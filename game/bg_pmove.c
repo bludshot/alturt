@@ -167,6 +167,79 @@ void PM_ClipVelocity( vec3_t in, vec3_t normal, vec3_t out, float overbounce ) {
 	}
 }
 
+/*
+=============
+CheckLadder Fuction Xamis 
+=============
+*/
+
+int CheckLadder( void )
+{
+	vec3_t forward,spot;
+	vec3_t spot2;
+	trace_t trace;
+	vec3_t	traceMins;
+	vec3_t	traceMaxs;
+
+	if ( pm->cmd.upmove > 0 )
+		return 0;
+	if ( pm->ps->weaponTime > 0 )
+		return 0;
+	traceMins[0] = -16;
+	traceMins[1] = -16;
+	traceMins[2] = -16;
+
+	traceMaxs[0] = 16;
+	traceMaxs[1] = 16;
+	traceMaxs[2] = 16;
+
+    // check for ladder
+	forward[0] = pml.forward[0];
+	forward[1] = pml.forward[1];
+	forward[2] = 0;
+
+	VectorNormalize (forward);
+    // trace 1 unit
+	VectorMA (pm->ps->origin, 2 ,forward, spot);
+
+	pm->trace (&trace, pm->ps->origin, pm->mins, pm->maxs, spot,
+		    pm->ps->clientNum, MASK_PLAYERSOLID);
+
+	if ( pm->ps->pm_type == PM_DEAD )
+		return 0;
+
+	if (pm->ps->pm_flags & PMF_TIME_WATERJUMP)
+		return 0;
+
+	if ((trace.fraction < 1) && (trace.surfaceFlags & SURF_LADDER)) {
+		if ( pml.groundPlane && pm->cmd.forwardmove <= -15 )
+			return 0;
+		return 1;
+	}
+
+	VectorClear( spot);
+
+	VectorMA (pm->ps->origin, -5, forward, spot );
+
+	spot[2] -= 25; 
+	
+	VectorMA( spot, 10, forward, spot2 );
+
+	pm->trace ( &trace, spot,traceMins,traceMaxs, spot2, pm->ps->clientNum, MASK_PLAYERSOLID );
+
+	if ((trace.fraction < 1) && (trace.surfaceFlags & SURF_LADDER)  )
+	{
+		if ( pml.groundPlane )
+			return -2; // standing on plane, allow forward/backward movement
+		else
+		{
+            // no, only upwards/downwards climbing
+			return -1;
+		}
+	}
+	return 0;
+}
+
 
 /*
 ==================
@@ -224,9 +297,9 @@ static void PM_Friction( void ) {
 	}
 	
 		//apply ladder friction Xamis
-	if ( pml.ladder ) 
+	if ( CheckLadder() != 0 ) 
 	{
-		drop += speed*pm_ladderfriction*pml.frametime; 
+		drop += speed*pm_ladderfriction*pml.frametime;
 	}
 
 
@@ -1856,39 +1929,45 @@ PM_LadderMove()         --needs a lot of work--
 
 
 static void PM_LadderMove( void ) {
-
+	int i;
 	vec3_t wishvel;
 	float wishspeed;
 	vec3_t wishdir;
 	float scale;
 	float vel;
-	//pml_t		tml;
 
 	PM_Friction ();
 
+    // get user input
 	scale = PM_CmdScale( &pm->cmd );
 
-    // user intentions [what the user is attempting to do]
-	if ( !scale ) { 
-		wishvel[0] = 0;
-		wishvel[1] = 0;
-		wishvel[2] = 0;
+	VectorClear(wishvel);
+
+	for (i=0 ; i<3 ; i++) {
+		if ( CheckLadder() == -1 )
+		{
+			if ( i < 2 )
+			{
+				if ( pm->cmd.forwardmove > 0 )
+				{
+					wishvel[i] = scale * pml.forward[i]*pm->cmd.forwardmove +
+							scale * pml.right[i]*pm->cmd.rightmove;
+				}
+				else
+					wishvel[i] = 0;
+			}
+		}
+		else if ( CheckLadder() == -2 )  {
+			wishvel[i] = scale * pml.forward[i]*pm->cmd.forwardmove +
+					scale * pml.right[i]*pm->cmd.rightmove;
+		}
+		else {
+			wishvel[i] = scale * pml.forward[i]*pm->cmd.forwardmove +
+					scale * pml.right[i]*pm->cmd.rightmove;
+		}
+
 	}
-	else {  
-		
-		wishvel[0] = scale * pml.forward[0]*pm->cmd.forwardmove +
-					  scale * pml.right[0]*pm->cmd.rightmove; 
-		wishvel[1] = scale * pml.forward[1]*pm->cmd.forwardmove +
-				scale * pml.right[1]*pm->cmd.rightmove;
-		wishvel[2] = scale * pm->cmd.forwardmove+
-				scale * pml.right[2]*pm->cmd.rightmove;  
-		wishvel[2] += scale * pm->cmd.upmove;
-		
-		//while ( tml.msec >= 3000 ){ 
-		//	tml.msec -= 3000;
-		//	PM_AddEvent(PM_FootstepForSurface());
-		//}
-	}
+	wishvel[2] = scale * pm->cmd.forwardmove + scale  ;
 
 	VectorCopy (wishvel, wishdir);
 	wishspeed = VectorNormalize(wishdir);
@@ -1902,41 +1981,19 @@ static void PM_LadderMove( void ) {
 	if ( pml.groundPlane && DotProduct( pm->ps->velocity,
 	     pml.groundTrace.plane.normal ) < 0 ) {
 		     vel = VectorLength(pm->ps->velocity);
-		     PM_ClipVelocity (pm->ps->velocity, pml.groundTrace.plane.normal, 
+		     PM_ClipVelocity (pm->ps->velocity, pml.groundTrace.plane.normal,
 				      pm->ps->velocity, OVERCLIP );
 
 		     VectorNormalize(pm->ps->velocity);
 		     VectorScale(pm->ps->velocity, vel, pm->ps->velocity);
 	     }
-	     PM_SlideMove( qfalse ); 
-}
+
+	     PM_SlideMove( qfalse );
 
 
 
-/*
-=============
-CheckLadder Fuction Xamis 
-=============
-*/
-void CheckLadder( void )
-{
-	vec3_t flatforward,spot;
-
-	trace_t trace;
-	pml.ladder = qfalse;
-	flatforward[0] = pml.forward[0];
-	flatforward[1] = pml.forward[1];
-	flatforward[2] = 0;
-	VectorNormalize (flatforward);
-	VectorMA (pm->ps->origin, 1, flatforward, spot);
-	pm->trace (&trace, pm->ps->origin, pm->mins, pm->maxs, spot,
-		    pm->ps->clientNum, MASK_PLAYERSOLID);
-
-	if ((trace.fraction < 2) && (trace.surfaceFlags & SURF_LADDER))
-		pml.ladder = qtrue;
 
 }
-
 
 /*
 ================
@@ -2071,7 +2128,9 @@ void PmoveSingle (pmove_t *pmove) {
 
 	// set mins, maxs, and viewheight
 	PM_CheckDuck ();
-	CheckLadder();  //Xamis
+	if ( CheckLadder () != 0) {//Xamis
+		PM_LadderMove();
+	}  
 	// set groundentity
 	PM_GroundTrace();
 
