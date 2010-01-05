@@ -896,6 +896,7 @@ typedef struct {
 	int			surfaceFlags;	// surface hit
 	int			contents;	// contents on other side of surface hit
 	int			entityNum;	// entity the contacted sirface is a part of
+	int		surfFlags;
 } trace_t;
 
 // trace->entityNum can also be 0 to (MAX_GENTITIES-1)
