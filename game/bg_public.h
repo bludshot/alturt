@@ -152,7 +152,7 @@ typedef enum {
 #define PMF_GRAPPLE_PULL	2048	// pull towards grapple location
 #define PMF_FOLLOW			4096	// spectate following another player
 #define PMF_SCOREBOARD		8192	// spectate as a scoreboard
-#define PMF_INVULEXPAND		16384	// invulnerability sphere set to full size
+//#define PMF_WALLJUMPING		16384
 
 #define	PMF_ALL_TIMES	(PMF_TIME_WATERJUMP|PMF_TIME_LAND|PMF_TIME_KNOCKBACK)
 
@@ -180,7 +180,7 @@ typedef struct {
 	int			waterlevel;
 
 	float		xyspeed;
-
+	int 		groundentity;
 	// for fixed msec Pmove
 	int			pmove_fixed;
 	int			pmove_msec;
@@ -293,40 +293,83 @@ typedef enum {
 
 typedef enum {
 	HI_NONE,
-
+ 	HI_LASER,
+  	HI_SILENCER,
+  	HI_HELMET,
 	HI_TELEPORTER,
 	HI_MEDKIT,
 	HI_KAMIKAZE,
 	HI_PORTAL,
 	HI_INVULNERABILITY,
-
+	
 	HI_NUM_HOLDABLE
 } holdable_t;
 
 
 typedef enum {
-	WP_NONE,
+	WP_NONE, //0
 
-	WP_GAUNTLET,
-	WP_MACHINEGUN,
-	WP_SHOTGUN,
-	WP_GRENADE_LAUNCHER,
-	WP_ROCKET_LAUNCHER,
-	WP_LIGHTNING,
-	WP_RAILGUN,
-	WP_PLASMAGUN,
-	WP_BFG,
-	WP_GRAPPLING_HOOK,
-#ifdef MISSIONPACK
-	WP_NAILGUN,
-	WP_PROX_LAUNCHER,
-	WP_CHAINGUN,
-#endif
+ WP_KNIFE, //1
+ WP_BERETTA, //2
+ WP_DEAGLE, //3
+ WP_MP5K, //4
+ WP_SPAS, //5
+ WP_UMP45, //6
+ WP_M4, //7
+ WP_LR300, //8 
+ WP_G36, //9
+ WP_AK103, //10
+ WP_HK69, //11
+ WP_NEGEV, //12
+ WP_PSG1, //13
+ WP_SR8, //14
+ WP_GRAPPLING_HOOK, //15
+
 
 	WP_NUM_WEAPONS
 } weapon_t;
 
 
+/*
+
+typedef enum {
+	WP_NONE,
+
+ WP_M4,
+ WP_LR300,
+ WP_G36,
+ WP_AK103,
+ WP_HK69,
+ WP_NEGEV,
+ WP_PSG1,
+ WP_SR8,
+ 
+ WP_NUM_WEAPONS
+} weapon_pri;
+
+typedef enum {
+	WP_NONE,
+
+ WP_KNIFE,
+ WP_BERETTA,
+ WP_DEAGLE,
+
+ WP_NUM_WEAPONS
+} weapon_sidearm;
+
+
+typedef enum {
+	WP_NONE,
+
+ WP MP5K,
+ WP_SPAS,
+ WP_UMP45,
+
+ WP_NUM_WEAPONS
+} weapon_secondary;
+
+
+*/
 // reward sounds (stored in ps->persistant[PERS_PLAYEREVENTS])
 #define	PLAYEREVENT_DENIEDREWARD		0x0001
 #define	PLAYEREVENT_GAUNTLETREWARD		0x0002
@@ -452,7 +495,8 @@ typedef enum {
 	EV_TAUNT_FOLLOWME,
 	EV_TAUNT_GETFLAG,
 	EV_TAUNT_GUARDBASE,
-	EV_TAUNT_PATROL
+	EV_TAUNT_PATROL,
+ 
 
 } entity_event_t;
 

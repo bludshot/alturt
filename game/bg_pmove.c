@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 //
 // bg_pmove.c -- both games player movement code
-// takes a playerstate and a usercmd as input and returns a modifed playerstate
+// takes a ps and a usercmd as input and returns a modifed ps
 
 #include "../qcommon/q_shared.h"
 #include "bg_public.h"
@@ -53,6 +53,7 @@ float   pm_ladderfriction = 2000; //Xamis
 
 
 int		c_pmove = 0;
+
 
 
 /*
@@ -167,6 +168,36 @@ void PM_ClipVelocity( vec3_t in, vec3_t normal, vec3_t out, float overbounce ) {
 	}
 }
 
+
+
+/*
+=============
+CheckWall Fuction Xamis 
+=============
+*/
+
+void CheckWall( void )
+{
+	vec3_t flatforward,spot;
+	trace_t trace;
+	pml.ladder = qfalse;
+
+	flatforward[0] = pml.forward[0];
+	flatforward[1] = pml.forward[1];
+	flatforward[2] = 0;
+	VectorNormalize (flatforward);
+	VectorMA (pm->ps->origin, 1, flatforward, spot);
+	pm->trace (&trace, pm->ps->origin, pm->mins, pm->maxs, spot,
+		    pm->ps->clientNum, CONTENTS_SOLID);
+
+	if ((trace.fraction == 0) && !(trace.surfaceFlags & SURF_LADDER))
+		pml.ladder = qtrue;
+
+}
+
+
+
+
 /*
 =============
 CheckLadder Fuction Xamis 
@@ -193,13 +224,13 @@ int CheckLadder( void )
 	traceMaxs[1] = 16;
 	traceMaxs[2] = 16;
 
-    // check for ladder
+
 	forward[0] = pml.forward[0];
 	forward[1] = pml.forward[1];
 	forward[2] = 0;
 
 	VectorNormalize (forward);
-    // trace 1 unit
+
 	VectorMA (pm->ps->origin, 2 ,forward, spot);
 
 	pm->trace (&trace, pm->ps->origin, pm->mins, pm->maxs, spot,
@@ -230,10 +261,9 @@ int CheckLadder( void )
 	if ((trace.fraction < 1) && (trace.surfaceFlags & SURF_LADDER)  )
 	{
 		if ( pml.groundPlane )
-			return -2; // standing on plane, allow forward/backward movement
+			return -2; 
 		else
 		{
-            // no, only upwards/downwards climbing
 			return -1;
 		}
 	}
@@ -295,13 +325,17 @@ static void PM_Friction( void ) {
 	if ( pm->ps->pm_type == PM_SPECTATOR) {
 		drop += speed*pm_spectatorfriction*pml.frametime;
 	}
-	
+	if ( pml.ladder ) // If they're on a ladder... 
+	{
+		drop += speed*pm_ladderfriction*pml.frametime;  // Add ladder friction! 
+	}
+
+
 		//apply ladder friction Xamis
 	if ( CheckLadder() != 0 ) 
 	{
 		drop += speed*pm_ladderfriction*pml.frametime;
 	}
-
 
 	
 	
@@ -622,6 +656,10 @@ static void PM_WaterMove( void ) {
 
 	PM_SlideMove( qfalse );
 }
+
+
+
+
 
 #ifdef MISSIONPACK
 /*
@@ -1343,22 +1381,6 @@ static void PM_CheckDuck (void)
 {
 	trace_t	trace;
 
-	if ( pm->ps->powerups[PW_INVULNERABILITY] ) {
-		if ( pm->ps->pm_flags & PMF_INVULEXPAND ) {
-			// invulnerability sphere has a 42 units radius
-			VectorSet( pm->mins, -42, -42, -42 );
-			VectorSet( pm->maxs, 42, 42, 42 );
-		}
-		else {
-			VectorSet( pm->mins, -15, -15, MINS_Z );
-			VectorSet( pm->maxs, 15, 15, 16 );
-		}
-		pm->ps->pm_flags |= PMF_DUCKED;
-		pm->ps->viewheight = CROUCH_VIEWHEIGHT;
-		return;
-	}
-	pm->ps->pm_flags &= ~PMF_INVULEXPAND;
-
 	pm->mins[0] = -15;
 	pm->mins[1] = -15;
 
@@ -1611,7 +1633,7 @@ PM_TorsoAnimation
 */
 static void PM_TorsoAnimation( void ) {
 	if ( pm->ps->weaponstate == WEAPON_READY ) {
-		if ( pm->ps->weapon == WP_GAUNTLET ) {
+		if ( pm->ps->weapon == WP_KNIFE ) {
 			PM_ContinueTorsoAnim( TORSO_STAND2 );
 		} else {
 			PM_ContinueTorsoAnim( TORSO_STAND );
@@ -1691,7 +1713,7 @@ static void PM_Weapon( void ) {
 
 	if ( pm->ps->weaponstate == WEAPON_RAISING ) {
 		pm->ps->weaponstate = WEAPON_READY;
-		if ( pm->ps->weapon == WP_GAUNTLET ) {
+		if ( pm->ps->weapon == WP_KNIFE ) {
 			PM_StartTorsoAnim( TORSO_STAND2 );
 		} else {
 			PM_StartTorsoAnim( TORSO_STAND );
@@ -1707,7 +1729,7 @@ static void PM_Weapon( void ) {
 	}
 
 	// start the animation even if out of ammo
-	if ( pm->ps->weapon == WP_GAUNTLET ) {
+	if ( pm->ps->weapon == WP_KNIFE ) {
 		// the guantlet only "fires" when it actually hits something
 		if ( !pm->gauntletHit ) {
 			pm->ps->weaponTime = 0;
@@ -1738,47 +1760,51 @@ static void PM_Weapon( void ) {
 
 	switch( pm->ps->weapon ) {
 	default:
-	case WP_GAUNTLET:
+	case WP_KNIFE:
 		addTime = 400;
 		break;
-	case WP_LIGHTNING:
-		addTime = 50;
-		break;
-	case WP_SHOTGUN:
-		addTime = 1000;
-		break;
-	case WP_MACHINEGUN:
-		addTime = 100;
-		break;
-	case WP_GRENADE_LAUNCHER:
-		addTime = 800;
-		break;
-	case WP_ROCKET_LAUNCHER:
-		addTime = 800;
-		break;
-	case WP_PLASMAGUN:
-		addTime = 100;
-		break;
-	case WP_RAILGUN:
-		addTime = 1500;
-		break;
-	case WP_BFG:
-		addTime = 200;
-		break;
+		case WP_M4:
+			addTime = 100;
+			break;
+		case WP_LR300:
+			addTime = 100;
+			break;
+		case WP_G36:
+			addTime = 130;
+			break;
+		case WP_SPAS:
+			addTime = 800;
+			break;
+		case WP_PSG1:
+			addTime = 800;
+			break;
+		case WP_SR8:
+			addTime = 1500;
+			break;
+		case WP_MP5K:
+			addTime = 65;
+			break;
+		case WP_UMP45:
+			addTime = 150;
+			break;
+		case WP_DEAGLE:
+			addTime = 500;
+			break;
+		case WP_BERETTA:
+			addTime = 300;
+			break;
+		case WP_NEGEV:
+			addTime = 100;
+			break;
+		case WP_AK103:
+			addTime = 150;
+			break;
+		case WP_HK69:
+			addTime = 800;
+			break;
 	case WP_GRAPPLING_HOOK:
 		addTime = 400;
 		break;
-#ifdef MISSIONPACK
-	case WP_NAILGUN:
-		addTime = 1000;
-		break;
-	case WP_PROX_LAUNCHER:
-		addTime = 800;
-		break;
-	case WP_CHAINGUN:
-		addTime = 30;
-		break;
-#endif
 	}
 
 #ifdef MISSIONPACK
@@ -1917,13 +1943,66 @@ void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd ) {
 
 }
 
+
 /*
 ===================
-PM_LadderMove()         --needs a lot of work--
-			going up ladder works fine,
-			going down ladder is hosed,
-			go up with forward, go down with crouch /back
-			Currently going down not working correctly, too easy to fall off of ledge!
+PM_LadderMove()
+by: Calrathan [Arthur Tomlin]
+
+Right now all I know is that this works for VERTICAL ladders. 
+Ladders with angles on them (urban2 for AQ2) haven't been tested.
+===================
+*/
+static void PM_WallMove( void ) {
+	int i;
+	vec3_t wishvel;
+	float wishspeed;
+	vec3_t wishdir;
+	float scale;
+	float vel;
+
+	PM_Friction ();
+
+	scale = PM_CmdScale( &pm->cmd );
+	
+	if ( pml.groundPlane ) {
+		return;
+	     }
+
+
+	// user intentions [what the user is attempting to do]
+	if ( !scale ) { 
+		wishvel[0] = 0;
+		wishvel[1] = 0;
+		wishvel[2] = 0;
+	}
+	else {   
+		for (i=0 ; i<3 ; i++)
+			wishvel[i] = scale * pml.forward[i]*pm->cmd.forwardmove +
+					scale * pml.right[i]*pm->cmd.rightmove; 
+		wishvel[2] += scale * pm->cmd.upmove;
+	}
+
+	VectorCopy (wishvel, wishdir);
+	wishspeed = VectorNormalize(wishdir);
+
+	if ( wishspeed > pm->ps->speed * pm_ladderscale ) {
+		wishspeed = pm->ps->speed * pm_ladderscale;
+	}
+
+	PM_Accelerate (wishdir, wishspeed, pm_ladderaccelerate);
+
+
+	     PM_SlideMove( qfalse ); // move without gravity
+}
+
+
+
+/*
+===================
+PM_LadderMove()         
+			
+
 ===================
 */
 
@@ -1952,6 +2031,7 @@ static void PM_LadderMove( void ) {
 				{
 					wishvel[i] = scale * pml.forward[i]*pm->cmd.forwardmove +
 							scale * pml.right[i]*pm->cmd.rightmove;
+
 				}
 				else
 					wishvel[i] = 0;
@@ -1960,6 +2040,7 @@ static void PM_LadderMove( void ) {
 		else if ( CheckLadder() == -2 )  {
 			wishvel[i] = scale * pml.forward[i]*pm->cmd.forwardmove +
 					scale * pml.right[i]*pm->cmd.rightmove;
+
 		}
 		else {
 			wishvel[i] = scale * pml.forward[i]*pm->cmd.forwardmove +
@@ -1994,7 +2075,7 @@ static void PM_LadderMove( void ) {
 
 
 }
-
+	vec3_t norm;
 /*
 ================
 PmoveSingle
@@ -2128,9 +2209,12 @@ void PmoveSingle (pmove_t *pmove) {
 
 	// set mins, maxs, and viewheight
 	PM_CheckDuck ();
+	//CheckWall();
+	
 	if ( CheckLadder () != 0) {//Xamis
 		PM_LadderMove();
 	}  
+	
 	// set groundentity
 	PM_GroundTrace();
 
@@ -2150,7 +2234,9 @@ void PmoveSingle (pmove_t *pmove) {
 		PM_FlyMove();
 		
 	} else if (pml.ladder) {   //Xamis 
-		PM_LadderMove();
+		//PM_WallMove();
+		
+	
 		
 	} else if (pm->ps->pm_flags & PMF_GRAPPLE_PULL) {
 		PM_GrappleMove();
@@ -2187,23 +2273,16 @@ void PmoveSingle (pmove_t *pmove) {
 	// entering / leaving water splashes
 	PM_WaterEvents();
 
-	// snap some parts of playerstate to save network bandwidth
+	// snap some parts of ps to save network bandwidth
 	trap_SnapVector( pm->ps->velocity );
 }
 
 
-/*
-================
-Pmove
 
-Can be called by either the server or the client
-================
-*/
 void Pmove (pmove_t *pmove) {
 	int			finalTime;
 
 	finalTime = pmove->cmd.serverTime;
-
 	if ( finalTime < pmove->ps->commandTime ) {
 		return;	// should not happen
 	}
@@ -2239,7 +2318,6 @@ void Pmove (pmove_t *pmove) {
 		}
 	}
 
-	//PM_CheckStuck();
-
 }
+
 

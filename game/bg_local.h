@@ -45,12 +45,23 @@ typedef struct {
 	qboolean	walking;
 	qboolean	groundPlane;
 	trace_t		groundTrace;
-	qboolean ladder; 	//Xamis
+
 	float		impactSpeed;
 
 	vec3_t		previous_origin;
 	vec3_t		previous_velocity;
-	int			previous_waterlevel;
+	int		previous_waterlevel;
+	
+	
+	qboolean ladder; 	//Xamis	
+	vec3_t 		origin;          // Xamis
+	vec3_t 		velocity;        // Xamis	
+	vec3_t 		flatforward; 	
+	int 		groundsurfFlags;
+	int		groundcontents;
+	float 		forwardPush, sidePush, upPush;
+		
+	
 } pml_t;
 
 extern	pmove_t		*pm;
@@ -76,6 +87,7 @@ extern	int		c_pmove;
 void PM_ClipVelocity( vec3_t in, vec3_t normal, vec3_t out, float overbounce );
 void PM_AddTouchEnt( int entityNum );
 void PM_AddEvent( int newEvent );
+
 
 qboolean	PM_SlideMove( qboolean gravity );
 void		PM_StepSlideMove( qboolean gravity );

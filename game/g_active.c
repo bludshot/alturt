@@ -484,44 +484,7 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
 			client->ps.stats[STAT_ARMOR]--;
 		}
 	}
-#ifdef MISSIONPACK
-	if( bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_AMMOREGEN ) {
-		int w, max, inc, t, i;
-    int weapList[]={WP_MACHINEGUN,WP_SHOTGUN,WP_GRENADE_LAUNCHER,WP_ROCKET_LAUNCHER,WP_LIGHTNING,WP_RAILGUN,WP_PLASMAGUN,WP_BFG,WP_NAILGUN,WP_PROX_LAUNCHER,WP_CHAINGUN};
-    int weapCount = sizeof(weapList) / sizeof(int);
-		//
-    for (i = 0; i < weapCount; i++) {
-		  w = weapList[i];
 
-		  switch(w) {
-			  case WP_MACHINEGUN: max = 50; inc = 4; t = 1000; break;
-			  case WP_SHOTGUN: max = 10; inc = 1; t = 1500; break;
-			  case WP_GRENADE_LAUNCHER: max = 10; inc = 1; t = 2000; break;
-			  case WP_ROCKET_LAUNCHER: max = 10; inc = 1; t = 1750; break;
-			  case WP_LIGHTNING: max = 50; inc = 5; t = 1500; break;
-			  case WP_RAILGUN: max = 10; inc = 1; t = 1750; break;
-			  case WP_PLASMAGUN: max = 50; inc = 5; t = 1500; break;
-			  case WP_BFG: max = 10; inc = 1; t = 4000; break;
-			  case WP_NAILGUN: max = 10; inc = 1; t = 1250; break;
-			  case WP_PROX_LAUNCHER: max = 5; inc = 1; t = 2000; break;
-			  case WP_CHAINGUN: max = 100; inc = 5; t = 1000; break;
-			  default: max = 0; inc = 0; t = 1000; break;
-		  }
-		  client->ammoTimes[w] += msec;
-		  if ( client->ps.ammo[w] >= max ) {
-			  client->ammoTimes[w] = 0;
-		  }
-		  if ( client->ammoTimes[w] >= t ) {
-			  while ( client->ammoTimes[w] >= t )
-				  client->ammoTimes[w] -= t;
-			  client->ps.ammo[w] += inc;
-			  if ( client->ps.ammo[w] > max ) {
-				  client->ps.ammo[w] = max;
-			  }
-		  }
-    }
-	}
-#endif
 }
 
 /*
@@ -916,7 +879,7 @@ void ClientThink_real( gentity_t *ent ) {
 
 	// check for the hit-scan gauntlet, don't let the action
 	// go through as an attack unless it actually hits something
-	if ( client->ps.weapon == WP_GAUNTLET && !( ucmd->buttons & BUTTON_TALK ) &&
+	if ( client->ps.weapon == WP_KNIFE && !( ucmd->buttons & BUTTON_TALK ) &&
 		( ucmd->buttons & BUTTON_ATTACK ) && client->ps.weaponTime <= 0 ) {
 		pm.gauntletHit = CheckGauntletAttack( ent );
 	}
@@ -926,32 +889,7 @@ void ClientThink_real( gentity_t *ent ) {
 		ent->client->pers.cmd.buttons |= BUTTON_GESTURE;
 	}
 
-#ifdef MISSIONPACK
-	// check for invulnerability expansion before doing the Pmove
-	if (client->ps.powerups[PW_INVULNERABILITY] ) {
-		if ( !(client->ps.pm_flags & PMF_INVULEXPAND) ) {
-			vec3_t mins = { -42, -42, -42 };
-			vec3_t maxs = { 42, 42, 42 };
-			vec3_t oldmins, oldmaxs;
 
-			VectorCopy (ent->r.mins, oldmins);
-			VectorCopy (ent->r.maxs, oldmaxs);
-			// expand
-			VectorCopy (mins, ent->r.mins);
-			VectorCopy (maxs, ent->r.maxs);
-			trap_LinkEntity(ent);
-			// check if this would get anyone stuck in this player
-			if ( !StuckInOtherClient(ent) ) {
-				// set flag so the expanded size will be set in PM_CheckDuck
-				client->ps.pm_flags |= PMF_INVULEXPAND;
-			}
-			// set back
-			VectorCopy (oldmins, ent->r.mins);
-			VectorCopy (oldmaxs, ent->r.maxs);
-			trap_LinkEntity(ent);
-		}
-	}
-#endif
 
 	pm.ps = &client->ps;
 	pm.cmd = *ucmd;

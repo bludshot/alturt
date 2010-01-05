@@ -1229,17 +1229,46 @@ void ClientSpawn(gentity_t *ent) {
 	VectorCopy (playerMaxs, ent->r.maxs);
 
 	client->ps.clientNum = index;
-
-	client->ps.stats[STAT_WEAPONS] = ( 1 << WP_MACHINEGUN );
-	if ( g_gametype.integer == GT_TEAM ) {
-		client->ps.ammo[WP_MACHINEGUN] = 50;
-	} else {
-		client->ps.ammo[WP_MACHINEGUN] = 100;
+	
+	
+	/*
+	--Xamis--
+	probably need to change the primary, secondary, and sidearms to different structs, instead of all using weapon_t
+	This is working for now, but is not the optimum solution	
+	*/
+	
+	client->ps.stats[STAT_WEAPONS] = ( 1 << WP_KNIFE ); //should always have a knife --Xamis
+	
+	if( g_sidearm.integer == WP_DEAGLE || g_sidearm.integer == WP_BERETTA ){ //pull sidearm from cvar --Xamis
+		client->ps.stats[STAT_WEAPONS] |= ( 1 << g_sidearm.integer );
+	}else{
+		G_Printf( S_COLOR_BLUE "USING DEFAULT SIDEARM");
+		client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_BERETTA );
+		client->ps.ammo[WP_BERETTA] = 10;
+		g_sidearm.integer = WP_BERETTA;
 	}
-
-	client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_GAUNTLET );
-	client->ps.ammo[WP_GAUNTLET] = -1;
-	client->ps.ammo[WP_GRAPPLING_HOOK] = -1;
+	
+	if( g_primary_weapon.integer <= WP_SR8 &&  g_primary_weapon.integer >= WP_M4 ){
+	client->ps.stats[STAT_WEAPONS] |= ( 1 << g_primary_weapon.integer );
+	}else{
+		G_Printf( S_COLOR_BLUE "USING DEFAULT PRIMARY");
+	client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_M4 );
+	client->ps.ammo[WP_M4] = 30;
+	g_primary_weapon.integer = WP_M4;
+	}
+	
+	if( g_secondary_weapon.integer >= WP_MP5K && g_secondary_weapon.integer <= WP_UMP45 ){
+	client->ps.stats[STAT_WEAPONS] |= ( 1 <<  g_secondary_weapon.integer );
+	}else{
+		client->ps.stats[STAT_WEAPONS] |= ( 1 <<  WP_MP5K );
+		client->ps.ammo[WP_MP5K] = 30;
+		g_secondary_weapon.integer = WP_MP5K;
+	}
+	client->ps.ammo[g_primary_weapon.integer] = 30;
+	client->ps.ammo[g_sidearm.integer] = 10;
+	client->ps.ammo[g_secondary_weapon.integer] = 30;
+	client->ps.ammo[WP_KNIFE] = -1;
+	//client->ps.ammo[WP_GRAPPLING_HOOK] = -1;
 
 	// health will count down towards max_health
 	ent->health = client->ps.stats[STAT_HEALTH] = client->ps.stats[STAT_MAX_HEALTH] + 25;
@@ -1261,7 +1290,7 @@ void ClientSpawn(gentity_t *ent) {
 		trap_LinkEntity (ent);
 
 		// force the base weapon up
-		client->ps.weapon = WP_MACHINEGUN;
+		client->ps.weapon = WP_KNIFE;
 		client->ps.weaponstate = WEAPON_READY;
 
 	}

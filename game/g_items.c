@@ -805,8 +805,7 @@ void ClearRegisteredItems( void ) {
 	memset( itemRegistered, 0, sizeof( itemRegistered ) );
 
 	// players always start with the base weapon
-	RegisterItem( BG_FindItemForWeapon( WP_MACHINEGUN ) );
-	RegisterItem( BG_FindItemForWeapon( WP_GAUNTLET ) );
+	RegisterItem( BG_FindItemForWeapon( WP_KNIFE ) );
 #ifdef MISSIONPACK
 	if( g_gametype.integer == GT_BOMB ) {
 		RegisterItem( BG_FindItem( "Red Cube" ) );

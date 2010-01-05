@@ -255,6 +255,14 @@ typedef struct {
 	int			voteCount;			// to prevent people from constantly calling votes
 	int			teamVoteCount;		// to prevent people from constantly calling votes
 	qboolean	teamInfo;			// send team overlay updates?
+	int		weapon_primary;
+	int		weapon_secondary;
+	int		new_weapon_primary;	
+	int		new_weapon_secondary;	
+	
+	
+	
+	
 } clientPersistant_t;
 
 
@@ -768,6 +776,9 @@ extern	vmCvar_t	g_enableDust;
 extern	vmCvar_t	g_enableBreath;
 extern	vmCvar_t	g_singlePlayer;
 extern	vmCvar_t	g_proxMineTimeout;
+extern	vmCvar_t	g_primary_weapon;
+extern	vmCvar_t	g_secondary_weapon;
+extern	vmCvar_t	g_sidearm;
 
 void	trap_Printf( const char *fmt );
 void	trap_Error( const char *fmt );

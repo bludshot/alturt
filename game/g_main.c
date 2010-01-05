@@ -81,6 +81,9 @@ vmCvar_t	pmove_fixed;
 vmCvar_t	pmove_msec;
 vmCvar_t	g_rankings;
 vmCvar_t	g_listEntity;
+vmCvar_t	g_primary_weapon;
+vmCvar_t	g_secondary_weapon;
+vmCvar_t	g_sidearm;
 #ifdef MISSIONPACK
 vmCvar_t	g_obeliskHealth;
 vmCvar_t	g_obeliskRegenPeriod;
@@ -156,6 +159,9 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_podiumDrop, "g_podiumDrop", "70", 0, 0, qfalse },
 
 	{ &g_allowVote, "g_allowVote", "1", CVAR_ARCHIVE, 0, qfalse },
+ 	{ &g_secondary_weapon, "g_secondary_weapon", "4", CVAR_ARCHIVE }, 
+  { &g_primary_weapon, "g_primary_weapon", "14", CVAR_ARCHIVE }, 
+ 	 { &g_sidearm, "g_sidearm", "1", CVAR_ARCHIVE },  
 	{ &g_listEntity, "g_listEntity", "0", 0, 0, qfalse },
 
 #ifdef MISSIONPACK

@@ -87,7 +87,7 @@ void TossClientItems( gentity_t *self ) {
 	// weapon that isn't the mg or gauntlet.  Without this, a client
 	// can pick up a weapon, be killed, and not drop the weapon because
 	// their weapon change hasn't completed yet and they are still holding the MG.
-	if ( weapon == WP_MACHINEGUN || weapon == WP_GRAPPLING_HOOK ) {
+	if ( weapon == WP_KNIFE || weapon == WP_GRAPPLING_HOOK ) {
 		if ( self->client->ps.weaponstate == WEAPON_DROPPING ) {
 			weapon = self->client->pers.cmd.weapon;
 		}
@@ -96,7 +96,7 @@ void TossClientItems( gentity_t *self ) {
 		}
 	}
 
-	if ( weapon > WP_MACHINEGUN && weapon != WP_GRAPPLING_HOOK && 
+	if ( weapon > WP_KNIFE && weapon != WP_GRAPPLING_HOOK && 
 		self->client->ps.ammo[ weapon ] ) {
 		// find the item type for this weapon
 		item = BG_FindItemForWeapon( weapon );
@@ -755,7 +755,7 @@ int RaySphereIntersections( vec3_t origin, float radius, vec3_t point, vec3_t di
 	return 0;
 }
 
-#ifdef MISSIONPACK
+
 /*
 ================
 G_InvulnerabilityEffect
@@ -793,7 +793,7 @@ int G_InvulnerabilityEffect( gentity_t *targ, vec3_t dir, vec3_t point, vec3_t i
 		return qfalse;
 	}
 }
-#endif
+
 /*
 ============
 T_Damage

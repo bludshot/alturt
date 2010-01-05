@@ -221,6 +221,10 @@ char *strcpy( char *strDestination, const char *strSource ) {
 }
 
 
+
+
+
+
 int strcmp( const char *string1, const char *string2 ) {
 	while ( *string1 == *string2 && *string1 && *string2 ) {
 		string1++;
@@ -256,6 +260,9 @@ char *strstr( const char *string, const char *strCharSet ) {
 	}
 	return (char *)0;
 }
+
+
+
 
 int tolower( int c ) {
 	if ( c >= 'A' && c <= 'Z' ) {

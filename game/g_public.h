@@ -53,6 +53,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //===============================================================
 
 
+
 typedef struct {
 	entityState_t	s;				// communicated by server to clients
 
@@ -383,6 +384,10 @@ typedef enum {
 	BOTLIB_AAS_PREDICT_ROUTE,
 	BOTLIB_AAS_POINT_REACHABILITY_AREA_INDEX,
 
+ 
+ 
+	CG_CM_TRANSFORMEDBOXTRACE,
+ 
 	BOTLIB_PC_LOAD_SOURCE,
 	BOTLIB_PC_FREE_SOURCE,
 	BOTLIB_PC_READ_TOKEN,

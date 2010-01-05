@@ -153,8 +153,14 @@ void SnapVectorTowards( vec3_t v, vec3_t to ) {
 #define CHAINGUN_SPREAD		600
 #endif
 #define MACHINEGUN_SPREAD	200
+#define DEAGLE_SPREAD		50
 #define	MACHINEGUN_DAMAGE	7
 #define	MACHINEGUN_TEAM_DAMAGE	5		// wimpier MG in teamplay
+#define	M4_DAMAGE	12
+#define	AK103_DAMAGE	16
+#define	DEAGLE_DAMAGE	25
+
+
 
 void Bullet_Fire (gentity_t *ent, float spread, int damage ) {
 	trace_t		tr;
@@ -230,24 +236,6 @@ void Bullet_Fire (gentity_t *ent, float spread, int damage ) {
 	}
 }
 
-
-/*
-======================================================================
-
-BFG
-
-======================================================================
-*/
-
-void BFG_Fire ( gentity_t *ent ) {
-	gentity_t	*m;
-
-	m = fire_bfg (ent, muzzle, forward);
-	m->damage *= s_quadFactor;
-	m->splashDamage *= s_quadFactor;
-
-//	VectorAdd( m->s.pos.trDelta, ent->client->ps.velocity, m->s.pos.trDelta );	// "real" physics
-}
 
 
 /*
@@ -383,53 +371,10 @@ void weapon_grenadelauncher_fire (gentity_t *ent) {
 	m->damage *= s_quadFactor;
 	m->splashDamage *= s_quadFactor;
 
-//	VectorAdd( m->s.pos.trDelta, ent->client->ps.velocity, m->s.pos.trDelta );	// "real" physics
-}
-
-/*
-======================================================================
-
-ROCKET
-
-======================================================================
-*/
-
-void Weapon_RocketLauncher_Fire (gentity_t *ent) {
-	gentity_t	*m;
-
-	m = fire_rocket (ent, muzzle, forward);
-	m->damage *= s_quadFactor;
-	m->splashDamage *= s_quadFactor;
-
-//	VectorAdd( m->s.pos.trDelta, ent->client->ps.velocity, m->s.pos.trDelta );	// "real" physics
+	VectorAdd( m->s.pos.trDelta, ent->client->ps.velocity, m->s.pos.trDelta );	// "real" physics
 }
 
 
-/*
-======================================================================
-
-PLASMA GUN
-
-======================================================================
-*/
-
-void Weapon_Plasmagun_Fire (gentity_t *ent) {
-	gentity_t	*m;
-
-	m = fire_plasma (ent, muzzle, forward);
-	m->damage *= s_quadFactor;
-	m->splashDamage *= s_quadFactor;
-
-//	VectorAdd( m->s.pos.trDelta, ent->client->ps.velocity, m->s.pos.trDelta );	// "real" physics
-}
-
-/*
-======================================================================
-
-RAILGUN
-
-======================================================================
-*/
 
 
 /*
@@ -688,52 +633,7 @@ void Weapon_LightningFire( gentity_t *ent ) {
 	}
 }
 
-#ifdef MISSIONPACK
-/*
-======================================================================
 
-NAILGUN
-
-======================================================================
-*/
-
-void Weapon_Nailgun_Fire (gentity_t *ent) {
-	gentity_t	*m;
-	int			count;
-
-	for( count = 0; count < NUM_NAILSHOTS; count++ ) {
-		m = fire_nail (ent, muzzle, forward, right, up );
-		m->damage *= s_quadFactor;
-		m->splashDamage *= s_quadFactor;
-	}
-
-//	VectorAdd( m->s.pos.trDelta, ent->client->ps.velocity, m->s.pos.trDelta );	// "real" physics
-}
-
-
-/*
-======================================================================
-
-PROXIMITY MINE LAUNCHER
-
-======================================================================
-*/
-
-void weapon_proxlauncher_fire (gentity_t *ent) {
-	gentity_t	*m;
-
-	// extra vertical velocity
-	forward[2] += 0.2f;
-	VectorNormalize( forward );
-
-	m = fire_prox (ent, muzzle, forward);
-	m->damage *= s_quadFactor;
-	m->splashDamage *= s_quadFactor;
-
-//	VectorAdd( m->s.pos.trDelta, ent->client->ps.velocity, m->s.pos.trDelta );	// "real" physics
-}
-
-#endif
 
 //======================================================================
 
@@ -822,16 +722,8 @@ void FireWeapon( gentity_t *ent ) {
 #endif
 
 	// track shots taken for accuracy tracking.  Grapple is not a weapon and gauntet is just not tracked
-	if( ent->s.weapon != WP_GRAPPLING_HOOK && ent->s.weapon != WP_GAUNTLET ) {
-#ifdef MISSIONPACK
-		if( ent->s.weapon == WP_NAILGUN ) {
-			ent->client->accuracy_shots += NUM_NAILSHOTS;
-		} else {
-			ent->client->accuracy_shots++;
-		}
-#else
-		ent->client->accuracy_shots++;
-#endif
+	if( ent->s.weapon != WP_GRAPPLING_HOOK && ent->s.weapon != WP_KNIFE ) {
+
 	}
 
 	// set aiming directions
@@ -841,51 +733,50 @@ void FireWeapon( gentity_t *ent ) {
 
 	// fire the specific weapon
 	switch( ent->s.weapon ) {
-	case WP_GAUNTLET:
+	case WP_KNIFE:
 		Weapon_Gauntlet( ent );
 		break;
-	case WP_LIGHTNING:
-		Weapon_LightningFire( ent );
+		case WP_SPAS:
+			weapon_supershotgun_fire( ent );
+	case WP_M4:
+			Bullet_Fire( ent, MACHINEGUN_SPREAD, M4_DAMAGE );
 		break;
-	case WP_SHOTGUN:
-		weapon_supershotgun_fire( ent );
-		break;
-	case WP_MACHINEGUN:
-		if ( g_gametype.integer != GT_TEAM ) {
+		case WP_MP5K:
 			Bullet_Fire( ent, MACHINEGUN_SPREAD, MACHINEGUN_DAMAGE );
-		} else {
-			Bullet_Fire( ent, MACHINEGUN_SPREAD, MACHINEGUN_TEAM_DAMAGE );
-		}
-		break;
-	case WP_GRENADE_LAUNCHER:
-		weapon_grenadelauncher_fire( ent );
-		break;
-	case WP_ROCKET_LAUNCHER:
-		Weapon_RocketLauncher_Fire( ent );
-		break;
-	case WP_PLASMAGUN:
-		Weapon_Plasmagun_Fire( ent );
-		break;
-	case WP_RAILGUN:
-		weapon_railgun_fire( ent );
-		break;
-	case WP_BFG:
-		BFG_Fire( ent );
-		break;
+			break;
+		case WP_UMP45:
+			Bullet_Fire( ent, MACHINEGUN_SPREAD, MACHINEGUN_DAMAGE );
+			break;
+		case WP_PSG1:
+			Bullet_Fire( ent, MACHINEGUN_SPREAD, MACHINEGUN_DAMAGE );
+			break;
+		case WP_SR8:
+			Bullet_Fire( ent, MACHINEGUN_SPREAD, MACHINEGUN_DAMAGE );
+			break;
+		case WP_G36:
+			Bullet_Fire( ent, MACHINEGUN_SPREAD, MACHINEGUN_DAMAGE );
+			break;
+		case WP_LR300:
+			Bullet_Fire( ent, MACHINEGUN_SPREAD, MACHINEGUN_DAMAGE );
+			break;
+		case WP_AK103:
+			Bullet_Fire( ent, MACHINEGUN_SPREAD, AK103_DAMAGE );
+			break;
+		case WP_NEGEV:
+			Bullet_Fire( ent, MACHINEGUN_SPREAD, MACHINEGUN_DAMAGE );
+			break;
+		case WP_DEAGLE:
+			Bullet_Fire( ent, DEAGLE_SPREAD, DEAGLE_DAMAGE );
+			break;
+		case WP_BERETTA:
+			Bullet_Fire( ent, MACHINEGUN_SPREAD, MACHINEGUN_DAMAGE );
+			break;
+	case WP_HK69:
+			weapon_grenadelauncher_fire( ent );
+			break;
 	case WP_GRAPPLING_HOOK:
 		Weapon_GrapplingHook_Fire( ent );
 		break;
-#ifdef MISSIONPACK
-	case WP_NAILGUN:
-		Weapon_Nailgun_Fire( ent );
-		break;
-	case WP_PROX_LAUNCHER:
-		weapon_proxlauncher_fire( ent );
-		break;
-	case WP_CHAINGUN:
-		Bullet_Fire( ent, CHAINGUN_SPREAD, MACHINEGUN_DAMAGE );
-		break;
-#endif
 	default:
 // FIXME		G_Error( "Bad ent->s.weapon" );
 		break;

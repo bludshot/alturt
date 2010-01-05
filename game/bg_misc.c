@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "../qcommon/q_shared.h"
 #include "bg_public.h"
-
+#define CGender "models/players/orion/helmet.md3"
 /*QUAKED item_***** ( 0 0 0 ) (-16 -16 -16) (16 16 16) suspended
 DO NOT USE THIS CLASS, IT JUST HOLDS GENERAL INFORMATION.
 The suspended flag will allow items to hang in the air, otherwise they are dropped to the next surface.
@@ -187,149 +187,418 @@ gitem_t	bg_itemlist[] =
 	// WEAPONS 
 	//
 
-/*QUAKED weapon_gauntlet (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-	{
-		"weapon_gauntlet", 
-		"sound/misc/w_pkup.wav",
-        { "models/weapons2/gauntlet/gauntlet.md3",
-		NULL, NULL, NULL},
-/* icon */		"icons/iconw_gauntlet",
-/* pickup */	"Gauntlet",
-		0,
-		IT_WEAPON,
-		WP_GAUNTLET,
-/* precache */ "",
-/* sounds */ ""
-	},
 
-/*QUAKED weapon_shotgun (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-	{
-		"weapon_shotgun", 
-		"sound/misc/w_pkup.wav",
-        { "models/weapons2/shotgun/shotgun.md3", 
-		NULL, NULL, NULL},
-/* icon */		"icons/iconw_shotgun",
-/* pickup */	"Shotgun",
-		10,
-		IT_WEAPON,
-		WP_SHOTGUN,
-/* precache */ "",
-/* sounds */ ""
-	},
 
-/*QUAKED weapon_machinegun (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
+
+/*QUAKED ut_weapon_g36 (0.3 0.9 0.4)(-5 -5 -5) (5 5 5) 
+ -------- KEYS --------
+ count: sets the amount of ammo given to the player when picked up (default 0).
+ gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
+ -------- SPAWNFLAGS --------
+ spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
+ -------- Notes --------
+ A count has to be set in order for ammo to be in the weapon when picked up 
+ the count system is very weird and I am unable to figure out how it works,
+ but here are some usefull numbers
+ count of 30   = 30 bullets 0 clips
+ count of 500  = 30 bullets 1 clip
+ count of 1000 = 30 bullets 2 clips
 */
-	{
-		"weapon_machinegun", 
-		"sound/misc/w_pkup.wav",
-        { "models/weapons2/machinegun/machinegun.md3", 
-		NULL, NULL, NULL},
-/* icon */		"icons/iconw_machinegun",
-/* pickup */	"Machinegun",
+ {
+	 "ut_weapon_g36", 
+  "sound/misc/w_pkup.wav",
+  { "models/weapons2/g36/g36.md3", 
+  NULL, NULL, NULL},
+/* icon */		"icons/weapons/g36",
+/* pickup */	"G36",
 		40,
-		IT_WEAPON,
-		WP_MACHINEGUN,
+  IT_WEAPON,
+  WP_G36,
 /* precache */ "",
 /* sounds */ ""
-	},
-
-/*QUAKED weapon_grenadelauncher (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
+ },
+/*QUAKED ut_weapon_spas12 (0.3 0.9 0.4)(-5 -5 -5) (5 5 5) 
+ -------- KEYS --------
+ count: sets the amount of ammo given to the player when picked up (default 0).
+ gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
+ -------- SPAWNFLAGS --------
+ spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
+ -------- Notes --------
+ A count has to be set in order for ammo to be in the weapon when picked up 
+ the count system is very weird and I am unable to figure out how it works,
+ but here are some usefull numbers
+ count of 30   = 30 bullets 0 clips
+ count of 500  = 30 bullets 1 clip
+ count of 1000 = 30 bullets 2 clips
 */
-	{
-		"weapon_grenadelauncher",
-		"sound/misc/w_pkup.wav",
-        { "models/weapons2/grenadel/grenadel.md3", 
-		NULL, NULL, NULL},
-/* icon */		"icons/iconw_grenade",
-/* pickup */	"Grenade Launcher",
-		10,
-		IT_WEAPON,
-		WP_GRENADE_LAUNCHER,
-/* precache */ "",
-/* sounds */ "sound/weapons/grenade/hgrenb1a.wav sound/weapons/grenade/hgrenb2a.wav"
-	},
-
-/*QUAKED weapon_rocketlauncher (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-	{
-		"weapon_rocketlauncher",
-		"sound/misc/w_pkup.wav",
-        { "models/weapons2/rocketl/rocketl.md3", 
-		NULL, NULL, NULL},
-/* icon */		"icons/iconw_rocket",
-/* pickup */	"Rocket Launcher",
-		10,
-		IT_WEAPON,
-		WP_ROCKET_LAUNCHER,
+ {
+	 "ut_weapon_spas12", 
+  "sound/misc/w_pkup.wav",
+  { "models/weapons2/spas12/spas12.md3", 
+  NULL, NULL, NULL},
+/* icon */		"icons/weapons/spas12",
+/* pickup */	"Spas",
+		40,
+  IT_WEAPON,
+  WP_SPAS,
 /* precache */ "",
 /* sounds */ ""
-	},
-
-/*QUAKED weapon_lightning (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
+ },
+/*QUAKED ut_weapon_beretta (0.3 0.9 0.4)(-5 -5 -5) (5 5 5) 
+ -------- KEYS --------
+ count: sets the amount of ammo given to the player when picked up (default 0).
+ gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
+ -------- SPAWNFLAGS --------
+ spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
+ -------- Notes --------
+ A count has to be set in order for ammo to be in the weapon when picked up 
+ the count system is very weird and I am unable to figure out how it works,
+ but here are some usefull numbers
+ count of 30   = 30 bullets 0 clips
+ count of 500  = 30 bullets 1 clip
+ count of 1000 = 30 bullets 2 clips
 */
-	{
-		"weapon_lightning", 
-		"sound/misc/w_pkup.wav",
-        { "models/weapons2/lightning/lightning.md3", 
-		NULL, NULL, NULL},
-/* icon */		"icons/iconw_lightning",
-/* pickup */	"Lightning Gun",
-		100,
-		IT_WEAPON,
-		WP_LIGHTNING,
+ {
+	 "ut_weapon_beretta", 
+  "sound/misc/w_pkup.wav",
+  { "models/weapons2/beretta/beretta.md3", 
+  NULL, NULL, NULL},
+/* icon */		"icons/weapons/beretta",
+/* pickup */	"beretta",
+		40,
+  IT_WEAPON,
+  WP_BERETTA,
 /* precache */ "",
 /* sounds */ ""
-	},
-
-/*QUAKED weapon_railgun (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
+ },
+/*QUAKED ut_weapon_grenade_he (0.3 0.9 0.4)(-5 -5 -5) (5 5 5) 
+ -------- KEYS --------
+ count: sets the amount of ammo given to the player when picked up (default 0).
+ gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
+ -------- SPAWNFLAGS --------
+ spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
+ -------- Notes --------
+ A count has to be set in order for ammo to be in the weapon when picked up 
+ the count system is very weird and I am unable to figure out how it works,
+ but here are some usefull numbers
+ count of 30   = 30 bullets 0 clips
+ count of 500  = 30 bullets 1 clip
+ count of 1000 = 30 bullets 2 clips
 */
-	{
-		"weapon_railgun", 
-		"sound/misc/w_pkup.wav",
-        { "models/weapons2/railgun/railgun.md3", 
-		NULL, NULL, NULL},
-/* icon */		"icons/iconw_railgun",
-/* pickup */	"Railgun",
-		10,
-		IT_WEAPON,
-		WP_RAILGUN,
+
+/*QUAKED ut_weapon_knife (0.3 0.9 0.4)(-5 -5 -5) (5 5 5) 
+ -------- KEYS --------
+ count: sets the amount of ammo given to the player when picked up (default 0).
+ gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
+ -------- SPAWNFLAGS --------
+ spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
+ -------- Notes --------
+ A count has to be set in order for ammo to be in the weapon when picked up 
+ the count system is very weird and I am unable to figure out how it works,
+ but here are some usefull numbers
+ count of 30   = 30 bullets 0 clips
+ count of 500  = 30 bullets 1 clip
+ count of 1000 = 30 bullets 2 clips
+*/
+ {
+	 "ut_weapon_knife", 
+  "sound/misc/w_pkup.wav",
+  { "models/weapons2/knife/knife.md3", 
+  NULL, NULL, NULL},
+/* icon */		"icons/weapons/knife",
+/* pickup */	"knife",
+		40,
+  IT_WEAPON,
+  WP_KNIFE,
 /* precache */ "",
 /* sounds */ ""
-	},
-
-/*QUAKED weapon_plasmagun (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
+ },
+/*QUAKED ut_weapon_ak103 (0.3 0.9 0.4)(-5 -5 -5) (5 5 5) 
+ -------- KEYS --------
+ count: sets the amount of ammo given to the player when picked up (default 0).
+ gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
+ -------- SPAWNFLAGS --------
+ spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
+ -------- Notes --------
+ A count has to be set in order for ammo to be in the weapon when picked up 
+ the count system is very weird and I am unable to figure out how it works,
+ but here are some usefull numbers
+ count of 30   = 30 bullets 0 clips
+ count of 500  = 30 bullets 1 clip
+ count of 1000 = 30 bullets 2 clips
 */
-	{
-		"weapon_plasmagun", 
-		"sound/misc/w_pkup.wav",
-        { "models/weapons2/plasma/plasma.md3", 
-		NULL, NULL, NULL},
-/* icon */		"icons/iconw_plasma",
-/* pickup */	"Plasma Gun",
-		50,
-		IT_WEAPON,
-		WP_PLASMAGUN,
+ {
+	 "ut_weapon_ak103", 
+  "sound/misc/w_pkup.wav",
+  { "models/weapons2/ak103/ak103.md3", 
+  NULL, NULL, NULL},
+/* icon */		"icons/weapons/ak103",
+/* pickup */	"ak103",
+		40,
+  IT_WEAPON,
+  WP_AK103,
 /* precache */ "",
 /* sounds */ ""
-	},
-
-/*QUAKED weapon_bfg (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
+ },
+/*QUAKED ut_weapon_mp5k (0.3 0.9 0.4)(-5 -5 -5) (5 5 5) 
+ -------- KEYS --------
+ count: sets the amount of ammo given to the player when picked up (default 0).
+ gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
+ -------- SPAWNFLAGS --------
+ spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
+ -------- Notes --------
+ A count has to be set in order for ammo to be in the weapon when picked up 
+ the count system is very weird and I am unable to figure out how it works,
+ but here are some usefull numbers
+ count of 30   = 30 bullets 0 clips
+ count of 500  = 30 bullets 1 clip
+ count of 1000 = 30 bullets 2 clips
 */
-	{
-		"weapon_bfg",
-		"sound/misc/w_pkup.wav",
-        { "models/weapons2/bfg/bfg.md3", 
-		NULL, NULL, NULL},
-/* icon */		"icons/iconw_bfg",
-/* pickup */	"BFG10K",
-		20,
-		IT_WEAPON,
-		WP_BFG,
+ {
+	 "ut_weapon_mp5k", 
+  "sound/misc/w_pkup.wav",
+  { "models/weapons2/mp5k/mp5k.md3", 
+  NULL, NULL, NULL},
+/* icon */		"icons/weapons/mp5k",
+/* pickup */	"mp5k",
+		40,
+  IT_WEAPON,
+  WP_MP5K,
 /* precache */ "",
 /* sounds */ ""
-	},
+ },
+/*QUAKED ut_weapon_deagle (0.3 0.9 0.4)(-5 -5 -5) (5 5 5) 
+ -------- KEYS --------
+ count: sets the amount of ammo given to the player when picked up (default 0).
+ gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
+ -------- SPAWNFLAGS --------
+ spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
+ -------- Notes --------
+ A count has to be set in order for ammo to be in the weapon when picked up 
+ the count system is very weird and I am unable to figure out how it works,
+ but here are some usefull numbers
+ count of 30   = 30 bullets 0 clips
+ count of 500  = 30 bullets 1 clip
+ count of 1000 = 30 bullets 2 clips
+*/
+ {
+	 "ut_weapon_deagle", 
+  "sound/misc/w_pkup.wav",
+  { "models/weapons2/deserteagle/deagle.md3", 
+  NULL, NULL, NULL},
+/* icon */		"icons/weapons/deserteagle",
+/* pickup */	"Desert Eagle",
+		40,
+  IT_WEAPON,
+  WP_DEAGLE,
+/* precache */ "",
+/* sounds */ ""
+ },
+/*QUAKED ut_weapon_grenade_smoke (0.3 0.9 0.4)(-5 -5 -5) (5 5 5) 
+ -------- KEYS --------
+ count: sets the amount of ammo given to the player when picked up (default 0).
+ gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
+ -------- SPAWNFLAGS --------
+ spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
+ -------- Notes --------
+ A count has to be set in order for ammo to be in the weapon when picked up 
+ the count system is very weird and I am unable to figure out how it works,
+ but here are some usefull numbers
+ count of 30   = 30 bullets 0 clips
+ count of 500  = 30 bullets 1 clip
+ count of 1000 = 30 bullets 2 clips
+*/
+
+/*QUAKED ut_weapon_lr (0.3 0.9 0.4)(-5 -5 -5) (5 5 5) 
+ -------- KEYS --------
+ count: sets the amount of ammo given to the player when picked up (default 0).
+ gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
+ -------- SPAWNFLAGS --------
+ spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
+ -------- Notes --------
+ A count has to be set in order for ammo to be in the weapon when picked up 
+ the count system is very weird and I am unable to figure out how it works,
+ but here are some usefull numbers
+ count of 30   = 30 bullets 0 clips
+ count of 500  = 30 bullets 1 clip
+ count of 1000 = 30 bullets 2 clips
+*/
+ {
+	 "ut_weapon_lr", 
+  "sound/misc/w_pkup.wav",
+  { "models/weapons2/zm300/lr.md3", 
+  NULL, NULL, NULL},
+/* icon */		"icons/weapons/lr",
+/* pickup */	"LR300",
+		40,
+  IT_WEAPON,
+  WP_LR300,
+/* precache */ "",
+/* sounds */ ""
+ },
+/*QUAKED ut_weapon_ump45 (0.3 0.9 0.4)(-5 -5 -5) (5 5 5) 
+ -------- KEYS --------
+ count: sets the amount of ammo given to the player when picked up (default 0).
+ gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
+ -------- SPAWNFLAGS --------
+ spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
+ -------- Notes --------
+ A count has to be set in order for ammo to be in the weapon when picked up 
+ the count system is very weird and I am unable to figure out how it works,
+ but here are some usefull numbers
+ count of 30   = 30 bullets 0 clips
+ count of 500  = 30 bullets 1 clip
+ count of 1000 = 30 bullets 2 clips
+*/
+ {
+	 "ut_weapon_ump45", 
+  "sound/misc/w_pkup.wav",
+  { "models/weapons2/ump45/ump45.md3", 
+  NULL, NULL, NULL},
+/* icon */		"icons/weapons/ump45",
+/* pickup */	"ump45",
+		40,
+  IT_WEAPON,
+  WP_UMP45,
+/* precache */ "",
+/* sounds */ ""
+ },
+/*QUAKED ut_weapon_hk69 (0.3 0.9 0.4)(-5 -5 -5) (5 5 5) 
+ -------- KEYS --------
+ count: sets the amount of ammo given to the player when picked up (default 0).
+ gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
+ -------- SPAWNFLAGS --------
+ spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
+ -------- Notes --------
+ A count has to be set in order for ammo to be in the weapon when picked up 
+ the count system is very weird and I am unable to figure out how it works,
+ but here are some usefull numbers
+ count of 30   = 30 bullets 0 clips
+ count of 500  = 30 bullets 1 clip
+ count of 1000 = 30 bullets 2 clips
+*/
+ {
+	 "ut_weapon_hk69", 
+  "sound/misc/w_pkup.wav",
+  { "models/weapons2/hk69/hk69.md3", 
+  NULL, NULL, NULL},
+/* icon */		"icons/weapons/hk69",
+/* pickup */	"hk69",
+		40,
+  IT_WEAPON,
+  WP_HK69,
+/* precache */ "",
+/* sounds */ ""
+ },
+/*QUAKED ut_weapon_psg1 (0.3 0.9 0.4)(-5 -5 -5) (5 5 5) 
+ -------- KEYS --------
+ count: sets the amount of ammo given to the player when picked up (default 0).
+ gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
+ -------- SPAWNFLAGS --------
+ spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
+ -------- Notes --------
+ A count has to be set in order for ammo to be in the weapon when picked up 
+ the count system is very weird and I am unable to figure out how it works,
+ but here are some usefull numbers
+ count of 30   = 30 bullets 0 clips
+ count of 500  = 30 bullets 1 clip
+ count of 1000 = 30 bullets 2 clips
+*/
+ {
+	 "ut_weapon_psg1", 
+  "sound/misc/w_pkup.wav",
+  { "models/weapons2/psg1/psg1.md3", 
+  NULL, NULL, NULL},
+/* icon */		"icons/weapons/psg1",
+/* pickup */	"psg1",
+		40,
+  IT_WEAPON,
+  WP_PSG1,
+/* precache */ "",
+/* sounds */ ""
+ },
+/*QUAKED ut_weapon_sr8 (0.3 0.9 0.4)(-5 -5 -5) (5 5 5) 
+ -------- KEYS --------
+ count: sets the amount of ammo given to the player when picked up (default 0).
+ gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
+ -------- SPAWNFLAGS --------
+ spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
+ -------- Notes --------
+ A count has to be set in order for ammo to be in the weapon when picked up 
+ the count system is very weird and I am unable to figure out how it works,
+ but here are some usefull numbers
+ count of 30   = 30 bullets 0 clips
+ count of 500  = 30 bullets 1 clip
+ count of 1000 = 30 bullets 2 clips
+*/
+ {
+	 "ut_weapon_sr8", 
+  "sound/misc/w_pkup.wav",
+  { "models/weapons2/sr8/sr8.md3", 
+  NULL, NULL, NULL},
+/* icon */		"icons/weapons/sr8",
+/* pickup */	"sr8",
+		40,
+  IT_WEAPON,
+  WP_SR8,
+/* precache */ "",
+/* sounds */ ""
+ },
+/*QUAKED ut_weapon_negev (0.3 0.9 0.4)(-5 -5 -5) (5 5 5) 
+ -------- KEYS --------
+ count: sets the amount of ammo given to the player when picked up (default 0).
+ gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
+ -------- SPAWNFLAGS --------
+ spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
+ -------- Notes --------
+ A count has to be set in order for ammo to be in the weapon when picked up 
+ the count system is very weird and I am unable to figure out how it works,
+ but here are some usefull numbers
+ count of 30   = 30 bullets 0 clips
+ count of 500  = 30 bullets 1 clip
+ count of 1000 = 30 bullets 2 clips
+*/
+ {
+	 "ut_weapon_negev", 
+  "sound/misc/w_pkup.wav",
+  { "models/weapons2/negev/negev.md3", 
+  NULL, NULL, NULL},
+/* icon */		"icons/weapons/negev",
+/* pickup */	"negev",
+		40,
+  IT_WEAPON,
+  WP_NEGEV,
+/* precache */ "",
+/* sounds */ ""
+ },
+/*QUAKED ut_weapon_m4 (0.3 0.9 0.4)(-5 -5 -5) (5 5 5) 
+ -------- KEYS --------
+ count: sets the amount of ammo given to the player when picked up (default 0).
+ gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
+ -------- SPAWNFLAGS --------
+ spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
+ -------- Notes --------
+ A count has to be set in order for ammo to be in the weapon when picked up 
+ the count system is very weird and I am unable to figure out how it works,
+ but here are some usefull numbers
+ count of 30   = 30 bullets 0 clips
+ count of 500  = 30 bullets 1 clip
+ count of 1000 = 30 bullets 2 clips
+*/
+ {
+	 "ut_weapon_m4", 
+  "sound/misc/w_pkup.wav",
+  { "models/weapons2/m4/m4.md3", 
+  NULL, NULL, NULL},
+/* icon */		"icons/weapons/m4",
+/* pickup */	"M4 Carbine",
+		40,
+  IT_WEAPON,
+  WP_M4,
+/* precache */ "",
+/* sounds */ ""
+ },
+ 
 
 /*QUAKED weapon_grapplinghook (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
@@ -362,7 +631,7 @@ gitem_t	bg_itemlist[] =
 /* pickup */	"Shells",
 		10,
 		IT_AMMO,
-		WP_SHOTGUN,
+		WP_SPAS,
 /* precache */ "",
 /* sounds */ ""
 	},
@@ -378,7 +647,7 @@ gitem_t	bg_itemlist[] =
 /* pickup */	"Bullets",
 		50,
 		IT_AMMO,
-		WP_MACHINEGUN,
+		WP_M4,
 /* precache */ "",
 /* sounds */ ""
 	},
@@ -394,90 +663,94 @@ gitem_t	bg_itemlist[] =
 /* pickup */	"Grenades",
 		5,
 		IT_AMMO,
-		WP_GRENADE_LAUNCHER,
+		WP_HK69,
 /* precache */ "",
 /* sounds */ ""
 	},
-
-/*QUAKED ammo_cells (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-	{
-		"ammo_cells",
-		"sound/misc/am_pkup.wav",
-        { "models/powerups/ammo/plasmaam.md3", 
-		NULL, NULL, NULL},
-/* icon */		"icons/icona_plasma",
-/* pickup */	"Cells",
-		30,
-		IT_AMMO,
-		WP_PLASMAGUN,
-/* precache */ "",
-/* sounds */ ""
-	},
-
-/*QUAKED ammo_lightning (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-	{
-		"ammo_lightning",
-		"sound/misc/am_pkup.wav",
-        { "models/powerups/ammo/lightningam.md3", 
-		NULL, NULL, NULL},
-/* icon */		"icons/icona_lightning",
-/* pickup */	"Lightning",
+	//
+ 	//Equipment Items
+	//
+ 
+ /*QUAKED ut_item_silencer (0.3 0.9 0.4)(-5 -5 -5) (5 5 5) 
+ -------- KEYS --------
+ gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
+ -------- SPAWNFLAGS --------
+ spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
+ */
+ {
+	 "ut_item_silencer", 
+  "sound/misc/w_pkup.wav",
+  { "models/weapons2/m4/m4_silencer.md3", 
+  NULL, NULL, NULL},
+/* icon */		"icons/items/silencer",
+/* pickup */	"Silencer",
 		60,
-		IT_AMMO,
-		WP_LIGHTNING,
+  IT_HOLDABLE,
+  HI_SILENCER,
 /* precache */ "",
 /* sounds */ ""
-	},
-
-/*QUAKED ammo_rockets (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
+ },
+/*QUAKED ut_item_nvg (0.3 0.9 0.4)(-5 -5 -5) (5 5 5) 
+ -------- KEYS --------
+ gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
+ -------- SPAWNFLAGS --------
+ spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
 */
-	{
-		"ammo_rockets",
-		"sound/misc/am_pkup.wav",
-        { "models/powerups/ammo/rocketam.md3", 
-		NULL, NULL, NULL},
-/* icon */		"icons/icona_rocket",
-/* pickup */	"Rockets",
-		5,
-		IT_AMMO,
-		WP_ROCKET_LAUNCHER,
-/* precache */ "",
-/* sounds */ ""
-	},
 
-/*QUAKED ammo_slugs (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
+/*QUAKED ut_item_vest (0.3 0.9 0.4)(-5 -5 -5) (5 5 5) 
+ -------- KEYS --------
+ gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
+ -------- SPAWNFLAGS --------
+ spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
 */
-	{
-		"ammo_slugs",
-		"sound/misc/am_pkup.wav",
-        { "models/powerups/ammo/railgunam.md3", 
-		NULL, NULL, NULL},
-/* icon */		"icons/icona_railgun",
-/* pickup */	"Slugs",
-		10,
-		IT_AMMO,
-		WP_RAILGUN,
-/* precache */ "",
-/* sounds */ ""
-	},
 
-/*QUAKED ammo_bfg (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
+/*QUAKED ut_item_laser (0.3 0.9 0.4)(-5 -5 -5) (5 5 5) 
+ -------- KEYS --------
+ gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
+ -------- SPAWNFLAGS --------
+ spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
 */
-	{
-		"ammo_bfg",
-		"sound/misc/am_pkup.wav",
-        { "models/powerups/ammo/bfgam.md3", 
-		NULL, NULL, NULL},
-/* icon */		"icons/icona_bfg",
-/* pickup */	"Bfg Ammo",
-		15,
-		IT_AMMO,
-		WP_BFG,
+ {
+	 "ut_item_laser", 
+  "sound/misc/w_pkup.wav",
+  { "models/weapons2/m4/m4_laser.md3", 
+  NULL, NULL, NULL},
+/* icon */		"icons/items/laser",
+/* pickup */	"Laser Sight",
+		60,
+  IT_HOLDABLE,
+  HI_LASER,
 /* precache */ "",
 /* sounds */ ""
-	},
+ },
+ 
+/*QUAKED ut_item_medkit (0.3 0.9 0.4)(-5 -5 -5) (5 5 5) 
+ gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
+ -------- SPAWNFLAGS --------
+ spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
+*/
+
+/*QUAKED ut_item_helmet (0.3 0.9 0.4)(-5 -5 -5) (5 5 5) 
+ -------- KEYS --------
+ gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
+ -------- SPAWNFLAGS --------
+ spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
+*/
+ {
+	 "ut_item_helmet", 
+  "sound/misc/w_pkup.wav",
+  { CGender, 
+  NULL, NULL, NULL},
+/* icon */		"icons/items/helmet",
+/* pickup */	"Helmet",
+		60,
+  IT_HOLDABLE,
+  HI_HELMET,
+/* precache */ "",
+/* sounds */ ""
+ },
+ 
+ 
 
 	//
 	// HOLDABLE ITEMS
@@ -654,267 +927,7 @@ Only in CTF games
 /* sounds */ ""
 	},
 
-#ifdef MISSIONPACK
-/*QUAKED holdable_kamikaze (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-	{
-		"holdable_kamikaze", 
-		"sound/items/holdable.wav",
-        { "models/powerups/kamikazi.md3", 
-		NULL, NULL, NULL},
-/* icon */		"icons/kamikaze",
-/* pickup */	"Kamikaze",
-		60,
-		IT_HOLDABLE,
-		HI_KAMIKAZE,
-/* precache */ "",
-/* sounds */ "sound/items/kamikazerespawn.wav"
-	},
 
-/*QUAKED holdable_portal (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-	{
-		"holdable_portal", 
-		"sound/items/holdable.wav",
-        { "models/powerups/holdable/porter.md3",
-		NULL, NULL, NULL},
-/* icon */		"icons/portal",
-/* pickup */	"Portal",
-		60,
-		IT_HOLDABLE,
-		HI_PORTAL,
-/* precache */ "",
-/* sounds */ ""
-	},
-
-/*QUAKED holdable_invulnerability (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-	{
-		"holdable_invulnerability", 
-		"sound/items/holdable.wav",
-        { "models/powerups/holdable/invulnerability.md3", 
-		NULL, NULL, NULL},
-/* icon */		"icons/invulnerability",
-/* pickup */	"Invulnerability",
-		60,
-		IT_HOLDABLE,
-		HI_INVULNERABILITY,
-/* precache */ "",
-/* sounds */ ""
-	},
-
-/*QUAKED ammo_nails (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-	{
-		"ammo_nails",
-		"sound/misc/am_pkup.wav",
-        { "models/powerups/ammo/nailgunam.md3", 
-		NULL, NULL, NULL},
-/* icon */		"icons/icona_nailgun",
-/* pickup */	"Nails",
-		20,
-		IT_AMMO,
-		WP_NAILGUN,
-/* precache */ "",
-/* sounds */ ""
-	},
-
-/*QUAKED ammo_mines (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-	{
-		"ammo_mines",
-		"sound/misc/am_pkup.wav",
-        { "models/powerups/ammo/proxmineam.md3", 
-		NULL, NULL, NULL},
-/* icon */		"icons/icona_proxlauncher",
-/* pickup */	"Proximity Mines",
-		10,
-		IT_AMMO,
-		WP_PROX_LAUNCHER,
-/* precache */ "",
-/* sounds */ ""
-	},
-
-/*QUAKED ammo_belt (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-	{
-		"ammo_belt",
-		"sound/misc/am_pkup.wav",
-        { "models/powerups/ammo/chaingunam.md3", 
-		NULL, NULL, NULL},
-/* icon */		"icons/icona_chaingun",
-/* pickup */	"Chaingun Belt",
-		100,
-		IT_AMMO,
-		WP_CHAINGUN,
-/* precache */ "",
-/* sounds */ ""
-	},
-
-	//
-	// PERSISTANT POWERUP ITEMS
-	//
-/*QUAKED item_scout (.3 .3 1) (-16 -16 -16) (16 16 16) suspended redTeam blueTeam
-*/
-	{
-		"item_scout",
-		"sound/items/scout.wav",
-        { "models/powerups/scout.md3", 
-		NULL, NULL, NULL },
-/* icon */		"icons/scout",
-/* pickup */	"Scout",
-		30,
-		IT_PERSISTANT_POWERUP,
-		PW_SCOUT,
-/* precache */ "",
-/* sounds */ ""
-	},
-
-/*QUAKED item_guard (.3 .3 1) (-16 -16 -16) (16 16 16) suspended redTeam blueTeam
-*/
-	{
-		"item_guard",
-		"sound/items/guard.wav",
-        { "models/powerups/guard.md3", 
-		NULL, NULL, NULL },
-/* icon */		"icons/guard",
-/* pickup */	"Guard",
-		30,
-		IT_PERSISTANT_POWERUP,
-		PW_GUARD,
-/* precache */ "",
-/* sounds */ ""
-	},
-
-/*QUAKED item_doubler (.3 .3 1) (-16 -16 -16) (16 16 16) suspended redTeam blueTeam
-*/
-	{
-		"item_doubler",
-		"sound/items/doubler.wav",
-        { "models/powerups/doubler.md3", 
-		NULL, NULL, NULL },
-/* icon */		"icons/doubler",
-/* pickup */	"Doubler",
-		30,
-		IT_PERSISTANT_POWERUP,
-		PW_DOUBLER,
-/* precache */ "",
-/* sounds */ ""
-	},
-
-/*QUAKED item_doubler (.3 .3 1) (-16 -16 -16) (16 16 16) suspended redTeam blueTeam
-*/
-	{
-		"item_ammoregen",
-		"sound/items/ammoregen.wav",
-        { "models/powerups/ammo.md3",
-		NULL, NULL, NULL },
-/* icon */		"icons/ammo_regen",
-/* pickup */	"Ammo Regen",
-		30,
-		IT_PERSISTANT_POWERUP,
-		PW_AMMOREGEN,
-/* precache */ "",
-/* sounds */ ""
-	},
-
-	/*QUAKED team_CTF_neutralflag (0 0 1) (-16 -16 -16) (16 16 16)
-Only in One Flag CTF games
-*/
-	{
-		"team_CTF_neutralflag",
-		NULL,
-        { "models/flags/n_flag.md3",
-		NULL, NULL, NULL },
-/* icon */		"icons/iconf_neutral1",
-/* pickup */	"Neutral Flag",
-		0,
-		IT_TEAM,
-		PW_NEUTRALFLAG,
-/* precache */ "",
-/* sounds */ ""
-	},
-
-	{
-		"item_redcube",
-		"sound/misc/am_pkup.wav",
-        { "models/powerups/orb/r_orb.md3",
-		NULL, NULL, NULL },
-/* icon */		"icons/iconh_rorb",
-/* pickup */	"Red Cube",
-		0,
-		IT_TEAM,
-		0,
-/* precache */ "",
-/* sounds */ ""
-	},
-
-	{
-		"item_bluecube",
-		"sound/misc/am_pkup.wav",
-        { "models/powerups/orb/b_orb.md3",
-		NULL, NULL, NULL },
-/* icon */		"icons/iconh_borb",
-/* pickup */	"Blue Cube",
-		0,
-		IT_TEAM,
-		0,
-/* precache */ "",
-/* sounds */ ""
-	},
-/*QUAKED weapon_nailgun (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-	{
-		"weapon_nailgun", 
-		"sound/misc/w_pkup.wav",
-        { "models/weapons/nailgun/nailgun.md3", 
-		NULL, NULL, NULL},
-/* icon */		"icons/iconw_nailgun",
-/* pickup */	"Nailgun",
-		10,
-		IT_WEAPON,
-		WP_NAILGUN,
-/* precache */ "",
-/* sounds */ ""
-	},
-
-/*QUAKED weapon_prox_launcher (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-	{
-		"weapon_prox_launcher", 
-		"sound/misc/w_pkup.wav",
-        { "models/weapons/proxmine/proxmine.md3", 
-		NULL, NULL, NULL},
-/* icon */		"icons/iconw_proxlauncher",
-/* pickup */	"Prox Launcher",
-		5,
-		IT_WEAPON,
-		WP_PROX_LAUNCHER,
-/* precache */ "",
-/* sounds */ "sound/weapons/proxmine/wstbtick.wav "
-			"sound/weapons/proxmine/wstbactv.wav "
-			"sound/weapons/proxmine/wstbimpl.wav "
-			"sound/weapons/proxmine/wstbimpm.wav "
-			"sound/weapons/proxmine/wstbimpd.wav "
-			"sound/weapons/proxmine/wstbactv.wav"
-	},
-
-/*QUAKED weapon_chaingun (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-	{
-		"weapon_chaingun", 
-		"sound/misc/w_pkup.wav",
-        { "models/weapons/vulcan/vulcan.md3", 
-		NULL, NULL, NULL},
-/* icon */		"icons/iconw_chaingun",
-/* pickup */	"Chaingun",
-		80,
-		IT_WEAPON,
-		WP_CHAINGUN,
-/* precache */ "",
-/* sounds */ "sound/weapons/vulcan/wvulwind.wav"
-	},
-#endif
 
 	// end of list marker
 	{NULL}
