@@ -388,12 +388,16 @@ typedef struct weaponInfo_s {
 	qhandle_t		weaponModel;
 	qhandle_t		barrelModel;
 	qhandle_t		flashModel;
+	qhandle_t		laserModel;
+	qhandle_t		silencerModel;
+	
 
 	vec3_t			weaponMidpoint;		// so it will rotate centered instead of by tag
 
 	float			flashDlight;
 	vec3_t			flashDlightColor;
 	sfxHandle_t		flashSound[4];		// fast firing weapons randomly choose
+	sfxHandle_t		silenceSound[4];
 
 	qhandle_t		weaponIcon;
 	qhandle_t		ammoIcon;
@@ -863,6 +867,8 @@ typedef struct {
 	sfxHandle_t	loserSound;
 	sfxHandle_t	youSuckSound;
 #endif
+	
+	
 	sfxHandle_t	gibSound;
 	sfxHandle_t	gibBounce1Sound;
 	sfxHandle_t	gibBounce2Sound;
