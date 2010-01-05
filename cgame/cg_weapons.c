@@ -693,6 +693,7 @@ void CG_RegisterWeapon( int weaponNum ) {
 			MAKERGB( weaponInfo->flashDlightColor, 1, 1, 0 );
 			weaponInfo->flashSound[0] = trap_S_RegisterSound( "sound/weapons/m4/m4.wav", qfalse );
 			weaponInfo->silenceSound[0] = trap_S_RegisterSound( "sound/weapons/m4/m4_sil.wav", qfalse );
+			weaponInfo->normalSound[0] = trap_S_RegisterSound( "sound/weapons/m4/m4.wav", qfalse );	
 			weaponInfo->ejectBrassFunc = CG_MachineGunEjectBrass;
 			cgs.media.bulletExplosionShader = trap_R_RegisterShader( "bulletExplosion" );
 			break;
@@ -707,6 +708,8 @@ void CG_RegisterWeapon( int weaponNum ) {
 		case WP_SR8:
 			MAKERGB( weaponInfo->flashDlightColor, 1, 1, 0 );
 			weaponInfo->flashSound[0] = trap_S_RegisterSound( "sound/weapons/sr8/sr8.wav", qfalse );
+			weaponInfo->silenceSound[0] = trap_S_RegisterSound( "sound/weapons/sr8/sr8_sil.wav", qfalse );
+			weaponInfo->normalSound[0] = trap_S_RegisterSound( "sound/weapons/sr8/sr8.wav", qfalse );
 			weaponInfo->ejectBrassFunc = CG_MachineGunEjectBrass;
 			cgs.media.bulletExplosionShader = trap_R_RegisterShader( "bulletExplosion" );
 			break;
@@ -714,6 +717,8 @@ void CG_RegisterWeapon( int weaponNum ) {
 		case WP_AK103:
 			MAKERGB( weaponInfo->flashDlightColor, 1, 1, 0 );
 			weaponInfo->flashSound[0] = trap_S_RegisterSound( "sound/weapons/ak103/ak103.wav", qfalse );
+			weaponInfo->silenceSound[0] = trap_S_RegisterSound( "sound/weapons/ak103/ak103_sil.wav", qfalse );
+			weaponInfo->normalSound[0] = trap_S_RegisterSound( "sound/weapons/ak103/ak103.wav", qfalse );
 			weaponInfo->ejectBrassFunc = CG_MachineGunEjectBrass;
 			cgs.media.bulletExplosionShader = trap_R_RegisterShader( "bulletExplosion" );
 			break;
@@ -722,6 +727,7 @@ void CG_RegisterWeapon( int weaponNum ) {
 			MAKERGB( weaponInfo->flashDlightColor, 1, 1, 0 );
 			weaponInfo->flashSound[0] = trap_S_RegisterSound( "sound/weapons/zm300/lr.wav", qfalse );
 			weaponInfo->silenceSound[0] = trap_S_RegisterSound( "sound/weapons/zm300/lr_sil.wav", qfalse );
+			weaponInfo->normalSound[0] = trap_S_RegisterSound( "sound/weapons/zm300/lr.wav", qfalse );
 			weaponInfo->ejectBrassFunc = CG_MachineGunEjectBrass;
 			cgs.media.bulletExplosionShader = trap_R_RegisterShader( "bulletExplosion" );
 			break;
@@ -729,18 +735,24 @@ void CG_RegisterWeapon( int weaponNum ) {
 		case WP_G36:
 			MAKERGB( weaponInfo->flashDlightColor, 1, 1, 0 );
 			weaponInfo->flashSound[0] = trap_S_RegisterSound( "sound/weapons/g36/g36.wav", qfalse );
+			weaponInfo->silenceSound[0] = trap_S_RegisterSound( "sound/weapons/g36/g36_sil.wav", qfalse );
+			weaponInfo->normalSound[0] = trap_S_RegisterSound( "sound/weapons/g36/g36.wav", qfalse );
 			weaponInfo->ejectBrassFunc = CG_MachineGunEjectBrass;
 			cgs.media.bulletExplosionShader = trap_R_RegisterShader( "bulletExplosion" );
 			break;
 		case WP_MP5K:
 			MAKERGB( weaponInfo->flashDlightColor, 1, 1, 0 );
 			weaponInfo->flashSound[0] = trap_S_RegisterSound( "sound/weapons/mp5k/mp5k.wav", qfalse );
+			weaponInfo->silenceSound[0] = trap_S_RegisterSound( "sound/weapons/mp5k/mp5k_sil.wav", qfalse );
+			weaponInfo->normalSound[0] = trap_S_RegisterSound( "sound/weapons/mp5k/mp5k.wav", qfalse );
 			weaponInfo->ejectBrassFunc = CG_MachineGunEjectBrass;
 			cgs.media.bulletExplosionShader = trap_R_RegisterShader( "bulletExplosion" );
 			break;
 		case WP_UMP45:
 			MAKERGB( weaponInfo->flashDlightColor, 1, 1, 0 );
 			weaponInfo->flashSound[0] = trap_S_RegisterSound( "sound/weapons/ump45/ump45.wav", qfalse );
+			weaponInfo->silenceSound[0] = trap_S_RegisterSound( "sound/weapons/ump45/ump45_sil.wav", qfalse );
+			weaponInfo->normalSound[0] = trap_S_RegisterSound( "sound/weapons/ump45/ump45.wav", qfalse );
 			weaponInfo->ejectBrassFunc = CG_MachineGunEjectBrass;
 			cgs.media.bulletExplosionShader = trap_R_RegisterShader( "bulletExplosion" );
 			break;
@@ -748,6 +760,8 @@ void CG_RegisterWeapon( int weaponNum ) {
 		case WP_BERETTA:
 			MAKERGB( weaponInfo->flashDlightColor, 1, 1, 0 );
 			weaponInfo->flashSound[0] = trap_S_RegisterSound( "sound/weapons/beretta/beretta.wav", qfalse );
+			weaponInfo->silenceSound[0] = trap_S_RegisterSound( "sound/weapons/beretta/beretta_sil.wav", qfalse );
+			weaponInfo->normalSound[0] = trap_S_RegisterSound( "sound/weapons/beretta/beretta.wav", qfalse );
 			weaponInfo->ejectBrassFunc = CG_MachineGunEjectBrass;
 			cgs.media.bulletExplosionShader = trap_R_RegisterShader( "bulletExplosion" );
 			break;
@@ -755,6 +769,8 @@ void CG_RegisterWeapon( int weaponNum ) {
 		case WP_DEAGLE:
 			MAKERGB( weaponInfo->flashDlightColor, 1, 1, 0 );
 			weaponInfo->flashSound[0] = trap_S_RegisterSound( "sound/weapons/de/de.wav", qfalse );
+			weaponInfo->silenceSound[0] = trap_S_RegisterSound( "sound/weapons/de/de_sil.wav", qfalse );
+			weaponInfo->normalSound[0] = trap_S_RegisterSound( "sound/weapons/de/de.wav", qfalse );
 			weaponInfo->ejectBrassFunc = CG_MachineGunEjectBrass;
 			cgs.media.bulletExplosionShader = trap_R_RegisterShader( "bulletExplosion" );
 			break;
@@ -776,7 +792,7 @@ void CG_RegisterWeapon( int weaponNum ) {
 
 	 default:
 		MAKERGB( weaponInfo->flashDlightColor, 1, 1, 1 );
-		weaponInfo->flashSound[0] = trap_S_RegisterSound( "sound/weapons/rocket/rocklf1a.wav", qfalse );
+		weaponInfo->flashSound[0] = trap_S_RegisterSound( "sound/weapons/ak103/ak103.wav", qfalse );
 		break;
 	}
 }
@@ -1177,7 +1193,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		CG_AddWeaponWithPowerups( &silencer, cent->currentState.powerups );
 	}
 	
-	if ( weapon->silencerModel && weaponNum != WP_KNIFE && weaponNum != WP_HK69 && weaponNum != WP_SPAS ) {
+	if ( weapon->laserModel && weaponNum != WP_KNIFE && weaponNum != WP_HK69 && weaponNum != WP_SPAS ) {
 
 		memset( &laser, 0, sizeof( laser ) );
 		VectorCopy( parent->lightingOrigin, laser.lightingOrigin );
