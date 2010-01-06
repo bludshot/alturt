@@ -155,10 +155,10 @@ void SnapVectorTowards( vec3_t v, vec3_t to ) {
 #define MACHINEGUN_SPREAD	200
 #define DEAGLE_SPREAD		50
 #define	MACHINEGUN_DAMAGE	7
-#define	MACHINEGUN_TEAM_DAMAGE	5		// wimpier MG in teamplay
-#define	M4_DAMAGE	12
-#define	AK103_DAMAGE	16
-#define	DEAGLE_DAMAGE	25
+#define	MACHINEGUN_TEAM_DAMAGE	7		// wimpier MG in teamplay (blud: Are we even using this?)
+#define	M4_DAMAGE	30 //12
+#define	AK103_DAMAGE	30 //16
+#define	DEAGLE_DAMAGE	30 //25
 
 
 
