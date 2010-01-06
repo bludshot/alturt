@@ -1773,16 +1773,16 @@ static void PM_Weapon( void ) {
 			addTime = 130;
 			break;
 		case WP_SPAS:
-			addTime = 800;
+			addTime = 500;
 			break;
 		case WP_PSG1:
 			addTime = 800;
 			break;
 		case WP_SR8:
-			addTime = 1500;
+			addTime = 2500; //blud changed from 1500
 			break;
 		case WP_MP5K:
-			addTime = 65;
+			addTime = 100; //blud changed from 65
 			break;
 		case WP_UMP45:
 			addTime = 150;
@@ -1794,13 +1794,13 @@ static void PM_Weapon( void ) {
 			addTime = 300;
 			break;
 		case WP_NEGEV:
-			addTime = 100;
+			addTime = 125; //blud changed from 100
 			break;
 		case WP_AK103:
-			addTime = 150;
+			addTime = 125; //blud changed from 150
 			break;
 		case WP_HK69:
-			addTime = 800;
+			addTime = 3000;
 			break;
 	case WP_GRAPPLING_HOOK:
 		addTime = 400;

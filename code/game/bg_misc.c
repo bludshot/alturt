@@ -488,7 +488,7 @@ gitem_t	bg_itemlist[] =
   IT_WEAPON,
   WP_HK69,
 /* precache */ "",
-/* sounds */ ""
+/* sounds */ "sound/weapons/grenade/hgrenb1a.wav sound/weapons/grenade/hgrenb2a.wav"
  },
 /*QUAKED ut_weapon_psg1 (0.3 0.9 0.4)(-5 -5 -5) (5 5 5) 
  -------- KEYS --------
@@ -627,7 +627,7 @@ gitem_t	bg_itemlist[] =
 		"sound/misc/am_pkup.wav",
         { "models/powerups/ammo/shotgunam.md3", 
 		NULL, NULL, NULL},
-/* icon */		"icons/icona_shotgun",
+/* icon */		"icons/ammo/spas12", //blud was icons/icona_shotgun
 /* pickup */	"Shells",
 		10,
 		IT_AMMO,
@@ -643,7 +643,7 @@ gitem_t	bg_itemlist[] =
 		"sound/misc/am_pkup.wav",
         { "models/powerups/ammo/machinegunam.md3", 
 		NULL, NULL, NULL},
-/* icon */		"icons/icona_machinegun",
+/* icon */		"icons/ammo/m4", //blud was icons/icona_machinegun
 /* pickup */	"Bullets",
 		50,
 		IT_AMMO,
@@ -659,7 +659,7 @@ gitem_t	bg_itemlist[] =
 		"sound/misc/am_pkup.wav",
         { "models/powerups/ammo/grenadeam.md3", 
 		NULL, NULL, NULL},
-/* icon */		"icons/icona_grenade",
+/* icon */		"icons/ammo/hk69",
 /* pickup */	"Grenades",
 		5,
 		IT_AMMO,

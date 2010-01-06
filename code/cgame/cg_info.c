@@ -108,7 +108,7 @@ void CG_LoadingClient( int clientNum ) {
 		if ( skin ) {
 			*skin++ = '\0';
 		} else {
-			skin = "default";
+			skin = "swat";
 		}
 
 		Com_sprintf( iconName, MAX_QPATH, "models/players/%s/icon_%s.tga", model, skin );

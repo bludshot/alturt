@@ -253,6 +253,7 @@ void CG_AddMarks( void ) {
 		}
 
 		// fade out the energy bursts
+		/*
 		if ( mp->markShader == cgs.media.energyMarkShader ) {
 
 			fade = 450 - 450 * ( (cg.time - mp->time ) / 3000.0 );
@@ -268,7 +269,7 @@ void CG_AddMarks( void ) {
 					}
 				}
 			}
-		}
+		}*/ //blud trying this out... to make sr8 hits not look stupid - this is probably obsolete by now though.
 
 		// fade all marks out with time
 		t = mp->time + MARK_TOTAL_TIME - cg.time;

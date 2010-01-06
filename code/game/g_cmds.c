@@ -1576,6 +1576,48 @@ void Cmd_Stats_f( gentity_t *ent ) {
 */
 }
 
+
+/*
+==================
+Cmd_SetClass_f  //blud 3rd try at classes (it works)
+
+Set the client's player class
+==================
+*/
+void Cmd_SetClass_f (gentity_t *ent)
+{
+	char		*name;
+
+	name = ConcatArgs( 1 );
+    
+	if (Q_stricmp(name, "0") == 0)
+	{
+		//set player class 0, "auto"
+		ent->client->pers.playerClass = 0;
+		trap_SendServerCommand( ent-g_entities, va("print \"You will spawn next time as a Soldier.\n\""));
+	}
+	else if (Q_stricmp(name, "1") == 0)
+	{
+		//set player class 1, "rocket"
+		ent->client->pers.playerClass = 1;
+		trap_SendServerCommand( ent-g_entities, va("print \"You will spawn next time as a Rocketeer.\n\""));
+	}
+	else if (Q_stricmp(name, "2") == 0)
+	{
+		//set player class 2, "sniper"
+		ent->client->pers.playerClass = 2;
+		trap_SendServerCommand( ent-g_entities, va("print \"You will spawn next time as a Sniper.\n\""));
+	}
+	else
+	{
+		//set player class 0, "auto" as a default
+		ent->client->pers.playerClass = 0;
+		trap_SendServerCommand( ent-g_entities, va("print \"You will spawn next time as the default class: Soldier.\n\""));
+	}
+}
+
+
+
 /*
 =================
 ClientCommand
@@ -1682,6 +1724,8 @@ void ClientCommand( int clientNum ) {
 		Cmd_SetViewpos_f( ent );
 	else if (Q_stricmp (cmd, "stats") == 0)
 		Cmd_Stats_f( ent );
+	else if (Q_stricmp (cmd, "class") == 0) //blud 3rd try at player class (this works)
+		Cmd_SetClass_f (ent);
 	else
 		trap_SendServerCommand( clientNum, va("print \"unknown cmd %s\n\"", cmd ) );
 }

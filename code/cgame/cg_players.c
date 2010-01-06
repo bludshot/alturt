@@ -88,6 +88,8 @@ models/players/visor/animation.cfg, etc
 ======================
 */
 static qboolean	CG_ParseAnimationFile( const char *filename, clientInfo_t *ci ) {
+	int			bludtemp; //blud
+	int			j; //blud
 	char		*text_p, *prev;
 	int			len;
 	int			i;
@@ -188,9 +190,11 @@ static qboolean	CG_ParseAnimationFile( const char *filename, clientInfo_t *ci ) 
 		Com_Printf( "unknown token '%s' is %s\n", token, filename );
 	}
 
+	//blud well it's definitely not above this line
+	bludtemp = 0; //blud
 	// read information for each frame
 	for ( i = 0 ; i < MAX_ANIMATIONS ; i++ ) {
-
+		bludtemp++;
 		token = COM_Parse( &text_p );
 		if ( !*token ) {
 			if( i >= TORSO_GETFLAG && i <= TORSO_NEGATIVE ) {
@@ -208,7 +212,7 @@ static qboolean	CG_ParseAnimationFile( const char *filename, clientInfo_t *ci ) 
 		animations[i].firstFrame = atoi( token );
 		// leg only frames are adjusted to not count the upper body only frames
 		if ( i == LEGS_WALKCR ) {
-			skip = animations[LEGS_WALKCR].firstFrame - animations[TORSO_GESTURE].firstFrame;
+			skip = animations[LEGS_WALKCR].firstFrame - animations[TORSO_GESTURE].firstFrame -224; //blud added the -224 for weird fix. I could code this dynamically, but I don't feel like figuring out how. But -224 = how faw my chosen gesture animation (taunt) is from 300 which is i guess where it's "supposed" to be (even tho it's not lol but somehow 300 is the magic number)
 		}
 		if ( i >= LEGS_WALKCR && i<TORSO_GETFLAG) {
 			animations[i].firstFrame -= skip;
@@ -250,6 +254,12 @@ static qboolean	CG_ParseAnimationFile( const char *filename, clientInfo_t *ci ) 
 		CG_Printf( "Error parsing animation file: %s", filename );
 		return qfalse;
 	}
+
+	//blud, let's try to print out the entire animation sequence BLUD DEBUG...
+	//CG_Printf( "NUMBER OF ANIMATIONS: %d\n", bludtemp );
+	//for ( j = 0 ; j < bludtemp; j++ ) {
+	//	CG_Printf( "ANIMATION #%d | FF=%d\n", j, animations[j].firstFrame);  
+	//}
 
 	// crouch backward animation
 	memcpy(&animations[LEGS_BACKCR], &animations[LEGS_WALKCR], sizeof(animation_t));
@@ -313,24 +323,27 @@ CG_FindClientModelFile
 static qboolean	CG_FindClientModelFile( char *filename, int length, clientInfo_t *ci, const char *teamName, const char *modelName, const char *skinName, const char *base, const char *ext ) {
 	char *team, *charactersFolder;
 	int i;
+	int j; //blud
 
 	if ( cgs.gametype >= GT_TEAM ) {
 		switch ( ci->team ) {
 			case TEAM_BLUE: {
-				team = "blue";
+				team = "swat_b"; //bludfixteams
 				break;
 			}
 			default: {
-				team = "red";
+				team = "tag_b"; //bludfixteams
 				break;
 			}
 		}
 	}
 	else {
-		team = "default";
+		team = "swat_b"; //bludfixteams
 	}
 	charactersFolder = "";
-	while(1) {
+	j = 0; //blud
+	while(j < 100) { // blud was just while(1)
+		j++; //blud
 		for ( i = 0; i < 2; i++ ) {
 			if ( i == 0 && teamName && *teamName ) {
 				//								"models/players/characters/james/stroggs/lower_lily_red.skin"
@@ -374,7 +387,7 @@ static qboolean	CG_FindClientModelFile( char *filename, int length, clientInfo_t
 		if ( charactersFolder[0] ) {
 			break;
 		}
-		charactersFolder = "characters/";
+		//charactersFolder = "characters/"; //bludm2 gonna get rid of this and see how that goes.
 	}
 
 	return qfalse;
@@ -392,21 +405,21 @@ static qboolean	CG_FindClientHeadFile( char *filename, int length, clientInfo_t 
 	if ( cgs.gametype >= GT_TEAM ) {
 		switch ( ci->team ) {
 			case TEAM_BLUE: {
-				team = "blue";
+				team = "swat_b_";
 				break;
 			}
 			default: {
-				team = "red";
+				team = "tag_b_";
 				break;
 			}
 		}
 	}
 	else {
-		team = "default";
+		team = "swat_b_";
 	}
 
 	if ( headModelName[0] == '*' ) {
-		headsFolder = "heads/";
+		headsFolder = "";
 		headModelName++;
 	}
 	else {
@@ -450,7 +463,13 @@ static qboolean	CG_FindClientHeadFile( char *filename, int length, clientInfo_t 
 		if ( headsFolder[0] ) {
 			break;
 		}
-		headsFolder = "heads/";
+		headsFolder = "";
+		//blud: Ok well, I'm pretty confused here so, I'm gonna try just breaking ALL the time lol.
+		//I'm breaking just to see if it's ok to do it???
+		//Actually, you can't break out of the while, or you'll get return false.
+		//So i'll just return true :o  Even though that's a bit ridiculous, I'll see if
+		//i can get away with it
+		return qtrue; //blud did this bad code
 	}
 
 	return qfalse;
@@ -599,7 +618,10 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 		}
 	}
 
-	if ( CG_FindClientHeadFile( filename, sizeof(filename), ci, teamName, headName, headSkinName, "icon", "skin" ) ) {
+	//blud. This WAS: if ( CG_FindClientHeadFile( filename, sizeof(filename), ci, teamName, headName, headSkinName, "icon", "skin" ) ) {
+	//and i cheaply changed it to tga. But keep in mind, I took a cheap route making findclientheadfile always return true lol
+	if ( CG_FindClientHeadFile( filename, sizeof(filename), ci, teamName, headName, headSkinName, "icon", "tga" ) ) {
+		//CG_Printf( "BSF1%sBSF1\n", filename ); //blud debug
 		ci->modelIcon = trap_R_RegisterShaderNoMip( filename );
 	}
 	else if ( CG_FindClientHeadFile( filename, sizeof(filename), ci, teamName, headName, headSkinName, "icon", "tga" ) ) {
@@ -607,7 +629,12 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 	}
 
 	if ( !ci->modelIcon ) {
-		return qfalse;
+		//CG_Printf( "WEGETHERE\n" ); //blud debug
+		//blud, again this isn't RIGHT lol. But we're just gonna return true anyways!
+		//i think it means that we're short circuiting the icon loading, which isnt good of course, and
+		//i may need to go back later and fix it... :|
+		//return qfalse; <-ORIGINAL CODE :p
+		return qtrue; //bad blud code
 	}
 
 	return qtrue;
@@ -686,7 +713,7 @@ static void CG_LoadClientInfo( int clientNum, clientInfo_t *ci ) {
 				CG_Error( "DEFAULT_TEAM_MODEL / skin (%s/%s) failed to register", DEFAULT_TEAM_MODEL, ci->skinName );
 			}
 		} else {
-			if ( !CG_RegisterClientModelname( ci, DEFAULT_MODEL, "default", DEFAULT_MODEL, "default", teamname ) ) {
+			if ( !CG_RegisterClientModelname( ci, DEFAULT_MODEL, "swat_b", DEFAULT_MODEL, "swat_b_", teamname ) ) {
 				CG_Error( "DEFAULT_MODEL (%s) failed to register", DEFAULT_MODEL );
 			}
 		}
@@ -704,6 +731,12 @@ static void CG_LoadClientInfo( int clientNum, clientInfo_t *ci ) {
 
 	// sounds
 	dir = ci->modelName;
+	//bludshot: changing orion or athena to male or female, because urt stores its sounds there contrary
+	//to q3 which stores them in the modelname dir
+	if (strcmp(dir, "orion") == 0){ dir = "male"; } //blud
+	else if (strcmp(dir, "athena") == 0){ dir = "female"; } //blud
+	//else who cares I guess
+
 	fallback = (cgs.gametype >= GT_TEAM) ? DEFAULT_TEAM_MODEL : DEFAULT_MODEL;
 
 	for ( i = 0 ; i < MAX_CUSTOM_SOUNDS ; i++ ) {
@@ -717,7 +750,7 @@ static void CG_LoadClientInfo( int clientNum, clientInfo_t *ci ) {
 			ci->sounds[i] = trap_S_RegisterSound( va("sound/player/%s/%s", dir, s + 1), qfalse );
 		}
 		if ( !ci->sounds[i] ) {
-			ci->sounds[i] = trap_S_RegisterSound( va("sound/player/%s/%s", fallback, s + 1), qfalse );
+			ci->sounds[i] = trap_S_RegisterSound( va("sound/player/%s/%s", "male", s + 1), qfalse ); //blud changed this to male to be the default sounds.
 		}
 	}
 
@@ -973,7 +1006,7 @@ void CG_NewClientInfo( int clientNum ) {
 		slash = strchr( newInfo.modelName, '/' );
 		if ( !slash ) {
 			// modelName didn not include a skin name
-			Q_strncpyz( newInfo.skinName, "default", sizeof( newInfo.skinName ) );
+			Q_strncpyz( newInfo.skinName, "swat_b", sizeof( newInfo.skinName ) ); //blud hopefully fixing bad skins?
 		} else {
 			Q_strncpyz( newInfo.skinName, slash + 1, sizeof( newInfo.skinName ) );
 			// truncate modelName

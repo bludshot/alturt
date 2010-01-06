@@ -533,7 +533,8 @@ static void CG_DrawStatusBar( void ) {
 
 	static float colors[4][4] = { 
 //		{ 0.2, 1.0, 0.2, 1.0 } , { 1.0, 0.2, 0.2, 1.0 }, {0.5, 0.5, 0.5, 1} };
-		{ 1.0f, 0.69f, 0.0f, 1.0f },    // normal
+		//{ 1.0f, 0.69f, 0.0f, 1.0f },    // normal (original)
+		{ 1.0f, 1.0f, 1.0f, 1.0f },    // normal blud new!
 		{ 1.0f, 0.2f, 0.2f, 1.0f },     // low health
 		{ 0.5f, 0.5f, 0.5f, 1.0f },     // weapon firing
 		{ 1.0f, 1.0f, 1.0f, 1.0f } };   // health > 100
@@ -550,6 +551,7 @@ static void CG_DrawStatusBar( void ) {
 
 	VectorClear( angles );
 
+	/* blud commenting out the 3D model (for ammo) code
 	// draw any 3D icons first, so the changes back to 2D are minimized
 	if ( cent->currentState.weapon && cg_weapons[ cent->currentState.weapon ].ammoModel ) {
 		origin[0] = 70;
@@ -558,7 +560,7 @@ static void CG_DrawStatusBar( void ) {
 		angles[YAW] = 90 + 20 * sin( cg.time / 1000.0 );
 		CG_Draw3DModel( CHAR_WIDTH*3 + TEXT_ICON_SPACE, 432, ICON_SIZE, ICON_SIZE,
 					   cg_weapons[ cent->currentState.weapon ].ammoModel, 0, origin, angles );
-	}
+	}*/
 
 	CG_DrawStatusBarHead( 185 + CHAR_WIDTH*3 + TEXT_ICON_SPACE );
 
@@ -601,7 +603,8 @@ static void CG_DrawStatusBar( void ) {
 			trap_R_SetColor( NULL );
 
 			// if we didn't draw a 3D icon, draw a 2D icon for ammo
-			if ( !cg_draw3dIcons.integer && cg_drawIcons.integer ) {
+			//if ( !cg_draw3dIcons.integer && cg_drawIcons.integer ) {
+			if (1) { //blud changing this so it always does it because I got rid of the 3D ammo.
 				qhandle_t	icon;
 
 				icon = cg_weapons[ cg.predictedPlayerState.weapon ].ammoIcon;
@@ -2104,9 +2107,11 @@ static void CG_DrawSpectator(void) {
 		CG_DrawBigString(320 - 15 * 8, 460, "waiting to play", 1.0F);
 	}
 	else if ( cgs.gametype >= GT_TEAM ) {
-		CG_DrawBigString(320 - 39 * 8, 460, "press ESC and use the JOIN menu to play", 1.0F);
+		CG_DrawBigString(320 - 39 * 8, 460, "press ESC and Pick Your Team", 1.0F);
 	}
 }
+
+
 
 /*
 =================

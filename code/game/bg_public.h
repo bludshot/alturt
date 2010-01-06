@@ -25,7 +25,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // because games can change separately from the main system version, we need a
 // second version that must match between game and cgame
 
-#define	GAME_VERSION		BASEGAME "-1"
+//note from blud: the original code (in this io code) is:
+//#define	GAME_VERSION	BASEGAME
+//So I guess it pulls the value of the constant BASEGAME which is set someplace else
+//but why would we want to do that? That seems like something you'd want to do for
+//when making a full game and have your mod be like the same folder as your base game
+//so it's not what we want to do in alturt. Instead we do:
+#define	GAME_VERSION		"alturt-alpha" //make this "alturt-01" for first actual release.
 
 #define	DEFAULT_GRAVITY		800
 #define	GIB_HEALTH			-40

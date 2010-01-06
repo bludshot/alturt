@@ -29,7 +29,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //==================================================================
 
 // the "gameversion" client command will print this plus compile date
-#define	GAMEVERSION	BASEGAME
+//blud note: original code was:
+//#define	GAMEVERSION	BASEGAME
+//but again this doesn't suit alt urt, so:
+#define	GAMEVERSION	"AltUrT alpha build"	//change this for real releases to show proper version number
 
 #define BODY_QUEUE_SIZE		8
 
@@ -258,7 +261,8 @@ typedef struct {
 	int		weapon_primary;
 	int		weapon_secondary;
 	int		new_weapon_primary;	
-	int		new_weapon_secondary;	
+	int		new_weapon_secondary;
+	int			playerClass; //blud 3rd try at player class (it works)
 	
 	
 	
