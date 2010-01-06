@@ -583,6 +583,15 @@ void G_SpawnGEntityFromSpawnVars( void ) {
 	if ( !G_CallSpawn( ent ) ) {
 		G_FreeEntity( ent );
 	}
+
+	// blud getting rid of flags in non CTF [this might need to be updated now that xamis moved the GT's?
+	// if this entity is a red or blue flag AND the game type is NOT 4 (GT_CTF)
+	// then don't spawn it
+	if ( (!strcmp("team_CTF_redflag", ent->classname) || !strcmp("team_CTF_blueflag", ent->classname)) && g_gametype.integer != GT_CTF ) {
+		G_FreeEntity( ent );
+	}
+
+
 }
 
 
