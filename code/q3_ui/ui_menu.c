@@ -162,7 +162,7 @@ static void Main_MenuDraw( void ) {
 	vec3_t			angles;
 	float			adjust;
 	float			x, y, w, h;
-	vec4_t			color = {0.5, 0, 0, 1};
+	vec4_t			color = {1, 1, 1, 1};
 
 	// setup the refdef
 
@@ -195,6 +195,7 @@ static void Main_MenuDraw( void ) {
 	trap_R_ClearScene();
 
 	// add the model
+/* blud commenting out the Q3Arena main menu title model
 
 	memset( &ent, 0, sizeof(ent) );
 
@@ -210,7 +211,8 @@ static void Main_MenuDraw( void ) {
 	trap_R_AddRefEntityToScene( &ent );
 
 	trap_R_RenderScene( &refdef );
-	
+*/
+
 	if (strlen(s_errorMessage.errorMessage))
 	{
 		UI_DrawProportionalString_AutoWrapped( 320, 192, 600, 20, s_errorMessage.errorMessage, UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, menu_text_color );
@@ -273,6 +275,7 @@ void UI_MainMenu( void ) {
 
 	trap_Cvar_Set( "sv_killserver", "1" );
 
+/* blud, commenting out the cdkey check since iourt doesn't need one
 	if( !uis.demoversion && !ui_cdkeychecked.integer ) {
 		char	key[17];
 
@@ -282,7 +285,8 @@ void UI_MainMenu( void ) {
 			return;
 		}
 	}
-	
+*/
+
 	memset( &s_main, 0 ,sizeof(mainmenu_t) );
 	memset( &s_errorMessage, 0 ,sizeof(errorMessage_t) );
 
@@ -318,7 +322,7 @@ void UI_MainMenu( void ) {
 	s_main.singleplayer.generic.id			= ID_SINGLEPLAYER;
 	s_main.singleplayer.generic.callback	= Main_MenuEvent; 
 	s_main.singleplayer.string				= "SINGLE PLAYER";
-	s_main.singleplayer.color				= color_red;
+	s_main.singleplayer.color				= color_white;
 	s_main.singleplayer.style				= style;
 
 	y += MAIN_MENU_VERTICAL_SPACING;
@@ -329,7 +333,7 @@ void UI_MainMenu( void ) {
 	s_main.multiplayer.generic.id			= ID_MULTIPLAYER;
 	s_main.multiplayer.generic.callback		= Main_MenuEvent; 
 	s_main.multiplayer.string				= "MULTIPLAYER";
-	s_main.multiplayer.color				= color_red;
+	s_main.multiplayer.color				= color_white;
 	s_main.multiplayer.style				= style;
 
 	y += MAIN_MENU_VERTICAL_SPACING;
@@ -340,9 +344,11 @@ void UI_MainMenu( void ) {
 	s_main.setup.generic.id					= ID_SETUP;
 	s_main.setup.generic.callback			= Main_MenuEvent; 
 	s_main.setup.string						= "SETUP";
-	s_main.setup.color						= color_red;
+	s_main.setup.color						= color_white;
 	s_main.setup.style						= style;
 
+// blud commenting out these menu items below!
+/*blud
 	y += MAIN_MENU_VERTICAL_SPACING;
 	s_main.demos.generic.type				= MTYPE_PTEXT;
 	s_main.demos.generic.flags				= QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
@@ -389,6 +395,8 @@ void UI_MainMenu( void ) {
 	s_main.mods.string					= "MODS";
 	s_main.mods.color					= color_red;
 	s_main.mods.style					= style;
+// blud commenting out these menu items above!
+*/
 
 	y += MAIN_MENU_VERTICAL_SPACING;
 	s_main.exit.generic.type				= MTYPE_PTEXT;
@@ -398,18 +406,20 @@ void UI_MainMenu( void ) {
 	s_main.exit.generic.id					= ID_EXIT;
 	s_main.exit.generic.callback			= Main_MenuEvent; 
 	s_main.exit.string						= "EXIT";
-	s_main.exit.color						= color_red;
+	s_main.exit.color						= color_white;
 	s_main.exit.style						= style;
 
 	Menu_AddItem( &s_main.menu,	&s_main.singleplayer );
 	Menu_AddItem( &s_main.menu,	&s_main.multiplayer );
 	Menu_AddItem( &s_main.menu,	&s_main.setup );
+	/* also commented out by blud
 	Menu_AddItem( &s_main.menu,	&s_main.demos );
 	Menu_AddItem( &s_main.menu,	&s_main.cinematics );
 	if (teamArena) {
 		Menu_AddItem( &s_main.menu,	&s_main.teamArena );
 	}
 	Menu_AddItem( &s_main.menu,	&s_main.mods );
+	*/
 	Menu_AddItem( &s_main.menu,	&s_main.exit );             
 
 	trap_Key_SetCatcher( KEYCATCH_UI );
