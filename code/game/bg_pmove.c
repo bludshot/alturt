@@ -42,14 +42,14 @@ float	pm_accelerate = 10.0f;
 float	pm_airaccelerate = 1.0f;
 float	pm_wateraccelerate = 4.0f;
 float	pm_flyaccelerate = 8.0f;
-float   pm_ladderaccelerate = 2000; //Xamis
+float   pm_ladderaccelerate = 4000; //Xamis
 
 
 float	pm_friction = 6.0f;
 float	pm_waterfriction = 1.0f;
 float	pm_flightfriction = 3.0f;
 float	pm_spectatorfriction = 5.0f;
-float   pm_ladderfriction = 2000; //Xamis
+float   pm_ladderfriction = 4000; //Xamis
 
 
 int		c_pmove = 0;
@@ -501,7 +501,11 @@ static qboolean PM_CheckJump( void ) {
 	pm->ps->pm_flags |= PMF_JUMP_HELD;
 
 	pm->ps->groundEntityNum = ENTITYNUM_NONE;
+	if (pm->ps->stats[STAT_STAMINA] < 25 ){
+	pm->ps->velocity[2] = JUMP_VELOCITY/1.6; //Xamis less jump velocity when stamina low
+	}else{
 	pm->ps->velocity[2] = JUMP_VELOCITY;
+	}
 	PM_AddEvent( EV_JUMP );
 
 	if ( pm->cmd.forwardmove >= 0 ) {
@@ -1436,8 +1440,11 @@ PM_Footsteps
 */
 static void PM_Footsteps( void ) {
 	float		bobmove;
+	int 		xyzspeed;
 	int			old;
+	int 		onladder = CheckLadder();
 	qboolean	footstep;
+	footstep = qfalse;
 
 	//
 	// calculate speed and cycle to be used for
@@ -1446,6 +1453,27 @@ static void PM_Footsteps( void ) {
 	pm->xyspeed = sqrt( pm->ps->velocity[0] * pm->ps->velocity[0]
 		+  pm->ps->velocity[1] * pm->ps->velocity[1] );
 
+	xyzspeed = sqrt( pm->ps->velocity[0] * pm->ps->velocity[0]
+			+  pm->ps->velocity[1] * pm->ps->velocity[1]
+			+  pm->ps->velocity[2] * pm->ps->velocity[2] );
+	
+	if ( onladder == -1 || onladder == 1 ) // on ladder
+	{			
+        // moving up or down)
+		if ( xyzspeed ) {
+			//PM_ContinueTorsoAnim ( ??Xamis ); what are the animations for climbing
+			//PM_ContinueLegsAnim  ( ??Xamis );
+			footstep = qtrue; //not sure why this isn't working, need more testing
+				//Com_Printf("\nonladder  moving foosteps added\n");
+		}
+		else {
+			footstep = qfalse;
+			
+		}return;
+
+	}
+
+	
 	if ( pm->ps->groundEntityNum == ENTITYNUM_NONE ) {
 
 		if ( pm->ps->powerups[PW_INVULNERABILITY] ) {
@@ -1472,7 +1500,7 @@ static void PM_Footsteps( void ) {
 	}
 	
 
-	footstep = qfalse;
+
 
 	if ( pm->ps->pm_flags & PMF_DUCKED ) {
 		//bobmove = 0.5;	// ducked characters bob much faster
@@ -1946,11 +1974,8 @@ void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd ) {
 
 /*
 ===================
-PM_LadderMove()
-by: Calrathan [Arthur Tomlin]
+PM_WallMove()
 
-Right now all I know is that this works for VERTICAL ladders. 
-Ladders with angles on them (urban2 for AQ2) haven't been tested.
 ===================
 */
 static void PM_WallMove( void ) {
@@ -2001,7 +2026,7 @@ static void PM_WallMove( void ) {
 /*
 ===================
 PM_LadderMove()         
-			
+still needs work		
 
 ===================
 */
@@ -2075,7 +2100,7 @@ static void PM_LadderMove( void ) {
 
 
 }
-	vec3_t norm;
+
 /*
 ================
 PmoveSingle
