@@ -777,6 +777,7 @@ void CG_RegisterWeapon( int weaponNum ) {
 		case WP_SPAS:
 			MAKERGB( weaponInfo->flashDlightColor, 1, 1, 0 );
 			weaponInfo->flashSound[0] = trap_S_RegisterSound( "sound/weapons/spas/spas.wav", qfalse );
+			weaponInfo->normalSound[0] = trap_S_RegisterSound( "sound/weapons/spas/spas.wav", qfalse );
 			weaponInfo->ejectBrassFunc = CG_ShotgunEjectBrass;
 			break;
 
@@ -1569,13 +1570,9 @@ CG_OutOfAmmoChange
 The current weapon has just run out of ammo
 ===================
 */
-void CG_OutOfAmmoChange( centity_t *cent ) { //Xamis	don't switch on out of ammo
-	weaponInfo_t *weapon;
-	entityState_t *ent;
-	ent = &cent->currentState;	//int		i;
+void CG_OutOfAmmoChange( void ) { //Xamis	don't switch on out of ammo
+	//int		i;
 
-	weapon = &cg_weapons[ent->weapon];
-	weapon->flashSound[0] = cgs.media.noammoSound;
 	//cg.weaponSelectTime = cg.time;
 
 	//for ( i = MAX_WEAPONS-1 ; i > 0 ; i-- ) {
