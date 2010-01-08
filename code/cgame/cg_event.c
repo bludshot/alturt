@@ -754,7 +754,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		DEBUGNAME("EV_NOAMMO");
 //		trap_S_StartSound (NULL, es->number, CHAN_AUTO, cgs.media.noAmmoSound );
 		if ( es->number == cg.snap->ps.clientNum ) {
-			CG_OutOfAmmoChange();
+			CG_OutOfAmmoChange( cent);
 		}
 		break;
 	case EV_CHANGE_WEAPON:
@@ -1146,7 +1146,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	//Xamis	
 	case EV_BREAK_GLASS:
 		DEBUGNAME("EV_BREAK_GLASS");
-			trap_S_StartSound( NULL, es->number, CHAN_BODY, cgs.media.gibSound );//need to change
+			trap_S_StartSound( NULL, es->number, CHAN_BODY, cgs.media.glassSound );//need to change
 			CG_BreakGlass( cent->lerpOrigin );
 			break;
 

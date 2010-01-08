@@ -12,7 +12,7 @@ or (at your option) any later version.
 Quake III Arena source code is distributed in the hope that it will be
 useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU General Pubpm->ps->lic License for more details.
 
 You should have received a copy of the GNU General Public License
 along with Quake III Arena source code; if not, write to the Free Software
@@ -1191,7 +1191,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		
 
 		CG_AddWeaponWithPowerups( &silencer, cent->currentState.powerups );
-	}
+	}else weapon->flashSound[0] = weapon->normalSound[0];
 	
 	if ( weapon->laserModel && weaponNum != WP_KNIFE && weaponNum != WP_HK69 && weaponNum != WP_SPAS ) {
 
@@ -1211,6 +1211,8 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 
 		CG_AddWeaponWithPowerups( &laser, cent->currentState.powerups );
 	}
+
+
 
 	// make sure we aren't looking at cg.predictedPlayerEntity for LG
 	nonPredictedCent = &cg_entities[cent->currentState.clientNum];
@@ -1448,14 +1450,11 @@ CG_WeaponSelectable
 ===============
 */
 static qboolean CG_WeaponSelectable( int i ) {
-	if ( !cg.snap->ps.ammo[i] ) {
-		return qfalse;
-	}
-	if ( ! (cg.snap->ps.stats[ STAT_WEAPONS ] & ( 1 << i ) ) ) {
-		return qfalse;
-	}
-
-	return qtrue;
+	// removed ammo check, we want to be able to cycle to weapon if it's empty --Xamis
+    if ( ! (BG_HasWeapon( i, cg.snap->ps.stats) ) ) { 
+        return qfalse;
+    }
+    return qtrue;
 }
 
 /*
@@ -1483,7 +1482,7 @@ void CG_NextWeapon_f( void ) {
 			cg.weaponSelect = 0;
 		}
 		if ( cg.weaponSelect == WP_KNIFE ) {
-			continue;		// never cycle to gauntlet
+			continue;		// never cycle to KNIFE
 		}
 		if ( CG_WeaponSelectable( cg.weaponSelect ) ) {
 			break;
@@ -1552,6 +1551,9 @@ void CG_Weapon_f( void ) {
 	}
 
 	cg.weaponSelectTime = cg.time;
+	
+	//clear curent invintory
+	//cg.InventorySlot[PRIMARY] = cg.InventorySlot[SIDEARM] = cg.Inventorypos[SECONDARY] = cg.Inventorypos[MELEE] = cg.Inventorypos[NADE] = cg.InventorySlot[MISC] = 0;
 
 	if ( ! ( cg.snap->ps.stats[STAT_WEAPONS] & ( 1 << num ) ) ) {
 		return;		// don't have the weapon
@@ -1567,17 +1569,21 @@ CG_OutOfAmmoChange
 The current weapon has just run out of ammo
 ===================
 */
-void CG_OutOfAmmoChange( void ) {
-	int		i;
+void CG_OutOfAmmoChange( centity_t *cent ) { //Xamis	don't switch on out of ammo
+	weaponInfo_t *weapon;
+	entityState_t *ent;
+	ent = &cent->currentState;	//int		i;
 
-	cg.weaponSelectTime = cg.time;
+	weapon = &cg_weapons[ent->weapon];
+	weapon->flashSound[0] = cgs.media.noammoSound;
+	//cg.weaponSelectTime = cg.time;
 
-	for ( i = MAX_WEAPONS-1 ; i > 0 ; i-- ) {
-		if ( CG_WeaponSelectable( i ) ) {
-			cg.weaponSelect = i;
-			break;
-		}
-	}
+	//for ( i = MAX_WEAPONS-1 ; i > 0 ; i-- ) {
+		//if ( CG_WeaponSelectable( i ) ) {
+		//	cg.weaponSelect = i;
+		//	break;
+		//}
+	//}
 }
 
 

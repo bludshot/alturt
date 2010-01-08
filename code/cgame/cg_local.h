@@ -95,6 +95,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define DEFAULT_REDTEAM_NAME		"Red Dragons"
 #define DEFAULT_BLUETEAM_NAME		"SWAT"
 
+//xamis
+#define MELEE			0
+#define SIDEARM			1
+#define PRIMARY			2
+#define SECONDARY		3
+#define NADE			4
+#define MISC			5
+#define INVENTORYITEMS	6
+
+
+
 typedef enum {
 	FOOTSTEP_NORMAL,
 	FOOTSTEP_BOOT,
@@ -649,6 +660,16 @@ typedef struct {
 	refEntity_t		testModelEntity;
 	char			testModelName[MAX_QPATH];
 	qboolean		testGun;
+	
+	
+	
+	//Xamis Invintory selection
+	
+	int			activatedInventory;
+	int			currentInventory;
+	int Inventory[INVENTORYITEMS][WP_NUM_WEAPONS];
+	int InventorySlot[INVENTORYITEMS];
+	
 
 } cg_t;
 
@@ -871,6 +892,7 @@ typedef struct {
 	
 	
 	sfxHandle_t	gibSound;
+	sfxHandle_t	glassSound;	
 	sfxHandle_t	gibBounce1Sound;
 	sfxHandle_t	gibBounce2Sound;
 	sfxHandle_t	gibBounce3Sound;
@@ -883,6 +905,7 @@ typedef struct {
 	sfxHandle_t fallSound;
 	sfxHandle_t jumpPadSound;
 	sfxHandle_t ladderSound;
+	sfxHandle_t noammoSound;	
 
 	sfxHandle_t oneMinuteSound;
 	sfxHandle_t fiveMinuteSound;
@@ -1374,7 +1397,7 @@ void CG_AddViewWeapon (playerState_t *ps);
 void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent, int team );
 void CG_DrawWeaponSelect( void );
 
-void CG_OutOfAmmoChange( void );	// should this be in pmove?
+void CG_OutOfAmmoChange(  centity_t *cent );	// should this be in pmove?
 
 //
 // cg_marks.c
