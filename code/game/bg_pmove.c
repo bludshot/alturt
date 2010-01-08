@@ -32,13 +32,13 @@ pml_t		pml;
 
 // movement parameters
 float	pm_stopspeed = 100.0f;
-float	pm_duckScale = 0.95f; // Xamis 
+float	pm_duckScale = 0.55f; // Xamis 
 float	pm_swimScale = 0.50f;
 float	pm_wadeScale = 0.70f;
 float   pm_ladderscale = 0.40; //Xamis
 
 
-float	pm_accelerate = 10.0f;
+float	pm_accelerate = 12.0f;
 float	pm_airaccelerate = 1.0f;
 float	pm_wateraccelerate = 4.0f;
 float	pm_flyaccelerate = 8.0f;
@@ -1503,7 +1503,7 @@ static void PM_Footsteps( void ) {
 
 
 	if ( pm->ps->pm_flags & PMF_DUCKED ) {
-		//bobmove = 0.5;	// ducked characters bob much faster
+		bobmove = 0;	// dont bob while crouched --Xamis Value was .5
 		if ( pm->ps->pm_flags & PMF_BACKWARDS_RUN ) {
 			PM_ContinueLegsAnim( LEGS_BACKCR );
 		}
@@ -1680,7 +1680,6 @@ Generates weapon events and modifes the weapon counter
 */
 static void PM_Weapon( void ) {
 	int		addTime;
-
 	// don't allow attack until all buttons are up
 	if ( pm->ps->pm_flags & PMF_RESPAWNED ) {
 		return;
@@ -1775,6 +1774,7 @@ static void PM_Weapon( void ) {
 	if ( ! pm->ps->ammo[ pm->ps->weapon ] ) {
 		PM_AddEvent( EV_NOAMMO );
 		pm->ps->weaponTime += 500;
+		
 		return;
 	}
 

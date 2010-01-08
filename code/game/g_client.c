@@ -1234,8 +1234,7 @@ void ClientSpawn(gentity_t *ent) {
 	
 	/*
 	--Xamis--
-	probably need to change the primary, secondary, and sidearms to different structs, instead of all using weapon_t
-	This is working for now, but is not the optimum solution	
+
 	*/
 	
 	client->ps.stats[STAT_WEAPONS] = ( 1 << WP_KNIFE ); //should always have a knife --Xamis

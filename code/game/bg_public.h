@@ -214,6 +214,7 @@ typedef enum {
 	STAT_PERSISTANT_POWERUP,
 #endif
 	STAT_WEAPONS,					// 16 bit fields
+	STAT_CWEAPONS,
 	STAT_ARMOR,				
 	STAT_DEAD_YAW,					// look this direction when dead (FIXME: get rid of?)
 	STAT_CLIENTS_READY,				// bit mask of clients wishing to exit the intermission (FIXME: configstring?)
@@ -221,6 +222,21 @@ typedef enum {
 	STAT_MAX_STAMINA 	//Xamis
 
 } statIndex_t;
+
+
+// loadout related  -located in bg_misc.c --xamis
+qboolean BG_Melee( int weapon );
+qboolean BG_Sidearm( int weapon );
+qboolean BG_Primary ( int weapon );
+qboolean BG_Secondary ( int weapon );
+qboolean BG_Grenade( int weapon );
+qboolean BG_HasWeapon( int weapon, int stats[ ] );
+qboolean BG_HasSidearm (const  playerState_t *ps );
+qboolean BG_HasPrimary (const  playerState_t *ps );
+qboolean BG_HasSecondary (const  playerState_t *ps );
+
+//int BG_WeaponModes( int weapon ) ;
+
 
 
 // player_state->persistant[] indexes
@@ -328,7 +344,7 @@ typedef enum {
  WP_HK69, //11
  WP_NEGEV, //12
  WP_PSG1, //13
- WP_SR8, //14
+ WP_SR8, //14	
  WP_GRAPPLING_HOOK, //15
 
 
@@ -763,6 +779,7 @@ void	BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean 
 void	BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s, int time, qboolean snap );
 
 qboolean	BG_PlayerTouchesItem( playerState_t *ps, entityState_t *item, int atTime );
+
 
 
 #define ARENAS_PER_TIER		4

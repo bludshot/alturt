@@ -1063,7 +1063,29 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
 
 	switch( item->giType ) {
 	case IT_WEAPON:
-		return qtrue;	// weapons are always picked up
+			
+// Xamis 
+			if ( BG_Sidearm  ( item->giTag ) && BG_HasSidearm ( ps ) ) //can only have 1 sidearm
+                return qfalse;
+			if ( BG_Primary ( item->giTag ) && BG_HasPrimary( ps ) ) //can only have 1 primary weapon
+                return qfalse;
+            if ( BG_Secondary ( item->giTag  ) && BG_HasSecondary( ps ) ) //can only have 1 secondary weapon
+                return qfalse;
+		/*	if ( item->giTag == WP_HE ) {
+                if ( ps->ammo[WP_HE] < 2 )
+                    return qtrue;
+                else
+                    return qfalse;
+            }
+			if ( item->giTag == WP_SMOKE ) {
+                if ( ps->ammo[ WP_SMOKE] < 2 )
+                    return qtrue;
+                else
+                    return qfalse;
+         }
+	  */ 
+// end
+
 
 	case IT_AMMO:
 		if ( ps->ammo[ item->giTag ] >= 200 ) {
@@ -1616,3 +1638,223 @@ void BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s
 	s->loopSound = ps->loopSound;
 	s->generic1 = ps->generic1;
 }
+
+
+// loadout related  -prototype in bg_public.h --xamis
+
+/*
+=====================
+BG_HasWeapon
+=====================	  
+*/	  
+
+qboolean BG_HasWeapon( int weapon, int stats[ ] )
+{
+    if (weapon < MAX_WEAPONS ) return (unsigned int)stats[STAT_WEAPONS] & (1 << weapon);
+
+    return (unsigned int) stats[STAT_CWEAPONS] & ( 1 << (weapon - 16) );
+}
+
+
+
+
+/*
+================
+BG_HasPistol
+
+================
+*/
+
+qboolean BG_HasSidearm (const  playerState_t *ps ) {
+    if (BG_HasWeapon(WP_DEAGLE , (int*)ps->stats ) )
+        return qtrue;
+    if (BG_HasWeapon(WP_BERETTA , (int*)ps->stats ) )
+        return qtrue;
+
+    return qfalse;
+}
+
+/*
+================
+BG_HasPrimary 
+
+================
+*/
+
+qboolean BG_HasPrimary  (const  playerState_t *ps ) {
+    if (BG_HasWeapon(WP_AK103 , (int*)ps->stats ) )
+        return qtrue;
+    if (BG_HasWeapon(WP_M4 , (int*)ps->stats ) )
+        return qtrue;
+    if (BG_HasWeapon(WP_PSG1 , (int*)ps->stats ) )
+        return qtrue;
+	    if (BG_HasWeapon(WP_SR8 , (int*)ps->stats ) )
+        return qtrue;
+    if (BG_HasWeapon(WP_G36 , (int*)ps->stats ) )
+        return qtrue;
+    if (BG_HasWeapon(WP_LR300 , (int*)ps->stats ) )
+        return qtrue;
+	    if (BG_HasWeapon(WP_NEGEV , (int*)ps->stats ) )
+        return qtrue;
+
+    return qfalse;
+}
+
+/*
+================
+BG_HasSecondary
+
+================
+*/
+
+qboolean BG_HasSecondary (const  playerState_t *ps ) {
+    if (BG_HasWeapon(WP_MP5K , (int*)ps->stats ) )
+        return qtrue;
+    if (BG_HasWeapon(WP_UMP45 , (int*)ps->stats ) )
+        return qtrue;
+    if (BG_HasWeapon(WP_SPAS , (int*)ps->stats ) )
+        return qtrue;
+
+    return qfalse;
+}
+
+
+
+/*
+=====================
+BG_GetPrimary
+=====================	  
+*/	  
+
+int		BG_GetPrimary( int stats [ ] )
+{
+    int i;
+
+    for ( i=WP_NUM_WEAPONS-1;i>WP_NONE;i--)
+    {
+        if ( BG_HasWeapon( i, stats ) )
+        {
+            if ( BG_Primary( i ) )
+                return i;
+        }
+    }
+    return WP_NONE;
+}
+
+
+/*
+=====================
+BG_GetSecondary
+=====================	  
+*/	  
+int		BG_GetSecondary( int stats [ ] )
+{
+    int i;
+
+    for ( i=WP_NUM_WEAPONS-1;i>WP_NONE;i--)
+    {
+          if ( BG_HasWeapon( i, stats ) )
+        {
+            if ( BG_Secondary( i ) )
+                return i;
+        }
+    }
+    return WP_NONE;
+}
+
+
+
+
+
+/*
+================
+BG_Melee
+
+can use this to implement more melee weapons
+================
+*/
+qboolean BG_Melee ( int weapon ) {
+    switch (weapon) {
+    case WP_KNIFE:
+        return qtrue;
+    default:
+        return qfalse;
+    }
+}
+
+/*
+================
+BG_Sidearm
+
+
+================
+*/
+qboolean BG_Sidearm( int weapon ) {
+    switch (weapon) {
+    case WP_BERETTA:
+    case WP_DEAGLE:
+        return qtrue;
+    default:
+        return qfalse;
+    }
+}
+
+/*
+================
+BG_Primary
+
+
+================
+*/
+
+qboolean BG_Primary ( int weapon ) {
+    switch (weapon) {
+    case WP_AK103:
+    case WP_M4:
+    case WP_PSG1:
+    case WP_SR8:
+    case WP_G36:
+    case WP_LR300:
+    case WP_NEGEV:
+        return qtrue;
+    default:
+        return qfalse;
+    }
+}
+/*
+================
+BG_Secondary
+
+
+================
+*/
+
+qboolean BG_Secondary ( int weapon) {
+    switch (weapon) {
+    case WP_MP5K:
+    case WP_UMP45:
+	case WP_SPAS:
+        return qtrue;
+    default:
+        return qfalse;
+    }
+}
+
+/*
+================
+BG_Grenade
+
+================
+*/
+
+/*
+qboolean BG_Grenade ( int weapon ) {
+    switch (weapon) {
+    case WP_SMOKE:
+    case WP_HE:
+        return qtrue;
+    default:
+        return qfalse;
+    }
+}
+*/
