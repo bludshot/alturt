@@ -780,9 +780,7 @@ extern	vmCvar_t	g_enableDust;
 extern	vmCvar_t	g_enableBreath;
 extern	vmCvar_t	g_singlePlayer;
 extern	vmCvar_t	g_proxMineTimeout;
-extern	vmCvar_t	g_primary_weapon;
-extern	vmCvar_t	g_secondary_weapon;
-extern	vmCvar_t	g_sidearm;
+extern	vmCvar_t	gear;
 
 void	trap_Printf( const char *fmt );
 void	trap_Error( const char *fmt );

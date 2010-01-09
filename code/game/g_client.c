@@ -1232,43 +1232,93 @@ void ClientSpawn(gentity_t *ent) {
 	client->ps.clientNum = index;
 	
 	
-	/*
+		/*
 	--Xamis--
 
-	*/
-	
+		*/
+
+//layout for gear selection from urt config file!
+	//sidearm = gear.string[0];
+	//primary = gear.string[1];
+	//secondary = gear.string[2];
+	//grenade = gear.string[3];
+	//item1 = gear.string[4];
+	//item2 = gear.string[5];
+	//item3 = gear.string[6];	
+
+
 	client->ps.stats[STAT_WEAPONS] = ( 1 << WP_KNIFE ); //should always have a knife --Xamis
+	client->ps.ammo[WP_KNIFE] = -1;
 	
-	if( g_sidearm.integer == WP_DEAGLE || g_sidearm.integer == WP_BERETTA ){ //pull sidearm from cvar --Xamis
-		client->ps.stats[STAT_WEAPONS] |= ( 1 << g_sidearm.integer );
-	}else{
-		G_Printf( S_COLOR_BLUE "USING DEFAULT SIDEARM");
+	if( gear.string[0] == 'F'  ){ 
 		client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_BERETTA );
 		client->ps.ammo[WP_BERETTA] = 10;
-		g_sidearm.integer = WP_BERETTA;
+	}else if( gear.string[0] == 'G'  ){
+		client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_DEAGLE );
+		client->ps.ammo[WP_DEAGLE] = 10;
 	}
+	switch ( gear.string[1] ) {
+		case 'H':
+			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_SPAS );
+			client->ps.ammo[WP_SPAS] = 30;
+			break;
+		case 'I':	
+			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_MP5K );
+			client->ps.ammo[WP_MP5K] = 8;
+			break;
+		case 'J':	
+			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_UMP45 );
+			client->ps.ammo[WP_UMP45] = 30;
+			break;
+		case 'K':			
+			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_HK69 );
+			client->ps.ammo[WP_HK69] = 10;
+			break;
+		case 'L':		
+			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_LR300 );
+			client->ps.ammo[WP_LR300] = 30;
+			break;
+		case 'M':		
+			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_G36 );
+			client->ps.ammo[WP_G36] = 30;
+			break;
+		case 'N':
+			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_PSG1 );
+			client->ps.ammo[WP_PSG1] = 30;
+			break;
+		case 'Z':			
+			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_SR8 );
+			client->ps.ammo[WP_SPAS] = 30;
+			break;
+		case 'a':
+			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_AK103 );
+			client->ps.ammo[WP_AK103] = 30;
+			break;
+		case 'c':			
+			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_NEGEV );
+			client->ps.ammo[WP_NEGEV] = 30;
+			break;
+		default:
+			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_NONE );
+	}
+		
 	
-	if( g_primary_weapon.integer <= WP_SR8 &&  g_primary_weapon.integer >= WP_M4 ){
-	client->ps.stats[STAT_WEAPONS] |= ( 1 << g_primary_weapon.integer );
-	}else{
-		G_Printf( S_COLOR_BLUE "USING DEFAULT PRIMARY");
-	client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_M4 );
-	client->ps.ammo[WP_M4] = 30;
-	g_primary_weapon.integer = WP_M4;
+	switch ( gear.string[2] ) {
+		case 'H':
+			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_SPAS );
+			client->ps.ammo[WP_SPAS] = 30;
+			break;
+		case 'I':	
+			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_MP5K );
+			client->ps.ammo[WP_MP5K] = 8;
+			break;
+		case 'J':	
+			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_UMP45 );
+			client->ps.ammo[WP_UMP45] = 30;
+			break;
+		default:
+			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_NONE );
 	}
-	
-	if( g_secondary_weapon.integer >= WP_MP5K && g_secondary_weapon.integer <= WP_UMP45 ){
-	client->ps.stats[STAT_WEAPONS] |= ( 1 <<  g_secondary_weapon.integer );
-	}else{
-		client->ps.stats[STAT_WEAPONS] |= ( 1 <<  WP_MP5K );
-		client->ps.ammo[WP_MP5K] = 30;
-		g_secondary_weapon.integer = WP_MP5K;
-	}
-	client->ps.ammo[g_primary_weapon.integer] = 30;
-	client->ps.ammo[g_sidearm.integer] = 10;
-	client->ps.ammo[g_secondary_weapon.integer] = 30;
-	client->ps.ammo[WP_KNIFE] = -1;
-	//client->ps.ammo[WP_GRAPPLING_HOOK] = -1;
 
 	// health will count down towards max_health
 	ent->health = client->ps.stats[STAT_HEALTH] = client->ps.stats[STAT_MAX_HEALTH] + 25;
