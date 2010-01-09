@@ -1371,7 +1371,7 @@ void CG_ParseMenu(const char *menuFile) {
 
 	handle = trap_PC_LoadSource(menuFile);
 	if (!handle)
-		handle = trap_PC_LoadSource("ui/testhud.menu");
+		handle = trap_PC_LoadSource("ui/main.menu");
 	if (!handle)
 		return;
 
