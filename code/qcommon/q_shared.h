@@ -1106,7 +1106,7 @@ typedef struct playerState_s {
 #define	BUTTON_NEGATIVE		64
 
 #define BUTTON_GETFLAG		128
-#define BUTTON_GUARDBASE	256
+#define BUTTON_SPRINTING	256 // Xamis, moved to match urt configuration
 #define BUTTON_PATROL		512
 #define BUTTON_FOLLOWME		1024
 
@@ -1115,7 +1115,7 @@ typedef struct playerState_s {
 #define	MOVE_RUN			120			// if forwardmove or rightmove are >= MOVE_RUN,
 										// then BUTTON_WALKING should be set
 										
-#define	BUTTON_SPRINTING		4096			// Xamis	
+#define	BUTTON_GUARDBASE		4096			// Xamis	
 
 // usercmd_t is sent to the server each client frame
 typedef struct usercmd_s {
