@@ -22,7 +22,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //
 // cg_weapons.c -- events and effects dealing with weapons
 #include "cg_local.h"
-char *str_replace(char * t1, char * t2, char * t6);
+
+
+
 /*
 ==========================
 CG_MachineGunEjectBrass
@@ -701,6 +703,7 @@ void CG_RegisterWeapon( int weaponNum ) {
 			MAKERGB( weaponInfo->flashDlightColor, 1, 1, 0 );
 			weaponInfo->flashSound[0] = trap_S_RegisterSound( "sound/weapons/psg1/psg1.wav", qfalse );
 			weaponInfo->silenceSound[0] = trap_S_RegisterSound( "sound/weapons/psg1/psg1_sil.wav", qfalse );
+			weaponInfo->normalSound[0] = trap_S_RegisterSound( "sound/weapons/psg1/psg1.wav", qfalse );
 			weaponInfo->ejectBrassFunc = CG_MachineGunEjectBrass;
 			cgs.media.bulletExplosionShader = trap_R_RegisterShader( "bulletExplosion" );
 			break;
@@ -708,7 +711,7 @@ void CG_RegisterWeapon( int weaponNum ) {
 		case WP_SR8:
 			MAKERGB( weaponInfo->flashDlightColor, 1, 1, 0 );
 			weaponInfo->flashSound[0] = trap_S_RegisterSound( "sound/weapons/sr8/sr8.wav", qfalse );
-			weaponInfo->silenceSound[0] = trap_S_RegisterSound( "sound/weapons/sr8/sr8_sil.wav", qfalse );
+			weaponInfo->silenceSound[0] = trap_S_RegisterSound( "sound/weapons/sr8/sr8.wav", qfalse );
 			weaponInfo->normalSound[0] = trap_S_RegisterSound( "sound/weapons/sr8/sr8.wav", qfalse );
 			weaponInfo->ejectBrassFunc = CG_MachineGunEjectBrass;
 			cgs.media.bulletExplosionShader = trap_R_RegisterShader( "bulletExplosion" );
@@ -743,7 +746,7 @@ void CG_RegisterWeapon( int weaponNum ) {
 		case WP_MP5K:
 			MAKERGB( weaponInfo->flashDlightColor, 1, 1, 0 );
 			weaponInfo->flashSound[0] = trap_S_RegisterSound( "sound/weapons/mp5k/mp5k.wav", qfalse );
-			weaponInfo->silenceSound[0] = trap_S_RegisterSound( "sound/weapons/mp5k/mp5k_sil.wav", qfalse );
+			weaponInfo->silenceSound[0] = trap_S_RegisterSound( "sound/weapons/ump45/ump45_sil.wav", qfalse );
 			weaponInfo->normalSound[0] = trap_S_RegisterSound( "sound/weapons/mp5k/mp5k.wav", qfalse );
 			weaponInfo->ejectBrassFunc = CG_MachineGunEjectBrass;
 			cgs.media.bulletExplosionShader = trap_R_RegisterShader( "bulletExplosion" );
@@ -790,7 +793,19 @@ void CG_RegisterWeapon( int weaponNum ) {
 		weaponInfo->flashSound[0] = trap_S_RegisterSound( "sound/weapons/gl/gl.wav", qfalse );
 		cgs.media.grenadeExplosionShader = trap_R_RegisterShader( "grenadeExplosion" );
 		break;
-
+	case WP_HE:
+		weaponInfo->missileModel = trap_R_RegisterModel( "models/weapons2/grenade/grenade.MD3" );
+		cgs.media.grenadeExplosionShader = trap_R_RegisterShader( "grenadeExplosion" );
+		break;
+/*	case WP_SMOKE:
+		weaponInfo->missileModel = trap_R_RegisterModel( "models/weapons2/grenade/grenade.MD3" );
+		weaponInfo->missileTrailFunc = CG_GrenadeTrail;
+		weaponInfo->wiTrailTime = 2000;
+		weaponInfo->trailRadius = 232;
+		MAKERGB( weaponInfo->flashDlightColor, 1, 0.70f, 0 );
+		cgs.media.bulletExplosionShader = cgs.media.smokePuffShader;
+		break;
+*/
 	 default:
 		MAKERGB( weaponInfo->flashDlightColor, 1, 1, 1 );
 		weaponInfo->flashSound[0] = trap_S_RegisterSound( "sound/weapons/ak103/ak103.wav", qfalse );
@@ -1174,7 +1189,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		CG_AddWeaponWithPowerups( &barrel, cent->currentState.powerups );
 	}
 	
-	if ( weapon->silencerModel && weaponNum != WP_KNIFE  && weaponNum != WP_HK69 && weaponNum != WP_SPAS ) {
+	if ( weapon->silencerModel && weaponNum != WP_KNIFE  && weaponNum != WP_HK69 && weaponNum != WP_SPAS && weaponNum != WP_HE && ps->persistant[HI_SILENCER] ) {
 
 		memset( &silencer, 0, sizeof( silencer ) );
 		VectorCopy( parent->lightingOrigin, silencer.lightingOrigin );
@@ -1194,7 +1209,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		CG_AddWeaponWithPowerups( &silencer, cent->currentState.powerups );
 	}else weapon->flashSound[0] = weapon->normalSound[0];
 	
-	if ( weapon->laserModel && weaponNum != WP_KNIFE && weaponNum != WP_HK69 && weaponNum != WP_SPAS ) {
+	if ( weapon->laserModel && weaponNum != WP_KNIFE && weaponNum != WP_HK69 && weaponNum != WP_SPAS && weaponNum != WP_HE && ps->persistant[HI_LASER]) {
 
 		memset( &laser, 0, sizeof( laser ) );
 		VectorCopy( parent->lightingOrigin, laser.lightingOrigin );
@@ -1452,7 +1467,7 @@ CG_WeaponSelectable
 */
 static qboolean CG_WeaponSelectable( int i ) {
 	// removed ammo check, we want to be able to cycle to weapon if it's empty --Xamis
-    if ( ! (BG_HasWeapon( i, cg.snap->ps.stats) ) ) { 
+    if ( ! (BG_HasWeapon( i, cg.snap->ps.stats) ) ) { //sanity check  --Xamis
         return qfalse;
     }
     return qtrue;
@@ -1477,9 +1492,9 @@ void CG_NextWeapon_f( void ) {
 	cg.weaponSelectTime = cg.time;
 	original = cg.weaponSelect;
 
-	for ( i = 0 ; i < MAX_WEAPONS ; i++ ) {
+	for ( i = 0 ; i < WP_NUM_WEAPONS ; i++ ) {
 		cg.weaponSelect++;
-		if ( cg.weaponSelect == MAX_WEAPONS ) {
+		if ( cg.weaponSelect == WP_NUM_WEAPONS ) {
 			cg.weaponSelect = 0;
 		}
 		if ( cg.weaponSelect == WP_KNIFE ) {
@@ -1489,7 +1504,7 @@ void CG_NextWeapon_f( void ) {
 			break;
 		}
 	}
-	if ( i == MAX_WEAPONS ) {
+	if ( i == WP_NUM_WEAPONS ) {
 		cg.weaponSelect = original;
 	}
 }
@@ -1513,10 +1528,10 @@ void CG_PrevWeapon_f( void ) {
 	cg.weaponSelectTime = cg.time;
 	original = cg.weaponSelect;
 
-	for ( i = 0 ; i < MAX_WEAPONS ; i++ ) {
+	for ( i = 0 ; i < WP_NUM_WEAPONS ; i++ ) {
 		cg.weaponSelect--;
 		if ( cg.weaponSelect == -1 ) {
-			cg.weaponSelect = MAX_WEAPONS - 1;
+			cg.weaponSelect = WP_NUM_WEAPONS - 1;
 		}
 		if ( cg.weaponSelect == WP_KNIFE ) {
 			continue;		// never cycle to gauntlet
@@ -1525,7 +1540,7 @@ void CG_PrevWeapon_f( void ) {
 			break;
 		}
 	}
-	if ( i == MAX_WEAPONS ) {
+	if ( i == WP_NUM_WEAPONS ) {
 		cg.weaponSelect = original;
 	}
 }
@@ -1553,9 +1568,6 @@ void CG_Weapon_f( void ) {
 
 	cg.weaponSelectTime = cg.time;
 	
-	//clear curent invintory
-	//cg.InventorySlot[PRIMARY] = cg.InventorySlot[SIDEARM] = cg.Inventorypos[SECONDARY] = cg.Inventorypos[MELEE] = cg.Inventorypos[NADE] = cg.InventorySlot[MISC] = 0;
-
 	if ( ! ( cg.snap->ps.stats[STAT_WEAPONS] & ( 1 << num ) ) ) {
 		return;		// don't have the weapon
 	}
@@ -1563,25 +1575,6 @@ void CG_Weapon_f( void ) {
 	cg.weaponSelect = num;
 }
 
-/*
-===================
-CG_OutOfAmmoChange
-
-The current weapon has just run out of ammo
-===================
-*/
-void CG_OutOfAmmoChange( void ) { //Xamis	don't switch on out of ammo
-	//int		i;
-
-	//cg.weaponSelectTime = cg.time;
-
-	//for ( i = MAX_WEAPONS-1 ; i > 0 ; i-- ) {
-		//if ( CG_WeaponSelectable( i ) ) {
-		//	cg.weaponSelect = i;
-		//	break;
-		//}
-	//}
-}
 
 
 
@@ -1618,13 +1611,6 @@ void CG_FireWeapon( centity_t *cent ) {
 	// mark the entity as muzzle flashing, so when it is added it will
 	// append the flash to the weapon model
 	cent->muzzleFlashTime = cg.time;
-
-	// lightning gun only does this this on initial press
-
-	// play quad sound if needed
-	if ( cent->currentState.powerups & ( 1 << PW_QUAD ) ) {
-		trap_S_StartSound (NULL, cent->currentState.number, CHAN_ITEM, cgs.media.quadSound );
-	}
 
 	// play a sound
 	for ( c = 0 ; c < 4 ; c++ ) {
@@ -1702,7 +1688,7 @@ void CG_MissileHitWall( int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 		sfx = 0;
 		radius = 4;
 		break;
-
+	case WP_LR300:
 	case WP_M4:
 		mod = cgs.media.bulletFlashModel;
 		shader = cgs.media.bulletExplosionShader;
@@ -1718,6 +1704,15 @@ void CG_MissileHitWall( int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 		}
 
 		radius = 8;
+		break;
+		case WP_HE:
+		mod = cgs.media.dishFlashModel;
+		shader = cgs.media.grenadeExplosionShader;
+		sfx = cgs.media.sfx_rockexp;
+		mark = cgs.media.burnMarkShader;
+		radius = 100;
+		light = 300;
+		isSprite = qtrue;
 		break;
 	}
 

@@ -431,6 +431,8 @@ typedef struct weaponInfo_s {
 	sfxHandle_t		readySound;
 	sfxHandle_t		firingSound;
 	qboolean		loopFireSound;
+	
+
 } weaponInfo_t;
 
 
@@ -1397,7 +1399,6 @@ void CG_AddViewWeapon (playerState_t *ps);
 void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent, int team );
 void CG_DrawWeaponSelect( void );
 
-void CG_OutOfAmmoChange(  void );	// should this be in pmove? //no longer called --xamis
 
 //
 // cg_marks.c

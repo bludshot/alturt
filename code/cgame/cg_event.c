@@ -1146,7 +1146,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	//Xamis	
 	case EV_BREAK_GLASS:
 		DEBUGNAME("EV_BREAK_GLASS");
-			trap_S_StartSound( NULL, es->number, CHAN_BODY, cgs.media.glassSound );//need to change
+			trap_S_StartSound( NULL, es->number, CHAN_BODY, cgs.media.glassSound );
 			CG_BreakGlass( cent->lerpOrigin );
 			break;
 
