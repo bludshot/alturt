@@ -1096,7 +1096,7 @@ typedef struct playerState_s {
 #define	BUTTON_ATTACK		1
 #define	BUTTON_TALK			2			// displays talk balloon and disables actions
 #define	BUTTON_USE_HOLDABLE	4
-#define	BUTTON_GESTURE		8
+#define	BUTTON_WP_MODE		8
 #define	BUTTON_WALKING		16			// walking can't just be infered from MOVE_RUN
 										// because a key pressed late in the frame will
 										// only generate a small move value for that frame
@@ -1116,6 +1116,7 @@ typedef struct playerState_s {
 										// then BUTTON_WALKING should be set
 										
 #define	BUTTON_GUARDBASE		4096			// Xamis	
+#define BUTTON_GESTURE			8192
 
 // usercmd_t is sent to the server each client frame
 typedef struct usercmd_s {
