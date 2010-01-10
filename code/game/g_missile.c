@@ -440,6 +440,48 @@ void G_RunMissile( gentity_t *ent ) {
 	G_RunThink( ent );
 }
 
+/*
+=================
+throw_grenade
+=================
+*/
+gentity_t *throw_grenade (gentity_t *self, vec3_t start, vec3_t dir) {
+	gentity_t	*bolt;
+	
+
+	VectorNormalize (dir);
+
+	bolt = G_Spawn();
+	bolt->classname = "ut_weapon_grenade_he";
+	bolt->nextthink = level.time + 3000; 
+	bolt->think = G_ExplodeMissile;
+	bolt->s.eType = ET_MISSILE;
+	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
+	bolt->s.weapon = WP_HE;
+	bolt->s.eFlags = EF_BOUNCE_HALF;
+	bolt->r.ownerNum = self->s.number;
+	bolt->timestamp = level.time;
+	bolt->parent = self;
+	bolt->damage = 100;
+	bolt->splashDamage = 100;
+	bolt->splashRadius = 150;
+	bolt->methodOfDeath = MOD_GRENADE;
+	bolt->splashMethodOfDeath = MOD_GRENADE_SPLASH;
+	bolt->clipmask = MASK_SHOT;
+	bolt->target_ent = NULL;
+
+
+	VectorScale( dir, 500 , bolt->s.pos.trDelta );
+
+	bolt->s.pos.trType = TR_GRAVITY;
+	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;		// move a bit on the very first frame
+	VectorCopy( start, bolt->s.pos.trBase );
+	SnapVector( bolt->s.pos.trDelta );			// save net bandwidth
+
+	VectorCopy (start, bolt->r.currentOrigin);
+
+	return bolt;
+}
 
 
 /*

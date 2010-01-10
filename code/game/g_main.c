@@ -81,7 +81,7 @@ vmCvar_t	pmove_fixed;
 vmCvar_t	pmove_msec;
 vmCvar_t	g_rankings;
 vmCvar_t	g_listEntity;
-vmCvar_t	gear;
+vmCvar_t	gear; //Xamis, This holds the inventory information that is stored in the config file.
 #ifdef MISSIONPACK
 vmCvar_t	g_obeliskHealth;
 vmCvar_t	g_obeliskRegenPeriod;

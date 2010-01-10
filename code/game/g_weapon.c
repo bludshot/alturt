@@ -355,7 +355,7 @@ void weapon_supershotgun_fire (gentity_t *ent) {
 /*
 ======================================================================
 
-GRENADE LAUNCHER
+GRENADES
 
 ======================================================================
 */
@@ -374,8 +374,25 @@ void weapon_grenadelauncher_fire (gentity_t *ent) {
 	VectorAdd( m->s.pos.trDelta, ent->client->ps.velocity, m->s.pos.trDelta );	// "real" physics
 }
 
+//Xamis
+void weapon_grenade_throw (gentity_t *ent) {
+	gentity_t	*m;
+	vec3_t start;
 
+	VectorCopy(ent->s.pos.trBase, start);
 
+	start[2] += ent->client->ps.viewheight+8.0f;
+
+	forward[2] += 0.1f;
+	
+	VectorNormalize( forward );
+
+	m = throw_grenade (ent, start, forward);
+	//m->damage *= s_quadFactor;
+	//m->splashDamage *= s_quadFactor;
+//	VectorAdd( m->s.pos.trDelta, ent->client->ps.velocity, m->s.pos.trDelta );	// "real" physics
+
+}
 
 /*
 =================
@@ -774,8 +791,11 @@ void FireWeapon( gentity_t *ent ) {
 	case WP_HK69:
 			weapon_grenadelauncher_fire( ent );
 			break;
-	case WP_GRAPPLING_HOOK:
-		Weapon_GrapplingHook_Fire( ent );
+		//case GN_SMOKE:
+		//	weapon_smoke_throw( ent );
+		//	break;
+		case WP_HE:
+			weapon_grenade_throw( ent );
 		break;
 	default:
 // FIXME		G_Error( "Bad ent->s.weapon" );

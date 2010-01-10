@@ -285,7 +285,19 @@ gitem_t	bg_itemlist[] =
  count of 500  = 30 bullets 1 clip
  count of 1000 = 30 bullets 2 clips
 */
-
+ {
+	 "ut_weapon_grenade_he", 
+  "sound/misc/w_pkup.wav",
+  { "models/weapons2/grenade/grenade.md3", 
+  NULL, NULL, NULL},
+/* icon */		"icons/weapons/grenade_he",
+/* pickup */	"HE Grenades",
+		40,
+  IT_WEAPON,
+  WP_HE,
+/* precache */ "",
+/* sounds */ ""
+ },
 /*QUAKED ut_weapon_knife (0.3 0.9 0.4)(-5 -5 -5) (5 5 5) 
  -------- KEYS --------
  count: sets the amount of ammo given to the player when picked up (default 0).
@@ -408,7 +420,19 @@ gitem_t	bg_itemlist[] =
  count of 500  = 30 bullets 1 clip
  count of 1000 = 30 bullets 2 clips
 */
-
+// {
+//	 "ut_weapon_grenade_smoke", 
+//  "sound/misc/w_pkup.wav",
+//  { "models/weapons2/grenade/grenade.md3", 
+//  NULL, NULL, NULL},
+// /* icon */		"icons/weapons/grenade_smoke",
+// /* pickup */	"Smoke Grenades",
+//		40,
+//  IT_WEAPON,
+//  WP_SMOKE,
+// /* precache */ "",
+// /* sounds */ ""
+// },
 /*QUAKED ut_weapon_lr (0.3 0.9 0.4)(-5 -5 -5) (5 5 5) 
  -------- KEYS --------
  count: sets the amount of ammo given to the player when picked up (default 0).
@@ -1858,3 +1882,5 @@ qboolean BG_Grenade ( int weapon ) {
     }
 }
 */
+
+

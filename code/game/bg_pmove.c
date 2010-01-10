@@ -1678,115 +1678,10 @@ PM_Weapon
 Generates weapon events and modifes the weapon counter
 ==============
 */
-static void PM_Weapon( void ) {
-	int		addTime;
-	// don't allow attack until all buttons are up
-	if ( pm->ps->pm_flags & PMF_RESPAWNED ) {
-		return;
-	}
-
-	// ignore if spectator
-	if ( pm->ps->persistant[PERS_TEAM] == TEAM_SPECTATOR ) {
-		return;
-	}
-
-	// check for dead player
-	if ( pm->ps->stats[STAT_HEALTH] <= 0 ) {
-		pm->ps->weapon = WP_NONE;
-		return;
-	}
-
-	// check for item using
-	if ( pm->cmd.buttons & BUTTON_USE_HOLDABLE ) {
-		if ( ! ( pm->ps->pm_flags & PMF_USE_ITEM_HELD ) ) {
-			if ( bg_itemlist[pm->ps->stats[STAT_HOLDABLE_ITEM]].giTag == HI_MEDKIT
-				&& pm->ps->stats[STAT_HEALTH] >= (pm->ps->stats[STAT_MAX_HEALTH] + 25) ) {
-				// don't use medkit if at max health
-			} else {
-				pm->ps->pm_flags |= PMF_USE_ITEM_HELD;
-				PM_AddEvent( EV_USE_ITEM0 + bg_itemlist[pm->ps->stats[STAT_HOLDABLE_ITEM]].giTag );
-				pm->ps->stats[STAT_HOLDABLE_ITEM] = 0;
-			}
-			return;
-		}
-	} else {
-		pm->ps->pm_flags &= ~PMF_USE_ITEM_HELD;
-	}
-
-
-	// make weapon function
-	if ( pm->ps->weaponTime > 0 ) {
-		pm->ps->weaponTime -= pml.msec;
-	}
-
-	// check for weapon change
-	// can't change if weapon is firing, but can change
-	// again if lowering or raising
-	if ( pm->ps->weaponTime <= 0 || pm->ps->weaponstate != WEAPON_FIRING ) {
-		if ( pm->ps->weapon != pm->cmd.weapon ) {
-			PM_BeginWeaponChange( pm->cmd.weapon );
-		}
-	}
-
-	if ( pm->ps->weaponTime > 0 ) {
-		return;
-	}
-
-	// change weapon if time
-	if ( pm->ps->weaponstate == WEAPON_DROPPING ) {
-		PM_FinishWeaponChange();
-		return;
-	}
-
-	if ( pm->ps->weaponstate == WEAPON_RAISING ) {
-		pm->ps->weaponstate = WEAPON_READY;
-		if ( pm->ps->weapon == WP_KNIFE ) {
-			PM_StartTorsoAnim( TORSO_STAND2 );
-		} else {
-			PM_StartTorsoAnim( TORSO_STAND );
-		}
-		return;
-	}
-
-	// check for fire
-	if ( ! (pm->cmd.buttons & BUTTON_ATTACK) ) {
-		pm->ps->weaponTime = 0;
-		pm->ps->weaponstate = WEAPON_READY;
-		return;
-	}
-
-	// start the animation even if out of ammo
-	if ( pm->ps->weapon == WP_KNIFE ) {
-		// the guantlet only "fires" when it actually hits something
-		if ( !pm->gauntletHit ) {
-			pm->ps->weaponTime = 0;
-			pm->ps->weaponstate = WEAPON_READY;
-			return;
-		}
-		PM_StartTorsoAnim( TORSO_ATTACK2 );
-	} else {
-		PM_StartTorsoAnim( TORSO_ATTACK );
-	}
-
-	pm->ps->weaponstate = WEAPON_FIRING;
-
-	// check for out of ammo
-	if ( ! pm->ps->ammo[ pm->ps->weapon ] ) {
-		PM_AddEvent( EV_NOAMMO );
-		pm->ps->weaponTime += 500;
-		
-		return;
-	}
-
-	// take an ammo away if not infinite
-	if ( pm->ps->ammo[ pm->ps->weapon ] != -1 ) {
-		pm->ps->ammo[ pm->ps->weapon ]--;
-	}
-
-	// fire weapon
-	PM_AddEvent( EV_FIRE_WEAPON );
-
-	switch( pm->ps->weapon ) {
+static int PM_WeaponTime( int weapon ) 
+{
+	int addTime;
+	switch( weapon ) {
 	default:
 	case WP_KNIFE:
 		addTime = 400;
@@ -1830,26 +1725,134 @@ static void PM_Weapon( void ) {
 		case WP_HK69:
 			addTime = 3000;
 			break;
+	case WP_HE:
+	//case WP_SMOKE:
+			addTime = 3000;
+			break;
 	case WP_GRAPPLING_HOOK:
 		addTime = 400;
 		break;
+	}return addTime;
+}
+
+
+
+static void PM_Weapon( void ) {
+
+	if ( pm->ps->pm_flags & PMF_RESPAWNED ) {
+		return;
 	}
 
-#ifdef MISSIONPACK
-	if( bg_itemlist[pm->ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_SCOUT ) {
-		addTime /= 1.5;
-	}
-	else
-	if( bg_itemlist[pm->ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_AMMOREGEN ) {
-		addTime /= 1.3;
-  }
-  else
-#endif
-	if ( pm->ps->powerups[PW_HASTE] ) {
-		addTime /= 1.3;
+
+	if ( pm->ps->pm_type == PM_SPECTATOR || pm->ps->pm_type == PM_NOCLIP ) {
+		return;
 	}
 
-	pm->ps->weaponTime += addTime;
+
+
+	if ( pm->ps->stats[STAT_HEALTH] <= 0 ) {
+		pm->ps->weapon = WP_NONE;
+		return;
+	}
+
+	
+
+	if ( pm->cmd.buttons & BUTTON_USE_HOLDABLE ) {
+	if ( ! ( pm->ps->pm_flags & PMF_USE_ITEM_HELD ) ) {
+	if ( bg_itemlist[pm->ps->stats[STAT_HOLDABLE_ITEM]].giTag == HI_MEDKIT
+	&& pm->ps->stats[STAT_HEALTH] >= pm->ps->stats[STAT_MAX_HEALTH] ) {
+                // don't use medkit if at max health
+} else {
+	pm->ps->pm_flags |= PMF_USE_ITEM_HELD;
+	PM_AddEvent( EV_USE_ITEM0 + bg_itemlist[pm->ps->stats[STAT_HOLDABLE_ITEM]].giTag );
+	pm->ps->stats[STAT_HOLDABLE_ITEM] = 0;
+}
+	return;
+}
+} else {
+	pm->ps->pm_flags &= ~PMF_USE_ITEM_HELD;
+}
+
+    // make weapon function
+	if ( pm->ps->weaponTime > 0 )
+	pm->ps->weaponTime -= pml.msec;
+
+
+	if ( pm->ps->weaponstate == WEAPON_DROPPING && pm->ps->weaponTime > 0 ) {
+        //	G_Printf("dropping: %i\n", pm->ps->weaponTime );
+		return;
+	}
+
+	if ( pm->ps->weaponTime > 0 ) {
+		return;
+	}
+
+    // check for weapon change
+    // can't change if weapon is firing, but can change
+    // again if lowering or raising
+	if ( pm->ps->weaponstate == WEAPON_READY ) {
+		if ( pm->ps->weapon != pm->cmd.weapon) {
+			PM_BeginWeaponChange( pm->cmd.weapon );
+			return;
+		}
+	}
+
+
+    // change weapon if time
+	if ( pm->ps->weaponstate == WEAPON_DROPPING ) {
+		PM_FinishWeaponChange();
+		return;
+	}
+
+	if ( pm->ps->weaponstate == WEAPON_RAISING ) {
+		pm->ps->weaponstate = WEAPON_READY;
+
+		return;
+	}
+
+
+    // check for fire
+	if (!(pm->cmd.buttons & 1) ) {
+
+		pm->ps->weaponTime = 0;
+
+		pm->ps->weaponstate = WEAPON_READY;
+
+        // remove flag
+		if ( pm->ps->pm_flags & PMF_SINGLE_SHOT )
+			pm->ps->pm_flags &= ~PMF_SINGLE_SHOT;
+		return;
+	}
+
+ 
+    // single shot mode
+	if ( pm->ps->pm_flags & PMF_SINGLE_SHOT ) {
+		pm->ps->weaponstate = WEAPON_READY;
+		pm->ps->weaponTime = 0;
+		return;
+	}
+
+
+	if ( pm->ps->weapon <= WP_NONE )
+		return;
+
+    				// check for out of ammo
+				if ( pm->ps->ammo[pm->ps->weapon] <= 0) {
+				   PM_AddEvent( EV_NOAMMO );
+				   pm->ps->weaponTime = 550;
+				 //  pm->ps->weaponstate = WEAPON_READY;
+				   return;
+			   } 	
+
+			   pm->ps->weaponstate = WEAPON_FIRING; 
+			   pm->ps->weaponTime = PM_WeaponTime(pm->ps->weapon );
+			   PM_AddEvent( EV_FIRE_WEAPON );
+			   if ( pm->ps->weapon == WP_DEAGLE || pm->ps->weapon == WP_BERETTA || pm->ps->weapon == WP_PSG1 || pm->ps->weapon == WP_SR8)
+				   {
+					   pm->ps->pm_flags |= PMF_SINGLE_SHOT;
+					   
+				   }pm->ps->ammo[pm->ps->weapon]--;
+
 }
 
 /*
@@ -2131,6 +2134,8 @@ void PmoveSingle (pmove_t *pmove) {
 		pm->cmd.buttons &= ~BUTTON_WALKING;
 	}
 
+
+	
 	// set the talk balloon flag
 	if ( pm->cmd.buttons & BUTTON_TALK ) {
 		pm->ps->eFlags |= EF_TALK;
@@ -2337,6 +2342,8 @@ void Pmove (pmove_t *pmove) {
 		}
 		pmove->cmd.serverTime = pmove->ps->commandTime + msec;
 		PmoveSingle( pmove );
+		
+	
 
 		if ( pmove->ps->pm_flags & PMF_JUMP_HELD ) {
 			pmove->cmd.upmove = 20;

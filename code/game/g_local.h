@@ -260,9 +260,8 @@ typedef struct {
 	qboolean	teamInfo;			// send team overlay updates?
 	int		weapon_primary;
 	int		weapon_secondary;
-	int		new_weapon_primary;	
-	int		new_weapon_secondary;
 	int			playerClass; //blud 3rd try at player class (it works)
+
 	
 	
 	
@@ -541,6 +540,7 @@ gentity_t *fire_grenade (gentity_t *self, vec3_t start, vec3_t aimdir);
 gentity_t *fire_rocket (gentity_t *self, vec3_t start, vec3_t dir);
 gentity_t *fire_bfg (gentity_t *self, vec3_t start, vec3_t dir);
 gentity_t *fire_grapple (gentity_t *self, vec3_t start, vec3_t dir);
+gentity_t *throw_grenade (gentity_t *self, vec3_t start, vec3_t aimdir); //Xamis
 #ifdef MISSIONPACK
 gentity_t *fire_nail( gentity_t *self, vec3_t start, vec3_t forward, vec3_t right, vec3_t up );
 gentity_t *fire_prox( gentity_t *self, vec3_t start, vec3_t aimdir );

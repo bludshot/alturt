@@ -142,12 +142,21 @@ typedef enum {
 	WEAPON_READY, 
 	WEAPON_RAISING,
 	WEAPON_DROPPING,
-	WEAPON_FIRING
+	WEAPON_FIRING,
+    WEAPON_FIRING2
 } weaponstate_t;
+
+
+typedef enum {
+    WM_NONE,
+    WM_BURST,
+    WM_SINGLE
+} weaponmode_t;
 
 // pmove->pm_flags
 #define	PMF_DUCKED			1
 #define	PMF_JUMP_HELD		2
+#define PMF_SINGLE_SHOT		4
 #define	PMF_BACKWARDS_JUMP	8		// go into backwards land
 #define	PMF_BACKWARDS_RUN	16		// coast down to backwards run
 #define	PMF_TIME_LAND		32		// pm_time is time before rejump
@@ -158,7 +167,7 @@ typedef enum {
 #define PMF_GRAPPLE_PULL	2048	// pull towards grapple location
 #define PMF_FOLLOW			4096	// spectate following another player
 #define PMF_SCOREBOARD		8192	// spectate as a scoreboard
-//#define PMF_WALLJUMPING		16384
+
 
 #define	PMF_ALL_TIMES	(PMF_TIME_WATERJUMP|PMF_TIME_LAND|PMF_TIME_KNOCKBACK)
 
@@ -219,7 +228,7 @@ typedef enum {
 	STAT_DEAD_YAW,					// look this direction when dead (FIXME: get rid of?)
 	STAT_CLIENTS_READY,				// bit mask of clients wishing to exit the intermission (FIXME: configstring?)
 	STAT_MAX_HEALTH,				// health / armor limit, changable by handicap
-	STAT_MAX_STAMINA 	//Xamis
+	STAT_MAX_STAMINA, 	//Xamis
 
 } statIndex_t;
 
@@ -344,54 +353,17 @@ typedef enum {
  WP_HK69, //11
  WP_NEGEV, //12
  WP_PSG1, //13
- WP_SR8, //14	
- WP_GRAPPLING_HOOK, //15
+ WP_SR8, //14
+ WP_HE,
+ //WP_SMOKE,
+ WP_GRAPPLING_HOOK, 
 
 
 	WP_NUM_WEAPONS
 } weapon_t;
 
 
-/*
 
-typedef enum {
-	WP_NONE,
-
- WP_M4,
- WP_LR300,
- WP_G36,
- WP_AK103,
- WP_HK69,
- WP_NEGEV,
- WP_PSG1,
- WP_SR8,
- 
- WP_NUM_WEAPONS
-} weapon_pri;
-
-typedef enum {
-	WP_NONE,
-
- WP_KNIFE,
- WP_BERETTA,
- WP_DEAGLE,
-
- WP_NUM_WEAPONS
-} weapon_sidearm;
-
-
-typedef enum {
-	WP_NONE,
-
- WP MP5K,
- WP_SPAS,
- WP_UMP45,
-
- WP_NUM_WEAPONS
-} weapon_secondary;
-
-
-*/
 // reward sounds (stored in ps->persistant[PERS_PLAYEREVENTS])
 #define	PLAYEREVENT_DENIEDREWARD		0x0001
 #define	PLAYEREVENT_GAUNTLETREWARD		0x0002
