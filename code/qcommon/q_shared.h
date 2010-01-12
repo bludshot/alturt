@@ -1105,7 +1105,8 @@ typedef struct playerState_s {
 #define BUTTON_AFFIRMATIVE	32
 #define	BUTTON_NEGATIVE		64
 
-#define BUTTON_GETFLAG		128
+#define BUTTON_GETFLAG		16384
+#define	BUTTON_USE		128
 #define BUTTON_SPRINTING	256 // Xamis, moved to match urt configuration
 #define BUTTON_PATROL		512
 #define BUTTON_FOLLOWME		1024
