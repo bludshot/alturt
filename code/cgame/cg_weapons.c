@@ -1336,8 +1336,8 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
         if(ps){
           gun.hModel = weapon->holdsModel;
           if ( team ){
-            gun.customSkin = cgs.media.handsBlueSkin;
-          }else gun.customSkin = cgs.media.handsRedSkin;
+            gun.customSkin = cgs.media.handsRedSkin;
+          }else gun.customSkin = cgs.media.handsBlueSkin;
         }
 	if (!gun.hModel) {
 		return;
