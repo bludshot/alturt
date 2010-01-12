@@ -116,7 +116,10 @@ field_t fields[] = {
 	{"angle", FOFS(s.angles), F_ANGLEHACK},
 	{"targetShaderName", FOFS(targetShaderName), F_LSTRING},
 	{"targetShaderNewName", FOFS(targetShaderNewName), F_LSTRING},
-
+	{"distance", FOFS(distance), F_FLOAT},//Xamis
+	{"only", FOFS(only), F_LSTRING},//Xamis
+	{"CloseWhenIdle", FOFS(CloseWhenIdle), F_INT},//Xamis
+	{"trigger_only", FOFS(trigger_only), F_INT},//Xamis
 	{NULL}
 };
 
@@ -146,6 +149,7 @@ void SP_func_button (gentity_t *ent);
 void SP_func_door (gentity_t *ent);
 void SP_func_train (gentity_t *ent);
 void SP_func_timer (gentity_t *self);
+void SP_func_rotating_door (gentity_t *ent);
 
 void SP_trigger_always (gentity_t *ent);
 void SP_trigger_multiple (gentity_t *ent);
@@ -211,6 +215,7 @@ spawn_t	spawns[] = {
 	{"func_plat", SP_func_plat},
 	{"func_button", SP_func_button},
 	{"func_door", SP_func_door},
+	{"func_rotating_door", SP_func_rotating_door},
 	{"func_static", SP_func_static},
 	{"func_rotating", SP_func_rotating},
 	{"func_bobbing", SP_func_bobbing},

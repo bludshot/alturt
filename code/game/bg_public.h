@@ -92,7 +92,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define	CS_SOUNDS				(CS_MODELS+MAX_MODELS)
 #define	CS_PLAYERS				(CS_SOUNDS+MAX_SOUNDS)
 #define CS_LOCATIONS			(CS_PLAYERS+MAX_CLIENTS)
-#define CS_PARTICLES			(CS_LOCATIONS+MAX_LOCATIONS) 
+#define CS_PARTICLES			(CS_LOCATIONS+MAX_LOCATIONS)
 
 #define CS_MAX					(CS_PARTICLES+MAX_LOCATIONS)
 
@@ -139,7 +139,7 @@ typedef enum {
 } pmtype_t;
 
 typedef enum {
-	WEAPON_READY, 
+	WEAPON_READY,
 	WEAPON_RAISING,
 	WEAPON_DROPPING,
 	WEAPON_FIRING,
@@ -224,7 +224,7 @@ typedef enum {
 #endif
 	STAT_WEAPONS,					// 16 bit fields
 	STAT_CWEAPONS,
-	STAT_ARMOR,				
+	STAT_ARMOR,
 	STAT_DEAD_YAW,					// look this direction when dead (FIXME: get rid of?)
 	STAT_CLIENTS_READY,				// bit mask of clients wishing to exit the intermission (FIXME: configstring?)
 	STAT_MAX_HEALTH,				// health / armor limit, changable by handicap
@@ -332,7 +332,7 @@ typedef enum {
 	HI_KAMIKAZE,
 	HI_PORTAL,
 	HI_INVULNERABILITY,
-	
+
 	HI_NUM_HOLDABLE
 } holdable_t;
 
@@ -347,7 +347,7 @@ typedef enum {
  WP_SPAS, //5
  WP_UMP45, //6
  WP_M4, //7
- WP_LR300, //8 
+ WP_LR300, //8
  WP_G36, //9
  WP_AK103, //10
  WP_HK69, //11
@@ -356,7 +356,7 @@ typedef enum {
  WP_SR8, //14
  WP_HE,
  //WP_SMOKE,
- WP_GRAPPLING_HOOK, 
+ WP_GRAPPLING_HOOK,
 
 
 	WP_NUM_WEAPONS
@@ -490,7 +490,7 @@ typedef enum {
 	EV_TAUNT_GETFLAG,
 	EV_TAUNT_GUARDBASE,
 	EV_TAUNT_PATROL,
- 
+
 
 } entity_event_t;
 
@@ -567,6 +567,18 @@ typedef enum {
 	MAX_TOTALANIMATIONS
 } animNumber_t;
 
+typedef enum {
+  WPN_DRAW,
+  WPN_IDLE,
+  WPN_READY_FIRE,
+  WPN_FIRE,
+  WPN_READY_FIRE_IDLE,
+  WPN_RELOAD,
+
+  MAX_WEAPON_ANIMATIONS
+} wpAnimNumber_t;
+
+
 
 typedef struct animation_s {
 	int		firstFrame;
@@ -604,7 +616,7 @@ typedef enum {
 //team task
 typedef enum {
 	TEAMTASK_NONE,
-	TEAMTASK_OFFENSE, 
+	TEAMTASK_OFFENSE,
 	TEAMTASK_DEFENSE,
 	TEAMTASK_PATROL,
 	TEAMTASK_FOLLOW,
@@ -730,8 +742,9 @@ typedef enum {
 	ET_INVISIBLE,
 	ET_GRAPPLE,				// grapple hooked on wall
 	ET_TEAM,
-	ET_BREAKABLE,				//XAMIS
+	ET_BREAKABLE,			//XAMIS
  	ET_WALL, 				//XAMIS
+	ET_DOOR,				//XAMIS
 
 	ET_EVENTS				// any of the EV_* events can be added freestanding
 							// by setting eType to ET_EVENTS + eventNum

@@ -54,13 +54,22 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define FL_NO_BOTS				0x00002000	// spawn point not for bot use
 #define FL_NO_HUMANS			0x00004000	// spawn point just for bots
 #define FL_FORCE_GESTURE		0x00008000	// force gesture on client
+#define FL_OPENDOOR				0x00016000  //Xamis
+#define	FL_ROTATE				0x00032000  //Xamis
 
 // movers are things like doors, plats, buttons, etc
 typedef enum {
-	MOVER_POS1,
-	MOVER_POS2,
-	MOVER_1TO2,
-	MOVER_2TO1
+    MOVER_POS1,
+    MOVER_POS2,
+    MOVER_1TO2,
+    MOVER_2TO1,
+    MOVER_STOP_1TO2,
+    MOVER_STOP_2TO1,
+	ROTATOR_POS1,
+	ROTATOR_POS2,
+	ROTATOR_1TO2,
+	ROTATOR_2TO1
+
 } moverState_t;
 
 #define SP_PODIUM_MODEL		"models/mapobjects/podium/podium4.md3"
@@ -116,6 +125,7 @@ struct gentity_s {
 	gentity_t	*nextTrain;
 	gentity_t	*prevTrain;
 	vec3_t		pos1, pos2;
+	gentity_t	*moverent; //xamis for rotating doors
 
 	char		*message;
 
@@ -127,6 +137,7 @@ struct gentity_s {
 	char		*team;
 	char		*targetShaderName;
 	char		*targetShaderNewName;
+	char		*only; //Xamis
 	gentity_t	*target_ent;
 
 	float		speed;
@@ -144,9 +155,11 @@ struct gentity_s {
 	int			pain_debounce_time;
 	int			fly_sound_debounce_time;	// wind tunnel
 	int			last_move_time;
-
+	float		distance;//Xamis doors
 	int			health;
 	int			stamina; //Xamis
+	int			CloseWhenIdle;//Xamis
+	int			trigger_only; //Xamis 
 
 
 	qboolean	takedamage;

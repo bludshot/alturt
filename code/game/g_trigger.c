@@ -94,6 +94,10 @@ so, the basic time between firing is a random time between
 void SP_trigger_multiple( gentity_t *ent ) {
 	G_SpawnFloat( "wait", "0.5", &ent->wait );
 	G_SpawnFloat( "random", "0", &ent->random );
+	
+	if ( ent->wait == 0.25){
+		ent->wait+=5;
+	}
 
 	if ( ent->random >= ent->wait && ent->wait >= 0 ) {
 		ent->random = ent->wait - FRAMETIME;

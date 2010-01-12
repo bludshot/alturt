@@ -32,10 +32,10 @@ pml_t		pml;
 
 // movement parameters
 float	pm_stopspeed = 100.0f;
-float	pm_duckScale = 0.55f; // Xamis 
+float	pm_duckScale = 0.55f; // Xamis
 float	pm_swimScale = 0.50f;
 float	pm_wadeScale = 0.70f;
-float   pm_ladderscale = 0.40; //Xamis
+float   pm_ladderscale = 0.50f; //Xamis
 
 
 float	pm_accelerate = 12.0f;
@@ -141,7 +141,27 @@ static void PM_ForceLegsAnim( int anim ) {
 	PM_StartLegsAnim( anim );
 }
 
+/* [QUARANTINE] - Weapon Animations
+===================
+PM_StartWeaponAnim, PM_ContinueWeaponAnim
+===================
+*/
+static void PM_StartWeaponAnim( int anim ) {
+  if ( pm->ps->pm_type >= PM_DEAD ) {
+    return;
+  }
 
+  pm->ps->generic1 = ( ( pm->ps->generic1 & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT ) | anim;
+}
+
+static void PM_ContinueWeaponAnim( int anim ) {
+  if ( ( pm->ps->generic1 & ~ANIM_TOGGLEBIT ) == anim ) {
+    return;
+  }
+
+  PM_StartWeaponAnim( anim );
+}
+// END
 /*
 ==================
 PM_ClipVelocity
@@ -153,9 +173,9 @@ void PM_ClipVelocity( vec3_t in, vec3_t normal, vec3_t out, float overbounce ) {
 	float	backoff;
 	float	change;
 	int		i;
-	
+
 	backoff = DotProduct (in, normal);
-	
+
 	if ( backoff < 0 ) {
 		backoff *= overbounce;
 	} else {
@@ -172,7 +192,7 @@ void PM_ClipVelocity( vec3_t in, vec3_t normal, vec3_t out, float overbounce ) {
 
 /*
 =============
-CheckWall Fuction Xamis 
+CheckWall Fuction Xamis
 =============
 */
 
@@ -200,7 +220,7 @@ void CheckWall( void )
 
 /*
 =============
-CheckLadder Fuction Xamis 
+CheckLadder Fuction Xamis
 =============
 */
 
@@ -252,8 +272,8 @@ int CheckLadder( void )
 
 	VectorMA (pm->ps->origin, -5, forward, spot );
 
-	spot[2] -= 25; 
-	
+	spot[2] -= 25;
+
 	VectorMA( spot, 10, forward, spot2 );
 
 	pm->trace ( &trace, spot,traceMins,traceMaxs, spot2, pm->ps->clientNum, MASK_PLAYERSOLID );
@@ -261,7 +281,7 @@ int CheckLadder( void )
 	if ((trace.fraction < 1) && (trace.surfaceFlags & SURF_LADDER)  )
 	{
 		if ( pml.groundPlane )
-			return -2; 
+			return -2;
 		else
 		{
 			return -1;
@@ -283,9 +303,9 @@ static void PM_Friction( void ) {
 	float	*vel;
 	float	speed, newspeed, control;
 	float	drop;
-	
+
 	vel = pm->ps->velocity;
-	
+
 	VectorCopy( vel, vec );
 	if ( pml.walking ) {
 		vec[2] = 0;	// ignore slope movement
@@ -325,20 +345,20 @@ static void PM_Friction( void ) {
 	if ( pm->ps->pm_type == PM_SPECTATOR) {
 		drop += speed*pm_spectatorfriction*pml.frametime;
 	}
-	if ( pml.ladder ) // If they're on a ladder... 
+	if ( pml.ladder ) // If they're on a ladder...
 	{
-		drop += speed*pm_ladderfriction*pml.frametime;  // Add ladder friction! 
+		drop += speed*pm_ladderfriction*pml.frametime;  // Add ladder friction!
 	}
 
 
 		//apply ladder friction Xamis
-	if ( CheckLadder() != 0 ) 
+	if ( CheckLadder() != 0 )
 	{
 		drop += speed*pm_ladderfriction*pml.frametime;
 	}
 
-	
-	
+
+
 
 	// scale the velocity
 	newspeed = speed - drop;
@@ -375,9 +395,9 @@ static void PM_Accelerate( vec3_t wishdir, float wishspeed, float accel ) {
 	if (accelspeed > addspeed) {
 		accelspeed = addspeed;
 	}
-	
+
 	for (i=0 ; i<3 ; i++) {
-		pm->ps->velocity[i] += accelspeed*wishdir[i];	
+		pm->ps->velocity[i] += accelspeed*wishdir[i];
 	}
 #else
 	// proper way (avoids strafe jump maxspeed bug), but feels bad
@@ -469,7 +489,7 @@ static void PM_SetMovementDir( void ) {
 			pm->ps->movementDir = 1;
 		} else if ( pm->ps->movementDir == 6 ) {
 			pm->ps->movementDir = 7;
-		} 
+		}
 	}
 }
 
@@ -651,7 +671,7 @@ static void PM_WaterMove( void ) {
 	if ( pml.groundPlane && DotProduct( pm->ps->velocity, pml.groundTrace.plane.normal ) < 0 ) {
 		vel = VectorLength(pm->ps->velocity);
 		// slide along the ground plane
-		PM_ClipVelocity (pm->ps->velocity, pml.groundTrace.plane.normal, 
+		PM_ClipVelocity (pm->ps->velocity, pml.groundTrace.plane.normal,
 			pm->ps->velocity, OVERCLIP );
 
 		VectorNormalize(pm->ps->velocity);
@@ -771,7 +791,7 @@ static void PM_AirMove( void ) {
 	// though we don't have a groundentity
 	// slide along the steep plane
 	if ( pml.groundPlane ) {
-		PM_ClipVelocity (pm->ps->velocity, pml.groundTrace.plane.normal, 
+		PM_ClipVelocity (pm->ps->velocity, pml.groundTrace.plane.normal,
 			pm->ps->velocity, OVERCLIP );
 	}
 
@@ -921,7 +941,7 @@ static void PM_WalkMove( void ) {
 	vel = VectorLength(pm->ps->velocity);
 
 	// slide along the ground plane
-	PM_ClipVelocity (pm->ps->velocity, pml.groundTrace.plane.normal, 
+	PM_ClipVelocity (pm->ps->velocity, pml.groundTrace.plane.normal,
 		pm->ps->velocity, OVERCLIP );
 
 	// don't decrease velocity when going up or down a slope
@@ -1010,7 +1030,7 @@ static void PM_NoclipMove( void ) {
 
 	fmove = pm->cmd.forwardmove;
 	smove = pm->cmd.rightmove;
-	
+
 	for (i=0 ; i<3 ; i++)
 		wishvel[i] = pml.forward[i]*fmove + pml.right[i]*smove;
 	wishvel[2] += pm->cmd.upmove;
@@ -1117,14 +1137,14 @@ static void PM_CrashLand( void ) {
 	// SURF_NODAMAGE is used for bounce pads where you don't ever
 	// want to take damage or play a crunch sound
 	if ( !(pml.groundTrace.surfaceFlags & SURF_NODAMAGE) )  {
-		if ( delta > 145 ) { 
+		if ( delta > 145 ) {
 			PM_AddEvent( EV_FALL_FAR );
-		} else if ( delta > 125 ) { 
+		} else if ( delta > 125 ) {
 			// this is a pain grunt, so don't play it if dead
 			if ( pm->ps->stats[STAT_HEALTH] > 0 ) {
 				PM_AddEvent( EV_FALL_MEDIUM );
 			}
-		} else if ( delta > 72 ) { 
+		} else if ( delta > 72 ) {
 			PM_AddEvent( EV_FALL_SHORT );
 		} else {
 			PM_AddEvent( PM_FootstepForSurface() );
@@ -1283,7 +1303,7 @@ static void PM_GroundTrace( void ) {
 		pml.walking = qfalse;
 		return;
 	}
-	
+
 	// slopes that are too steep will not be considered onground
 	if ( trace.plane.normal[2] < MIN_WALK_NORMAL ) {
 		if ( pm->debugLevel ) {
@@ -1312,7 +1332,7 @@ static void PM_GroundTrace( void ) {
 		if ( pm->debugLevel ) {
 			Com_Printf("%i:Land\n", c_pmove);
 		}
-		
+
 		PM_CrashLand();
 
 		// don't do landing time if we were just going down a slope
@@ -1351,7 +1371,7 @@ static void PM_SetWaterLevel( void ) {
 
 	point[0] = pm->ps->origin[0];
 	point[1] = pm->ps->origin[1];
-	point[2] = pm->ps->origin[2] + MINS_Z + 1;	
+	point[2] = pm->ps->origin[2] + MINS_Z + 1;
 	cont = pm->pointcontents( point, pm->ps->clientNum );
 
 	if ( cont & MASK_WATER ) {
@@ -1456,9 +1476,9 @@ static void PM_Footsteps( void ) {
 	xyzspeed = sqrt( pm->ps->velocity[0] * pm->ps->velocity[0]
 			+  pm->ps->velocity[1] * pm->ps->velocity[1]
 			+  pm->ps->velocity[2] * pm->ps->velocity[2] );
-	
+
 	if ( onladder == -1 || onladder == 1 ) // on ladder
-	{			
+	{
         // moving up or down)
 		if ( xyzspeed ) {
 			//PM_ContinueTorsoAnim ( ??Xamis ); what are the animations for climbing
@@ -1468,12 +1488,12 @@ static void PM_Footsteps( void ) {
 		}
 		else {
 			footstep = qfalse;
-			
+
 		}return;
 
 	}
 
-	
+
 	if ( pm->ps->groundEntityNum == ENTITYNUM_NONE ) {
 
 		if ( pm->ps->powerups[PW_INVULNERABILITY] ) {
@@ -1498,9 +1518,9 @@ static void PM_Footsteps( void ) {
 		}
 		return;
 	}
-	
 
 
+footstep = qfalse;
 
 	if ( pm->ps->pm_flags & PMF_DUCKED ) {
 		bobmove = 0;	// dont bob while crouched --Xamis Value was .5
@@ -1617,7 +1637,7 @@ static void PM_BeginWeaponChange( int weapon ) {
 	if ( !( pm->ps->stats[STAT_WEAPONS] & ( 1 << weapon ) ) ) {
 		return;
 	}
-	
+
 	if ( pm->ps->weaponstate == WEAPON_DROPPING ) {
 		return;
 	}
@@ -1666,6 +1686,11 @@ static void PM_TorsoAnimation( void ) {
 		} else {
 			PM_ContinueTorsoAnim( TORSO_STAND );
 		}
+                // QUARANTINE - Weapon Animation
+// Should always draw the weapon when it is just ready
+                PM_ContinueWeaponAnim( WPN_IDLE );
+
+
 		return;
 	}
 }
@@ -1678,7 +1703,7 @@ PM_Weapon
 Generates weapon events and modifes the weapon counter
 ==============
 */
-static int PM_WeaponTime( int weapon ) 
+static int PM_WeaponTime( int weapon )
 {
 	int addTime;
 	switch( weapon ) {
@@ -1755,7 +1780,7 @@ static void PM_Weapon( void ) {
 		return;
 	}
 
-	
+
 
 	if ( pm->cmd.buttons & BUTTON_USE_HOLDABLE ) {
 	if ( ! ( pm->ps->pm_flags & PMF_USE_ITEM_HELD ) ) {
@@ -1806,6 +1831,14 @@ static void PM_Weapon( void ) {
 
 	if ( pm->ps->weaponstate == WEAPON_RAISING ) {
 		pm->ps->weaponstate = WEAPON_READY;
+                if ( pm->ps->weapon == WP_KNIFE ) {
+                  PM_StartTorsoAnim( TORSO_STAND2 );
+                } else {
+                  PM_StartTorsoAnim( TORSO_STAND );
+                }
+// QUARANTINE - Weapon Animation
+// Should always draw the weapon when it is just ready
+                PM_StartWeaponAnim( WPN_IDLE );
 
 		return;
 	}
@@ -1817,6 +1850,7 @@ static void PM_Weapon( void ) {
 		pm->ps->weaponTime = 0;
 
 		pm->ps->weaponstate = WEAPON_READY;
+                PM_StartWeaponAnim( WPN_IDLE );
 
         // remove flag
 		if ( pm->ps->pm_flags & PMF_SINGLE_SHOT )
@@ -1824,7 +1858,7 @@ static void PM_Weapon( void ) {
 		return;
 	}
 
- 
+
     // single shot mode
 	if ( pm->ps->pm_flags & PMF_SINGLE_SHOT ) {
 		pm->ps->weaponstate = WEAPON_READY;
@@ -1839,18 +1873,23 @@ static void PM_Weapon( void ) {
     				// check for out of ammo
 				if ( pm->ps->ammo[pm->ps->weapon] <= 0) {
 				   PM_AddEvent( EV_NOAMMO );
-				   pm->ps->weaponTime = 550;
-				 //  pm->ps->weaponstate = WEAPON_READY;
+                                   pm->ps->weaponTime = 550;
+				   pm->ps->weaponstate = WEAPON_READY;
+                                   PM_ContinueWeaponAnim( WPN_IDLE );
 				   return;
-			   } 	
+                                }else PM_StartTorsoAnim( TORSO_ATTACK );
 
-			   pm->ps->weaponstate = WEAPON_FIRING; 
+                           // QUARANTINE - Weapon animations
+// This should change pm->ps->generic1 so we can animate
+                           PM_StartWeaponAnim( WPN_FIRE );
+
+			   pm->ps->weaponstate = WEAPON_FIRING;
 			   pm->ps->weaponTime = PM_WeaponTime(pm->ps->weapon );
 			   PM_AddEvent( EV_FIRE_WEAPON );
 			   if ( pm->ps->weapon == WP_DEAGLE || pm->ps->weapon == WP_BERETTA || pm->ps->weapon == WP_PSG1 || pm->ps->weapon == WP_SR8)
 				   {
 					   pm->ps->pm_flags |= PMF_SINGLE_SHOT;
-					   
+
 				   }pm->ps->ammo[pm->ps->weapon]--;
 
 }
@@ -1992,22 +2031,21 @@ static void PM_WallMove( void ) {
 	PM_Friction ();
 
 	scale = PM_CmdScale( &pm->cmd );
-	
+
 	if ( pml.groundPlane ) {
 		return;
 	     }
 
 
-	// user intentions [what the user is attempting to do]
-	if ( !scale ) { 
+	if ( !scale ) {
 		wishvel[0] = 0;
 		wishvel[1] = 0;
 		wishvel[2] = 0;
 	}
-	else {   
+	else {
 		for (i=0 ; i<3 ; i++)
 			wishvel[i] = scale * pml.forward[i]*pm->cmd.forwardmove +
-					scale * pml.right[i]*pm->cmd.rightmove; 
+					scale * pml.right[i]*pm->cmd.rightmove;
 		wishvel[2] += scale * pm->cmd.upmove;
 	}
 
@@ -2028,8 +2066,8 @@ static void PM_WallMove( void ) {
 
 /*
 ===================
-PM_LadderMove()         
-still needs work		
+PM_LadderMove()
+still needs work
 
 ===================
 */
@@ -2135,7 +2173,7 @@ void PmoveSingle (pmove_t *pmove) {
 	}
 
 
-	
+
 	// set the talk balloon flag
 	if ( pm->cmd.buttons & BUTTON_TALK ) {
 		pm->ps->eFlags |= EF_TALK;
@@ -2152,7 +2190,7 @@ void PmoveSingle (pmove_t *pmove) {
 	}
 
 	// clear the respawned flag if attack and use are cleared
-	if ( pm->ps->stats[STAT_HEALTH] > 0 && 
+	if ( pm->ps->stats[STAT_HEALTH] > 0 &&
 		!( pm->cmd.buttons & (BUTTON_ATTACK | BUTTON_USE_HOLDABLE) ) ) {
 		pm->ps->pm_flags &= ~PMF_RESPAWNED;
 	}
@@ -2240,11 +2278,8 @@ void PmoveSingle (pmove_t *pmove) {
 	// set mins, maxs, and viewheight
 	PM_CheckDuck ();
 	//CheckWall();
-	
-	if ( CheckLadder () != 0) {//Xamis
-		PM_LadderMove();
-	}  
-	
+
+
 	// set groundentity
 	PM_GroundTrace();
 
@@ -2253,7 +2288,6 @@ void PmoveSingle (pmove_t *pmove) {
 	}
 
 	PM_DropTimers();
-
 #ifdef MISSIONPACK
 	if ( pm->ps->powerups[PW_INVULNERABILITY] ) {
 		PM_InvulnerabilityMove();
@@ -2262,12 +2296,9 @@ void PmoveSingle (pmove_t *pmove) {
 	if ( pm->ps->powerups[PW_FLIGHT] ) {
 		// flight powerup doesn't allow jump and has different friction
 		PM_FlyMove();
-		
-	} else if (pml.ladder) {   //Xamis 
-		//PM_WallMove();
-		
-	
-		
+
+	} else if ( CheckLadder () != 0) {//Xamis
+		PM_LadderMove();
 	} else if (pm->ps->pm_flags & PMF_GRAPPLE_PULL) {
 		PM_GrappleMove();
 		// We can wiggle a bit
@@ -2292,6 +2323,7 @@ void PmoveSingle (pmove_t *pmove) {
 	PM_SetWaterLevel();
 
 	// weapons
+	if ( CheckLadder () == 0 )
 	PM_Weapon();
 
 	// torso animation
@@ -2342,8 +2374,8 @@ void Pmove (pmove_t *pmove) {
 		}
 		pmove->cmd.serverTime = pmove->ps->commandTime + msec;
 		PmoveSingle( pmove );
-		
-	
+
+
 
 		if ( pmove->ps->pm_flags & PMF_JUMP_HELD ) {
 			pmove->cmd.upmove = 20;
