@@ -258,7 +258,7 @@ static qboolean	CG_ParseAnimationFile( const char *filename, clientInfo_t *ci ) 
 	//blud, let's try to print out the entire animation sequence BLUD DEBUG...
 	//CG_Printf( "NUMBER OF ANIMATIONS: %d\n", bludtemp );
 	//for ( j = 0 ; j < bludtemp; j++ ) {
-	//	CG_Printf( "ANIMATION #%d | FF=%d\n", j, animations[j].firstFrame);  
+	//	CG_Printf( "ANIMATION #%d | FF=%d\n", j, animations[j].firstFrame);
 	//}
 
 	// crouch backward animation
@@ -810,8 +810,8 @@ static qboolean CG_ScanForExistingClientInfo( clientInfo_t *ci ) {
 		if ( !Q_stricmp( ci->modelName, match->modelName )
 			&& !Q_stricmp( ci->skinName, match->skinName )
 			&& !Q_stricmp( ci->headModelName, match->headModelName )
-			&& !Q_stricmp( ci->headSkinName, match->headSkinName ) 
-			&& !Q_stricmp( ci->blueTeam, match->blueTeam ) 
+			&& !Q_stricmp( ci->headSkinName, match->headSkinName )
+			&& !Q_stricmp( ci->blueTeam, match->blueTeam )
 			&& !Q_stricmp( ci->redTeam, match->redTeam )
 			&& (cgs.gametype < GT_TEAM || ci->team == match->team) ) {
 			// this clientinfo is identical, so use it's handles
@@ -1122,7 +1122,33 @@ PLAYER ANIMATION
 =============================================================================
 */
 
+/* [QUARANTINE] - Weapon Animations Added by Xamis
+===============
+CG_SetWeaponLerpFrame
 
+may include ANIM_TOGGLEBIT
+===============
+*/
+static void CG_SetWeaponLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation ) {
+  animation_t *anim;
+
+  lf->animationNumber = newAnimation;
+  newAnimation &= ~ANIM_TOGGLEBIT;
+
+  if ( newAnimation < 0 || newAnimation >= MAX_WEAPON_ANIMATIONS ) {
+    CG_Error( "Bad weapon animation number: %i", newAnimation );
+  }
+
+  anim = &cg_weapons[cg.snap->ps.weapon].animations[ newAnimation ];
+
+  lf->animation = anim;
+  lf->animationTime = lf->frameTime + anim->initialLerp;
+
+  if ( cg_debugAnim.integer ) {
+    CG_Printf( "Weapon Anim: %i\n", newAnimation );
+  }
+}
+// END
 /*
 ===============
 CG_SetLerpFrameAnimation
@@ -1158,7 +1184,13 @@ Sets cg.snap, cg.oldFrame, and cg.backlerp
 cg.time should be between oldFrameTime and frameTime after exit
 ===============
 */
-static void CG_RunLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation, float speedScale ) {
+
+/*Xamis, this was:
+static void CG_RunLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation, float speedScale)
+Had to add check for weapon animation.
+
+*/
+static void CG_RunLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation, float speedScale, qboolean weaponAnim ) {
 	int			f, numFrames;
 	animation_t	*anim;
 
@@ -1169,9 +1201,17 @@ static void CG_RunLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation
 	}
 
 	// see if the animation sequence is switching
-	if ( newAnimation != lf->animationNumber || !lf->animation ) {
-		CG_SetLerpFrameAnimation( ci, lf, newAnimation );
-	}
+// QUARANTINE - Weapon Animation
+// Check and see if the animation is switching and then check to see if it is a weapon
+// animation or character and call the proper lerp frame function
+        if ( newAnimation != lf->animationNumber || !lf->animation ) {
+          if (weaponAnim) {
+            CG_SetWeaponLerpFrame( ci, lf, newAnimation );
+          } else {
+            CG_SetLerpFrameAnimation( ci, lf, newAnimation );
+          }
+        }
+// END
 
 	// if we have passed the current frame, move it to
 	// oldFrame and calculate a new frame
@@ -1252,6 +1292,42 @@ static void CG_ClearLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int animationN
 	lf->oldFrame = lf->frame = lf->animation->firstFrame;
 }
 
+/* [QUARANTINE] - Weapon Animations
+===============
+CG_WeaponAnimation
+
+This is called from cg_weapons.c
+===============
+*/
+void CG_WeaponAnimation( centity_t *cent, int *weaponOld, int *weapon, float *weaponBackLerp ) {
+  clientInfo_t *ci;
+  int clientNum;
+
+  clientNum = cent->currentState.clientNum;
+
+  if ( cg_noPlayerAnims.integer ) {
+    *weaponOld = *weapon = 0;
+    return;
+  }
+
+  ci = &cgs.clientinfo[ clientNum ];
+
+  CG_RunLerpFrame( ci, &cent->pe.weapon, cent->currentState.generic1, 1, qtrue );
+
+// QUARANTINE - Debug - Animations
+#if 0
+  if(cent->pe.weapon.oldFrame || cent->pe.weapon.frame || cent->pe.weapon.backlerp) {
+  CG_Printf("weaponOld: %i weaponFrame: %i weaponBack: %i\n",
+                cent->pe.weapon.oldFrame, cent->pe.weapon.frame, cent->pe.weapon.backlerp);
+}
+#endif
+
+                *weaponOld = cent->pe.weapon.oldFrame;
+            *weapon = cent->pe.weapon.frame;
+            *weaponBackLerp = cent->pe.weapon.backlerp;
+
+}
+// END
 
 /*
 ===============
@@ -1281,16 +1357,16 @@ static void CG_PlayerAnimation( centity_t *cent, int *legsOld, int *legs, float 
 
 	// do the shuffle turn frames locally
 	if ( cent->pe.legs.yawing && ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) == LEGS_IDLE ) {
-		CG_RunLerpFrame( ci, &cent->pe.legs, LEGS_TURN, speedScale );
+		CG_RunLerpFrame( ci, &cent->pe.legs, LEGS_TURN, speedScale, qfalse );//Xamis, added qfalse
 	} else {
-		CG_RunLerpFrame( ci, &cent->pe.legs, cent->currentState.legsAnim, speedScale );
+          CG_RunLerpFrame( ci, &cent->pe.legs, cent->currentState.legsAnim, speedScale, qfalse  );//Xamis, added qfalse
 	}
 
 	*legsOld = cent->pe.legs.oldFrame;
 	*legs = cent->pe.legs.frame;
 	*legsBackLerp = cent->pe.legs.backlerp;
 
-	CG_RunLerpFrame( ci, &cent->pe.torso, cent->currentState.torsoAnim, speedScale );
+        CG_RunLerpFrame( ci, &cent->pe.torso, cent->currentState.torsoAnim, speedScale, qfalse  );//Xamis, added qfalse
 
 	*torsoOld = cent->pe.torso.oldFrame;
 	*torso = cent->pe.torso.frame;
@@ -1327,7 +1403,7 @@ static void CG_SwingAngles( float destination, float swingTolerance, float clamp
 	if ( !*swinging ) {
 		return;
 	}
-	
+
 	// modify the speed depending on the delta
 	// so it doesn't seem so linear
 	swing = AngleSubtract( destination, *angle );
@@ -1421,7 +1497,7 @@ static void CG_PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t torso[3], v
 	// --------- yaw -------------
 
 	// allow yaw to drift a bit
-	if ( ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) != LEGS_IDLE 
+	if ( ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) != LEGS_IDLE
 		|| ( cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT ) != TORSO_STAND  ) {
 		// if not standing still, always point all in the same direction
 		cent->pe.torso.yawing = qtrue;	// always center
@@ -1541,10 +1617,10 @@ static void CG_HasteTrail( centity_t *cent ) {
 	VectorCopy( cent->lerpOrigin, origin );
 	origin[2] -= 16;
 
-	smoke = CG_SmokePuff( origin, vec3_origin, 
-				  8, 
+	smoke = CG_SmokePuff( origin, vec3_origin,
+				  8,
 				  1, 1, 1, 1,
-				  500, 
+				  500,
 				  cg.time,
 				  0,
 				  0,
@@ -1773,7 +1849,7 @@ static void CG_PlayerFlag( centity_t *cent, qhandle_t hSkin, refEntity_t *torso 
 	angles[YAW] = cent->pe.flag.yawAngle;
 	// lerp the flag animation frames
 	ci = &cgs.clientinfo[ cent->currentState.clientNum ];
-	CG_RunLerpFrame( ci, &cent->pe.flag, flagAnim, 1 );
+        CG_RunLerpFrame( ci, &cent->pe.flag, flagAnim, 1,qfalse  );//Xamis, added qfalse
 	flag.oldframe = cent->pe.flag.oldFrame;
 	flag.frame = cent->pe.flag.frame;
 	flag.backlerp = cent->pe.flag.backlerp;
@@ -2002,7 +2078,7 @@ static void CG_PlayerSprites( centity_t *cent ) {
 	}
 
 	team = cgs.clientinfo[ cent->currentState.clientNum ].team;
-	if ( !(cent->currentState.eFlags & EF_DEAD) && 
+	if ( !(cent->currentState.eFlags & EF_DEAD) &&
 		cg.snap->ps.persistant[PERS_TEAM] == team &&
 		cgs.gametype >= GT_TEAM) {
 		if (cg_drawFriend.integer) {
@@ -2059,11 +2135,11 @@ static qboolean CG_PlayerShadow( centity_t *cent, float *shadowPlane ) {
 	alpha = 1.0 - trace.fraction;
 
 	// hack / FPE - bogus planes?
-	//assert( DotProduct( trace.plane.normal, trace.plane.normal ) != 0.0f ) 
+	//assert( DotProduct( trace.plane.normal, trace.plane.normal ) != 0.0f )
 
 	// add the mark as a temporary, so it goes directly to the renderer
 	// without taking a spot in the cg_marks array
-	CG_ImpactMark( cgs.media.shadowMarkShader, trace.endpos, trace.plane.normal, 
+	CG_ImpactMark( cgs.media.shadowMarkShader, trace.endpos, trace.plane.normal,
 		cent->pe.legs.yawAngle, alpha,alpha,alpha,1, qfalse, 24, qtrue );
 
 	return qtrue;
@@ -2229,7 +2305,7 @@ int CG_LightVerts( vec3_t normal, int numVerts, polyVert_t *verts )
 			verts[i].modulate[2] = ambientLight[2];
 			verts[i].modulate[3] = 255;
 			continue;
-		} 
+		}
 		j = ( ambientLight[0] + incoming * directedLight[0] );
 		if ( j > 255 ) {
 			j = 255;
@@ -2310,7 +2386,7 @@ void CG_Player( centity_t *cent ) {
 
 	// get the rotation information
 	CG_PlayerAngles( cent, legs.axis, torso.axis, head.axis );
-	
+
 	// get the animation state (after rotation, to allow feet shuffle)
 	CG_PlayerAnimation( cent, &legs.oldframe, &legs.frame, &legs.backlerp,
 		 &torso.oldframe, &torso.frame, &torso.backlerp );
@@ -2391,7 +2467,7 @@ void CG_Player( centity_t *cent ) {
 			angle = ((cg.time / 4) & 255) * (M_PI * 2) / 255;
 			dir[2] = 15 + sin(angle) * 8;
 			VectorAdd(torso.origin, dir, skull.origin);
-			
+
 			dir[2] = 0;
 			VectorCopy(dir, skull.axis[1]);
 			VectorNormalize(skull.axis[1]);
@@ -2469,7 +2545,7 @@ void CG_Player( centity_t *cent ) {
 			dir[1] = cos(angle) * 20;
 			dir[2] = 0;
 			VectorAdd(torso.origin, dir, skull.origin);
-			
+
 			VectorCopy(dir, skull.axis[1]);
 			VectorNormalize(skull.axis[1]);
 			VectorSet(skull.axis[2], 0, 0, 1);
@@ -2621,7 +2697,7 @@ A player just came into view or teleported, so reset all animation info
 */
 void CG_ResetPlayerEntity( centity_t *cent ) {
 	cent->errorTime = -99999;		// guarantee no error decay added
-	cent->extrapolated = qfalse;	
+	cent->extrapolated = qfalse;
 
 	CG_ClearLerpFrame( &cgs.clientinfo[ cent->currentState.clientNum ], &cent->pe.legs, cent->currentState.legsAnim );
 	CG_ClearLerpFrame( &cgs.clientinfo[ cent->currentState.clientNum ], &cent->pe.torso, cent->currentState.torsoAnim );

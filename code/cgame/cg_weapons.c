@@ -23,6 +23,67 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // cg_weapons.c -- events and effects dealing with weapons
 #include "cg_local.h"
 
+/* [QUARANTINE] - Weapon Animations - CG_ParseWeaponAnimFile
+==========================
+CG_ParseWeaponAnimFile
+==========================
+*/
+static qboolean CG_ParseWeaponAnimFile( const char *filename, weaponInfo_t *weapon ) {
+  char *text_p;
+  int len;
+  int i;
+  char *token;
+  float fps;
+  int skip;
+  char text[20000];
+  fileHandle_t f;
+  animation_t *animations;
+
+  animations = weapon->animations;
+
+// load the file
+  len = trap_FS_FOpenFile( filename, &f, FS_READ );
+  if ( len <= 0 ) {
+    return qfalse;
+  }
+  if ( len >= sizeof( text ) - 1 ) {
+    CG_Printf( "File %s too long\n", filename );
+    return qfalse;
+  }
+  trap_FS_Read( text, len, f );
+  text[len] = 0;
+  trap_FS_FCloseFile( f );
+
+// parse the text
+  text_p = text;
+  skip = 0; // quite the compiler warning
+
+// read information for each frame
+  for ( i = 0 ; i < MAX_WEAPON_ANIMATIONS ; i++ ) {
+    token = COM_Parse( &text_p );
+    if ( !token ) break;
+    animations[i].firstFrame = atoi( token );
+    token = COM_Parse( &text_p );
+    if ( !token ) break;
+    animations[i].numFrames = atoi( token );
+    token = COM_Parse( &text_p );
+    if ( !token ) break;
+    animations[i].loopFrames = atoi( token );
+    token = COM_Parse( &text_p );
+    if ( !token ) break;
+    fps = atof( token );
+    if ( fps == 0 ) fps = 1;
+    animations[i].frameLerp = 1000 / fps;
+    animations[i].initialLerp = 1000 / fps;
+  }
+  if ( i != MAX_WEAPON_ANIMATIONS ) {
+    CG_Printf( "Error parsing weapon animation file: %s", filename );
+    return qfalse;
+  }
+
+  return qtrue;
+}
+// END
 
 
 /*
@@ -218,31 +279,31 @@ void CG_RailTrail (clientInfo_t *ci, vec3_t start, vec3_t end) {
 	vec3_t axis[36], move, move2, next_move, vec, temp;
 	float  len;
 	int    i, j, skip;
- 
+
 	localEntity_t *le;
 	refEntity_t   *re;
- 
+
 #define RADIUS   4
 #define ROTATION 1
 #define SPACING  5
- 
+
 	start[2] -= 4;
- 
+
 	le = CG_AllocLocalEntity();
 	re = &le->refEntity;
- 
+
 	le->leType = LE_FADE_RGB;
 	le->startTime = cg.time;
 	le->endTime = cg.time + cg_railTrailTime.value;
 	le->lifeRate = 1.0 / (le->endTime - le->startTime);
- 
+
 	re->shaderTime = cg.time / 1000.0f;
 	re->reType = RT_RAIL_CORE;
 	re->customShader = cgs.media.railCoreShader;
- 
+
 	VectorCopy(start, re->origin);
 	VectorCopy(end, re->oldorigin);
- 
+
 	re->shaderRGBA[0] = ci->color1[0] * 255;
 	re->shaderRGBA[1] = ci->color1[1] * 255;
 	re->shaderRGBA[2] = ci->color1[2] * 255;
@@ -254,7 +315,7 @@ void CG_RailTrail (clientInfo_t *ci, vec3_t start, vec3_t end) {
 	le->color[3] = 1.0f;
 
 	AxisClear( re->axis );
- 
+
 	if (cg_oldRail.integer)
 	{
 		// nudge down a bit so it isn't exactly in center
@@ -277,7 +338,7 @@ void CG_RailTrail (clientInfo_t *ci, vec3_t start, vec3_t end) {
 	VectorScale (vec, SPACING, vec);
 
 	skip = -1;
- 
+
 	j = 18;
 	for (i = 0; i < len; i += SPACING)
 	{
@@ -378,13 +439,13 @@ static void CG_RocketTrail( centity_t *ent, const weaponInfo_t *wi ) {
 	for ( ; t <= ent->trailTime ; t += step ) {
 		BG_EvaluateTrajectory( &es->pos, t, lastPos );
 
-		smoke = CG_SmokePuff( lastPos, up, 
-					  wi->trailRadius, 
+		smoke = CG_SmokePuff( lastPos, up,
+					  wi->trailRadius,
 					  1, 1, 1, 0.33f,
-					  wi->wiTrailTime, 
+					  wi->wiTrailTime,
 					  t,
 					  0,
-					  0, 
+					  0,
 					  cgs.media.smokePuffShader );
 		// use the optimized local entity add
 		smoke->leType = LE_SCALE_FADE;
@@ -446,13 +507,13 @@ static void CG_NailTrail( centity_t *ent, const weaponInfo_t *wi ) {
 	for ( ; t <= ent->trailTime ; t += step ) {
 		BG_EvaluateTrajectory( &es->pos, t, lastPos );
 
-		smoke = CG_SmokePuff( lastPos, up, 
-					  wi->trailRadius, 
+		smoke = CG_SmokePuff( lastPos, up,
+					  wi->trailRadius,
 					  1, 1, 1, 0.33f,
-					  wi->wiTrailTime, 
+					  wi->wiTrailTime,
 					  t,
 					  0,
-					  0, 
+					  0,
 					  cgs.media.nailPuffShader );
 		// use the optimized local entity add
 		smoke->leType = LE_SCALE_FADE;
@@ -617,7 +678,9 @@ void CG_RegisterWeapon( int weaponNum ) {
 	char			path[MAX_QPATH];
 	vec3_t			mins, maxs;
 	int				i;
-
+// QUARANTINE - Weapon Animations - Added Variable
+        char filename[MAX_QPATH]; //Used to open animation.cfg files
+// END
 	weaponInfo = &cg_weapons[weaponNum];
 
 	if ( weaponNum == 0 ) {
@@ -663,6 +726,17 @@ void CG_RegisterWeapon( int weaponNum ) {
 		weaponInfo->ammoModel = trap_R_RegisterModel( ammo->world_model[0] );
 	}
 
+// Load all weapons animation config files --Xamis
+            strcpy( path, item->world_model[0] );
+            COM_StripExtension(path, path, sizeof(path));
+            strcat( path, ".cfg" );
+            if ( !CG_ParseWeaponAnimFile(path, weaponInfo) ) {
+              Com_Printf("Failed to load weapon animation file %s\n", path);
+
+            }
+
+//  All weapons parts for animations in first person view --Xamis
+
 	strcpy( path, item->world_model[0] );
 	COM_StripExtension(path, path, sizeof(path));
 	strcat( path, "_flash.md3" );
@@ -673,10 +747,94 @@ void CG_RegisterWeapon( int weaponNum ) {
 	strcat( path, "_barrel.md3" );
 	weaponInfo->barrelModel = trap_R_RegisterModel( path );
 
-	strcpy( path, item->world_model[0] );
-	COM_StripExtension(path, path, sizeof(path));
-	strcat( path, "_hand.md3" );
-	weaponInfo->handsModel = trap_R_RegisterModel( path );
+        strcpy( path, item->world_model[0] );
+        COM_StripExtension(path, path, sizeof(path));
+        strcat( path, "_hold.md3" );
+        weaponInfo->holdsModel = trap_R_RegisterModel( path );
+
+
+        strcpy( path, item->world_model[0] );
+        COM_StripExtension(path, path, sizeof(path));
+        strcat( path, "_view_main.md3" );
+        weaponInfo->vmainModel = trap_R_RegisterModel( path );
+
+        strcpy( path, item->world_model[0] );
+        COM_StripExtension(path, path, sizeof(path));
+        strcat( path, "_view_bolt.md3" );
+        weaponInfo->vboltModel = trap_R_RegisterModel( path );
+
+        strcpy( path, item->world_model[0] );
+        COM_StripExtension(path, path, sizeof(path));
+        strcat( path, "_view_trigger.md3" );
+        weaponInfo->vtriggerModel = trap_R_RegisterModel( path );
+
+        strcpy( path, item->world_model[0] );
+        COM_StripExtension(path, path, sizeof(path));
+        strcat( path, "_view_ejector.md3" );
+        weaponInfo->vejectorModel = trap_R_RegisterModel( path );
+
+
+        strcpy( path, item->world_model[0] );
+        COM_StripExtension(path, path, sizeof(path));
+        strcat( path, "_view_mode.md3" );
+        weaponInfo->vmodeModel = trap_R_RegisterModel( path );
+
+        strcpy( path, item->world_model[0] );
+        COM_StripExtension(path, path, sizeof(path));
+        strcat( path, "_view_clip.md3" );
+        weaponInfo->vclipModel = trap_R_RegisterModel( path );
+
+        strcpy( path, item->world_model[0] );
+        COM_StripExtension(path, path, sizeof(path));
+        strcat( path, "_view_cliprel.md3" );
+        weaponInfo->vcliprelModel = trap_R_RegisterModel( path );
+
+        strcpy( path, item->world_model[0] );
+        COM_StripExtension(path, path, sizeof(path));
+        strcat( path, "_view_flap.md3" );
+        weaponInfo->vflapModel = trap_R_RegisterModel( path );
+
+        strcpy( path, item->world_model[0] );
+        COM_StripExtension(path, path, sizeof(path));
+        strcat( path, "_view_butt.md3" );
+        weaponInfo->vbuttModel = trap_R_RegisterModel( path );
+
+        strcpy( path, item->world_model[0] );
+        COM_StripExtension(path, path, sizeof(path));
+        strcat( path, "_view_cock.md3" );
+        weaponInfo->vcockModel = trap_R_RegisterModel( path );
+
+        strcpy( path, item->world_model[0] );
+        COM_StripExtension(path, path, sizeof(path));
+        strcat( path, "_view_slide.md3" );
+        weaponInfo->vslideModel = trap_R_RegisterModel( path );
+
+        strcpy( path, item->world_model[0] );
+        COM_StripExtension(path, path, sizeof(path));
+        strcat( path, "_view_barrel.md3" );
+        weaponInfo->vbarrelModel = trap_R_RegisterModel( path );
+
+        strcpy( path, item->world_model[0] );
+        COM_StripExtension(path, path, sizeof(path));
+        strcat( path, "_view_sliderel.md3" );
+        weaponInfo->vsliderelModel = trap_R_RegisterModel( path );
+
+
+        strcpy( path, item->world_model[0] );
+        COM_StripExtension(path, path, sizeof(path));
+        strcat( path, "_view_pin.md3" );
+        weaponInfo->vpinModel = trap_R_RegisterModel( path );
+
+        strcpy( path, item->world_model[0] );
+        COM_StripExtension(path, path, sizeof(path));
+        strcat( path, "_view_ring.md3" );
+        weaponInfo->vringModel = trap_R_RegisterModel( path );
+
+
+
+
+
+        weaponInfo->handsModel = trap_R_RegisterModel( "models/weapons2/handskins/hands.md3" );
 	weaponInfo->silencerModel = trap_R_RegisterModel( "models/weapons2/M4/M4_silencer.md3" );
 	weaponInfo->laserModel = trap_R_RegisterModel( "models/weapons2/M4/M4_laser.md3" );
 	if ( !weaponInfo->handsModel ) {
@@ -695,7 +853,7 @@ void CG_RegisterWeapon( int weaponNum ) {
 			MAKERGB( weaponInfo->flashDlightColor, 1, 1, 0 );
 			weaponInfo->flashSound[0] = trap_S_RegisterSound( "sound/weapons/m4/m4.wav", qfalse );
 			weaponInfo->silenceSound[0] = trap_S_RegisterSound( "sound/weapons/m4/m4_sil.wav", qfalse );
-			weaponInfo->normalSound[0] = trap_S_RegisterSound( "sound/weapons/m4/m4.wav", qfalse );	
+			weaponInfo->normalSound[0] = trap_S_RegisterSound( "sound/weapons/m4/m4.wav", qfalse );
 			weaponInfo->ejectBrassFunc = CG_MachineGunEjectBrass;
 			cgs.media.bulletExplosionShader = trap_R_RegisterShader( "bulletExplosion" );
 			break;
@@ -707,7 +865,7 @@ void CG_RegisterWeapon( int weaponNum ) {
 			weaponInfo->ejectBrassFunc = CG_MachineGunEjectBrass;
 			cgs.media.bulletExplosionShader = trap_R_RegisterShader( "bulletExplosion" );
 			break;
-			
+
 		case WP_SR8:
 			MAKERGB( weaponInfo->flashDlightColor, 1, 1, 0 );
 			weaponInfo->flashSound[0] = trap_S_RegisterSound( "sound/weapons/sr8/sr8.wav", qfalse );
@@ -725,7 +883,7 @@ void CG_RegisterWeapon( int weaponNum ) {
 			weaponInfo->ejectBrassFunc = CG_MachineGunEjectBrass;
 			cgs.media.bulletExplosionShader = trap_R_RegisterShader( "bulletExplosion" );
 			break;
-			
+
 		case WP_LR300:
 			MAKERGB( weaponInfo->flashDlightColor, 1, 1, 0 );
 			weaponInfo->flashSound[0] = trap_S_RegisterSound( "sound/weapons/zm300/lr.wav", qfalse );
@@ -759,7 +917,7 @@ void CG_RegisterWeapon( int weaponNum ) {
 			weaponInfo->ejectBrassFunc = CG_MachineGunEjectBrass;
 			cgs.media.bulletExplosionShader = trap_R_RegisterShader( "bulletExplosion" );
 			break;
-			
+
 		case WP_BERETTA:
 			MAKERGB( weaponInfo->flashDlightColor, 1, 1, 0 );
 			weaponInfo->flashSound[0] = trap_S_RegisterSound( "sound/weapons/beretta/beretta.wav", qfalse );
@@ -849,7 +1007,7 @@ void CG_RegisterItemVisuals( int itemNum ) {
 	//
 	// powerups have an accompanying ring or sphere
 	//
-	if ( item->giType == IT_POWERUP || item->giType == IT_HEALTH || 
+	if ( item->giType == IT_POWERUP || item->giType == IT_HEALTH ||
 		item->giType == IT_ARMOR || item->giType == IT_HOLDABLE ) {
 		if ( item->world_model[1] ) {
 			itemInfo->models[1] = trap_R_RegisterModel( item->world_model[1] );
@@ -875,23 +1033,23 @@ CG_MapTorsoToWeaponFrame
 static int CG_MapTorsoToWeaponFrame( clientInfo_t *ci, int frame ) {
 
 	// change weapon
-	if ( frame >= ci->animations[TORSO_DROP].firstFrame 
+	if ( frame >= ci->animations[TORSO_DROP].firstFrame
 		&& frame < ci->animations[TORSO_DROP].firstFrame + 9 ) {
 		return frame - ci->animations[TORSO_DROP].firstFrame + 6;
 	}
 
 	// stand attack
-	if ( frame >= ci->animations[TORSO_ATTACK].firstFrame 
+	if ( frame >= ci->animations[TORSO_ATTACK].firstFrame
 		&& frame < ci->animations[TORSO_ATTACK].firstFrame + 6 ) {
 		return 1 + frame - ci->animations[TORSO_ATTACK].firstFrame;
 	}
 
 	// stand attack 2
-	if ( frame >= ci->animations[TORSO_ATTACK2].firstFrame 
+	if ( frame >= ci->animations[TORSO_ATTACK2].firstFrame
 		&& frame < ci->animations[TORSO_ATTACK2].firstFrame + 6 ) {
 		return 1 + frame - ci->animations[TORSO_ATTACK2].firstFrame;
 	}
-	
+
 	return 0;
 }
 
@@ -926,7 +1084,7 @@ static void CG_CalculateWeaponPosition( vec3_t origin, vec3_t angles ) {
 	if ( delta < LAND_DEFLECT_TIME ) {
 		origin[2] += cg.landChange*0.25 * delta / LAND_DEFLECT_TIME;
 	} else if ( delta < LAND_DEFLECT_TIME + LAND_RETURN_TIME ) {
-		origin[2] += cg.landChange*0.25 * 
+		origin[2] += cg.landChange*0.25 *
 			(LAND_DEFLECT_TIME + LAND_RETURN_TIME - delta) / LAND_RETURN_TIME;
 	}
 
@@ -989,7 +1147,7 @@ static void CG_LightningBolt( centity_t *cent, vec3_t origin ) {
 	VectorMA( muzzlePoint, LIGHTNING_RANGE, forward, endPoint );
 
 	// see if it hit a wall
-	CG_Trace( &trace, muzzlePoint, vec3_origin, vec3_origin, endPoint, 
+	CG_Trace( &trace, muzzlePoint, vec3_origin, vec3_origin, endPoint,
 		cent->currentState.number, MASK_SHOT );
 
 	// this is the endpoint
@@ -1108,23 +1266,62 @@ sound should only be done on the world model case.
 =============
 */
 void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent, int team ) {
-	refEntity_t	gun;
+
+
+	refEntity_t	gun; //this is used for thirdperson weapon and firstperson hands model Xamis
+        refEntity_t     viewmainModel; //firstperson weapon model
+        refEntity_t     holds;
 	refEntity_t	barrel;
 	refEntity_t	flash;
 	refEntity_t	silencer;
 	refEntity_t	laser;
+        refEntity_t     vtrigger;
+        refEntity_t     vbolt;
+        refEntity_t     vclip;
+        refEntity_t     vcliprel;
+        refEntity_t     vejector;
+        refEntity_t     vflap;
+        refEntity_t     vbutt;
+        refEntity_t     veject;
+        refEntity_t     vmode;
+        refEntity_t     vcock;
+        refEntity_t     vbarrel;
+        refEntity_t     vpin;
+        refEntity_t     vring;
+        refEntity_t     vslide;
+        refEntity_t     vsliderel;
+
 	vec3_t		angles;
 	weapon_t	weaponNum;
 	weaponInfo_t	*weapon;
 	centity_t	*nonPredictedCent;
 	orientation_t	lerped;
-	
+
 	char			path[MAX_QPATH];
-	
+
 	weaponNum = cent->currentState.weapon;
 
 	CG_RegisterWeapon( weaponNum );
 	weapon = &cg_weapons[weaponNum];
+
+
+
+        memset( &viewmainModel, 0, sizeof( viewmainModel ) );
+        VectorCopy( parent->lightingOrigin, viewmainModel.lightingOrigin );
+        viewmainModel.shadowPlane = parent->shadowPlane;
+        viewmainModel.renderfx = parent->renderfx;
+        viewmainModel.hModel = weapon->vmainModel;
+
+
+
+        // add the hands
+
+        memset( &holds, 0, sizeof( holds ) );
+        VectorCopy( parent->lightingOrigin, holds.lightingOrigin );
+        holds.customShader = cgs.media.handsBlueSkin;
+        holds.shadowPlane = parent->shadowPlane;
+        holds.renderfx = parent->renderfx;
+        holds.hModel = weapon->holdsModel;
 
 	// add the weapon
 	memset( &gun, 0, sizeof( gun ) );
@@ -1132,10 +1329,16 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	gun.shadowPlane = parent->shadowPlane;
 	gun.renderfx = parent->renderfx;
 
-	// set custom shading for railgun refire rate
 
 
+        if(!ps)
 	gun.hModel = weapon->weaponModel;
+        if(ps){
+          gun.hModel = weapon->holdsModel;
+          if ( team ){
+            gun.customSkin = cgs.media.handsBlueSkin;
+          }else gun.customSkin = cgs.media.handsRedSkin;
+        }
 	if (!gun.hModel) {
 		return;
 	}
@@ -1152,48 +1355,78 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		}
 	}
 
+
+
+
 	trap_R_LerpTag(&lerped, parent->hModel, parent->oldframe, parent->frame,
 		1.0 - parent->backlerp, "tag_weapon");
 	VectorCopy(parent->origin, gun.origin);
 
+        if(!ps)
+        VectorMA(gun.origin, lerped.origin[0], parent->axis[0], gun.origin);
+
+
+        if(ps){
+
+
+
 	VectorMA(gun.origin, lerped.origin[0], parent->axis[0], gun.origin);
+        VectorMA(gun.origin, lerped.origin[1]-2, parent->axis[1], gun.origin);
+        VectorMA(gun.origin, lerped.origin[2], parent->axis[2], gun.origin);
+        }
 
 	// Make weapon appear left-handed for 2 and centered for 3
 	if(ps && cg_drawGun.integer == 2)
 		VectorMA(gun.origin, -lerped.origin[1], parent->axis[1], gun.origin);
 	else if(!ps || cg_drawGun.integer != 3)
        	VectorMA(gun.origin, lerped.origin[1], parent->axis[1], gun.origin);
-
+        if(!ps)
 	VectorMA(gun.origin, lerped.origin[2], parent->axis[2], gun.origin);
 
 	MatrixMultiply(lerped.axis, ((refEntity_t *)parent)->axis, gun.axis);
 	gun.backlerp = parent->backlerp;
-
+        CG_WeaponAnimation( cent, &gun.oldframe, &gun.frame, &gun.backlerp );
 	CG_AddWeaponWithPowerups( &gun, cent->currentState.powerups );
 
-	// add the spinning barrel
-	if ( weapon->barrelModel ) {
-		memset( &barrel, 0, sizeof( barrel ) );
-		VectorCopy( parent->lightingOrigin, barrel.lightingOrigin );
-		barrel.shadowPlane = parent->shadowPlane;
-		barrel.renderfx = parent->renderfx;
 
-		barrel.hModel = weapon->barrelModel;
-		angles[YAW] = 0;
-		angles[PITCH] = 0;
-		angles[ROLL] = CG_MachinegunSpinAngle( cent );
-		AnglesToAxis( angles, barrel.axis );
+        if ( ps ) {
 
-		CG_PositionRotatedEntityOnTag( &barrel, &gun, weapon->weaponModel, "tag_barrel" );
 
-		CG_AddWeaponWithPowerups( &barrel, cent->currentState.powerups );
-	}
-	
-	if ( weapon->silencerModel && weaponNum != WP_KNIFE  && weaponNum != WP_HK69 && weaponNum != WP_SPAS && weaponNum != WP_HE && ps->persistant[HI_SILENCER] ) {
+     //     memset( &holds, 0, sizeof( holds ) );
+     //     VectorCopy( parent->lightingOrigin, holds.lightingOrigin );
+
+       //   holds.shadowPlane = parent->shadowPlane;
+        //  holds.renderfx = parent->renderfx;
+        //  holds.hModel = weapon->holdsModel;
+
+       //   angles[YAW] = 0;
+       //   angles[PITCH] = 0;
+       //   angles[ROLL] = 0;
+       //   AnglesToAxis( angles, holds.axis );
+
+       //   CG_PositionRotatedEntityOnTag( &holds, &gun, weapon->handsModel, "tag_weapon" );
+
+       //   CG_AddWeaponWithPowerups( &holds, cent->currentState.powerups );
+
+
+          memset( &viewmainModel, 0, sizeof( viewmainModel ) );
+          VectorCopy( parent->lightingOrigin, viewmainModel.lightingOrigin );
+          viewmainModel.shadowPlane = parent->shadowPlane;
+          viewmainModel.renderfx = parent->renderfx;
+          viewmainModel.hModel = weapon->vmainModel;
+          angles[YAW] = 0;
+          angles[PITCH] = 0;
+          angles[ROLL] = 0;
+          AnglesToAxis( angles, viewmainModel.axis );
+          CG_PositionRotatedEntityOnTag( &viewmainModel, &gun, weapon->holdsModel, "tag_main" );
+          CG_AddWeaponWithPowerups( &viewmainModel, cent->currentState.powerups );
+
+        }
+
+        if ( ps && weapon->silencerModel && weaponNum != WP_KNIFE  && weaponNum != WP_HK69 && weaponNum != WP_SPAS && weaponNum != WP_HE && weaponNum != WP_SR8) {
 
 		memset( &silencer, 0, sizeof( silencer ) );
 		VectorCopy( parent->lightingOrigin, silencer.lightingOrigin );
-		//hold.customShader = cgs.media.handsBlueShader;
 		silencer.shadowPlane = parent->shadowPlane;
 		silencer.renderfx = parent->renderfx;
 		silencer.hModel = weapon->silencerModel;
@@ -1203,17 +1436,18 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		angles[ROLL] = 0;
 
 		AnglesToAxis( angles, silencer.axis );
-		CG_PositionRotatedEntityOnTag( &silencer, &gun, weapon->weaponModel , "tag_flash" );
-		
+		CG_PositionRotatedEntityOnTag( &silencer, &gun, weapon->holdsModel , "tag_flash" );
+
 
 		CG_AddWeaponWithPowerups( &silencer, cent->currentState.powerups );
 	}else weapon->flashSound[0] = weapon->normalSound[0];
-	
-	if ( weapon->laserModel && weaponNum != WP_KNIFE && weaponNum != WP_HK69 && weaponNum != WP_SPAS && weaponNum != WP_HE && ps->persistant[HI_LASER]) {
+
+        if ( ps && weapon->laserModel && weaponNum != WP_KNIFE && weaponNum != WP_HK69
+             && weaponNum != WP_SPAS && weaponNum != WP_HE && weaponNum != WP_SR8
+             && weaponNum != WP_AK103 && weaponNum != WP_NEGEV ) {
 
 		memset( &laser, 0, sizeof( laser ) );
 		VectorCopy( parent->lightingOrigin, laser.lightingOrigin );
-		//hold.customShader = cgs.media.handsBlueShader;
 		laser.shadowPlane = parent->shadowPlane;
 		laser.renderfx = parent->renderfx;
 		laser.hModel = weapon->laserModel;
@@ -1222,12 +1456,217 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		angles[ROLL] = 0;
 
 		AnglesToAxis( angles, laser.axis );
-		CG_PositionRotatedEntityOnTag( &laser, &gun, weapon->weaponModel , "tag_laser" );
-		
+                CG_PositionRotatedEntityOnTag( &laser, &gun, weapon->holdsModel , "tag_laser" );
+
 
 		CG_AddWeaponWithPowerups( &laser, cent->currentState.powerups );
 	}
 
+        if( ps){
+
+        if ( weapon->vtriggerModel) {
+
+          memset( &vtrigger, 0, sizeof( vtrigger ) );
+          VectorCopy( parent->lightingOrigin, vtrigger.lightingOrigin );
+                //hold.customShader = cgs.media.handsBlueShader;
+          vtrigger.shadowPlane = parent->shadowPlane;
+          vtrigger.renderfx = parent->renderfx;
+          vtrigger.hModel = weapon->vtriggerModel;
+          angles[YAW] = 0;
+          angles[PITCH] = 0;
+          angles[ROLL] = 0;
+          AnglesToAxis( angles, vtrigger.axis );
+          CG_PositionRotatedEntityOnTag( &vtrigger, &gun, weapon->holdsModel , "tag_trigger" );
+
+
+          CG_AddWeaponWithPowerups( &vtrigger, cent->currentState.powerups );
+          }
+
+          if ( weapon->vboltModel) {
+
+            memset( &vbolt, 0, sizeof( vbolt ) );
+            VectorCopy( parent->lightingOrigin, vbolt.lightingOrigin );
+            vbolt.shadowPlane = parent->shadowPlane;
+            vbolt.renderfx = parent->renderfx;
+            vbolt.hModel = weapon->vboltModel;
+            angles[YAW] = 0;
+            angles[PITCH] = 0;
+            angles[ROLL] = 0;
+            AnglesToAxis( angles, vbolt.axis );
+            CG_PositionRotatedEntityOnTag( &vbolt, &gun, weapon->holdsModel , "tag_bolt" );
+
+
+            CG_AddWeaponWithPowerups( &vbolt, cent->currentState.powerups );
+          }
+
+          if ( weapon->vflapModel) {
+
+            memset( &vflap, 0, sizeof( vflap ) );
+            VectorCopy( parent->lightingOrigin, vflap.lightingOrigin );
+            vflap.shadowPlane = parent->shadowPlane;
+            vflap.renderfx = parent->renderfx;
+            vflap.hModel = weapon->vflapModel;
+            angles[YAW] = 0;
+            angles[PITCH] = 0;
+            angles[ROLL] = 0;
+            AnglesToAxis( angles, vflap.axis );
+            CG_PositionRotatedEntityOnTag( &vflap, &gun, weapon->holdsModel , "tag_flap" );
+
+            CG_AddWeaponWithPowerups( &vflap, cent->currentState.powerups );
+          }
+
+          if ( weapon->vejectorModel) {
+
+            memset( &vejector, 0, sizeof( vejector ) );
+            VectorCopy( parent->lightingOrigin, vejector.lightingOrigin );
+            vejector.shadowPlane = parent->shadowPlane;
+            vejector.renderfx = parent->renderfx;
+            vejector.hModel = weapon->vejectorModel;
+            angles[YAW] = 0;
+            angles[PITCH] = 0;
+            angles[ROLL] = 0;
+            AnglesToAxis( angles, vejector.axis );
+            CG_PositionRotatedEntityOnTag( &vejector, &gun, weapon->holdsModel , "tag_ejector" );
+
+
+            CG_AddWeaponWithPowerups( &vejector, cent->currentState.powerups );
+          }
+
+          if ( weapon->vmodeModel) {
+
+            memset( &vmode, 0, sizeof( vmode ) );
+            VectorCopy( parent->lightingOrigin, vmode.lightingOrigin );
+            vmode.shadowPlane = parent->shadowPlane;
+            vmode.renderfx = parent->renderfx;
+            vmode.hModel = weapon->vmodeModel;
+            angles[YAW] = 0;
+            angles[PITCH] = 0;
+            angles[ROLL] = 0;
+            AnglesToAxis( angles, vmode.axis );
+            CG_PositionRotatedEntityOnTag( &vmode, &gun, weapon->holdsModel , "tag_mode" );
+
+
+            CG_AddWeaponWithPowerups( &vmode, cent->currentState.powerups );
+          }
+
+          if ( weapon->vbuttModel) {
+
+            memset( &vbutt, 0, sizeof( vbutt ) );
+            VectorCopy( parent->lightingOrigin, vbutt.lightingOrigin );
+            vbutt.shadowPlane = parent->shadowPlane;
+            vbutt.renderfx = parent->renderfx;
+            vbutt.hModel = weapon->vbuttModel;
+            CG_PositionEntityOnTag( &vbutt, &gun, weapon->holdsModel , "tag_butt" );
+
+
+            CG_AddWeaponWithPowerups( &vbutt, cent->currentState.powerups );
+          }
+
+          if ( weapon->vcockModel) {
+
+            memset( &vcock, 0, sizeof( vcock ) );
+            VectorCopy( parent->lightingOrigin, vcock.lightingOrigin );
+            vcock.shadowPlane = parent->shadowPlane;
+            vcock.renderfx = parent->renderfx;
+            vcock.hModel = weapon->vcockModel;
+            CG_PositionEntityOnTag( &vcock, &gun, weapon->holdsModel , "tag_cock" );
+
+
+            CG_AddWeaponWithPowerups( &vcock, cent->currentState.powerups );
+          }
+
+          if ( weapon->vbarrelModel) {
+
+            memset( &vbarrel, 0, sizeof( vbarrel ) );
+            VectorCopy( parent->lightingOrigin, vbarrel.lightingOrigin );
+            vbarrel.shadowPlane = parent->shadowPlane;
+            vbarrel.renderfx = parent->renderfx;
+            vbarrel.hModel = weapon->vbarrelModel;
+            angles[YAW] = 0;
+            angles[PITCH] = 0;
+            angles[ROLL] = 0;
+            AnglesToAxis( angles, vbarrel.axis );
+            CG_PositionRotatedEntityOnTag( &vbarrel, &gun, weapon->holdsModel , "tag_barrel" );
+
+
+            CG_AddWeaponWithPowerups( &vbarrel, cent->currentState.powerups );
+          }
+
+          if ( weapon->vclipModel) {
+
+            memset( &vclip, 0, sizeof( vclip ) );
+            VectorCopy( parent->lightingOrigin, vclip.lightingOrigin );
+            vclip.shadowPlane = parent->shadowPlane;
+            vclip.renderfx = parent->renderfx;
+            vclip.hModel = weapon->vclipModel;
+            angles[YAW] = 0;
+            angles[PITCH] = 0;
+            angles[ROLL] = 0;
+            AnglesToAxis( angles, vclip.axis );
+            CG_PositionRotatedEntityOnTag( &vclip, &gun, weapon->holdsModel , "tag_clip" );
+
+
+            CG_AddWeaponWithPowerups( &vclip, cent->currentState.powerups );
+          }
+
+
+          if ( weapon->vringModel) {
+
+            memset( &vring, 0, sizeof( vring ) );
+            VectorCopy( parent->lightingOrigin, vring.lightingOrigin );
+            vring.shadowPlane = parent->shadowPlane;
+            vring.renderfx = parent->renderfx;
+            vring.hModel = weapon->vringModel;
+            angles[YAW] = 0;
+            angles[PITCH] = 0;
+            angles[ROLL] = 0;
+            AnglesToAxis( angles, vring.axis );
+            CG_PositionRotatedEntityOnTag( &vring, &gun, weapon->holdsModel , "tag_ring" );
+
+
+            CG_AddWeaponWithPowerups( &vring, cent->currentState.powerups );
+          }
+
+          if ( weapon->vcliprelModel) {
+
+            memset( &vcliprel, 0, sizeof( vcliprel ) );
+            VectorCopy( parent->lightingOrigin, vcliprel.lightingOrigin );
+            vcliprel.shadowPlane = parent->shadowPlane;
+            vcliprel.renderfx = parent->renderfx;
+            vcliprel.hModel = weapon->vcliprelModel;
+            CG_PositionEntityOnTag( &vcliprel, &gun, weapon->holdsModel , "tag_cliprel" );
+
+
+            CG_AddWeaponWithPowerups( &vcliprel, cent->currentState.powerups );
+          }
+
+          if ( weapon->vslideModel) {
+
+            memset( &vslide, 0, sizeof( vslide ) );
+            VectorCopy( parent->lightingOrigin, vslide.lightingOrigin );
+            vslide.shadowPlane = parent->shadowPlane;
+            vslide.renderfx = parent->renderfx;
+            vslide.hModel = weapon->vslideModel;
+            CG_PositionEntityOnTag( &vslide, &gun, weapon->holdsModel , "tag_slide" );
+
+
+            CG_AddWeaponWithPowerups( &vslide, cent->currentState.powerups );
+          }
+
+          if ( weapon->vsliderelModel) {
+
+            memset( &vsliderel, 0, sizeof( vsliderel ) );
+            VectorCopy( parent->lightingOrigin, vsliderel.lightingOrigin );
+            vsliderel.shadowPlane = parent->shadowPlane;
+            vsliderel.renderfx = parent->renderfx;
+            vsliderel.hModel = weapon->vsliderelModel;
+            CG_PositionEntityOnTag( &vsliderel, &gun, weapon->holdsModel , "tag_sliderel" );
+
+
+            CG_AddWeaponWithPowerups( &vsliderel, cent->currentState.powerups );
+          }
+
+        }
 
 
 	// make sure we aren't looking at cg.predictedPlayerEntity for LG
@@ -1242,7 +1681,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 
 	// add the flash
 	if ( ( weaponNum == WP_KNIFE || weaponNum == WP_GRAPPLING_HOOK )
-		&& ( nonPredictedCent->currentState.eFlags & EF_FIRING ) ) 
+		&& ( nonPredictedCent->currentState.eFlags & EF_FIRING ) )
 	{
 		// continuous flash
 	} else {
@@ -1567,7 +2006,7 @@ void CG_Weapon_f( void ) {
 	}
 
 	cg.weaponSelectTime = cg.time;
-	
+
 	if ( ! ( cg.snap->ps.stats[STAT_WEAPONS] & ( 1 << num ) ) ) {
 		return;		// don't have the weapon
 	}
@@ -1724,12 +2163,12 @@ void CG_MissileHitWall( int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 	// create the explosion
 	//
 	if ( mod ) {
-		le = CG_MakeExplosion( origin, dir, 
+		le = CG_MakeExplosion( origin, dir,
 							   mod,	shader,
 							   duration, isSprite );
 		le->light = light;
 		VectorCopy( lightColor, le->lightColor );
-		
+
 	}
 
 	//
@@ -1738,7 +2177,7 @@ void CG_MissileHitWall( int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 	alphaFade = (mark == cgs.media.energyMarkShader);	// plasma fades alpha, all others fade color
 
 		CG_ImpactMark( mark, origin, dir, random()*360, 1,1,1,1, alphaFade, radius, qfalse );
-	
+
 }
 
 

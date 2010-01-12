@@ -160,7 +160,7 @@ typedef struct {
 	int				painTime;
 	int				painDirection;	// flip from 0 to 1
 	int				lightningFiring;
-
+        lerpFrame_t             weapon; //Xamis
 	// railgun trail spawning
 	vec3_t			railgunImpact;
 	qboolean		railgunFlash;
@@ -198,7 +198,7 @@ typedef struct centity_s {
 	int				errorTime;		// decay the error from this time
 	vec3_t			errorOrigin;
 	vec3_t			errorAngles;
-	
+
 	qboolean		extrapolated;	// false if origin / angles is an interpolation
 	vec3_t			rawOrigin;
 	vec3_t			rawAngles;
@@ -290,7 +290,7 @@ typedef struct localEntity_s {
 	leMarkType_t		leMarkType;		// mark to leave on fragment impact
 	leBounceSoundType_t	leBounceSoundType;
 
-	refEntity_t		refEntity;		
+	refEntity_t		refEntity;
 } localEntity_t;
 
 //======================================================================
@@ -395,13 +395,37 @@ typedef struct weaponInfo_s {
 	qboolean		registered;
 	gitem_t			*item;
 
-	qhandle_t		handsModel;			// the hands don't actually draw, they just position the weapon
-	qhandle_t		weaponModel;
+	qhandle_t		handsModel;	// the hands don't actually draw, they just position the weapon
+        qhandle_t               holdsModel;     //Xamis --THis actually draws the hands
+	qhandle_t		weaponModel;    //Xamis --World model
 	qhandle_t		barrelModel;
 	qhandle_t		flashModel;
 	qhandle_t		laserModel;
 	qhandle_t		silencerModel;
-	
+        qhandle_t               vmainModel;     //Xamis --first person model
+        qhandle_t               vboltModel;
+        qhandle_t               vtriggerModel;
+        qhandle_t               vclipModel;
+        qhandle_t               vcliprelModel;
+        qhandle_t               vejectorModel;
+        qhandle_t               vflapModel;
+        qhandle_t               vmodeModel;
+        qhandle_t               vcockModel;
+        qhandle_t               vslideModel;
+        qhandle_t               vsliderelModel;
+        qhandle_t               vsafetyModel;
+        qhandle_t               vpinModel;      // Xamis --pin for grenades
+        qhandle_t               vringModel;     // Xamis --ring for grenades
+        qhandle_t               vaimModel;      // Xamis --HK69
+        qhandle_t               vbuttModel;     // Xamis --HK69
+        qhandle_t               vbarrelModel;    // Xamis --HK69
+
+        qhandle_t               animModel;       // Xamis
+        qhandle_t               animHandModel;    // Xamis
+        animation_t             animations[MAX_WEAPON_ANIMATIONS];  // Xamis
+
+
+
 
 	vec3_t			weaponMidpoint;		// so it will rotate centered instead of by tag
 
@@ -409,7 +433,7 @@ typedef struct weaponInfo_s {
 	vec3_t			flashDlightColor;
 	sfxHandle_t		flashSound[4];		// fast firing weapons randomly choose
 	sfxHandle_t		silenceSound[4];
-	sfxHandle_t		normalSound[4];	
+	sfxHandle_t		normalSound[4];
 
 	qhandle_t		weaponIcon;
 	qhandle_t		ammoIcon;
@@ -431,7 +455,7 @@ typedef struct weaponInfo_s {
 	sfxHandle_t		readySound;
 	sfxHandle_t		firingSound;
 	qboolean		loopFireSound;
-	
+
 
 } weaponInfo_t;
 
@@ -468,12 +492,12 @@ typedef struct {
 // occurs, and they will have visible effects for #define STEP_TIME or whatever msec after
 
 #define MAX_PREDICTED_EVENTS	16
- 
+
 typedef struct {
 	int			clientFrame;		// incremented each frame
 
 	int			clientNum;
-	
+
 	qboolean	demoPlayback;
 	qboolean	levelShot;			// taking a level menu screenshot
 	int			deferredPlayerLoading;
@@ -662,16 +686,16 @@ typedef struct {
 	refEntity_t		testModelEntity;
 	char			testModelName[MAX_QPATH];
 	qboolean		testGun;
-	
-	
-	
+
+
+
 	//Xamis Invintory selection
-	
+
 	int			activatedInventory;
 	int			currentInventory;
 	int Inventory[INVENTORYITEMS][WP_NUM_WEAPONS];
 	int InventorySlot[INVENTORYITEMS];
-	
+
 
 } cg_t;
 
@@ -768,6 +792,8 @@ typedef struct {
 	qhandle_t	smokePuffShader;
 	qhandle_t	smokePuffRageProShader;
 	qhandle_t	shotgunSmokePuffShader;
+        qhandle_t       handsBlueSkin; //Xamis
+        qhandle_t       handsRedSkin; //Xamis
 	qhandle_t	plasmaBallShader;
 	qhandle_t	waterBubbleShader;
 	qhandle_t	bloodTrailShader;
@@ -834,6 +860,7 @@ typedef struct {
 	qhandle_t	medkitUsageModel;
 	qhandle_t	dustPuffShader;
 	qhandle_t	heartShader;
+
 #endif
 	qhandle_t	invulnerabilityPowerupModel;
 
@@ -891,10 +918,10 @@ typedef struct {
 	sfxHandle_t	loserSound;
 	sfxHandle_t	youSuckSound;
 #endif
-	
-	
+
+
 	sfxHandle_t	gibSound;
-	sfxHandle_t	glassSound;	
+	sfxHandle_t	glassSound;
 	sfxHandle_t	gibBounce1Sound;
 	sfxHandle_t	gibBounce2Sound;
 	sfxHandle_t	gibBounce3Sound;
@@ -907,7 +934,7 @@ typedef struct {
 	sfxHandle_t fallSound;
 	sfxHandle_t jumpPadSound;
 	sfxHandle_t ladderSound;
-	sfxHandle_t noammoSound;	
+	sfxHandle_t noammoSound;
 
 	sfxHandle_t oneMinuteSound;
 	sfxHandle_t fiveMinuteSound;
@@ -1266,11 +1293,11 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 void CG_AdjustFrom640( float *x, float *y, float *w, float *h );
 void CG_FillRect( float x, float y, float width, float height, const float *color );
 void CG_DrawPic( float x, float y, float width, float height, qhandle_t hShader );
-void CG_DrawString( float x, float y, const char *string, 
+void CG_DrawString( float x, float y, const char *string,
 				   float charWidth, float charHeight, const float *modulate );
 
 
-void CG_DrawStringExt( int x, int y, const char *string, const float *setColor, 
+void CG_DrawStringExt( int x, int y, const char *string, const float *setColor,
 		qboolean forceColor, qboolean shadow, int charWidth, int charHeight, int maxChars );
 void CG_DrawBigString( int x, int y, const char *s, float alpha );
 void CG_DrawBigStringColor( int x, int y, const char *s, vec4_t color );
@@ -1341,13 +1368,13 @@ void CG_ResetPlayerEntity( centity_t *cent );
 void CG_AddRefEntityWithPowerups( refEntity_t *ent, entityState_t *state, int team );
 void CG_NewClientInfo( int clientNum );
 sfxHandle_t	CG_CustomSound( int clientNum, const char *soundName );
-
+void CG_WeaponAnimation( centity_t *cent, int *weaponOld, int *weapon, float *weaponBackLerp );//Xamis
 //
 // cg_predict.c
 //
 void CG_BuildSolidList( void );
 int	CG_PointContents( const vec3_t point, int passEntityNum );
-void CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, 
+void CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
 					 int skipNumber, int mask );
 void CG_PredictPlayerState( void );
 void CG_LoadDeferredPlayers( void );
@@ -1370,12 +1397,12 @@ void CG_AddPacketEntities( void );
 void CG_Beam( centity_t *cent );
 void CG_AdjustPositionForMover( const vec3_t in, int moverNum, int fromTime, int toTime, vec3_t out );
 
-void CG_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent, 
+void CG_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
 							qhandle_t parentModel, char *tagName );
-void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *parent, 
+void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
 							qhandle_t parentModel, char *tagName );
 
-
+void CG_PositionWeaponOnTag( refEntity_t *entity, const refEntity_t *parent, qhandle_t parentModel, char *tagName );
 
 //
 // cg_weapons.c
@@ -1405,11 +1432,11 @@ void CG_DrawWeaponSelect( void );
 //
 void	CG_InitMarkPolys( void );
 void	CG_AddMarks( void );
-void	CG_ImpactMark( qhandle_t markShader, 
-				    const vec3_t origin, const vec3_t dir, 
-					float orientation, 
-				    float r, float g, float b, float a, 
-					qboolean alphaFade, 
+void	CG_ImpactMark( qhandle_t markShader,
+				    const vec3_t origin, const vec3_t dir,
+					float orientation,
+				    float r, float g, float b, float a,
+					qboolean alphaFade,
 					float radius, qboolean temporary );
 
 //
@@ -1422,8 +1449,8 @@ void	CG_AddLocalEntities( void );
 //
 // cg_effects.c
 //
-localEntity_t *CG_SmokePuff( const vec3_t p, 
-				   const vec3_t vel, 
+localEntity_t *CG_SmokePuff( const vec3_t p,
+				   const vec3_t vel,
 				   float radius,
 				   float r, float g, float b, float a,
 				   float duration,
@@ -1565,7 +1592,7 @@ void		trap_CM_TransformedBoxTrace( trace_t *results, const vec3_t start, const v
 					  const vec3_t origin, const vec3_t angles );
 
 // Returns the projection of a polygon onto the solid brushes in the world
-int			trap_CM_MarkFragments( int numPoints, const vec3_t *points, 
+int			trap_CM_MarkFragments( int numPoints, const vec3_t *points,
 			const vec3_t projection,
 			int maxPoints, vec3_t pointBuffer,
 			int maxFragments, markFragment_t *fragmentBuffer );
@@ -1612,10 +1639,10 @@ void		trap_R_AddLightToScene( const vec3_t org, float intensity, float r, float 
 int			trap_R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir );
 void		trap_R_RenderScene( const refdef_t *fd );
 void		trap_R_SetColor( const float *rgba );	// NULL = 1,1,1,1
-void		trap_R_DrawStretchPic( float x, float y, float w, float h, 
+void		trap_R_DrawStretchPic( float x, float y, float w, float h,
 			float s1, float t1, float s2, float t2, qhandle_t hShader );
 void		trap_R_ModelBounds( clipHandle_t model, vec3_t mins, vec3_t maxs );
-int			trap_R_LerpTag( orientation_t *tag, clipHandle_t mod, int startFrame, int endFrame, 
+int			trap_R_LerpTag( orientation_t *tag, clipHandle_t mod, int startFrame, int endFrame,
 					   float frac, const char *tagName );
 void		trap_R_RemapShader( const char *oldShader, const char *newShader, const char *timeOffset );
 
@@ -1647,7 +1674,7 @@ qboolean	trap_GetServerCommand( int serverCommandNumber );
 // this will always be at least one higher than the number in the current
 // snapshot, and it may be quite a few higher if it is a fast computer on
 // a lagged connection
-int			trap_GetCurrentCmdNumber( void );	
+int			trap_GetCurrentCmdNumber( void );
 
 qboolean	trap_GetUserCmd( int cmdNumber, usercmd_t *ucmd );
 
