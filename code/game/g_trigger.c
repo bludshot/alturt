@@ -48,6 +48,11 @@ void multi_trigger( gentity_t *ent, gentity_t *activator ) {
 		return;		// can't retrigger until the wait is over
 	}
 
+        if ( ent->active ) {
+          G_Printf( "trigger active\n");      // can't retrigger until the wait is over
+          ent->wait++;
+        }
+
 	if ( activator->client ) {
 		if ( ( ent->spawnflags & 1 ) &&
 			activator->client->sess.sessionTeam != TEAM_RED ) {
@@ -71,6 +76,8 @@ void multi_trigger( gentity_t *ent, gentity_t *activator ) {
 		ent->nextthink = level.time + FRAMETIME;
 		ent->think = G_FreeEntity;
 	}
+
+
 }
 
 void Use_Multi( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
@@ -94,9 +101,10 @@ so, the basic time between firing is a random time between
 void SP_trigger_multiple( gentity_t *ent ) {
 	G_SpawnFloat( "wait", "0.5", &ent->wait );
 	G_SpawnFloat( "random", "0", &ent->random );
-	
-	if ( ent->wait == 0.25){
-		ent->wait+=5;
+
+	if ( ent->wait == 0.25){ //This is such a hack
+
+		ent->active = qtrue;
 	}
 
 	if ( ent->random >= ent->wait && ent->wait >= 0 ) {
@@ -282,7 +290,7 @@ void trigger_teleporter_touch (gentity_t *self, gentity_t *other, trace_t *trace
 		return;
 	}
 	// Spectators only?
-	if ( ( self->spawnflags & 1 ) && 
+	if ( ( self->spawnflags & 1 ) &&
 		other->client->sess.sessionTeam != TEAM_SPECTATOR ) {
 		return;
 	}

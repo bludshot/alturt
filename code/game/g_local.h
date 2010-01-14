@@ -102,13 +102,13 @@ struct gentity_s {
 	char		*model;
 	char		*model2;
 	int			freetime;			// level.time when the object was freed
-	
+
 	int			eventTime;			// events will be cleared EVENT_VALID_MSEC after set
 	qboolean	freeAfterEvent;
 	qboolean	unlinkAfterEvent;
 
 	qboolean	physicsObject;		// if true, it can be pushed by movers and fall off edges
-									// all game items are physicsObjects, 
+									// all game items are physicsObjects,
 	float		physicsBounce;		// 1.0 = continuous bounce, 0.0 = no bounce
 	int			clipmask;			// brushes with this content value will be collided against
 									// when moving.  items and corpses do not collide against
@@ -159,7 +159,7 @@ struct gentity_s {
 	int			health;
 	int			stamina; //Xamis
 	int			CloseWhenIdle;//Xamis
-	int			trigger_only; //Xamis 
+	int			trigger_only; //Xamis
 
 
 	qboolean	takedamage;
@@ -191,7 +191,7 @@ struct gentity_s {
 	// timing variables
 	float		wait;
 	float		random;
-
+        qboolean        active;
 	gitem_t		*item;			// for bonus items
 };
 
@@ -257,7 +257,7 @@ typedef struct {
 // client data that stays across multiple respawns, but is cleared
 // on each level change or team change at ClientBegin()
 typedef struct {
-	clientConnected_t	connected;	
+	clientConnected_t	connected;
 	usercmd_t	cmd;				// we would lose angles if not persistant
 	qboolean	localClient;		// true if "ip" info key is "localhost"
 	qboolean	initialSpawn;		// the first spawn should be at a cool location
@@ -271,14 +271,14 @@ typedef struct {
 	int			voteCount;			// to prevent people from constantly calling votes
 	int			teamVoteCount;		// to prevent people from constantly calling votes
 	qboolean	teamInfo;			// send team overlay updates?
-	int		weapon_primary;
-	int		weapon_secondary;
+	//int		weapon_primary;
+	//int		weapon_secondary;
 	int			playerClass; //blud 3rd try at player class (it works)
 
-	
-	
-	
-	
+
+
+
+
 } clientPersistant_t;
 
 
@@ -350,6 +350,8 @@ struct gclient_s {
 #endif
 
 	char		*areabits;
+
+        int             ammoclip[MAX_WEAPONS];//Xamis
 };
 
 
@@ -999,4 +1001,8 @@ void	trap_BotResetWeaponState(int weaponstate);
 int		trap_GeneticParentsAndChildSelection(int numranks, float *ranks, int *parent1, int *parent2, int *child);
 
 void	trap_SnapVector( float *v );
+
+//Xamis
+void Cmd_Reload( gentity_t *ent );
+int RoundCount( int w );
 

@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 //
-// g_weapon.c 
+// g_weapon.c
 // perform the server side effects of a weapon firing
 
 #include "g_local.h"
@@ -133,7 +133,7 @@ SnapVectorTowards
 
 Round a vector to integers for more efficient network
 transmission, but make sure that it rounds towards a given point
-rather than blindly truncating.  This prevents it from truncating 
+rather than blindly truncating.  This prevents it from truncating
 into a wall.
 ======================
 */
@@ -384,7 +384,7 @@ void weapon_grenade_throw (gentity_t *ent) {
 	start[2] += ent->client->ps.viewheight+8.0f;
 
 	forward[2] += 0.1f;
-	
+
 	VectorNormalize( forward );
 
 	m = throw_grenade (ent, start, forward);
@@ -719,6 +719,122 @@ void CalcMuzzlePointOrigin ( gentity_t *ent, vec3_t origin, vec3_t forward, vec3
 	SnapVector( muzzlePoint );
 }
 
+/*
+==================
+  RoundCount for Cmd_Reload --Xamis
+==================
+*/
+int RoundCount( int w )        {
+        //How much each clip holds
+  switch ( w ){
+    case WP_M4:
+    case WP_MP5K:
+    case WP_UMP45:
+    case WP_AK103:
+    case WP_G36:
+    case WP_LR300:
+      return 30;
+      break;
+    case WP_SPAS:
+      return 8;
+      break;
+    case WP_NEGEV:
+      return 80;
+      break;
+    case WP_SR8:
+      return 5;
+      break;
+    case WP_PSG1:
+      return 10;
+      break;
+    default:
+      return 15;
+  }
+
+}
+
+
+/*
+==================
+  ReloadTime for Cmd_Reload  --Xamis
+==================
+*/
+int ReloadTime( int w )        {
+  switch ( w ){
+    case WP_AK103:
+      return 3450;
+      break;
+    case WP_MP5K:
+      return 2570;
+      break;
+    case WP_UMP45:
+      return 2740;
+    case WP_M4:
+    case WP_LR300:
+      return 2530;
+      break;
+    case WP_G36:
+      return 2400;
+      break;
+    case WP_SPAS:
+      return 1800;
+      break;
+    case WP_SR8:
+      return 1510;
+      break;
+    case WP_PSG1:
+      return 3000;
+      break;
+    case WP_DEAGLE:
+      return 3300;
+      break;
+    case WP_BERETTA:
+      return 1700;
+      break;
+    case WP_NEGEV:
+      return 2000;
+      break;
+    default:
+      return 3000;
+  }
+
+}
+
+/*
+==================
+  Cmd_Reload
+==================
+*/
+void Cmd_Reload( gentity_t *ent )       {
+  int weapon;
+  int amt;
+  int ammotoadd;
+
+  weapon = ent->client->ps.weapon;
+  amt = RoundCount(weapon);
+  ammotoadd = amt;
+  if (ent->client->ps.ammo[weapon] == 0) return;
+  ent->client->ps.weaponstate = WEAPON_RELOADING;
+
+  ent->client->ps.weaponTime = ReloadTime( weapon );
+  PM_StartWeaponAnim( WPN_RELOAD );
+
+        //We can only add ammo(to weapon) what we need
+  if (ent->client->ammoclip[weapon] > 0)  {
+    ammotoadd -= ent->client->ammoclip[weapon];
+  }
+
+        //We can only remove (from bag) what ammo we have
+  if (ent->client->ps.ammo[weapon] > 0)   {
+  ent->client->ps.ammo[weapon]--;
+  }
+
+        //Add the ammo to weapon
+  ent->client->ammoclip[weapon] += ammotoadd;
+
+
+
+}
 
 
 /*
@@ -727,6 +843,12 @@ FireWeapon
 ===============
 */
 void FireWeapon( gentity_t *ent ) {
+
+
+  if ( ent->client->ammoclip[ ent->client->ps.weapon ] != -1 ) {
+    ent->client->ammoclip[ ent->client->ps.weapon ]--;
+  }
+
 	if (ent->client->ps.powerups[PW_QUAD] ) {
 		s_quadFactor = g_quadfactor.value;
 	} else {
@@ -739,7 +861,7 @@ void FireWeapon( gentity_t *ent ) {
 #endif
 
 	// track shots taken for accuracy tracking.  Grapple is not a weapon and gauntet is just not tracked
-	if( ent->s.weapon != WP_GRAPPLING_HOOK && ent->s.weapon != WP_KNIFE ) {
+	if(  ent->s.weapon != WP_KNIFE ) {
 
 	}
 

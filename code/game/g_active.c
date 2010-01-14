@@ -140,7 +140,7 @@ void P_WorldEffects( gentity_t *ent ) {
 				// don't play a normal pain sound
 				ent->pain_debounce_time = level.time + 200;
 
-				G_Damage (ent, NULL, NULL, NULL, NULL, 
+				G_Damage (ent, NULL, NULL, NULL, NULL,
 					ent->damage, DAMAGE_NO_ARMOR, MOD_WATER);
 			}
 		}
@@ -152,7 +152,7 @@ void P_WorldEffects( gentity_t *ent ) {
 	//
 	// check for sizzle damage (move to pmove?)
 	//
-	if (waterlevel && 
+	if (waterlevel &&
 		(ent->watertype&(CONTENTS_LAVA|CONTENTS_SLIME)) ) {
 		if (ent->health > 0
 			&& ent->pain_debounce_time <= level.time	) {
@@ -161,12 +161,12 @@ void P_WorldEffects( gentity_t *ent ) {
 				G_AddEvent( ent, EV_POWERUP_BATTLESUIT, 0 );
 			} else {
 				if (ent->watertype & CONTENTS_LAVA) {
-					G_Damage (ent, NULL, NULL, NULL, NULL, 
+					G_Damage (ent, NULL, NULL, NULL, NULL,
 						30*waterlevel, 0, MOD_LAVA);
 				}
 
 				if (ent->watertype & CONTENTS_SLIME) {
-					G_Damage (ent, NULL, NULL, NULL, NULL, 
+					G_Damage (ent, NULL, NULL, NULL, NULL,
 						10*waterlevel, 0, MOD_SLIME);
 				}
 			}
@@ -374,8 +374,8 @@ qboolean ClientInactivityTimer( gclient_t *client ) {
 		// gameplay, everyone isn't kicked
 		client->inactivityTime = level.time + 60 * 1000;
 		client->inactivityWarning = qfalse;
-	} else if ( client->pers.cmd.forwardmove || 
-		client->pers.cmd.rightmove || 
+	} else if ( client->pers.cmd.forwardmove ||
+		client->pers.cmd.rightmove ||
 		client->pers.cmd.upmove ||
 		(client->pers.cmd.buttons & BUTTON_ATTACK) ) {
 		client->inactivityTime = level.time + g_inactivity.integer * 1000;
@@ -412,7 +412,7 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
 
 	while ( client->timeResidual >= 1000 ) {
 		client->timeResidual -= 1000;
-		
+
 	ucmd = &ent->client->pers.cmd;   // ---Xamis
 
 
@@ -445,8 +445,8 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
 //--Xamis   Sprinting/Stamina
 
 		if ( !( ucmd->buttons & BUTTON_SPRINTING  ) ) {
-			if ( ent->stamina < ent->health*3 ) { 
-				ent->stamina += 35; 
+			if ( ent->stamina < ent->health*3 ) {
+				ent->stamina += 35;
 			}
 			if ( ent->stamina > ent->health*3 ) {
 				ent->stamina = ent->health*3 ;
@@ -454,9 +454,9 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
 			if ( ent->stamina > client->ps.stats[STAT_MAX_STAMINA] ) {
 				ent->stamina = client->ps.stats[STAT_MAX_STAMINA] ;
 			}
-		} 
-		
-		
+		}
+
+
 		if ( client->ps.powerups[PW_REGEN] ) {
 			if ( ent->health < client->ps.stats[STAT_MAX_HEALTH]) {
 				ent->health += 15;
@@ -761,7 +761,7 @@ void ClientThink_real( gentity_t *ent ) {
 	if ( ucmd->serverTime < level.time - 1000 ) {
 		ucmd->serverTime = level.time - 1000;
 //		G_Printf("serverTime >>>>>\n" );
-	} 
+	}
 
 	msec = ucmd->serverTime - client->ps.commandTime;
 	// following others may result in bad times, but we still want
@@ -832,23 +832,24 @@ void ClientThink_real( gentity_t *ent ) {
 	}
 	else
 #endif
-		
-		
-		
-		
-		
-		// -- Xamis               
+
+
+                // -- Xamis
+
+
+
+		// -- Xamis
 	if( ucmd->buttons & BUTTON_WALKING || client->ps.pm_flags & PMF_DUCKED ){ //if walking/ducking do nothing!
-		}else if  ( ent->stamina > 0 && ucmd->buttons & BUTTON_SPRINTING && pm.xyspeed > 5 ) { 
+		}else if  ( ent->stamina > 0 && ucmd->buttons & BUTTON_SPRINTING && pm.xyspeed > 5 ) {
 			client->ps.speed *= 1.5;
 			ent->stamina--;
                 //if (ent->stamina <= client->ps.stats[STAT_MAX_STAMINA] *.2 ) {(G_AddEvent( ent, EV_PANTING, 0 );} //todo
 		}
 
-		
-			// -- Xamis   Crude attempt at powerslide           
-		/* 
-	if( client->ps.pm_flags & PMF_DUCKED && pm.xyspeed > 250){ 
+
+			// -- Xamis   Crude attempt at powerslide
+		/*
+	if( client->ps.pm_flags & PMF_DUCKED && pm.xyspeed > 250){
 
 			float temp_velocity;
 			float slide_velocity;
@@ -856,21 +857,21 @@ void ClientThink_real( gentity_t *ent ) {
 			slide_velocity = client->ps.velocity[2] -= 92;
 			client->ps.velocity[2]= slide_velocity;
 			//client->ps.velocity[2] = temp_velocity;
-			
+
 		}
 
 		*/
-		
-		
+
+
 	if ( client->ps.powerups[PW_HASTE] ) {
 		client->ps.speed *= 1.3;
 	}
 
 	// Let go of the hook if we aren't firing
-	if ( client->ps.weapon == WP_GRAPPLING_HOOK &&
-		client->hook && !( ucmd->buttons & BUTTON_ATTACK ) ) {
-		Weapon_HookFree(client->hook);
-	}
+//	if ( client->ps.weapon == WP_GRAPPLING_HOOK &&
+//		client->hook && !( ucmd->buttons & BUTTON_ATTACK ) ) {
+//		Weapon_HookFree(client->hook);
+//	}
 
 	// set up for pmove
 	oldEventSequence = client->ps.eventSequence;
@@ -983,17 +984,25 @@ void ClientThink_real( gentity_t *ent ) {
 	client->buttons = ucmd->buttons;
 	client->latched_buttons |= client->buttons & ~client->oldbuttons;
 
+        if ( ( client->buttons & BUTTON_RELOAD && !(client->oldbuttons & BUTTON_RELOAD) ) )
+          Cmd_Reload( ent );
+
+        if ( ( client->buttons & BUTTON_WP_MODE && !(client->oldbuttons & BUTTON_WP_MODE) ) ){
+
+        }
+
+
 	// check for respawning
 	if ( client->ps.stats[STAT_HEALTH] <= 0 ) {
 		// wait for the attack button to be pressed
 		if ( level.time > client->respawnTime ) {
 			// forcerespawn is to prevent users from waiting out powerups
-			if ( g_forcerespawn.integer > 0 && 
+			if ( g_forcerespawn.integer > 0 &&
 				( level.time - client->respawnTime ) > g_forcerespawn.integer * 1000 ) {
 				respawn( ent );
 				return;
 			}
-		
+
 			// pressing attack or use is the normal respawn method
 			if ( ucmd->buttons & ( BUTTON_ATTACK | BUTTON_USE_HOLDABLE ) ) {
 				respawn( ent );
@@ -1161,7 +1170,7 @@ void ClientEndFrame( gentity_t *ent ) {
 
 	ent->client->ps.stats[STAT_HEALTH] = ent->health;	// FIXME: get rid of ent->health...
 	ent->client->ps.stats[STAT_STAMINA] = ent->stamina; //Xamis
-
+        ent->client->ps.stats[STAT_ROUNDS] = ent->client->ammoclip[ent->client->ps.weapon];//Xamis
 	G_SetClientSound (ent);
 
 	// set the latest infor

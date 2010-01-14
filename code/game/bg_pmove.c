@@ -1711,9 +1711,8 @@ static int PM_WeaponTime( int weapon )
 	case WP_KNIFE:
 		addTime = 400;
 		break;
+                case WP_MP5K:
 		case WP_M4:
-			addTime = 100;
-			break;
 		case WP_LR300:
 			addTime = 100;
 			break;
@@ -1729,9 +1728,6 @@ static int PM_WeaponTime( int weapon )
 		case WP_SR8:
 			addTime = 2500; //blud changed from 1500
 			break;
-		case WP_MP5K:
-			addTime = 100; //blud changed from 65
-			break;
 		case WP_UMP45:
 			addTime = 150;
 			break;
@@ -1742,21 +1738,16 @@ static int PM_WeaponTime( int weapon )
 			addTime = 300;
 			break;
 		case WP_NEGEV:
-			addTime = 125; //blud changed from 100
-			break;
 		case WP_AK103:
 			addTime = 125; //blud changed from 150
 			break;
 		case WP_HK69:
 			addTime = 3000;
 			break;
-	case WP_HE:
-	//case WP_SMOKE:
+	        case WP_HE:
+	      //case WP_SMOKE:
 			addTime = 3000;
 			break;
-	case WP_GRAPPLING_HOOK:
-		addTime = 400;
-		break;
 	}return addTime;
 }
 
@@ -1767,21 +1758,13 @@ static void PM_Weapon( void ) {
 	if ( pm->ps->pm_flags & PMF_RESPAWNED ) {
 		return;
 	}
-
-
 	if ( pm->ps->pm_type == PM_SPECTATOR || pm->ps->pm_type == PM_NOCLIP ) {
 		return;
 	}
-
-
-
 	if ( pm->ps->stats[STAT_HEALTH] <= 0 ) {
 		pm->ps->weapon = WP_NONE;
 		return;
 	}
-
-
-
 	if ( pm->cmd.buttons & BUTTON_USE_HOLDABLE ) {
 	if ( ! ( pm->ps->pm_flags & PMF_USE_ITEM_HELD ) ) {
 	if ( bg_itemlist[pm->ps->stats[STAT_HOLDABLE_ITEM]].giTag == HI_MEDKIT
@@ -1807,6 +1790,13 @@ static void PM_Weapon( void ) {
         //	G_Printf("dropping: %i\n", pm->ps->weaponTime );
 		return;
 	}
+//If were in the process of reloading we can't fire  --Xamis
+        if ( pm->ps->weaponstate == WEAPON_RELOADING && pm->ps->weaponTime > 0 ) {
+          return;
+ //If were in finished reloading, we're ready to fire, so set weaponstate
+        }if( pm->ps->weaponstate == WEAPON_RELOADING && pm->ps->weaponTime == 0 ) {
+          pm->ps->weaponstate = WEAPON_READY;
+        }
 
 	if ( pm->ps->weaponTime > 0 ) {
 		return;
@@ -1871,26 +1861,30 @@ static void PM_Weapon( void ) {
 		return;
 
     				// check for out of ammo
-				if ( pm->ps->ammo[pm->ps->weapon] <= 0) {
-				   PM_AddEvent( EV_NOAMMO );
-                                   pm->ps->weaponTime = 550;
-				   pm->ps->weaponstate = WEAPON_READY;
-                                   PM_ContinueWeaponAnim( WPN_IDLE );
-				   return;
-                                }else PM_StartTorsoAnim( TORSO_ATTACK );
+        if ( pm->ps->stats[STAT_ROUNDS] <= 0) {
+	   PM_AddEvent( EV_NOAMMO );
+           pm->ps->weaponTime = 550;
+	   pm->ps->weaponstate = WEAPON_READY;
+           PM_ContinueWeaponAnim( WPN_IDLE );
+	   return;
+           }else PM_StartTorsoAnim( TORSO_ATTACK );
 
                            // QUARANTINE - Weapon animations
 // This should change pm->ps->generic1 so we can animate
                            PM_StartWeaponAnim( WPN_FIRE );
 
+
 			   pm->ps->weaponstate = WEAPON_FIRING;
 			   pm->ps->weaponTime = PM_WeaponTime(pm->ps->weapon );
 			   PM_AddEvent( EV_FIRE_WEAPON );
+                           if (pm->ps->weapon == WP_SR8 ){
+                           PM_StartWeaponAnim( WPN_BOLT);
+}
 			   if ( pm->ps->weapon == WP_DEAGLE || pm->ps->weapon == WP_BERETTA || pm->ps->weapon == WP_PSG1 || pm->ps->weapon == WP_SR8)
 				   {
 					   pm->ps->pm_flags |= PMF_SINGLE_SHOT;
 
-				   }pm->ps->ammo[pm->ps->weapon]--;
+				   }//pm->ps->ammo[pm->ps->weapon]--;
 
 }
 
@@ -1907,38 +1901,7 @@ static void PM_Animate( void ) {
 			pm->ps->torsoTimer = TIMER_GESTURE;
 			PM_AddEvent( EV_TAUNT );
 		}
-#ifdef MISSIONPACK
-	} else if ( pm->cmd.buttons & BUTTON_GETFLAG ) {
-		if ( pm->ps->torsoTimer == 0 ) {
-			PM_StartTorsoAnim( TORSO_GETFLAG );
-			pm->ps->torsoTimer = 600;	//TIMER_GESTURE;
-		}
-	} else if ( pm->cmd.buttons & BUTTON_GUARDBASE ) {
-		if ( pm->ps->torsoTimer == 0 ) {
-			PM_StartTorsoAnim( TORSO_GUARDBASE );
-			pm->ps->torsoTimer = 600;	//TIMER_GESTURE;
-		}
-	} else if ( pm->cmd.buttons & BUTTON_PATROL ) {
-		if ( pm->ps->torsoTimer == 0 ) {
-			PM_StartTorsoAnim( TORSO_PATROL );
-			pm->ps->torsoTimer = 600;	//TIMER_GESTURE;
-		}
-	} else if ( pm->cmd.buttons & BUTTON_FOLLOWME ) {
-		if ( pm->ps->torsoTimer == 0 ) {
-			PM_StartTorsoAnim( TORSO_FOLLOWME );
-			pm->ps->torsoTimer = 600;	//TIMER_GESTURE;
-		}
-	} else if ( pm->cmd.buttons & BUTTON_AFFIRMATIVE ) {
-		if ( pm->ps->torsoTimer == 0 ) {
-			PM_StartTorsoAnim( TORSO_AFFIRMATIVE);
-			pm->ps->torsoTimer = 600;	//TIMER_GESTURE;
-		}
-	} else if ( pm->cmd.buttons & BUTTON_NEGATIVE ) {
-		if ( pm->ps->torsoTimer == 0 ) {
-			PM_StartTorsoAnim( TORSO_NEGATIVE );
-			pm->ps->torsoTimer = 600;	//TIMER_GESTURE;
-		}
-#endif
+
 	}
 }
 

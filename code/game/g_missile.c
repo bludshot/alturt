@@ -298,7 +298,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 				velocity[2] = 1;	// stepped on a grenade
 			}
 			G_Damage (other, ent, &g_entities[ent->r.ownerNum], velocity,
-				ent->s.origin, ent->damage, 
+				ent->s.origin, ent->damage,
 				0, ent->methodOfDeath);
 		}
 	}
@@ -373,7 +373,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 
 	// splash damage (doesn't apply to person directly hit)
 	if ( ent->splashDamage ) {
-		if( G_RadiusDamage( trace->endpos, ent->parent, ent->splashDamage, ent->splashRadius, 
+		if( G_RadiusDamage( trace->endpos, ent->parent, ent->splashDamage, ent->splashRadius,
 			other, ent->splashMethodOfDeath ) ) {
 			if( !hitClient ) {
 				g_entities[ent->r.ownerNum].client->accuracy_hits++;
@@ -447,13 +447,13 @@ throw_grenade
 */
 gentity_t *throw_grenade (gentity_t *self, vec3_t start, vec3_t dir) {
 	gentity_t	*bolt;
-	
+
 
 	VectorNormalize (dir);
 
 	bolt = G_Spawn();
 	bolt->classname = "ut_weapon_grenade_he";
-	bolt->nextthink = level.time + 3000; 
+	bolt->nextthink = level.time + 3000;
 	bolt->think = G_ExplodeMissile;
 	bolt->s.eType = ET_MISSILE;
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
@@ -531,7 +531,7 @@ fire_grapple
 =================
 */
 gentity_t *fire_grapple (gentity_t *self, vec3_t start, vec3_t dir) {
-	gentity_t	*hook;
+/*	gentity_t	*hook;
 
 	VectorNormalize (dir);
 
@@ -559,6 +559,7 @@ gentity_t *fire_grapple (gentity_t *self, vec3_t start, vec3_t dir) {
 	self->client->hook = hook;
 
 	return hook;
+  */
 }
 
 

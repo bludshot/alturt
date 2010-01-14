@@ -103,7 +103,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 typedef enum {
 	GT_FFA,				// free for all
 	GT_SINGLE_PLAYER,	// single player ffa
- 	GT_UNKNOWN,
+        GT_TOURNAMENT,
 
 	//-- team games go after this --
 	GT_TEAM,			// team deathmatch
@@ -143,7 +143,8 @@ typedef enum {
 	WEAPON_RAISING,
 	WEAPON_DROPPING,
 	WEAPON_FIRING,
-    WEAPON_FIRING2
+    WEAPON_FIRING2,
+    WEAPON_RELOADING
 } weaponstate_t;
 
 
@@ -218,6 +219,7 @@ void Pmove (pmove_t *pmove);
 typedef enum {
 	STAT_HEALTH,
 	STAT_STAMINA, //Xamis
+        STAT_ROUNDS,
 	STAT_HOLDABLE_ITEM,
 #ifdef MISSIONPACK
 	STAT_PERSISTANT_POWERUP,
@@ -356,7 +358,7 @@ typedef enum {
  WP_SR8, //14
  WP_HE,
  //WP_SMOKE,
- WP_GRAPPLING_HOOK,
+// WP_GRAPPLING_HOOK,
 
 
 	WP_NUM_WEAPONS
@@ -574,6 +576,7 @@ typedef enum {
   WPN_FIRE,
   WPN_READY_FIRE_IDLE,
   WPN_RELOAD,
+  WPN_BOLT,
 
   MAX_WEAPON_ANIMATIONS
 } wpAnimNumber_t;

@@ -106,7 +106,7 @@ void QDECL PrintMsg( gentity_t *ent, const char *fmt, ... ) {
 	char		msg[1024];
 	va_list		argptr;
 	char		*p;
-	
+
 	va_start (argptr,fmt);
 	if (Q_vsnprintf (msg, sizeof(msg), fmt, argptr) > sizeof(msg)) {
 		G_Error ( "PrintMsg overrun" );
@@ -310,7 +310,7 @@ void Team_FragBonuses(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker
 
 	if (g_gametype.integer == GT_BOMB) {
 		enemy_flag_pw = PW_NEUTRALFLAG;
-	} 
+	}
 
 	// did the attacker frag the flag carrier?
 	tokens = 0;
@@ -396,7 +396,7 @@ void Team_FragBonuses(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker
 
 	// we have to find the flag and carrier entities
 
-#ifdef MISSIONPACK	
+#ifdef MISSIONPACK
 	if( g_gametype.integer == GT_BOMB ) {
 		// find the team obelisk
 		switch (attacker->client->sess.sessionTeam) {
@@ -405,11 +405,11 @@ void Team_FragBonuses(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker
 			break;
 		case TEAM_BLUE:
 			c = "team_blueobelisk";
-			break;		
+			break;
 		default:
 			return;
 		}
-		
+
 	} else if (g_gametype.integer == GT_BOMB ) {
 		// find the center obelisk
 		c = "team_neutralobelisk";
@@ -422,7 +422,7 @@ void Team_FragBonuses(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker
 		break;
 	case TEAM_BLUE:
 		c = "team_CTF_blueflag";
-		break;		
+		break;
 	default:
 		return;
 	}
@@ -718,7 +718,7 @@ int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, int team ) {
 
 	if ( ent->flags & FL_DROPPED_ITEM ) {
 		// hey, its not home.  return it by teleporting it back
-		PrintMsg( NULL, "%s" S_COLOR_WHITE " returned the %s flag!\n", 
+		PrintMsg( NULL, "%s" S_COLOR_WHITE " returned the %s flag!\n",
 			cl->pers.netname, TeamName(team));
 		AddScore(other, ent->r.currentOrigin, CTF_RECOVERY_BONUS);
 		other->client->pers.teamState.flagrecovery++;
@@ -783,7 +783,7 @@ int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, int team ) {
 			if (player != other)
 				AddScore(player, ent->r.currentOrigin, CTF_TEAM_BONUS);
 			// award extra points for capture assists
-			if (player->client->pers.teamState.lastreturnedflag + 
+			if (player->client->pers.teamState.lastreturnedflag +
 				CTF_RETURN_FLAG_ASSIST_TIMEOUT > level.time) {
 				AddScore (player, ent->r.currentOrigin, CTF_RETURN_FLAG_ASSIST_BONUS);
 				other->client->pers.teamState.assists++;
@@ -794,7 +794,7 @@ int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, int team ) {
 				player->client->ps.eFlags |= EF_AWARD_ASSIST;
 				player->client->rewardTime = level.time + REWARD_SPRITE_TIME;
 
-			} else if (player->client->pers.teamState.lastfraggedcarrier + 
+			} else if (player->client->pers.teamState.lastfraggedcarrier +
 				CTF_FRAG_CARRIER_ASSIST_TIMEOUT > level.time) {
 				AddScore(player, ent->r.currentOrigin, CTF_FRAG_CARRIER_ASSIST_BONUS);
 				other->client->pers.teamState.assists++;
@@ -956,7 +956,7 @@ qboolean Team_GetLocationMsg(gentity_t *ent, char *loc, int loclen)
 	gentity_t *best;
 
 	best = Team_GetLocation( ent );
-	
+
 	if (!best)
 		return qfalse;
 
@@ -982,14 +982,14 @@ SelectRandomTeamSpawnPoint   --Xamis-- Modified for info_ut_spawn
 go to a random point that doesn't telefrag
 ================
 */
-#define	MAX_TEAM_SPAWN_POINTS	32
+#define	MAX_TEAM_SPAWN_POINTS	128
 gentity_t *SelectRandomTeamSpawnPoint( int teamstate, team_t utteam ) {
 	gentity_t	*spot;
 	int			count;
 	int			selection;
 	//int			i;
 	gentity_t	*spots[MAX_TEAM_SPAWN_POINTS];
-	
+
 	//char		*classname;
 	char		*teamname;
 	char		*class = "info_ut_spawn";
@@ -1001,18 +1001,18 @@ gentity_t *SelectRandomTeamSpawnPoint( int teamstate, team_t utteam ) {
 			teamname = "red";
 		}else
 			return NULL;
-	
+
 	count = 0;
 
 	spot = NULL;
 
 	while (qtrue) {
 		(spot = G_Find ((spot = G_Find (spot,FOFS(classname), class)), FOFS(team), teamname));// != NULL
-		
-		
-		
-		
-		
+
+
+
+
+
 		if ( SpotWouldTelefrag( spot ) ) {
 			G_Printf( S_COLOR_BLUE "WARNING: spots telefrag\n" );
 			continue;
@@ -1020,20 +1020,20 @@ gentity_t *SelectRandomTeamSpawnPoint( int teamstate, team_t utteam ) {
 
 		spots[ count ] = spot;
 		G_Printf( S_COLOR_GREEN "SPOT LOCATED\n" );
-		
+
 		if (++count == MAX_TEAM_SPAWN_POINTS){
 			G_Printf( S_COLOR_BLUE "WARNING: MAX_SPAWN_POINTS\n" );
 			break;
 		}
-		
-		
-		
+
+
+
 	}
 
 	if ( !count ) {	// no spots that won't telefrag
 		G_Printf( S_COLOR_BLUE "WARNING: no spots that won't telefrag\n" );
 		return  G_Find ((spot = G_Find (spot,FOFS(classname), class)), FOFS(team), teamname);
-		
+
 
 	}
 
@@ -1059,7 +1059,7 @@ gentity_t *SelectCTFSpawnPoint ( team_t team, int teamstate, vec3_t origin, vec3
 		G_Printf( S_COLOR_BLUE "WARNING: no spots SelectCTFSpawnPoint, Trying again\n"); //using SelectSpawnPoint\n" );
 		spot = SelectRandomTeamSpawnPoint( teamstate,team );// try again
 		tries++;
-		}else{		
+		}else{
 		return SelectSpawnPoint( vec3_origin, origin, angles, isbot ); //This should never happen --Xamis
 		}
 	}
@@ -1105,7 +1105,7 @@ void TeamplayInfoMessage( gentity_t *ent ) {
 	// but in client order (so they don't keep changing position on the overlay)
 	for (i = 0, cnt = 0; i < g_maxclients.integer && cnt < TEAM_MAXOVERLAY; i++) {
 		player = g_entities + level.sortedClients[i];
-		if (player->inuse && player->client->sess.sessionTeam == 
+		if (player->inuse && player->client->sess.sessionTeam ==
 			ent->client->sess.sessionTeam ) {
 			clients[cnt++] = level.sortedClients[i];
 		}
@@ -1120,7 +1120,7 @@ void TeamplayInfoMessage( gentity_t *ent ) {
 
 	for (i = 0, cnt = 0; i < g_maxclients.integer && cnt < TEAM_MAXOVERLAY; i++) {
 		player = g_entities + i;
-		if (player->inuse && player->client->sess.sessionTeam == 
+		if (player->inuse && player->client->sess.sessionTeam ==
 			ent->client->sess.sessionTeam ) {
 
 			h = player->client->ps.stats[STAT_HEALTH];
@@ -1129,9 +1129,9 @@ void TeamplayInfoMessage( gentity_t *ent ) {
 			if (a < 0) a = 0;
 
 			Com_sprintf (entry, sizeof(entry),
-				" %i %i %i %i %i %i", 
-//				level.sortedClients[i], player->client->pers.teamState.location, h, a, 
-				i, player->client->pers.teamState.location, h, a, 
+				" %i %i %i %i %i %i",
+//				level.sortedClients[i], player->client->pers.teamState.location, h, a,
+				i, player->client->pers.teamState.location, h, a,
 				player->client->ps.weapon, player->s.powerups);
 			j = strlen(entry);
 			if (stringlength + j > sizeof(string))
@@ -1309,7 +1309,7 @@ static void ObeliskTouch( gentity_t *self, gentity_t *other, trace_t *trace ) {
 	other->client->ps.eFlags |= EF_AWARD_CAP;
 	other->client->rewardTime = level.time + REWARD_SPRITE_TIME;
 	other->client->ps.persistant[PERS_CAPTURES] += tokens;
-	
+
 	other->client->ps.generic1 = 0;
 	CalculateRanks();
 

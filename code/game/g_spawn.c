@@ -75,7 +75,7 @@ qboolean	G_SpawnVector( const char *key, const char *defaultString, float *out )
 // fields are needed for spawning from the entity string
 //
 typedef enum {
-	F_INT, 
+	F_INT,
 	F_FLOAT,
 	F_LSTRING,			// string on disk, pointer in memory, TAG_LEVEL
 	F_GSTRING,			// string on disk, pointer in memory, TAG_GAME
@@ -204,12 +204,12 @@ spawn_t	spawns[] = {
 	// information for things controlled by other processes
 	{"info_player_start", SP_info_player_start},
 	{"info_player_deathmatch", SP_info_player_deathmatch},
- 	{"info_ut_spawn", SP_info_ut_spawn}, 
+ 	{"info_ut_spawn", SP_info_ut_spawn},
 	{"info_player_intermission", SP_info_player_intermission},
 	{"info_null", SP_info_null},
 	{"info_notnull", SP_info_notnull},		// use target_position instead
 	{"info_camp", SP_info_camp},
- 
+
  	{"func_breakable", SP_func_breakable},
 	{"func_wall", SP_func_wall}, //xamis
 	{"func_plat", SP_func_plat},
@@ -324,7 +324,7 @@ so message texts can be multi-line
 char *G_NewString( const char *string ) {
 	char	*newb, *new_p;
 	int		i,l;
-	
+
 	l = strlen(string) + 1;
 
 	newb = G_Alloc( l );
@@ -344,7 +344,7 @@ char *G_NewString( const char *string ) {
 			*new_p++ = string[i];
 		}
 	}
-	
+
 	return newb;
 }
 
@@ -433,17 +433,17 @@ void G_SpawnGEntityFromSpawnVars( void ) {
 			return;
 		}
 	}
-	
+
 	if ( g_gametype.integer >= GT_TEAM ) { //Xamis don't use ffa spawns in > GT_TEAM
 		G_SpawnInt( "team", "0", &i );
 		if ( i ) {
 			G_FreeEntity( ent );
 			return;
 		}
-	} 
+	}
 
 
-		
+
 	// check for "notteam" flag (GT_FFA, GT_SINGLE_PLAYER)
 	if ( g_gametype.integer >= GT_SINGLE_PLAYER ) {
 		G_SpawnInt( "notteam", "0", &i );
@@ -579,7 +579,63 @@ void G_SpawnGEntityFromSpawnVars( void ) {
 			}
 		}
 	}
-	
+
+//Xamis  temporary hack for rotating doors, so they dont block paths when gamemode_shut is set
+        if( G_SpawnString( "gamemode_shut", NULL, &value ) ) {
+          if( g_gametype.integer == GT_FFA  ) {
+            s = strstr( value, "0" );
+            if( !s ) {
+              G_FreeEntity( ent );
+              return;
+            }
+          }if( g_gametype.integer == GT_SINGLE_PLAYER  ) {
+            s = strstr( value, "1" );
+            if( !s ) {
+              G_FreeEntity( ent );
+              return;
+            }
+          }if( g_gametype.integer == GT_TEAM  ) {
+            s = strstr( value, "3" );
+            if( !s ) {
+              G_FreeEntity( ent );
+              return;
+            }
+          }if( g_gametype.integer == GT_TEAMSV  ) {
+            s = strstr( value, "4" );
+            if( !s ) {
+              G_FreeEntity( ent );
+              return;
+            }
+          }if( g_gametype.integer == GT_ASN  ) {
+            s = strstr( value, "5" );
+            if( !s ) {
+              G_FreeEntity( ent );
+              return;
+            }
+          }if( g_gametype.integer == GT_CAH  ) {
+            s = strstr( value, "6" );
+            if( !s ) {
+              G_FreeEntity( ent );
+              return;
+            }
+          }
+          if( g_gametype.integer == GT_BOMB  ) {
+            s = strstr( value, "8" );
+            if( !s ) {
+              G_FreeEntity( ent );
+              return;
+            }
+          }
+          if( g_gametype.integer == GT_CTF  ) {
+            s = strstr( value, "7" );
+            if( !s ) {
+              G_FreeEntity( ent );
+              return;
+            }
+          }
+        }
+
+
 	// move editor origin to pos
 	VectorCopy( ent->s.origin, ent->s.pos.trBase );
 	VectorCopy( ent->s.origin, ent->r.currentOrigin );
@@ -650,7 +706,7 @@ qboolean G_ParseSpawnVars( void ) {
 	}
 
 	// go through all the key / value pairs
-	while ( 1 ) {	
+	while ( 1 ) {
 		// parse key
 		if ( !trap_GetEntityToken( keyname, sizeof( keyname ) ) ) {
 			G_Error( "G_ParseSpawnVars: EOF without closing brace" );
@@ -659,8 +715,8 @@ qboolean G_ParseSpawnVars( void ) {
 		if ( keyname[0] == '}' ) {
 			break;
 		}
-		
-		// parse value	
+
+		// parse value
 		if ( !trap_GetEntityToken( com_token, sizeof( com_token ) ) ) {
 			G_Error( "G_ParseSpawnVars: EOF without closing brace" );
 		}
@@ -758,7 +814,7 @@ void G_SpawnEntitiesFromString( void ) {
 	// parse ents
 	while( G_ParseSpawnVars() ) {
 		G_SpawnGEntityFromSpawnVars();
-	}	
+	}
 
 	level.spawning = qfalse;			// any future calls to G_Spawn*() will be errors
 }
