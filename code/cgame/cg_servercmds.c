@@ -191,7 +191,7 @@ static void CG_ParseWarmup( void ) {
 
 	} else if ( warmup > 0 && cg.warmup <= 0 ) {
 #ifdef MISSIONPACK
-		if (cgs.gametype >= GT_CTF && cgs.gametype <= GT_BOMB) {
+		if (cgs.gametype >= GT_TEAM && cgs.gametype <= GT_BOMB) {
 			trap_S_StartLocalSound( cgs.media.countPrepareTeamSound, CHAN_ANNOUNCER );
 		} else
 #endif
@@ -356,7 +356,7 @@ static void CG_ConfigStringModified( void ) {
 	else if ( num == CS_SHADERSTATE ) {
 		CG_ShaderStateChanged();
 	}
-		
+
 }
 
 
@@ -1083,7 +1083,7 @@ static void CG_ServerCommand( void ) {
 
 			trap_R_RemapShader(shader1, shader2, shader3);
 		}
-		
+
 		return;
 	}
 

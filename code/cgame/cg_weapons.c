@@ -737,10 +737,7 @@ void CG_RegisterWeapon( int weaponNum ) {
 
 //  All weapons parts for animations in first person view --Xamis
 
-	strcpy( path, item->world_model[0] );
-	COM_StripExtension(path, path, sizeof(path));
-	strcat( path, "_flash.md3" );
-	weaponInfo->flashModel = trap_R_RegisterModel( path );
+        weaponInfo->flashModel = trap_R_RegisterModel( "models/weapons2/flash/flash.md3" );
 
 	strcpy( path, item->world_model[0] );
 	COM_StripExtension(path, path, sizeof(path));
@@ -1281,6 +1278,8 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
         refEntity_t     vcliprel;
         refEntity_t     vejector;
         refEntity_t     vflap;
+        refEntity_t     vflap1;
+        refEntity_t     vflap2;
         refEntity_t     vbutt;
         refEntity_t     veject;
         refEntity_t     vmode;
@@ -1290,6 +1289,10 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
         refEntity_t     vring;
         refEntity_t     vslide;
         refEntity_t     vsliderel;
+        refEntity_t     vbox;
+        refEntity_t     vhandle;
+        refEntity_t     vbullet;
+        refEntity_t     vaim;
 
 	vec3_t		angles;
 	weapon_t	weaponNum;
@@ -1335,10 +1338,11 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	gun.hModel = weapon->weaponModel;
         if(ps){
           gun.hModel = weapon->holdsModel;
-          if ( team ){
+          if ( team == 1 ){
             gun.customSkin = cgs.media.handsRedSkin;
-          }else gun.customSkin = cgs.media.handsBlueSkin;
-        }
+          }else
+            gun.customSkin = cgs.media.handsBlueSkin;
+        }//CG_Printf( "Team Number is %i\n", team );
 	if (!gun.hModel) {
 		return;
 	}
@@ -1390,23 +1394,6 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 
 
         if ( ps ) {
-
-
-     //     memset( &holds, 0, sizeof( holds ) );
-     //     VectorCopy( parent->lightingOrigin, holds.lightingOrigin );
-
-       //   holds.shadowPlane = parent->shadowPlane;
-        //  holds.renderfx = parent->renderfx;
-        //  holds.hModel = weapon->holdsModel;
-
-       //   angles[YAW] = 0;
-       //   angles[PITCH] = 0;
-       //   angles[ROLL] = 0;
-       //   AnglesToAxis( angles, holds.axis );
-
-       //   CG_PositionRotatedEntityOnTag( &holds, &gun, weapon->handsModel, "tag_weapon" );
-
-       //   CG_AddWeaponWithPowerups( &holds, cent->currentState.powerups );
 
 
           memset( &viewmainModel, 0, sizeof( viewmainModel ) );
@@ -1462,211 +1449,222 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		CG_AddWeaponWithPowerups( &laser, cent->currentState.powerups );
 	}
 
-        if( ps){
+  if( ps){
 
         if ( weapon->vtriggerModel) {
-
           memset( &vtrigger, 0, sizeof( vtrigger ) );
           VectorCopy( parent->lightingOrigin, vtrigger.lightingOrigin );
-                //hold.customShader = cgs.media.handsBlueShader;
           vtrigger.shadowPlane = parent->shadowPlane;
           vtrigger.renderfx = parent->renderfx;
           vtrigger.hModel = weapon->vtriggerModel;
-          angles[YAW] = 0;
-          angles[PITCH] = 0;
-          angles[ROLL] = 0;
-          AnglesToAxis( angles, vtrigger.axis );
-          CG_PositionRotatedEntityOnTag( &vtrigger, &gun, weapon->holdsModel , "tag_trigger" );
-
-
+          CG_PositionEntityOnTag( &vtrigger, &gun, weapon->holdsModel , "tag_trigger" );
           CG_AddWeaponWithPowerups( &vtrigger, cent->currentState.powerups );
           }
 
           if ( weapon->vboltModel) {
-
             memset( &vbolt, 0, sizeof( vbolt ) );
             VectorCopy( parent->lightingOrigin, vbolt.lightingOrigin );
             vbolt.shadowPlane = parent->shadowPlane;
             vbolt.renderfx = parent->renderfx;
             vbolt.hModel = weapon->vboltModel;
-            angles[YAW] = 0;
-            angles[PITCH] = 0;
-            angles[ROLL] = 0;
-            AnglesToAxis( angles, vbolt.axis );
-            CG_PositionRotatedEntityOnTag( &vbolt, &gun, weapon->holdsModel , "tag_bolt" );
-
-
+            CG_PositionEntityOnTag( &vbolt, &gun, weapon->holdsModel , "tag_bolt" );
             CG_AddWeaponWithPowerups( &vbolt, cent->currentState.powerups );
           }
 
           if ( weapon->vflapModel) {
-
             memset( &vflap, 0, sizeof( vflap ) );
             VectorCopy( parent->lightingOrigin, vflap.lightingOrigin );
             vflap.shadowPlane = parent->shadowPlane;
             vflap.renderfx = parent->renderfx;
             vflap.hModel = weapon->vflapModel;
-            angles[YAW] = 0;
-            angles[PITCH] = 0;
-            angles[ROLL] = 0;
-            AnglesToAxis( angles, vflap.axis );
-            CG_PositionRotatedEntityOnTag( &vflap, &gun, weapon->holdsModel , "tag_flap" );
-
+            CG_PositionEntityOnTag( &vflap, &gun, weapon->holdsModel , "tag_flap" );
             CG_AddWeaponWithPowerups( &vflap, cent->currentState.powerups );
           }
 
-          if ( weapon->vejectorModel) {
 
+        if ( weapon->vflap2Model) {
+            memset( &vflap2, 0, sizeof( vflap2 ) );
+            VectorCopy( parent->lightingOrigin, vflap2.lightingOrigin );
+            vflap2.shadowPlane = parent->shadowPlane;
+            vflap2.renderfx = parent->renderfx;
+            vflap2.hModel = weapon->vflap2Model;
+            CG_PositionEntityOnTag( &vflap2, &gun, weapon->holdsModel , "tag_flap2" );
+            CG_AddWeaponWithPowerups( &vflap2, cent->currentState.powerups );
+          }
+
+          if ( weapon->vejectorModel) {
             memset( &vejector, 0, sizeof( vejector ) );
             VectorCopy( parent->lightingOrigin, vejector.lightingOrigin );
             vejector.shadowPlane = parent->shadowPlane;
             vejector.renderfx = parent->renderfx;
             vejector.hModel = weapon->vejectorModel;
-            angles[YAW] = 0;
-            angles[PITCH] = 0;
-            angles[ROLL] = 0;
-            AnglesToAxis( angles, vejector.axis );
-            CG_PositionRotatedEntityOnTag( &vejector, &gun, weapon->holdsModel , "tag_ejector" );
-
-
+            CG_PositionEntityOnTag( &vejector, &gun, weapon->holdsModel , "tag_ejector" );
             CG_AddWeaponWithPowerups( &vejector, cent->currentState.powerups );
           }
 
           if ( weapon->vmodeModel) {
-
             memset( &vmode, 0, sizeof( vmode ) );
             VectorCopy( parent->lightingOrigin, vmode.lightingOrigin );
             vmode.shadowPlane = parent->shadowPlane;
             vmode.renderfx = parent->renderfx;
             vmode.hModel = weapon->vmodeModel;
-            angles[YAW] = 0;
-            angles[PITCH] = 0;
-            angles[ROLL] = 0;
-            AnglesToAxis( angles, vmode.axis );
-            CG_PositionRotatedEntityOnTag( &vmode, &gun, weapon->holdsModel , "tag_mode" );
-
-
+            CG_PositionEntityOnTag( &vmode, &gun, weapon->holdsModel , "tag_mode" );
             CG_AddWeaponWithPowerups( &vmode, cent->currentState.powerups );
           }
 
           if ( weapon->vbuttModel) {
-
             memset( &vbutt, 0, sizeof( vbutt ) );
             VectorCopy( parent->lightingOrigin, vbutt.lightingOrigin );
             vbutt.shadowPlane = parent->shadowPlane;
             vbutt.renderfx = parent->renderfx;
             vbutt.hModel = weapon->vbuttModel;
             CG_PositionEntityOnTag( &vbutt, &gun, weapon->holdsModel , "tag_butt" );
-
-
             CG_AddWeaponWithPowerups( &vbutt, cent->currentState.powerups );
           }
 
           if ( weapon->vcockModel) {
-
             memset( &vcock, 0, sizeof( vcock ) );
             VectorCopy( parent->lightingOrigin, vcock.lightingOrigin );
             vcock.shadowPlane = parent->shadowPlane;
             vcock.renderfx = parent->renderfx;
             vcock.hModel = weapon->vcockModel;
             CG_PositionEntityOnTag( &vcock, &gun, weapon->holdsModel , "tag_cock" );
-
-
             CG_AddWeaponWithPowerups( &vcock, cent->currentState.powerups );
           }
 
           if ( weapon->vbarrelModel) {
-
             memset( &vbarrel, 0, sizeof( vbarrel ) );
             VectorCopy( parent->lightingOrigin, vbarrel.lightingOrigin );
             vbarrel.shadowPlane = parent->shadowPlane;
             vbarrel.renderfx = parent->renderfx;
             vbarrel.hModel = weapon->vbarrelModel;
-            angles[YAW] = 0;
-            angles[PITCH] = 0;
-            angles[ROLL] = 0;
-            AnglesToAxis( angles, vbarrel.axis );
-            CG_PositionRotatedEntityOnTag( &vbarrel, &gun, weapon->holdsModel , "tag_barrel" );
-
-
+            CG_PositionEntityOnTag( &vbarrel, &gun, weapon->holdsModel , "tag_barrel" );
             CG_AddWeaponWithPowerups( &vbarrel, cent->currentState.powerups );
           }
 
           if ( weapon->vclipModel) {
-
             memset( &vclip, 0, sizeof( vclip ) );
             VectorCopy( parent->lightingOrigin, vclip.lightingOrigin );
             vclip.shadowPlane = parent->shadowPlane;
             vclip.renderfx = parent->renderfx;
             vclip.hModel = weapon->vclipModel;
-            angles[YAW] = 0;
-            angles[PITCH] = 0;
-            angles[ROLL] = 0;
-            AnglesToAxis( angles, vclip.axis );
-            CG_PositionRotatedEntityOnTag( &vclip, &gun, weapon->holdsModel , "tag_clip" );
-
-
+            CG_PositionEntityOnTag( &vclip, &gun, weapon->holdsModel , "tag_clip" );
             CG_AddWeaponWithPowerups( &vclip, cent->currentState.powerups );
           }
 
 
-          if ( weapon->vringModel) {
-
+         if ( weapon->vringModel) {
             memset( &vring, 0, sizeof( vring ) );
             VectorCopy( parent->lightingOrigin, vring.lightingOrigin );
             vring.shadowPlane = parent->shadowPlane;
             vring.renderfx = parent->renderfx;
             vring.hModel = weapon->vringModel;
-            angles[YAW] = 0;
-            angles[PITCH] = 0;
-            angles[ROLL] = 0;
-            AnglesToAxis( angles, vring.axis );
-            CG_PositionRotatedEntityOnTag( &vring, &gun, weapon->holdsModel , "tag_ring" );
-
-
+            CG_PositionEntityOnTag( &vring, &gun, weapon->holdsModel , "tag_ring" );
             CG_AddWeaponWithPowerups( &vring, cent->currentState.powerups );
           }
 
           if ( weapon->vcliprelModel) {
-
             memset( &vcliprel, 0, sizeof( vcliprel ) );
             VectorCopy( parent->lightingOrigin, vcliprel.lightingOrigin );
             vcliprel.shadowPlane = parent->shadowPlane;
             vcliprel.renderfx = parent->renderfx;
             vcliprel.hModel = weapon->vcliprelModel;
             CG_PositionEntityOnTag( &vcliprel, &gun, weapon->holdsModel , "tag_cliprel" );
-
-
             CG_AddWeaponWithPowerups( &vcliprel, cent->currentState.powerups );
           }
 
           if ( weapon->vslideModel) {
-
             memset( &vslide, 0, sizeof( vslide ) );
             VectorCopy( parent->lightingOrigin, vslide.lightingOrigin );
             vslide.shadowPlane = parent->shadowPlane;
             vslide.renderfx = parent->renderfx;
             vslide.hModel = weapon->vslideModel;
             CG_PositionEntityOnTag( &vslide, &gun, weapon->holdsModel , "tag_slide" );
-
-
             CG_AddWeaponWithPowerups( &vslide, cent->currentState.powerups );
           }
 
           if ( weapon->vsliderelModel) {
-
             memset( &vsliderel, 0, sizeof( vsliderel ) );
             VectorCopy( parent->lightingOrigin, vsliderel.lightingOrigin );
             vsliderel.shadowPlane = parent->shadowPlane;
             vsliderel.renderfx = parent->renderfx;
             vsliderel.hModel = weapon->vsliderelModel;
             CG_PositionEntityOnTag( &vsliderel, &gun, weapon->holdsModel , "tag_sliderel" );
-
-
             CG_AddWeaponWithPowerups( &vsliderel, cent->currentState.powerups );
           }
 
-        }
+        if ( weapon->vhandleModel) {
+            memset( &vhandle, 0, sizeof( vhandle ) );
+            VectorCopy( parent->lightingOrigin, vhandle.lightingOrigin );
+            vhandle.shadowPlane = parent->shadowPlane;
+            vhandle.renderfx = parent->renderfx;
+            vhandle.hModel = weapon->vhandleModel;
+            CG_PositionEntityOnTag( &vhandle, &gun, weapon->holdsModel , "tag_handle" );
+            CG_AddWeaponWithPowerups( &vhandle, cent->currentState.powerups );
+          }
+
+          if ( weapon->vboxModel) {
+            memset( &vbox, 0, sizeof( vbox ) );
+            VectorCopy( parent->lightingOrigin, vbox.lightingOrigin );
+            vbox.shadowPlane = parent->shadowPlane;
+            vbox.renderfx = parent->renderfx;
+            vbox.hModel = weapon->vboxModel;
+            CG_PositionEntityOnTag( &vbox, &gun, weapon->holdsModel , "tag_box" );
+            CG_AddWeaponWithPowerups( &vbox, cent->currentState.powerups );
+          }
+
+          if ( weapon->vbulletModel) {
+            memset( &vbullet, 0, sizeof( vbullet ) );
+            VectorCopy( parent->lightingOrigin, vbullet.lightingOrigin );
+            vbullet.shadowPlane = parent->shadowPlane;
+            vbullet.renderfx = parent->renderfx;
+            vbullet.hModel = weapon->vbulletModel;
+            CG_PositionEntityOnTag( &vbullet, &gun, weapon->holdsModel , "tag_bullet" );
+            CG_AddWeaponWithPowerups( &vbullet, cent->currentState.powerups );
+          }
+
+          if ( weapon->vaimModel) {
+
+            memset( &vaim, 0, sizeof( vaim ) );
+            VectorCopy( parent->lightingOrigin, vaim.lightingOrigin );
+            vaim.shadowPlane = parent->shadowPlane;
+            vaim.renderfx = parent->renderfx;
+            vaim.hModel = weapon->vaimModel;
+            CG_PositionEntityOnTag( &vaim, &gun, weapon->holdsModel , "tag_aim" );
+            CG_AddWeaponWithPowerups( &vaim, cent->currentState.powerups );
+          }
+
+          if ( weapon->vpinModel) {
+            memset( &vpin, 0, sizeof( vpin ) );
+            VectorCopy( parent->lightingOrigin, vpin.lightingOrigin );
+            vpin.shadowPlane = parent->shadowPlane;
+            vpin.renderfx = parent->renderfx;
+            vpin.hModel = weapon->vpinModel;
+            CG_PositionEntityOnTag( &vpin, &gun, weapon->holdsModel , "tag_pin" );
+            CG_AddWeaponWithPowerups( &vpin, cent->currentState.powerups );
+          }
+
+          if ( weapon->vejectModel) {
+            memset( &veject, 0, sizeof( veject ) );
+            VectorCopy( parent->lightingOrigin, veject.lightingOrigin );
+            veject.shadowPlane = parent->shadowPlane;
+            veject.renderfx = parent->renderfx;
+            veject.hModel = weapon->vejectModel;
+            CG_PositionEntityOnTag( &veject, &gun, weapon->holdsModel , "tag_eject" );
+            CG_AddWeaponWithPowerups( &veject, cent->currentState.powerups );
+          }
+
+          if ( weapon->vflap1Model) {
+            memset( &vflap1, 0, sizeof( vflap1 ) );
+            VectorCopy( parent->lightingOrigin, vflap1.lightingOrigin );
+            vflap1.shadowPlane = parent->shadowPlane;
+            vflap1.renderfx = parent->renderfx;
+            vflap1.hModel = weapon->vflap1Model;
+            CG_PositionEntityOnTag( &vflap1, &gun, weapon->holdsModel , "tag_flap1" );
+            CG_AddWeaponWithPowerups( &vflap1, cent->currentState.powerups );
+          }
+  }
+
 
 
 	// make sure we aren't looking at cg.predictedPlayerEntity for LG
@@ -1680,7 +1678,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	}
 
 	// add the flash
-	if ( ( weaponNum == WP_KNIFE || weaponNum == WP_GRAPPLING_HOOK )
+	if ( ( weaponNum == WP_KNIFE  )
 		&& ( nonPredictedCent->currentState.eFlags & EF_FIRING ) )
 	{
 		// continuous flash
@@ -1706,8 +1704,10 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	AnglesToAxis( angles, flash.axis );
 
 	// colorize the railgun blast
-
-	CG_PositionRotatedEntityOnTag( &flash, &gun, weapon->weaponModel, "tag_flash");
+        if (ps)
+          CG_PositionRotatedEntityOnTag( &flash, &gun, weapon->holdsModel, "tag_flash");
+        else
+          CG_PositionRotatedEntityOnTag( &flash, &gun, weapon->weaponModel, "tag_flash");
 	trap_R_AddRefEntityToScene( &flash );
 
 	if ( ps || cg.renderingThirdPerson ||

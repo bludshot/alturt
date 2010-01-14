@@ -419,6 +419,16 @@ typedef struct weaponInfo_s {
         qhandle_t               vaimModel;      // Xamis --HK69
         qhandle_t               vbuttModel;     // Xamis --HK69
         qhandle_t               vbarrelModel;    // Xamis --HK69
+        qhandle_t               vboxModel;
+        qhandle_t               vbulletModel;
+        qhandle_t               vhandleModel;
+        qhandle_t               vejectModel;
+
+
+     //   qhandle_t               vhandleModel;
+        qhandle_t               vflap1Model;
+        qhandle_t               vflap2Model;
+
 
         qhandle_t               animModel;       // Xamis
         qhandle_t               animHandModel;    // Xamis
