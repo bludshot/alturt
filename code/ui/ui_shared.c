@@ -1190,9 +1190,9 @@ void Script_SetFocus(itemDef_t *item, char **args) {
 
 void Script_SetPlayerModel(itemDef_t *item, char **args) {
   const char *name;
-  if (String_Parse(args, &name)) {
-    DC->setCVar("team_model", name);
-  }
+  //if (String_Parse(args, &name)) { //blud disabling team_model
+  //  DC->setCVar("team_model", name);
+  //}
 }
 
 void Script_SetPlayerHead(itemDef_t *item, char **args) {
