@@ -87,9 +87,10 @@ Read a configuration file containing animation coutns and rates
 models/players/visor/animation.cfg, etc
 ======================
 */
-static qboolean	CG_ParseAnimationFile( const char *filename, clientInfo_t *ci ) {
+static qboolean	CG_ParseAnimationFile( const char *filename, clientInfo_t *ci, const char *modelName ) {
 	int			bludtemp; //blud
-	int			j; //blud
+	//int			j; //blud debug
+	int			urtModelAnimOffset; //blud
 	char		*text_p, *prev;
 	int			len;
 	int			i;
@@ -99,6 +100,12 @@ static qboolean	CG_ParseAnimationFile( const char *filename, clientInfo_t *ci ) 
 	char		text[20000];
 	fileHandle_t	f;
 	animation_t *animations;
+
+
+	urtModelAnimOffset = 224; //blud: used for UrT style models (Orion & Athena).
+	//224 is how faw my chosen gesture animation (taunt) is from 300 
+	//which is i guess where it's "supposed" to be (even tho it's not lol 
+	//but somehow 300 is the magic number)
 
 	animations = ci->animations;
 
@@ -190,7 +197,6 @@ static qboolean	CG_ParseAnimationFile( const char *filename, clientInfo_t *ci ) 
 		Com_Printf( "unknown token '%s' is %s\n", token, filename );
 	}
 
-	//blud well it's definitely not above this line
 	bludtemp = 0; //blud
 	// read information for each frame
 	for ( i = 0 ; i < MAX_ANIMATIONS ; i++ ) {
@@ -212,7 +218,12 @@ static qboolean	CG_ParseAnimationFile( const char *filename, clientInfo_t *ci ) 
 		animations[i].firstFrame = atoi( token );
 		// leg only frames are adjusted to not count the upper body only frames
 		if ( i == LEGS_WALKCR ) {
-			skip = animations[LEGS_WALKCR].firstFrame - animations[TORSO_GESTURE].firstFrame -224; //blud added the -224 for weird fix. I could code this dynamically, but I don't feel like figuring out how. But -224 = how faw my chosen gesture animation (taunt) is from 300 which is i guess where it's "supposed" to be (even tho it's not lol but somehow 300 is the magic number)
+			if (strcmp(modelName, "orion") == 0 || strcmp(modelName, "athena") == 0) { //if this is Orion or Athena, apply weird fix (later I want to make this more sophisticated to detect ANY urt style models)
+				skip = animations[LEGS_WALKCR].firstFrame - animations[TORSO_GESTURE].firstFrame - urtModelAnimOffset; //blud: - urtModelAnimOffset for weird animation fix.
+			}
+			else { //else this is assumed to be a q3 style model
+				skip = animations[LEGS_WALKCR].firstFrame - animations[TORSO_GESTURE].firstFrame;
+			}
 		}
 		if ( i >= LEGS_WALKCR && i<TORSO_GETFLAG) {
 			animations[i].firstFrame -= skip;
@@ -315,165 +326,92 @@ static qboolean	CG_FileExists(const char *filename) {
 	return qfalse;
 }
 
+
 /*
 ==========================
-CG_FindClientModelFile
+CG_FindClientModelFile - re-written by blud because the old one is dumb
 ==========================
 */
 static qboolean	CG_FindClientModelFile( char *filename, int length, clientInfo_t *ci, const char *teamName, const char *modelName, const char *skinName, const char *base, const char *ext ) {
-	char *team, *charactersFolder;
-	int i;
-	int j; //blud
 
-	if ( cgs.gametype >= GT_TEAM ) {
-		switch ( ci->team ) {
-			case TEAM_BLUE: {
-				team = "swat_b"; //bludfixteams
-				break;
-			}
-			default: {
-				team = "tag_b"; //bludfixteams
-				break;
-			}
-		}
+	// note: in q3a there's a lot more code here. But in my code I fixed it so that this function
+	//       is always passed the correct info, and with alturt there's only 1 path possibility
+	Com_sprintf( filename, length, "models/players/%s/%s_%s.%s", modelName, base, skinName, ext );
+
+	if ( CG_FileExists( filename ) )
+	{
+		return qtrue;
 	}
-	else {
-		team = "swat_b"; //bludfixteams
-	}
-	charactersFolder = "";
-	j = 0; //blud
-	while(j < 100) { // blud was just while(1)
-		j++; //blud
-		for ( i = 0; i < 2; i++ ) {
-			if ( i == 0 && teamName && *teamName ) {
-				//								"models/players/characters/james/stroggs/lower_lily_red.skin"
-				Com_sprintf( filename, length, "models/players/%s%s/%s%s_%s_%s.%s", charactersFolder, modelName, teamName, base, skinName, team, ext );
-			}
-			else {
-				//								"models/players/characters/james/lower_lily_red.skin"
-				Com_sprintf( filename, length, "models/players/%s%s/%s_%s_%s.%s", charactersFolder, modelName, base, skinName, team, ext );
-			}
-			if ( CG_FileExists( filename ) ) {
+	else
+	{
+		if ( cgs.gametype < GT_TEAM )
+		{
+			//the non-team GT skin that they asked for doesn't exist so set it to a valid one (default, which must exist)
+			Com_sprintf( filename, length, "models/players/%s/%s_%s.%s", modelName, base, "default", ext );
+			Com_sprintf( ci->skinName, 8, "default" );
+
+			//we'll check if it exists just in case even though it pretty much must exist.
+			if ( CG_FileExists( filename ) )
+			{
 				return qtrue;
 			}
-			if ( cgs.gametype >= GT_TEAM ) {
-				if ( i == 0 && teamName && *teamName ) {
-					//								"models/players/characters/james/stroggs/lower_red.skin"
-					Com_sprintf( filename, length, "models/players/%s%s/%s%s_%s.%s", charactersFolder, modelName, teamName, base, team, ext );
-				}
-				else {
-					//								"models/players/characters/james/lower_red.skin"
-					Com_sprintf( filename, length, "models/players/%s%s/%s_%s.%s", charactersFolder, modelName, base, team, ext );
-				}
-			}
-			else {
-				if ( i == 0 && teamName && *teamName ) {
-					//								"models/players/characters/james/stroggs/lower_lily.skin"
-					Com_sprintf( filename, length, "models/players/%s%s/%s%s_%s.%s", charactersFolder, modelName, teamName, base, skinName, ext );
-				}
-				else {
-					//								"models/players/characters/james/lower_lily.skin"
-					Com_sprintf( filename, length, "models/players/%s%s/%s_%s.%s", charactersFolder, modelName, base, skinName, ext );
-				}
-			}
-			if ( CG_FileExists( filename ) ) {
-				return qtrue;
-			}
-			if ( !teamName || !*teamName ) {
-				break;
+			else
+			{
+				CG_Printf( "Error: default skin does not exist. That should never happen!\n" );
+				return qfalse;
 			}
 		}
-		// if tried the heads folder first
-		if ( charactersFolder[0] ) {
-			break;
+		else
+		{
+			return qfalse;
 		}
-		//charactersFolder = "characters/"; //bludm2 gonna get rid of this and see how that goes.
 	}
-
-	return qfalse;
 }
+
 
 /*
 ==========================
-CG_FindClientHeadFile
+CG_FindClientHeadFile - blud re-writing this one too
 ==========================
 */
 static qboolean	CG_FindClientHeadFile( char *filename, int length, clientInfo_t *ci, const char *teamName, const char *headModelName, const char *headSkinName, const char *base, const char *ext ) {
-	char *team, *headsFolder;
-	int i;
 
-	if ( cgs.gametype >= GT_TEAM ) {
-		switch ( ci->team ) {
-			case TEAM_BLUE: {
-				team = "swat_b_";
-				break;
-			}
-			default: {
-				team = "tag_b_";
-				break;
-			}
-		}
-	}
-	else {
-		team = "swat_b_";
-	}
+	// note: in q3a there's a lot more code here. But in my code I fixed it so that this function
+	//       is always passed the correct info, and with alturt there's only 1 path possibility
+	Com_sprintf( filename, length, "models/players/%s/%s_%s.%s", headModelName, base, headSkinName, ext );
 
-	if ( headModelName[0] == '*' ) {
-		headsFolder = "";
-		headModelName++;
+
+	if ( CG_FileExists( filename ) )
+	{
+		return qtrue;
 	}
-	else {
-		headsFolder = "";
-	}
-	while(1) {
-		for ( i = 0; i < 2; i++ ) {
-			if ( i == 0 && teamName && *teamName ) {
-				Com_sprintf( filename, length, "models/players/%s%s/%s/%s%s_%s.%s", headsFolder, headModelName, headSkinName, teamName, base, team, ext );
-			}
-			else {
-				Com_sprintf( filename, length, "models/players/%s%s/%s/%s_%s.%s", headsFolder, headModelName, headSkinName, base, team, ext );
-			}
-			if ( CG_FileExists( filename ) ) {
+	else
+	{
+		if ( cgs.gametype < GT_TEAM )
+		{
+			//the non-team GT skin that they asked for doesn't exist so set it to a valid one (default, which must exist)
+			Com_sprintf( filename, length, "models/players/%s/%s_%s.%s", headModelName, base, "default", ext );
+			Com_sprintf( ci->headSkinName, 8, "default" );
+
+			//we'll check if it exists just in case even though it pretty much must exist.
+			if ( CG_FileExists( filename ) )
+			{
 				return qtrue;
 			}
-			if ( cgs.gametype >= GT_TEAM ) {
-				if ( i == 0 &&  teamName && *teamName ) {
-					Com_sprintf( filename, length, "models/players/%s%s/%s%s_%s.%s", headsFolder, headModelName, teamName, base, team, ext );
-				}
-				else {
-					Com_sprintf( filename, length, "models/players/%s%s/%s_%s.%s", headsFolder, headModelName, base, team, ext );
-				}
-			}
-			else {
-				if ( i == 0 && teamName && *teamName ) {
-					Com_sprintf( filename, length, "models/players/%s%s/%s%s_%s.%s", headsFolder, headModelName, teamName, base, headSkinName, ext );
-				}
-				else {
-					Com_sprintf( filename, length, "models/players/%s%s/%s_%s.%s", headsFolder, headModelName, base, headSkinName, ext );
-				}
-			}
-			if ( CG_FileExists( filename ) ) {
-				return qtrue;
-			}
-			if ( !teamName || !*teamName ) {
-				break;
+			else
+			{
+				CG_Printf( "Error: default headskin does not exist. That should never happen!\n" );
+				return qfalse;
 			}
 		}
-		// if tried the heads folder first
-		if ( headsFolder[0] ) {
-			break;
+		else
+		{
+			return qfalse;
 		}
-		headsFolder = "";
-		//blud: Ok well, I'm pretty confused here so, I'm gonna try just breaking ALL the time lol.
-		//I'm breaking just to see if it's ok to do it???
-		//Actually, you can't break out of the while, or you'll get return false.
-		//So i'll just return true :o  Even though that's a bit ridiculous, I'll see if
-		//i can get away with it
-		return qtrue; //blud did this bad code
 	}
-
-	return qfalse;
 }
+
+
 
 /*
 ==========================
@@ -482,6 +420,8 @@ CG_RegisterClientSkin
 */
 static qboolean	CG_RegisterClientSkin( clientInfo_t *ci, const char *teamName, const char *modelName, const char *skinName, const char *headModelName, const char *headSkinName ) {
 	char filename[MAX_QPATH];
+
+
 
 	/*
 	Com_sprintf( filename, sizeof( filename ), "models/players/%s/%slower_%s.skin", modelName, teamName, skinName );
@@ -518,8 +458,8 @@ static qboolean	CG_RegisterClientSkin( clientInfo_t *ci, const char *teamName, c
 	if (!ci->torsoSkin) {
 		Com_Printf( "Torso skin load failure: %s\n", filename );
 	}
-
-	if ( CG_FindClientHeadFile( filename, sizeof(filename), ci, teamName, headModelName, headSkinName, "head", "skin" ) ) {
+	
+	if ( CG_FindClientHeadFile( filename, sizeof(filename), ci, teamName, modelName, skinName, "head", "skin" ) ) {
 		ci->headSkin = trap_R_RegisterSkin( filename );
 	}
 	if (!ci->headSkin) {
@@ -543,6 +483,8 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 	const char		*headName;
 	char newTeamName[MAX_QPATH*2];
 
+
+	
 	if ( headModelName[0] == '\0' ) {
 		headName = modelName;
 	}
@@ -589,52 +531,46 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 	}
 
 	// if any skins failed to load, return failure
-	if ( !CG_RegisterClientSkin( ci, teamName, modelName, skinName, headName, headSkinName ) ) {
+	if ( !CG_RegisterClientSkin( ci, teamName, modelName, skinName, modelName, skinName ) ) {
 		if ( teamName && *teamName) {
-			Com_Printf( "Failed to load skin file: %s : %s : %s, %s : %s\n", teamName, modelName, skinName, headName, headSkinName );
+			Com_Printf( "Failed to load skin file: %s : %s : %s, %s : %s\n", teamName, modelName, skinName, modelName, skinName );
 			if( ci->team == TEAM_BLUE ) {
 				Com_sprintf(newTeamName, sizeof(newTeamName), "%s/", DEFAULT_BLUETEAM_NAME);
 			}
 			else {
 				Com_sprintf(newTeamName, sizeof(newTeamName), "%s/", DEFAULT_REDTEAM_NAME);
 			}
-			if ( !CG_RegisterClientSkin( ci, newTeamName, modelName, skinName, headName, headSkinName ) ) {
-				Com_Printf( "Failed to load skin file: %s : %s : %s, %s : %s\n", newTeamName, modelName, skinName, headName, headSkinName );
+			if ( !CG_RegisterClientSkin( ci, newTeamName, modelName, skinName, modelName, skinName ) ) {
+				Com_Printf( "Failed to load skin file: %s : %s : %s, %s : %s\n", newTeamName, modelName, skinName, modelName, skinName );
 				return qfalse;
 			}
 		} else {
-			Com_Printf( "Failed to load skin file: %s : %s, %s : %s\n", modelName, skinName, headName, headSkinName );
+			Com_Printf( "Failed to load skin file: %s : %s, %s : %s\n", modelName, skinName, modelName, skinName );
 			return qfalse;
 		}
 	}
 
 	// load the animations
 	Com_sprintf( filename, sizeof( filename ), "models/players/%s/animation.cfg", modelName );
-	if ( !CG_ParseAnimationFile( filename, ci ) ) {
+	if ( !CG_ParseAnimationFile( filename, ci, modelName ) ) { //blud added modelName arg
 		Com_sprintf( filename, sizeof( filename ), "models/players/characters/%s/animation.cfg", modelName );
-		if ( !CG_ParseAnimationFile( filename, ci ) ) {
+		if ( !CG_ParseAnimationFile( filename, ci, modelName ) ) { //blud added modelName arg
 			Com_Printf( "Failed to load animation file %s\n", filename );
 			return qfalse;
 		}
 	}
 
 	//blud. This WAS: if ( CG_FindClientHeadFile( filename, sizeof(filename), ci, teamName, headName, headSkinName, "icon", "skin" ) ) {
-	//and i cheaply changed it to tga. But keep in mind, I took a cheap route making findclientheadfile always return true lol
-	if ( CG_FindClientHeadFile( filename, sizeof(filename), ci, teamName, headName, headSkinName, "icon", "tga" ) ) {
-		//CG_Printf( "BSF1%sBSF1\n", filename ); //blud debug
+	//this is kind of stupid code anyways but I'm just going to leave it.
+	if ( CG_FindClientHeadFile( filename, sizeof(filename), ci, teamName, modelName, skinName, "icon", "tga" ) ) {
 		ci->modelIcon = trap_R_RegisterShaderNoMip( filename );
 	}
-	else if ( CG_FindClientHeadFile( filename, sizeof(filename), ci, teamName, headName, headSkinName, "icon", "tga" ) ) {
+	else if ( CG_FindClientHeadFile( filename, sizeof(filename), ci, teamName, modelName, skinName, "icon", "tga" ) ) {
 		ci->modelIcon = trap_R_RegisterShaderNoMip( filename );
 	}
 
 	if ( !ci->modelIcon ) {
-		//CG_Printf( "WEGETHERE\n" ); //blud debug
-		//blud, again this isn't RIGHT lol. But we're just gonna return true anyways!
-		//i think it means that we're short circuiting the icon loading, which isnt good of course, and
-		//i may need to go back later and fix it... :|
-		//return qfalse; <-ORIGINAL CODE :p
-		return qtrue; //bad blud code
+		return qfalse;
 	}
 
 	return qtrue;
@@ -682,9 +618,10 @@ static void CG_LoadClientInfo( int clientNum, clientInfo_t *ci ) {
 	const char	*s;
 	char		teamname[MAX_QPATH];
 
+
 	teamname[0] = 0;
 	modelloaded = qtrue;
-	if ( !CG_RegisterClientModelname( ci, ci->modelName, ci->skinName, ci->headModelName, ci->headSkinName, teamname ) ) {
+	if ( !CG_RegisterClientModelname( ci, ci->modelName, ci->skinName, ci->modelName, ci->headSkinName, teamname ) ) {
 		if ( cg_buildScript.integer ) {
 			CG_Error( "CG_RegisterClientModelname( %s, %s, %s, %s %s ) failed", ci->modelName, ci->skinName, ci->headModelName, ci->headSkinName, teamname );
 		}
@@ -697,11 +634,11 @@ static void CG_LoadClientInfo( int clientNum, clientInfo_t *ci ) {
 			} else {
 				Q_strncpyz(teamname, DEFAULT_REDTEAM_NAME, sizeof(teamname) );
 			}
-			if ( !CG_RegisterClientModelname( ci, DEFAULT_TEAM_MODEL, ci->skinName, DEFAULT_TEAM_HEAD, ci->skinName, teamname ) ) {
+			if ( !CG_RegisterClientModelname( ci, DEFAULT_TEAM_MODEL, ci->skinName, DEFAULT_TEAM_HEAD, ci->skinName, teamname ) ) { 
 				CG_Error( "DEFAULT_TEAM_MODEL / skin (%s/%s) failed to register", DEFAULT_TEAM_MODEL, ci->skinName );
 			}
 		} else {
-			if ( !CG_RegisterClientModelname( ci, DEFAULT_MODEL, "swat_b", DEFAULT_MODEL, "swat_b_", teamname ) ) {
+			if ( !CG_RegisterClientModelname( ci, DEFAULT_MODEL, "default", DEFAULT_MODEL, "default", teamname ) ) {
 				CG_Error( "DEFAULT_MODEL (%s) failed to register", DEFAULT_MODEL );
 			}
 		}
@@ -760,6 +697,8 @@ CG_CopyClientInfoModel
 ======================
 */
 static void CG_CopyClientInfoModel( clientInfo_t *from, clientInfo_t *to ) {
+
+
 	VectorCopy( from->headOffset, to->headOffset );
 	to->footsteps = from->footsteps;
 	to->gender = from->gender;
@@ -801,14 +740,26 @@ static qboolean CG_ScanForExistingClientInfo( clientInfo_t *ci ) {
 			&& !Q_stricmp( ci->headSkinName, match->headSkinName )
 			&& !Q_stricmp( ci->blueTeam, match->blueTeam )
 			&& !Q_stricmp( ci->redTeam, match->redTeam )
-			&& (cgs.gametype < GT_TEAM || ci->team == match->team) ) {
-			// this clientinfo is identical, so use it's handles
+			&& (cgs.gametype < GT_TEAM || ci->team == match->team)) {
+			//&& (cgs.gametype < GT_TEAM || (ci->team == match->team && ((ci->team == TEAM_BLUE && (ci->raceblue == match->raceblue)) || (ci->racered == match->racered)))) ) {
+				if (ci->team == TEAM_BLUE && (ci->raceblue == match->raceblue)){
+					// this clientinfo is identical, so use it's handles
+					ci->deferred = qfalse;
 
-			ci->deferred = qfalse;
+					CG_CopyClientInfoModel( match, ci );
 
-			CG_CopyClientInfoModel( match, ci );
+					return qtrue;
+				}
 
-			return qtrue;
+				if (ci->team != TEAM_BLUE && (ci->racered == match->racered)) {
+					// this clientinfo is identical, so use it's handles
+					ci->deferred = qfalse;
+
+					CG_CopyClientInfoModel( match, ci );
+
+					return qtrue;
+				}
+				
 		}
 	}
 
@@ -827,6 +778,7 @@ client's info to use until we have some spare time.
 static void CG_SetDeferredClientInfo( int clientNum, clientInfo_t *ci ) {
 	int		i;
 	clientInfo_t	*match;
+
 
 	// if someone else is already the same models and skins we
 	// can just load the client info
@@ -899,7 +851,8 @@ void CG_NewClientInfo( int clientNum ) {
 	clientInfo_t newInfo;
 	const char	*configstring;
 	const char	*v;
-	char		*slash;
+	int			race;
+
 
 	ci = &cgs.clientinfo[clientNum];
 
@@ -908,6 +861,8 @@ void CG_NewClientInfo( int clientNum ) {
 		memset( ci, 0, sizeof( *ci ) );
 		return;		// player just left
 	}
+
+	//CG_Printf( "configstring: **%s**", configstring ); //blud debug
 
 	// build into a temp buffer so the defer checks can use
 	// the old value
@@ -960,91 +915,101 @@ void CG_NewClientInfo( int clientNum ) {
 
 	// model
 	v = Info_ValueForKey( configstring, "model" );
-	if ( cg_forceModel.integer ) {
-		// forcemodel makes everyone use a single model
-		// to prevent load hitches
-		char modelStr[MAX_QPATH];
-		char *skin;
+	//blud: I temporarily set the modelName from model, but down below it might get changed
+	//based on racered raceblue and whether it's a team game or not.
+	Q_strncpyz( newInfo.modelName, v, sizeof( newInfo.modelName ) );
 
-		if( cgs.gametype >= GT_TEAM ) {
-			Q_strncpyz( newInfo.modelName, DEFAULT_TEAM_MODEL, sizeof( newInfo.modelName ) );
-			Q_strncpyz( newInfo.skinName, "default", sizeof( newInfo.skinName ) );
-		} else {
-			trap_Cvar_VariableStringBuffer( "model", modelStr, sizeof( modelStr ) );
-			if ( ( skin = strchr( modelStr, '/' ) ) == NULL) {
-				skin = "default";
-			} else {
-				*skin++ = 0;
-			}
 
-			Q_strncpyz( newInfo.skinName, skin, sizeof( newInfo.skinName ) );
-			Q_strncpyz( newInfo.modelName, modelStr, sizeof( newInfo.modelName ) );
+	// head model stuff used to be here, I got rid of it.
+
+
+	// racered blud
+	v = Info_ValueForKey( configstring, "rr" );
+	newInfo.racered = atoi( v );
+
+	
+	// raceblue blud
+	v = Info_ValueForKey( configstring, "rb" );
+	newInfo.raceblue = atoi( v );
+
+
+	// skin blud
+	v = Info_ValueForKey( configstring, "skin" );
+	Q_strncpyz( newInfo.skin, v, sizeof( newInfo.skin ) ); //note this doesn't set the skinName
+	Q_strncpyz( newInfo.skinName, v, sizeof( newInfo.skinName ) );
+	Q_strncpyz( newInfo.headSkinName, v, sizeof( newInfo.headSkinName ) );
+
+
+
+	//blud: 
+	// We have set the skin and model above correctly for non-team GTs
+	// Now we will re-set the skin and model correctly for team GTs if this is a team GT
+
+	if ( cgs.gametype >= GT_TEAM )
+	{
+		// get the race which determines the model regardless of team
+		if ( newInfo.team == TEAM_BLUE )
+		{
+			race = newInfo.raceblue;
+		}
+		else //team is red
+		{
+			race = newInfo.racered;
 		}
 
-		if ( cgs.gametype >= GT_TEAM ) {
-			// keep skin name
-			slash = strchr( v, '/' );
-			if ( slash ) {
-				Q_strncpyz( newInfo.skinName, slash + 1, sizeof( newInfo.skinName ) );
+		// set the model
+		switch( race )
+		{
+			case 0:
+			case 1:		Q_strncpyz( newInfo.modelName, "athena", sizeof( newInfo.modelName ) );
+						break;
+			case 2:
+			case 3:		Q_strncpyz( newInfo.modelName, "orion", sizeof( newInfo.modelName ) );
+						break;
+			default:	Q_strncpyz( newInfo.modelName, "orion", sizeof( newInfo.modelName ) );
+						break;
+		}
+
+		// determine the skin
+		if ( newInfo.team == TEAM_BLUE )
+		{
+			if ( race == 0 || race == 2 )
+			{
+				Q_strncpyz( newInfo.skinName, "blue", sizeof( newInfo.skinName ) );
+				Q_strncpyz( newInfo.headSkinName, "blue", sizeof( newInfo.headSkinName ) );
+			}
+			else if ( race == 1 || race == 3 )
+			{
+				Q_strncpyz( newInfo.skinName, "blue2", sizeof( newInfo.skinName ) );
+				Q_strncpyz( newInfo.headSkinName, "blue2", sizeof( newInfo.headSkinName ) );
+			}
+			else //default
+			{
+				Q_strncpyz( newInfo.skinName, "blue", sizeof( newInfo.skinName ) );
+				Q_strncpyz( newInfo.headSkinName, "blue", sizeof( newInfo.headSkinName ) );
 			}
 		}
-	} else {
-		Q_strncpyz( newInfo.modelName, v, sizeof( newInfo.modelName ) );
-
-		slash = strchr( newInfo.modelName, '/' );
-		if ( !slash ) {
-			// modelName didn not include a skin name
-			Q_strncpyz( newInfo.skinName, "swat_b", sizeof( newInfo.skinName ) ); //blud hopefully fixing bad skins?
-		} else {
-			Q_strncpyz( newInfo.skinName, slash + 1, sizeof( newInfo.skinName ) );
-			// truncate modelName
-			*slash = 0;
+		else //team is red
+		{
+			if ( race == 0 || race == 2 )
+			{
+				Q_strncpyz( newInfo.skinName, "red", sizeof( newInfo.skinName ) );
+				Q_strncpyz( newInfo.headSkinName, "red", sizeof( newInfo.headSkinName ) );
+			}
+			else if ( race == 1 || race == 3 )
+			{
+				Q_strncpyz( newInfo.skinName, "red2", sizeof( newInfo.skinName ) );
+				Q_strncpyz( newInfo.headSkinName, "red2", sizeof( newInfo.headSkinName ) );
+			}
+			else //default
+			{
+				Q_strncpyz( newInfo.skinName, "red", sizeof( newInfo.skinName ) );
+				Q_strncpyz( newInfo.headSkinName, "red", sizeof( newInfo.headSkinName ) );
+			}
 		}
 	}
 
-	// head model
-	v = Info_ValueForKey( configstring, "hmodel" );
-	if ( cg_forceModel.integer ) {
-		// forcemodel makes everyone use a single model
-		// to prevent load hitches
-		char modelStr[MAX_QPATH];
-		char *skin;
 
-		if( cgs.gametype >= GT_TEAM ) {
-			Q_strncpyz( newInfo.headModelName, DEFAULT_TEAM_MODEL, sizeof( newInfo.headModelName ) );
-			Q_strncpyz( newInfo.headSkinName, "default", sizeof( newInfo.headSkinName ) );
-		} else {
-			trap_Cvar_VariableStringBuffer( "headmodel", modelStr, sizeof( modelStr ) );
-			if ( ( skin = strchr( modelStr, '/' ) ) == NULL) {
-				skin = "default";
-			} else {
-				*skin++ = 0;
-			}
-
-			Q_strncpyz( newInfo.headSkinName, skin, sizeof( newInfo.headSkinName ) );
-			Q_strncpyz( newInfo.headModelName, modelStr, sizeof( newInfo.headModelName ) );
-		}
-
-		if ( cgs.gametype >= GT_TEAM ) {
-			// keep skin name
-			slash = strchr( v, '/' );
-			if ( slash ) {
-				Q_strncpyz( newInfo.headSkinName, slash + 1, sizeof( newInfo.headSkinName ) );
-			}
-		}
-	} else {
-		Q_strncpyz( newInfo.headModelName, v, sizeof( newInfo.headModelName ) );
-
-		slash = strchr( newInfo.headModelName, '/' );
-		if ( !slash ) {
-			// modelName didn not include a skin name
-			Q_strncpyz( newInfo.headSkinName, "default", sizeof( newInfo.headSkinName ) );
-		} else {
-			Q_strncpyz( newInfo.headSkinName, slash + 1, sizeof( newInfo.headSkinName ) );
-			// truncate modelName
-			*slash = 0;
-		}
-	}
 
 	// scan for an existing clientinfo that matches this modelname
 	// so we can avoid loading checks if possible
@@ -1052,6 +1017,7 @@ void CG_NewClientInfo( int clientNum ) {
 		qboolean	forceDefer;
 
 		forceDefer = trap_MemoryRemaining() < 4000000;
+
 
 		// if we are defering loads, just have it pick the first valid
 		if ( forceDefer || (cg_deferPlayers.integer && !cg_buildScript.integer && !cg.loading ) ) {
@@ -1073,7 +1039,6 @@ void CG_NewClientInfo( int clientNum ) {
 }
 
 
-
 /*
 ======================
 CG_LoadDeferredPlayers
@@ -1086,6 +1051,7 @@ so deferred players can be loaded
 void CG_LoadDeferredPlayers( void ) {
 	int		i;
 	clientInfo_t	*ci;
+
 
 	// scan for a deferred player to load
 	for ( i = 0, ci = cgs.clientinfo ; i < cgs.maxclients ; i++, ci++ ) {
