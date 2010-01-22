@@ -273,7 +273,6 @@ typedef struct {
 	qboolean	teamInfo;			// send team overlay updates?
 	//int		weapon_primary;
 	//int		weapon_secondary;
-	int			playerClass; //blud 3rd try at player class (it works)
 
 
 
