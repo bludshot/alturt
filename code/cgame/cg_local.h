@@ -332,6 +332,9 @@ typedef struct {
 	vec3_t			color1;
 	vec3_t			color2;
 
+	int				racered;		//blud
+	int				raceblue;		//blud
+
 	int				score;			// updated by score servercmds
 	int				location;		// location index for team mode
 	int				health;			// you only get this info about your teammates
@@ -361,6 +364,7 @@ typedef struct {
 	char			headSkinName[MAX_QPATH];
 	char			redTeam[MAX_TEAMNAME];
 	char			blueTeam[MAX_TEAMNAME];
+	char			skin[MAX_QPATH]; //blud adding skin cvar and getting it to work...
 	qboolean		deferred;
 
 	qboolean		newAnims;		// true if using the new mission pack animations
@@ -1163,6 +1167,9 @@ extern	vmCvar_t		cg_gibs;
 extern	vmCvar_t		cg_drawTimer;
 extern	vmCvar_t		cg_drawFPS;
 extern	vmCvar_t		cg_drawStamina;  //Xamis
+extern	vmCvar_t		racered; //blud
+extern	vmCvar_t		raceblue; //blud
+extern	vmCvar_t		skin; //blud
 extern	vmCvar_t		cg_drawSnapshot;
 extern	vmCvar_t		cg_draw3dIcons;
 extern	vmCvar_t		cg_drawIcons;
