@@ -99,6 +99,12 @@ void CG_LoadingClient( int clientNum ) {
 	char			personality[MAX_QPATH];
 	char			model[MAX_QPATH];
 	char			iconName[MAX_QPATH];
+	int				racered; //blud
+	int				raceblue; //blud
+	int				race; //blud
+	int				team; //blud
+	const char		*v; //blud
+	char			skinToUseForIcon[MAX_QPATH]; //blud
 
 	info = CG_ConfigString( CS_PLAYERS + clientNum );
 
@@ -108,14 +114,102 @@ void CG_LoadingClient( int clientNum ) {
 		if ( skin ) {
 			*skin++ = '\0';
 		} else {
-			skin = "swat";
+			skin = "default";
 		}
 
-		Com_sprintf( iconName, MAX_QPATH, "models/players/%s/icon_%s.tga", model, skin );
+		//blud set the RIGHT skin and model here
+		//The old code is based on the old model/skin paradigm so I need to update it
+		//for the new racered raceblue paradigm
 
+		//blud note: later I should probably combine this code with the code in CG_NewClientInfo
+		//into a new function and then just call that function here (as well as calling it from
+		//CG_NewClientInfo)
+
+		//we now have the correct model and skin for non-team gts.
+		//so check if it's a team gt to correct them
+
+		//get info from info (configstring)
+		//team
+		v = Info_ValueForKey( info, "t" );
+		team = atoi( v );
+		// racered blud
+		v = Info_ValueForKey( info, "rr" );
+		racered = atoi( v );
+		// raceblue blud
+		v = Info_ValueForKey( info, "rb" );
+		raceblue = atoi( v );
+
+		if ( cgs.gametype >= GT_TEAM )
+		{
+			if ( team == TEAM_BLUE )
+			{
+				race = raceblue;
+			}
+			else //team is red
+			{
+				race = racered;
+			}
+
+
+			// set model (just for getting the right icon)
+			switch( race )
+			{
+				case 0:
+				case 1:		Q_strncpyz( model, "athena", sizeof( model ) );
+							break;
+				case 2:
+				case 3:		Q_strncpyz( model, "orion", sizeof( model ) );
+							break;
+				default:	Q_strncpyz( model, "orion", sizeof( model ) );
+							break;
+			}
+
+			// determine the skin (just for getting the right icon)
+			if ( team == TEAM_BLUE )
+			{
+				if ( race == 0 || race == 2 )
+				{
+					Q_strncpyz( skinToUseForIcon, "blue", sizeof( skinToUseForIcon ) );
+					Q_strncpyz( skinToUseForIcon, "blue", sizeof( skinToUseForIcon ) );
+				}
+				else if ( race == 1 || race == 3 )
+				{
+					Q_strncpyz( skinToUseForIcon, "blue2", sizeof( skinToUseForIcon ) );
+					Q_strncpyz( skinToUseForIcon, "blue2", sizeof( skinToUseForIcon ) );
+				}
+				else //default
+				{
+					Q_strncpyz( skinToUseForIcon, "blue", sizeof( skinToUseForIcon ) );
+					Q_strncpyz( skinToUseForIcon, "blue", sizeof( skinToUseForIcon ) );
+				}
+			}
+			else //team is red
+			{
+				if ( race == 0 || race == 2 )
+				{
+					Q_strncpyz( skinToUseForIcon, "red", sizeof( skinToUseForIcon ) );
+					Q_strncpyz( skinToUseForIcon, "red", sizeof( skinToUseForIcon ) );
+				}
+				else if ( race == 1 || race == 3 )
+				{
+					Q_strncpyz( skinToUseForIcon, "red2", sizeof( skinToUseForIcon ) );
+					Q_strncpyz( skinToUseForIcon, "red2", sizeof( skinToUseForIcon ) );
+				}
+				else //default
+				{
+					Q_strncpyz( skinToUseForIcon, "red", sizeof( skinToUseForIcon ) );
+					Q_strncpyz( skinToUseForIcon, "red", sizeof( skinToUseForIcon ) );
+				}
+			}
+		}
+
+
+		Com_sprintf( iconName, MAX_QPATH, "models/players/%s/icon_%s.tga", model, skinToUseForIcon );
+		
 		loadingPlayerIcons[loadingPlayerIconCount] = trap_R_RegisterShaderNoMip( iconName );
 		if ( !loadingPlayerIcons[loadingPlayerIconCount] ) {
-			Com_sprintf( iconName, MAX_QPATH, "models/players/characters/%s/icon_%s.tga", model, skin );
+			//Com_sprintf( iconName, MAX_QPATH, "models/players/characters/%s/icon_%s.tga", model, skin ); //blud was
+			Com_sprintf( iconName, MAX_QPATH, "models/players/%s/icon_%s.tga", model, skinToUseForIcon ); //blud fixed
 			loadingPlayerIcons[loadingPlayerIconCount] = trap_R_RegisterShaderNoMip( iconName );
 		}
 		if ( !loadingPlayerIcons[loadingPlayerIconCount] ) {
@@ -152,7 +246,7 @@ void CG_DrawInformation( void ) {
 	int			y;
 	int			value;
 	qhandle_t	levelshot;
-	qhandle_t	detail;
+	//qhandle_t	detail;
 	char		buf[1024];
 
 	info = CG_ConfigString( CS_SERVERINFO );
@@ -167,8 +261,9 @@ void CG_DrawInformation( void ) {
 	CG_DrawPic( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, levelshot );
 
 	// blend a detail texture over it
-	detail = trap_R_RegisterShader( "levelShotDetail" );
-	trap_R_DrawStretchPic( 0, 0, cgs.glconfig.vidWidth, cgs.glconfig.vidHeight, 0, 0, 2.5, 2, detail );
+//blud commenting this out: It makes this ugly weird semi-transparent texture go on top of levelshot
+//	detail = trap_R_RegisterShader( "levelShotDetail" );
+//	trap_R_DrawStretchPic( 0, 0, cgs.glconfig.vidWidth, cgs.glconfig.vidHeight, 0, 0, 2.5, 2, detail );
 
 	// draw the icons of things as they are loaded
 	CG_DrawLoadingIcons();
