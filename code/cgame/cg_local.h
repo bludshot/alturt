@@ -707,7 +707,7 @@ typedef struct {
 
 	int			activatedInventory;
 	int			currentInventory;
-	int Inventory[INVENTORYITEMS][WP_NUM_WEAPONS];
+	int Inventory[INVENTORYITEMS][WP_SMOKE];
 	int InventorySlot[INVENTORYITEMS];
 
 
