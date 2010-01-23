@@ -102,6 +102,9 @@ vmCvar_t	cg_gibs;
 vmCvar_t	cg_drawTimer;
 vmCvar_t	cg_drawFPS;
 vmCvar_t	cg_drawStamina; //xamis
+vmCvar_t	racered; //blud
+vmCvar_t	raceblue; //blud
+vmCvar_t	skin; //blud
 vmCvar_t	cg_drawSnapshot;
 vmCvar_t	cg_draw3dIcons;
 vmCvar_t	cg_drawIcons;
@@ -218,7 +221,10 @@ static cvarTable_t cvarTable[] = {
 	{ &cg_drawTimer, "cg_drawTimer", "0", CVAR_ARCHIVE  },
 	{ &cg_drawFPS, "cg_drawFPS", "0", CVAR_ARCHIVE  },
 	{ &cg_drawSnapshot, "cg_drawSnapshot", "0", CVAR_ARCHIVE  },
-	 { &cg_drawStamina, "cg_drawStamina", "0", CVAR_ARCHIVE  }, //Xamis
+	{ &cg_drawStamina, "cg_drawStamina", "0", CVAR_ARCHIVE  }, //Xamis
+	{ &racered, "racered", "0", CVAR_USERINFO | CVAR_ARCHIVE }, //blud
+	{ &raceblue, "raceblue", "0", CVAR_USERINFO | CVAR_ARCHIVE }, //blud
+	{ &skin, "skin", "default", CVAR_USERINFO | CVAR_ARCHIVE }, //blud
 	{ &cg_draw3dIcons, "cg_draw3dIcons", "1", CVAR_ARCHIVE  },
 	{ &cg_drawIcons, "cg_drawIcons", "1", CVAR_ARCHIVE  },
 	{ &cg_drawAmmoWarning, "cg_drawAmmoWarning", "1", CVAR_ARCHIVE  },
@@ -343,9 +349,10 @@ void CG_RegisterCvars( void ) {
 
 	trap_Cvar_Register(NULL, "model", DEFAULT_MODEL, CVAR_USERINFO | CVAR_ARCHIVE );
 	trap_Cvar_Register(NULL, "headmodel", DEFAULT_MODEL, CVAR_USERINFO | CVAR_ARCHIVE );
-//	trap_Cvar_Register(NULL, "team_model", DEFAULT_TEAM_MODEL, CVAR_USERINFO | CVAR_ARCHIVE );
+	//trap_Cvar_Register(NULL, "team_model", DEFAULT_TEAM_MODEL, CVAR_USERINFO | CVAR_ARCHIVE ); //blud disabling team_model
 	trap_Cvar_Register(NULL, "team_headmodel", DEFAULT_TEAM_HEAD, CVAR_USERINFO | CVAR_ARCHIVE );
 }
+
 
 /*
 ===================
@@ -1230,6 +1237,7 @@ qboolean CG_Asset_Parse(int handle) {
 	if (Q_stricmp(token.string, "{") != 0) {
 		return qfalse;
 	}
+    
 
 	while ( 1 ) {
 		if (!trap_PC_ReadToken(handle, &token))
@@ -1426,6 +1434,7 @@ qboolean CG_Load_Menu(char **p) {
 	while ( 1 ) {
 
 		token = COM_ParseExt(p, qtrue);
+    
 
 		if (Q_stricmp(token, "}") == 0) {
 			return qtrue;
@@ -1434,6 +1443,7 @@ qboolean CG_Load_Menu(char **p) {
 		if ( !token || token[0] == 0 ) {
 			return qfalse;
 		}
+
 
 		CG_ParseMenu(token);
 	}
@@ -1469,6 +1479,7 @@ void CG_LoadMenus(const char *menuFile) {
 	trap_FS_Read( buf, len, f );
 	buf[len] = 0;
 	trap_FS_FCloseFile( f );
+	
 
 	COM_Compress(buf);
 
@@ -1810,10 +1821,12 @@ void CG_LoadHudMenu( void ) {
 	cgDC.stopCinematic = &CG_StopCinematic;
 	cgDC.drawCinematic = &CG_DrawCinematic;
 	cgDC.runCinematicFrame = &CG_RunCinematicFrame;
+	
 
 	Init_Display(&cgDC);
 
 	Menu_Reset();
+	
 
 	trap_Cvar_VariableStringBuffer("cg_hudFiles", buff, sizeof(buff));
 	hudSet = buff;
