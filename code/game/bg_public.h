@@ -357,11 +357,11 @@ typedef enum {
  WP_PSG1, //13
  WP_SR8, //14
  WP_HE,
- //WP_SMOKE,
+ WP_SMOKE
 // WP_GRAPPLING_HOOK,
 
 
-	WP_NUM_WEAPONS
+
 } weapon_t;
 
 

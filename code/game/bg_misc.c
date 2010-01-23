@@ -1754,7 +1754,7 @@ int		BG_GetPrimary( int stats [ ] )
 {
     int i;
 
-    for ( i=WP_NUM_WEAPONS-1;i>WP_NONE;i--)
+    for ( i=WP_SMOKE-1;i>WP_NONE;i--)
     {
         if ( BG_HasWeapon( i, stats ) )
         {
@@ -1775,7 +1775,7 @@ int		BG_GetSecondary( int stats [ ] )
 {
     int i;
 
-    for ( i=WP_NUM_WEAPONS-1;i>WP_NONE;i--)
+    for ( i=WP_SMOKE-1;i>WP_NONE;i--)
     {
           if ( BG_HasWeapon( i, stats ) )
         {

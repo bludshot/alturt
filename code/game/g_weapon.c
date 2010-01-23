@@ -897,12 +897,6 @@ void FireWeapon( gentity_t *ent ) {
 	} else {
 		s_quadFactor = 1;
 	}
-#ifdef MISSIONPACK
-	if( ent->client->persistantPowerup && ent->client->persistantPowerup->item && ent->client->persistantPowerup->item->giTag == PW_DOUBLER ) {
-		s_quadFactor *= 2;
-	}
-#endif
-
 	// track shots taken for accuracy tracking.  Grapple is not a weapon and gauntet is just not tracked
 	if(  ent->s.weapon != WP_KNIFE ) {
 
