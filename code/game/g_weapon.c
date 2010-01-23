@@ -534,7 +534,10 @@ GRAPPLING HOOK
 void Weapon_GrapplingHook_Fire (gentity_t *ent)
 {
 	if (!ent->client->fireHeld && !ent->client->hook)
-		fire_grapple (ent, muzzle, forward);
+		//fire_grapple (ent, muzzle, forward); 
+		//blud commenting out call to fire_grapple() because
+		//fire_grapple() function is now commented out because
+		//it was throwing a warning I didn't want to see.
 
 	ent->client->fireHeld = qtrue;
 }

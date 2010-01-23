@@ -530,7 +530,7 @@ gentity_t *fire_grenade (gentity_t *self, vec3_t start, vec3_t dir) {
 fire_grapple
 =================
 */
-gentity_t *fire_grapple (gentity_t *self, vec3_t start, vec3_t dir) {
+//gentity_t *fire_grapple (gentity_t *self, vec3_t start, vec3_t dir) {
 /*	gentity_t	*hook;
 
 	VectorNormalize (dir);
@@ -560,7 +560,7 @@ gentity_t *fire_grapple (gentity_t *self, vec3_t start, vec3_t dir) {
 
 	return hook;
   */
-}
+//} //blud: xamis commented out the contents of the function, now I am commenting out the function itself to stop a warning it throws in the compiler for not returning anything.
 
 
 

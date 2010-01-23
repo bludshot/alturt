@@ -146,7 +146,7 @@ static void PM_ForceLegsAnim( int anim ) {
 PM_StartWeaponAnim, PM_ContinueWeaponAnim
 ===================
 */
-static void PM_StartWeaponAnim( int anim ) {
+void PM_StartWeaponAnim( int anim ) {
   if ( pm->ps->pm_type >= PM_DEAD ) {
     return;
   }

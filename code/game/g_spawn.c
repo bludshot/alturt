@@ -415,7 +415,8 @@ level.spawnVars[], then call the class specfic spawn function
 void G_SpawnGEntityFromSpawnVars( void ) {
 	int			i;
 	gentity_t	*ent;
-	char		*s, *value, *gametypeName;
+	char		*s, *value;
+	//char		*gametypeName; //commented out by blud to suppress warning, because not in use
 	static char *gametypeNames[] = {"ffa", "tournament", "single", "team", "ctf", "oneflag", "obelisk", "harvester", "teamtournament"};
 
 	// get the next free entity
