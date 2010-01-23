@@ -80,29 +80,22 @@ tryagain:
 	}
 
 	if( pi->weaponModel == 0 ) {
-		if( weaponNum == WP_BERETTA ) {
+		if( weaponNum == WP_KNIFE ) {
 			weaponNum = WP_NONE;
 			goto tryagain;
 		}
-		weaponNum = WP_BERETTA;
+		weaponNum = WP_KNIFE;
 		goto tryagain;
-	}
-
-	if ( weaponNum == WP_BERETTA || weaponNum == WP_KNIFE  ) {
-		strcpy( path, item->world_model[0] );
-		COM_StripExtension(path, path, sizeof(path));
-		strcat( path, "_barrel.md3" );
-		pi->barrelModel = trap_R_RegisterModel( path );
 	}
 
 	strcpy( path, item->world_model[0] );
 	COM_StripExtension(path, path, sizeof(path));
-	strcat( path, "_flash.md3" );
+	strcat( path, "_flash.md3" ); //this doesn't exist
 	pi->flashModel = trap_R_RegisterModel( path );
 
 	switch( weaponNum ) {
 	case WP_KNIFE:
-		MAKERGB( pi->flashDlightColor, 0.6f, 0.6f, 1 );
+		//MAKERGB( pi->flashDlightColor, 0.6f, 0.6f, 1 );
 		break;
 
 	case WP_M4:
@@ -137,10 +130,9 @@ tryagain:
 		MAKERGB( pi->flashDlightColor, 1, 0.7f, 1 );
 		break;
 
-	// blud commenting out to stop error since grappling hook is removed now
-	//case WP_GRAPPLING_HOOK:
-	//	MAKERGB( pi->flashDlightColor, 0.6f, 0.6f, 1 );
-	//	break;
+//	case WP_GRAPPLING_HOOK:
+//		MAKERGB( pi->flashDlightColor, 0.6f, 0.6f, 1 );
+//		break;
 
 	default:
 		MAKERGB( pi->flashDlightColor, 1, 1, 1 );
@@ -291,11 +283,11 @@ static void UI_LegsSequencing( playerInfo_t *pi ) {
 UI_PositionEntityOnTag
 ======================
 */
-static void UI_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent, 
+static void UI_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
 							clipHandle_t parentModel, char *tagName ) {
 	int				i;
 	orientation_t	lerped;
-	
+
 	// lerp the tag
 	trap_CM_LerpTag( &lerped, parentModel, parent->oldframe, parent->frame,
 		1.0 - parent->backlerp, tagName );
@@ -317,7 +309,7 @@ static void UI_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *pare
 UI_PositionRotatedEntityOnTag
 ======================
 */
-static void UI_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *parent, 
+static void UI_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
 							clipHandle_t parentModel, char *tagName ) {
 	int				i;
 	orientation_t	lerped;
@@ -485,7 +477,7 @@ static void UI_SwingAngles( float destination, float swingTolerance, float clamp
 	if ( !*swinging ) {
 		return;
 	}
-	
+
 	// modify the speed depending on the delta
 	// so it doesn't seem so linear
 	swing = AngleSubtract( destination, *angle );
@@ -587,7 +579,7 @@ static void UI_PlayerAngles( playerInfo_t *pi, vec3_t legs[3], vec3_t torso[3], 
 	// --------- yaw -------------
 
 	// allow yaw to drift a bit
-	if ( ( pi->legsAnim & ~ANIM_TOGGLEBIT ) != LEGS_IDLE 
+	if ( ( pi->legsAnim & ~ANIM_TOGGLEBIT ) != LEGS_IDLE
 		|| ( pi->torsoAnim & ~ANIM_TOGGLEBIT ) != TORSO_STAND  ) {
 		// if not standing still, always point all in the same direction
 		pi->torso.yawing = qtrue;	// always center
@@ -749,7 +741,7 @@ void UI_DrawPlayer( float x, float y, float w, float h, playerInfo_t *pi, int ti
 	refdef.fov_y *= ( 360 / (float)M_PI );
 
 	// calculate distance so the player nearly fills the box
-	len = 0.7 * ( maxs[2] - mins[2] );		
+	len = 0.7 * ( maxs[2] - mins[2] );
 	origin[0] = len / tan( DEG2RAD(refdef.fov_x) * 0.5 );
 	origin[1] = 0.5 * ( mins[1] + maxs[1] );
 	origin[2] = -0.5 * ( mins[2] + maxs[2] );
@@ -760,7 +752,7 @@ void UI_DrawPlayer( float x, float y, float w, float h, playerInfo_t *pi, int ti
 
 	// get the rotation information
 	UI_PlayerAngles( pi, legs.axis, torso.axis, head.axis );
-	
+
 	// get the animation state (after rotation, to allow feet shuffle)
 	UI_PlayerAnimation( pi, &legs.oldframe, &legs.frame, &legs.backlerp,
 		 &torso.oldframe, &torso.frame, &torso.backlerp );
@@ -831,7 +823,7 @@ void UI_DrawPlayer( float x, float y, float w, float h, playerInfo_t *pi, int ti
 		gun.renderfx = renderfx;
 		trap_R_AddRefEntityToScene( &gun );
 	}
-
+/*
 	//
 	// add the spinning barrel
 	//
@@ -876,7 +868,7 @@ void UI_DrawPlayer( float x, float y, float w, float h, playerInfo_t *pi, int ti
 				pi->flashDlightColor[1], pi->flashDlightColor[2] );
 		}
 	}
-
+*/
 	//
 	// add the chat icon
 	//
