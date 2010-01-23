@@ -519,9 +519,10 @@ static void Controls_UpdateModel( int anim ) {
 		s_controls.playerWeapon = WP_G36;
 		break;
 
-	case ANIM_WEAPON10:
-		s_controls.playerWeapon = WP_GRAPPLING_HOOK;
-		break;
+	// blud commenting out to get q3ui to compile
+	//case ANIM_WEAPON10:
+	//	s_controls.playerWeapon = WP_GRAPPLING_HOOK;
+	//	break;
 
 	case ANIM_ATTACK:
 		s_controls.playerTorso = TORSO_ATTACK;

@@ -136,9 +136,10 @@ tryagain:
 			MAKERGB( pi->flashDlightColor, 1, 0.7f, 1 );
 			break;
 
-		case WP_GRAPPLING_HOOK:
-			MAKERGB( pi->flashDlightColor, 0.6f, 0.6f, 1 );
-			break;
+		// blud commenting out to get q3ui to compile
+		//case WP_GRAPPLING_HOOK:
+		//	MAKERGB( pi->flashDlightColor, 0.6f, 0.6f, 1 );
+		//	break;
 
 	default:
 		MAKERGB( pi->flashDlightColor, 1, 1, 1 );

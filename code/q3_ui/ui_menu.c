@@ -157,9 +157,9 @@ TTimo: this function is common to the main menu and errorMessage menu
 
 static void Main_MenuDraw( void ) {
 	refdef_t		refdef;
-	refEntity_t		ent;
+	//refEntity_t		ent; //blud commenting out the Q3Arena main menu title model
 	vec3_t			origin;
-	vec3_t			angles;
+	//vec3_t			angles; //blud commenting out the Q3Arena main menu title model
 	float			adjust;
 	float			x, y, w, h;
 	vec4_t			color = {1, 1, 1, 1};
