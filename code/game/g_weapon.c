@@ -98,18 +98,8 @@ qboolean CheckGauntletAttack( gentity_t *ent ) {
 	if ( !traceEnt->takedamage) {
 		return qfalse;
 	}
-
-	if (ent->client->ps.powerups[PW_QUAD] ) {
-		G_AddEvent( ent, EV_POWERUP_QUAD, 0 );
-		s_quadFactor = g_quadfactor.value;
-	} else {
 		s_quadFactor = 1;
-	}
-#ifdef MISSIONPACK
-	if( ent->client->persistantPowerup && ent->client->persistantPowerup->item && ent->client->persistantPowerup->item->giTag == PW_DOUBLER ) {
-		s_quadFactor *= 2;
-	}
-#endif
+
 
 	damage = 50 * s_quadFactor;
 	G_Damage( traceEnt, ent, ent, forward, tr.endpos,
@@ -155,10 +145,9 @@ void SnapVectorTowards( vec3_t v, vec3_t to ) {
 #define MACHINEGUN_SPREAD	200
 #define DEAGLE_SPREAD		50
 #define	MACHINEGUN_DAMAGE	7
-#define	MACHINEGUN_TEAM_DAMAGE	7		// wimpier MG in teamplay (blud: Are we even using this?)
-#define	M4_DAMAGE	30 //12
-#define	AK103_DAMAGE	30 //16
-#define	DEAGLE_DAMAGE	30 //25
+#define	M4_DAMAGE	40 //12
+#define	AK103_DAMAGE	40 //16
+#define	DEAGLE_DAMAGE	40 //25
 
 
 
@@ -534,10 +523,12 @@ GRAPPLING HOOK
 void Weapon_GrapplingHook_Fire (gentity_t *ent)
 {
 	if (!ent->client->fireHeld && !ent->client->hook)
-		//fire_grapple (ent, muzzle, forward); 
-		//blud commenting out call to fire_grapple() because
-		//fire_grapple() function is now commented out because
-		//it was throwing a warning I didn't want to see.
+                //fire_grapple (ent, muzzle, forward);
+                //blud commenting out call to fire_grapple() because
+                //fire_grapple() function is now commented out because
+                //it was throwing a warning I didn't want to see.
+
+
 
 	ent->client->fireHeld = qtrue;
 }
@@ -545,7 +536,7 @@ void Weapon_GrapplingHook_Fire (gentity_t *ent)
 void Weapon_HookFree (gentity_t *ent)
 {
 	ent->parent->client->hook = NULL;
-	ent->parent->client->ps.pm_flags &= ~PMF_GRAPPLE_PULL;
+//	ent->parent->client->ps.pm_flags &= ~PMF_GRAPPLE_PULL;
 	G_FreeEntity( ent );
 }
 
@@ -756,6 +747,55 @@ int RoundCount( int w )        {
 
 }
 
+void Change_Mode(gentity_t *ent){
+//  int i;
+ ent->client->weaponModeChar = weapmodes_save.string;
+
+ //G_Printf( "weaponModeChar: %s\n", ent->client->weaponModeChar);
+
+
+  if ( ent->client->weaponMode[ ent->client->ps.weapon ] < -1 || ent->client->weaponMode[ ent->client->ps.weapon ] >2 )
+    ent->client->weaponMode[ ent->client->ps.weapon ] =-1;
+
+ ent->client->weaponMode[ ent->client->ps.weapon ]++;
+ // G_Printf( "WeaponMode set to: %i\n", ent->client->weaponMode[ ent->client->ps.weapon ]);
+
+
+ switch (ent->client->weaponMode[ ent->client->ps.weapon ]){
+    case 0:
+        weapmodes_save.string[ent->client->ps.weapon]= '0';
+        ent->client->ps.pm_flags &= ~PMF_SINGLE_MODE;
+        break;
+    case 1:
+      weapmodes_save.string[ent->client->ps.weapon]= '1';
+      ent->client->ps.pm_flags &= ~PMF_SINGLE_MODE;
+      break;
+    case 2:
+      weapmodes_save.string[ent->client->ps.weapon]= '2';
+      ent->client->ps.pm_flags |= PMF_SINGLE_MODE;
+      break;
+    default:
+      weapmodes_save.string[ent->client->ps.weapon]= '2';
+
+      trap_Cvar_Set( "weapmodes_save", ent->client->weaponModeChar);
+  //    return;
+  }
+ // G_Printf( "weapmodes_save.string: %s\n", weapmodes_save.string );
+  //for ( i=15; i>0; i--){
+   // G_Printf( "weapmodes_save.string[%i]: %c\n", i, weapmodes_save.string[i]);
+
+  //}
+
+//  G_Printf( "weaponmodes_save set to: %c\n", weapmodes_save.string[ent->client->ps.weapon]);
+  //if (  ent->client->weaponMode[ ent->client->ps.weapon ] != 1 )
+  //  ent->parent->client->ps.pm_flags &= ~PMF_SINGLE_SHOT;
+
+
+  if ( ent->client->weaponMode[ ent->client->ps.weapon ] == 2)
+    ent->client->weaponMode[ ent->client->ps.weapon ] =-1;
+
+
+}
 
 /*
 ==================
@@ -848,7 +888,7 @@ FireWeapon
 void FireWeapon( gentity_t *ent ) {
 
 
-  if ( ent->client->ammoclip[ ent->client->ps.weapon ] != -1 ) {
+  if ( ent->client->ammoclip[ ent->client->ps.weapon ] != -1 || ent->s.weapon != WP_KNIFE  ) {
     ent->client->ammoclip[ ent->client->ps.weapon ]--;
   }
 
@@ -876,7 +916,7 @@ void FireWeapon( gentity_t *ent ) {
 	// fire the specific weapon
 	switch( ent->s.weapon ) {
 	case WP_KNIFE:
-		Weapon_Gauntlet( ent );
+		//Weapon_Gauntlet( ent );
 		break;
 		case WP_SPAS:
 			weapon_supershotgun_fire( ent );

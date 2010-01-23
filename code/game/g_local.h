@@ -351,6 +351,8 @@ struct gclient_s {
 	char		*areabits;
 
         int             ammoclip[MAX_WEAPONS];//Xamis
+        int             weaponMode[17];
+        char            *weaponModeChar;
 };
 
 
@@ -795,6 +797,8 @@ extern	vmCvar_t	g_enableBreath;
 extern	vmCvar_t	g_singlePlayer;
 extern	vmCvar_t	g_proxMineTimeout;
 extern	vmCvar_t	gear;
+extern  vmCvar_t        weapmodes_save;
+
 
 void	trap_Printf( const char *fmt );
 void	trap_Error( const char *fmt );
@@ -1004,4 +1008,4 @@ void	trap_SnapVector( float *v );
 //Xamis
 void Cmd_Reload( gentity_t *ent );
 int RoundCount( int w );
-
+void Change_Mode(gentity_t *ent);

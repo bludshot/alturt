@@ -826,17 +826,6 @@ void ClientThink_real( gentity_t *ent ) {
 	// set speed
 	client->ps.speed = g_speed.value; // --info-- g_speed set in g_main.c --Xamis--
 
-#ifdef MISSIONPACK
-	if( bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_SCOUT ) {
-		client->ps.speed *= 1.5;
-	}
-	else
-#endif
-
-
-                // -- Xamis
-
-
 
 		// -- Xamis
 	if( ucmd->buttons & BUTTON_WALKING || client->ps.pm_flags & PMF_DUCKED ){ //if walking/ducking do nothing!
@@ -882,7 +871,7 @@ void ClientThink_real( gentity_t *ent ) {
 	// go through as an attack unless it actually hits something
 	if ( client->ps.weapon == WP_KNIFE && !( ucmd->buttons & BUTTON_TALK ) &&
 		( ucmd->buttons & BUTTON_ATTACK ) && client->ps.weaponTime <= 0 ) {
-		pm.gauntletHit = CheckGauntletAttack( ent );
+          pm.gauntletHit = CheckGauntletAttack( ent);
 	}
 
 	if ( ent->flags & FL_FORCE_GESTURE ) {
@@ -989,6 +978,7 @@ void ClientThink_real( gentity_t *ent ) {
 
         if ( ( client->buttons & BUTTON_WP_MODE && !(client->oldbuttons & BUTTON_WP_MODE) ) ){
 
+          Change_Mode(ent);
         }
 
 

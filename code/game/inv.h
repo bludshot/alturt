@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //armor
 #define INVENTORY_ARMOR				1
 //weapons
-#define INVENTORY_GAUNTLET			4
+#define INVENTORY_KNIFE			4
 #define INVENTORY_SHOTGUN			5
 #define INVENTORY_MACHINEGUN		6
 #define INVENTORY_GRENADELAUNCHER	7
@@ -151,7 +151,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
 //
-#define WEAPONINDEX_GAUNTLET			1
+#define WEAPONINDEX_KNIFE			1
 #define WEAPONINDEX_MACHINEGUN			2
 #define WEAPONINDEX_SHOTGUN				3
 #define WEAPONINDEX_GRENADE_LAUNCHER	4

@@ -341,7 +341,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 		ent->think = Weapon_HookThink;
 		ent->nextthink = level.time + FRAMETIME;
 
-		ent->parent->client->ps.pm_flags |= PMF_GRAPPLE_PULL;
+		//ent->parent->client->ps.pm_flags |= PMF_GRAPPLE_PULL;
 		VectorCopy( ent->r.currentOrigin, ent->parent->client->ps.grapplePoint);
 
 		trap_LinkEntity( ent );
@@ -531,36 +531,37 @@ fire_grapple
 =================
 */
 //gentity_t *fire_grapple (gentity_t *self, vec3_t start, vec3_t dir) {
-/*	gentity_t	*hook;
+/*      gentity_t       *hook;
 
-	VectorNormalize (dir);
+        VectorNormalize (dir);
 
-	hook = G_Spawn();
-	hook->classname = "hook";
-	hook->nextthink = level.time + 10000;
-	hook->think = Weapon_HookFree;
-	hook->s.eType = ET_MISSILE;
-	hook->r.svFlags = SVF_USE_CURRENT_ORIGIN;
-	hook->s.weapon = WP_GRAPPLING_HOOK;
-	hook->r.ownerNum = self->s.number;
-	hook->methodOfDeath = MOD_GRAPPLE;
-	hook->clipmask = MASK_SHOT;
-	hook->parent = self;
-	hook->target_ent = NULL;
+        hook = G_Spawn();
+        hook->classname = "hook";
+        hook->nextthink = level.time + 10000;
+        hook->think = Weapon_HookFree;
+        hook->s.eType = ET_MISSILE;
+        hook->r.svFlags = SVF_USE_CURRENT_ORIGIN;
+        hook->s.weapon = WP_GRAPPLING_HOOK;
+        hook->r.ownerNum = self->s.number;
+        hook->methodOfDeath = MOD_GRAPPLE;
+        hook->clipmask = MASK_SHOT;
+        hook->parent = self;
+        hook->target_ent = NULL;
 
-	hook->s.pos.trType = TR_LINEAR;
-	hook->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;		// move a bit on the very first frame
-	hook->s.otherEntityNum = self->s.number; // use to match beam in client
-	VectorCopy( start, hook->s.pos.trBase );
-	VectorScale( dir, 800, hook->s.pos.trDelta );
-	SnapVector( hook->s.pos.trDelta );			// save net bandwidth
-	VectorCopy (start, hook->r.currentOrigin);
+        hook->s.pos.trType = TR_LINEAR;
+        hook->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;         // move a bit on the very first frame
+        hook->s.otherEntityNum = self->s.number; // use to match beam in client
+        VectorCopy( start, hook->s.pos.trBase );
+        VectorScale( dir, 800, hook->s.pos.trDelta );
+        SnapVector( hook->s.pos.trDelta );                      // save net bandwidth
+        VectorCopy (start, hook->r.currentOrigin);
 
-	self->client->hook = hook;
+        self->client->hook = hook;
 
-	return hook;
+        return hook;
   */
 //} //blud: xamis commented out the contents of the function, now I am commenting out the function itself to stop a warning it throws in the compiler for not returning anything.
+
 
 
 

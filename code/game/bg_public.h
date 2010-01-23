@@ -165,7 +165,7 @@ typedef enum {
 #define	PMF_TIME_WATERJUMP	256		// pm_time is waterjump
 #define	PMF_RESPAWNED		512		// clear after attack and jump buttons come up
 #define	PMF_USE_ITEM_HELD	1024
-#define PMF_GRAPPLE_PULL	2048	// pull towards grapple location
+#define PMF_SINGLE_MODE   	2048	// pull towards grapple location
 #define PMF_FOLLOW			4096	// spectate following another player
 #define PMF_SCOREBOARD		8192	// spectate as a scoreboard
 
@@ -194,7 +194,7 @@ typedef struct {
 
 	int			watertype;
 	int			waterlevel;
-
+        int             burstCount;
 	float		xyspeed;
 	int 		groundentity;
 	// for fixed msec Pmove
@@ -522,6 +522,8 @@ typedef enum {
 	BOTH_DEAD2,
 	BOTH_DEATH3,
 	BOTH_DEAD3,
+        BOTH_CLIMB,
+        BOTH_CLIMB_IDLE,
 
 	TORSO_GESTURE,
 
@@ -550,6 +552,10 @@ typedef enum {
 	LEGS_IDLECR,
 
 	LEGS_TURN,
+ //Xamis pistol
+        TORSO_ATTACK_PISTOL,
+        TORSO_STAND_PISTOL,
+        TORSO_RUN_ATTACK_PISTOL,
 
 	TORSO_GETFLAG,
 	TORSO_GUARDBASE,

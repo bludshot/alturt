@@ -1145,9 +1145,11 @@ void ClientSpawn(gentity_t *ent) {
 	if ( client->sess.sessionTeam == TEAM_SPECTATOR ) {
 		spawnPoint = SelectSpectatorSpawnPoint ( 
 						spawn_origin, spawn_angles);
-	} else if (g_gametype.integer >= GT_CTF ) {
+	} else if (g_gametype.integer >= GT_TEAM ) {
 		// all base oriented team games use the CTF spawn points
+#ifdef  XAMISDB
 		G_Printf( S_COLOR_BLUE "Using spawnPoint = SelectCTFSpawnPoint" );
+#endif
 		spawnPoint = SelectCTFSpawnPoint ( 
 						client->sess.sessionTeam, 
 						client->pers.teamState.state, 
@@ -1263,79 +1265,95 @@ void ClientSpawn(gentity_t *ent) {
 
 	client->ps.stats[STAT_WEAPONS] = ( 1 << WP_KNIFE ); //should always have a knife --Xamis
 	client->ps.ammo[WP_KNIFE] = -1;
+        client->ammoclip[WP_KNIFE] = -1;
 	
 	if( gear.string[0] == 'F'  ){ 
 		client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_BERETTA );
-		client->ps.ammo[WP_BERETTA] = 10;
+                client->ammoclip[WP_BERETTA] = RoundCount(WP_BERETTA);
+                client->ps.ammo[WP_BERETTA] = 3;
 	}else if( gear.string[0] == 'G'  ){
 		client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_DEAGLE );
-		client->ps.ammo[WP_DEAGLE] = 10;
+                client->ammoclip[WP_DEAGLE] = RoundCount(WP_DEAGLE);
+                client->ps.ammo[WP_DEAGLE] = 3;
 	}
 	switch ( gear.string[1] ) {
 		case 'H':
 			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_SPAS );
-			client->ps.ammo[WP_SPAS] = 30;
+                        client->ammoclip[WP_SPAS] = RoundCount(WP_SPAS);
+                        client->ps.ammo[WP_SPAS] = 3;
 			break;
 		case 'I':	
 			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_MP5K );
-			client->ps.ammo[WP_MP5K] = 8;
+                        client->ammoclip[WP_MP5K] = RoundCount(WP_MP5K);
+                        client->ps.ammo[WP_MP5K] = 3;
 			break;
 		case 'J':	
 			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_UMP45 );
-			client->ps.ammo[WP_UMP45] = 30;
+                        client->ammoclip[WP_UMP45] = RoundCount(WP_UMP45);
+                        client->ps.ammo[WP_UMP45] = 3;
 			break;
 		case 'K':			
 			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_HK69 );
-			client->ps.ammo[WP_HK69] = 10;
+                        client->ammoclip[WP_HK69] = RoundCount(WP_HK69);
+                        client->ps.ammo[WP_HK69] = 3;
 			break;
 		case 'L':		
 			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_LR300 );
-			client->ps.ammo[WP_LR300] = 30;
+                        client->ammoclip[WP_LR300] = RoundCount(WP_LR300);
+                        client->ps.ammo[WP_LR300] = 3;
 			break;
 		case 'M':		
 			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_G36 );
-			client->ps.ammo[WP_G36] = 30;
+                        client->ammoclip[WP_G36] = RoundCount(WP_G36);
+                        client->ps.ammo[WP_G36] = 3;
 			break;
 		case 'N':
 			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_PSG1 );
-			client->ps.ammo[WP_PSG1] = 30;
+                        client->ammoclip[WP_PSG1] = RoundCount(WP_PSG1);
+                        client->ps.ammo[WP_PSG1] = 3;
 			break;
 		case 'Z':			
 			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_SR8 );
-			client->ps.ammo[WP_SPAS] = 30;
+                        client->ammoclip[WP_SR8] = RoundCount(WP_SR8);
+                        client->ps.ammo[WP_SR8] = 3;
 			break;
 		case 'a':
 			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_AK103 );
-			client->ps.ammo[WP_AK103] = 30;
+                        client->ammoclip[WP_AK103] = RoundCount(WP_AK103);
+                        client->ps.ammo[WP_AK103] = 3;
 			break;
-		case 'c':			
+		case 'c':
 			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_NEGEV );
-			client->ps.ammo[WP_NEGEV] = 30;
+                        client->ammoclip[WP_NEGEV] = RoundCount(WP_NEGEV);
+                        client->ps.ammo[WP_NEGEV] = 3;
 			break;
 		default:
 			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_NONE );
 	}
-		
-	
+
+
 	switch ( gear.string[2] ) {
 		case 'H':
 			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_SPAS );
-			client->ps.ammo[WP_SPAS] = 30;
+                        client->ammoclip[WP_SPAS] = RoundCount(WP_SPAS);
+                        client->ps.ammo[WP_SPAS] = 3;
 			break;
 		case 'I':	
 			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_MP5K );
-			client->ps.ammo[WP_MP5K] = 8;
+                        client->ammoclip[WP_MP5K] = RoundCount(WP_MP5K);
+                        client->ps.ammo[WP_MP5K] = 3;
 			break;
 		case 'J':	
 			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_UMP45 );
-			client->ps.ammo[WP_UMP45] = 30;
+                        client->ammoclip[WP_UMP45] = RoundCount(WP_UMP45);
+                        client->ps.ammo[WP_UMP45] = 3;
 			break;
 		default:
 			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_NONE );
 	}
 
 	// health will count down towards max_health
-	ent->health = client->ps.stats[STAT_HEALTH] = client->ps.stats[STAT_MAX_HEALTH] + 25;
+	ent->health = client->ps.stats[STAT_HEALTH] = client->ps.stats[STAT_MAX_HEALTH];// removed + 25 Xamis
 	ent->stamina = client->ps.stats[STAT_STAMINA] = client->ps.stats[STAT_MAX_STAMINA];
 
 	G_SetOrigin( ent, spawn_origin );

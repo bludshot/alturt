@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "bg_public.h"
 #include "bg_local.h"
 
+
 pmove_t		*pm;
 pml_t		pml;
 
@@ -1481,12 +1482,15 @@ static void PM_Footsteps( void ) {
 	{
         // moving up or down)
 		if ( xyzspeed ) {
-			//PM_ContinueTorsoAnim ( ??Xamis ); what are the animations for climbing
-			//PM_ContinueLegsAnim  ( ??Xamis );
+                  PM_ContinueTorsoAnim ( BOTH_CLIMB );
+                  PM_ContinueLegsAnim  ( BOTH_CLIMB );
 			footstep = qtrue; //not sure why this isn't working, need more testing
 				//Com_Printf("\nonladder  moving foosteps added\n");
 		}
 		else {
+                  PM_ContinueTorsoAnim ( BOTH_CLIMB_IDLE );
+                  PM_ContinueLegsAnim  ( BOTH_CLIMB_IDLE );
+
 			footstep = qfalse;
 
 		}return;
@@ -1683,7 +1687,9 @@ static void PM_TorsoAnimation( void ) {
 	if ( pm->ps->weaponstate == WEAPON_READY ) {
 		if ( pm->ps->weapon == WP_KNIFE ) {
 			PM_ContinueTorsoAnim( TORSO_STAND2 );
-		} else {
+                } else if ( BG_Sidearm(pm->ps->weapon)){
+                  PM_StartTorsoAnim( TORSO_ATTACK_PISTOL );
+                }else{
 			PM_ContinueTorsoAnim( TORSO_STAND );
 		}
                 // QUARANTINE - Weapon Animation
@@ -1823,7 +1829,9 @@ static void PM_Weapon( void ) {
 		pm->ps->weaponstate = WEAPON_READY;
                 if ( pm->ps->weapon == WP_KNIFE ) {
                   PM_StartTorsoAnim( TORSO_STAND2 );
-                } else {
+                } else if ( BG_Sidearm(pm->ps->weapon)){
+                  PM_StartTorsoAnim( TORSO_STAND_PISTOL );
+                }else{
                   PM_StartTorsoAnim( TORSO_STAND );
                 }
 // QUARANTINE - Weapon Animation
@@ -1848,7 +1856,6 @@ static void PM_Weapon( void ) {
 		return;
 	}
 
-
     // single shot mode
 	if ( pm->ps->pm_flags & PMF_SINGLE_SHOT ) {
 		pm->ps->weaponstate = WEAPON_READY;
@@ -1861,17 +1868,17 @@ static void PM_Weapon( void ) {
 		return;
 
     				// check for out of ammo
-        if ( pm->ps->stats[STAT_ROUNDS] <= 0) {
+        if ( pm->ps->stats[STAT_ROUNDS] == 0 ) {
 	   PM_AddEvent( EV_NOAMMO );
            pm->ps->weaponTime = 550;
 	   pm->ps->weaponstate = WEAPON_READY;
            PM_ContinueWeaponAnim( WPN_IDLE );
 	   return;
-           }else PM_StartTorsoAnim( TORSO_ATTACK );
-
-                           // QUARANTINE - Weapon animations
-// This should change pm->ps->generic1 so we can animate
-                           PM_StartWeaponAnim( WPN_FIRE );
+        }else if ( BG_Sidearm(pm->ps->weapon)){
+          PM_StartTorsoAnim( TORSO_ATTACK_PISTOL );
+        }else
+          PM_StartTorsoAnim( TORSO_ATTACK );
+                          PM_StartWeaponAnim( WPN_FIRE );
 
 
 			   pm->ps->weaponstate = WEAPON_FIRING;
@@ -1879,8 +1886,9 @@ static void PM_Weapon( void ) {
 			   PM_AddEvent( EV_FIRE_WEAPON );
                            if (pm->ps->weapon == WP_SR8 ){
                            PM_StartWeaponAnim( WPN_BOLT);
-}
-			   if ( pm->ps->weapon == WP_DEAGLE || pm->ps->weapon == WP_BERETTA || pm->ps->weapon == WP_PSG1 || pm->ps->weapon == WP_SR8)
+                          }
+
+			   if ( pm->ps->pm_flags & PMF_SINGLE_MODE || pm->ps->weapon == WP_DEAGLE || pm->ps->weapon == WP_BERETTA || pm->ps->weapon == WP_PSG1 || pm->ps->weapon == WP_SR8)
 				   {
 					   pm->ps->pm_flags |= PMF_SINGLE_SHOT;
 
@@ -2262,10 +2270,6 @@ void PmoveSingle (pmove_t *pmove) {
 
 	} else if ( CheckLadder () != 0) {//Xamis
 		PM_LadderMove();
-	} else if (pm->ps->pm_flags & PMF_GRAPPLE_PULL) {
-		PM_GrappleMove();
-		// We can wiggle a bit
-		PM_AirMove();
 	} else if (pm->ps->pm_flags & PMF_TIME_WATERJUMP) {
 		PM_WaterJumpMove();
 	} else if ( pm->waterlevel > 1 ) {
