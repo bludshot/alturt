@@ -672,7 +672,7 @@ static void CG_DrawStatusBar( void ) {
 // ammo in gun
         //
         value = ps->stats[STAT_ROUNDS];
-        if (value > 0 ) {
+        if (value > -1 ) {
         //First Draw the 3D Model of the Weapon
           angles[YAW] = ( cg.time & 2047 ) * 360 / 2048.0;
           origin[0] = 80;

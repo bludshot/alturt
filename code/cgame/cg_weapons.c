@@ -1532,7 +1532,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
             CG_AddWeaponWithPowerups( &vcock, cent->currentState.powerups );
           }
 
-          if ( weapon->vbarrelModel) {
+          if ( weapon->vbarrelModel && weaponNum != WP_KNIFE ) {
             memset( &vbarrel, 0, sizeof( vbarrel ) );
             VectorCopy( parent->lightingOrigin, vbarrel.lightingOrigin );
             vbarrel.shadowPlane = parent->shadowPlane;
@@ -1678,16 +1678,10 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	}
 
 	// add the flash
-	if ( ( weaponNum == WP_KNIFE  )
-		&& ( nonPredictedCent->currentState.eFlags & EF_FIRING ) )
-	{
-		// continuous flash
-	} else {
-		// impulse flash
-		if ( cg.time - cent->muzzleFlashTime > MUZZLE_FLASH_TIME && !cent->pe.railgunFlash ) {
-			return;
+          if ( cg.time - cent->muzzleFlashTime > MUZZLE_FLASH_TIME && !cent->pe.railgunFlash  && weaponNum != WP_KNIFE) {
+			return; //removed some stuff, trying to prevent flash on knife, looked real dumb  --Xamis
 		}
-	}
+
 
 	memset( &flash, 0, sizeof( flash ) );
 	VectorCopy( parent->lightingOrigin, flash.lightingOrigin );
@@ -1703,8 +1697,8 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	angles[ROLL] = crandom() * 10;
 	AnglesToAxis( angles, flash.axis );
 
-	// colorize the railgun blast
-        if (ps)
+        if (weaponNum != WP_KNIFE){
+        if (ps )
           CG_PositionRotatedEntityOnTag( &flash, &gun, weapon->holdsModel, "tag_flash");
         else
           CG_PositionRotatedEntityOnTag( &flash, &gun, weapon->weaponModel, "tag_flash");
@@ -1713,16 +1707,17 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	if ( ps || cg.renderingThirdPerson ||
 		cent->currentState.number != cg.predictedPlayerState.clientNum ) {
 		// add lightning bolt
-		CG_LightningBolt( nonPredictedCent, flash.origin );
+		//CG_LightningBolt( nonPredictedCent, flash.origin );
 
 		// add rail trail
-		CG_SpawnRailTrail( cent, flash.origin );
+		//CG_SpawnRailTrail( cent, flash.origin );
 
 		if ( weapon->flashDlightColor[0] || weapon->flashDlightColor[1] || weapon->flashDlightColor[2] ) {
 			trap_R_AddLightToScene( flash.origin, 300 + (rand()&31), weapon->flashDlightColor[0],
 				weapon->flashDlightColor[1], weapon->flashDlightColor[2] );
 		}
 	}
+        }
 }
 
 /*

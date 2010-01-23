@@ -380,7 +380,7 @@ static void CG_Item( centity_t *cent ) {
 		barrel.shadowPlane = ent.shadowPlane;
 		barrel.renderfx = ent.renderfx;
 
-		CG_PositionRotatedEntityOnTag( &barrel, &ent, wi->weaponModel, "tag_barrel" );
+//		CG_PositionRotatedEntityOnTag( &barrel, &ent, wi->weaponModel, "tag_barrel" ); //Xamis
 
 		AxisCopy( ent.axis, barrel.axis );
 		barrel.nonNormalizedAxes = ent.nonNormalizedAxes;
