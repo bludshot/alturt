@@ -103,7 +103,7 @@ static qboolean	CG_ParseAnimationFile( const char *filename, clientInfo_t *ci, c
 
 
 	urtModelAnimOffset = 224; //blud: used for UrT style models (Orion & Athena).
-	//224 is how faw my chosen gesture animation (taunt) is from 300 
+	//224 is how far my chosen gesture animation (taunt) is from 300 
 	//which is i guess where it's "supposed" to be (even tho it's not lol 
 	//but somehow 300 is the magic number)
 
