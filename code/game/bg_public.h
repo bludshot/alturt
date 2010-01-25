@@ -164,10 +164,11 @@ typedef enum {
 #define	PMF_TIME_KNOCKBACK	64		// pm_time is an air-accelerate only time
 #define	PMF_TIME_WATERJUMP	256		// pm_time is waterjump
 #define	PMF_RESPAWNED		512		// clear after attack and jump buttons come up
-#define	PMF_USE_ITEM_HELD	1024
+#define	PMF_USE_ITEM_HELD	16384
 #define PMF_SINGLE_MODE   	2048	// pull towards grapple location
 #define PMF_FOLLOW			4096	// spectate following another player
 #define PMF_SCOREBOARD		8192	// spectate as a scoreboard
+#define PMF_TIME_WALLJUMP       1024    //
 
 
 #define	PMF_ALL_TIMES	(PMF_TIME_WATERJUMP|PMF_TIME_LAND|PMF_TIME_KNOCKBACK)
@@ -225,6 +226,7 @@ typedef enum {
 	STAT_PERSISTANT_POWERUP,
 #endif
 	STAT_WEAPONS,					// 16 bit fields
+        STAT_WEAPONS_EXT,
 	STAT_CWEAPONS,
 	STAT_ARMOR,
 	STAT_DEAD_YAW,					// look this direction when dead (FIXME: get rid of?)
@@ -245,7 +247,7 @@ qboolean BG_HasWeapon( int weapon, int stats[ ] );
 qboolean BG_HasSidearm (const  playerState_t *ps );
 qboolean BG_HasPrimary (const  playerState_t *ps );
 qboolean BG_HasSecondary (const  playerState_t *ps );
-
+void BG_ExtendedWeapons( int weapon, int stats[ ] );
 //int BG_WeaponModes( int weapon ) ;
 
 
@@ -357,14 +359,22 @@ typedef enum {
  WP_PSG1, //13
  WP_SR8, //14
  WP_HE,
- WP_SMOKE
+ WP_SMOKE,
+
+
+ WP_NUM_WEAPONS
 // WP_GRAPPLING_HOOK,
 
 
 
 } weapon_t;
 
+typedef enum {
 
+  MF_NONE,
+
+  MF_SMOKE
+} missleFunc_t;
 
 // reward sounds (stored in ps->persistant[PERS_PLAYEREVENTS])
 #define	PLAYEREVENT_DENIEDREWARD		0x0001
@@ -774,6 +784,7 @@ void	BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s
 
 qboolean	BG_PlayerTouchesItem( playerState_t *ps, entityState_t *item, int atTime );
 
+void      BG_GetClientNormal( const playerState_t *ps, vec3_t normal );
 
 
 #define ARENAS_PER_TIER		4

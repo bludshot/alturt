@@ -644,48 +644,6 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 
 }
 
-#ifdef MISSIONPACK
-/*
-==============
-StuckInOtherClient
-==============
-*/
-static int StuckInOtherClient(gentity_t *ent) {
-	int i;
-	gentity_t	*ent2;
-
-	ent2 = &g_entities[0];
-	for ( i = 0; i < MAX_CLIENTS; i++, ent2++ ) {
-		if ( ent2 == ent ) {
-			continue;
-		}
-		if ( !ent2->inuse ) {
-			continue;
-		}
-		if ( !ent2->client ) {
-			continue;
-		}
-		if ( ent2->health <= 0 ) {
-			continue;
-		}
-		//
-		if (ent2->r.absmin[0] > ent->r.absmax[0])
-			continue;
-		if (ent2->r.absmin[1] > ent->r.absmax[1])
-			continue;
-		if (ent2->r.absmin[2] > ent->r.absmax[2])
-			continue;
-		if (ent2->r.absmax[0] < ent->r.absmin[0])
-			continue;
-		if (ent2->r.absmax[1] < ent->r.absmin[1])
-			continue;
-		if (ent2->r.absmax[2] < ent->r.absmin[2])
-			continue;
-		return qtrue;
-	}
-	return qfalse;
-}
-#endif
 
 void BotTestSolid(vec3_t origin);
 

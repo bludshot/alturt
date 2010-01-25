@@ -51,28 +51,28 @@ typedef struct {
 	vec3_t		previous_origin;
 	vec3_t		previous_velocity;
 	int		previous_waterlevel;
-	
-	
-	qboolean ladder; 	//Xamis	
+
+
+	qboolean ladder; 	//Xamis
 	vec3_t 		origin;          // Xamis
 	vec3_t 		velocity;        // Xamis
 	cplane_t 	groundplane;	 // Xamis
-	
+
 	float maxPlayerSpeed;// Xamis
 	float maxWalkSpeed;// Xamis
 	float maxCrouchedSpeed;// Xamis
 	float jumpPlayerSpeed;// Xamis
 	float dashPlayerSpeed;// Xamis
-	
-	
-	
-	
-	vec3_t 		flatforward; 	
+
+
+
+
+	vec3_t 		flatforward;
 	int 		groundsurfFlags;
 	int		groundcontents;
 	float 		forwardPush, sidePush, upPush;
-		
-	
+
+
 } pml_t;
 
 extern	pmove_t		*pm;
@@ -104,5 +104,8 @@ qboolean	PM_SlideMove( qboolean gravity );
 
 void		PM_StepSlideMove( qboolean gravity );
 void PM_StartWeaponAnim( int anim );
+
+
+
 
 

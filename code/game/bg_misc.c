@@ -1351,6 +1351,7 @@ char *eventnames[] = {
 	"EV_STEP_12",
 	"EV_STEP_16",
 
+
 	"EV_FALL_SHORT",
 	"EV_FALL_MEDIUM",
 	"EV_FALL_FAR",
@@ -1578,6 +1579,8 @@ void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean 
 			s->powerups |= 1 << i;
 		}
 	}
+  // have to get the surfNormal through somehow...
+        VectorCopy( ps->grapplePoint, s->angles2 );
 
 	s->loopSound = ps->loopSound;
 	s->generic1 = ps->generic1;
@@ -1871,7 +1874,7 @@ BG_Grenade
 ================
 */
 
-/*
+
 qboolean BG_Grenade ( int weapon ) {
     switch (weapon) {
     case WP_SMOKE:
@@ -1881,6 +1884,17 @@ qboolean BG_Grenade ( int weapon ) {
         return qfalse;
     }
 }
+
+
+
+/*
+===============
+BG_GetClientNormal
+
+Get the normal for the surface the client is walking on
+===============
 */
-
-
+void BG_GetClientNormal( const playerState_t *ps, vec3_t normal )
+{
+    VectorSet( normal, 0.0f, 0.0f, 1.0f );
+}

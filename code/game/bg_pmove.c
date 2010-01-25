@@ -196,7 +196,7 @@ void PM_ClipVelocity( vec3_t in, vec3_t normal, vec3_t out, float overbounce ) {
 CheckWall Fuction Xamis
 =============
 */
-
+/*
 void CheckWall( void )
 {
         vec3_t flatforward,spot;
@@ -216,7 +216,7 @@ void CheckWall( void )
 
 }
 
-
+*/
 
 
 /*
@@ -494,50 +494,158 @@ static void PM_SetMovementDir( void ) {
         }
 }
 
+//Draws Heavily from Tremulous --Xamis
+static qboolean PM_CheckJump( void )
+{
+  vec3_t normal;
+
+  if( pm->ps->groundEntityNum == ENTITYNUM_NONE )
+    return qfalse;
+
+  if( pm->ps->pm_flags & PMF_RESPAWNED )
+    return qfalse;    // don't allow jump until all buttons are up
+
+  if( pm->cmd.upmove < 10 )
+    // not holding jump
+    return qfalse;
+
+  // must wait for jump to be released
+  if( pm->ps->pm_flags & PMF_JUMP_HELD )
+  {
+    // clear upmove so cmdscale doesn't lower running speed
+    pm->cmd.upmove = 0;
+    return qfalse;
+  }
+
+  pml.groundPlane = qfalse;   // jumping away
+  pml.walking = qfalse;
+  pm->ps->pm_flags |= PMF_JUMP_HELD;
+
+  pm->ps->groundEntityNum = ENTITYNUM_NONE;
+
+  // jump away from wall
+  VectorSet( normal, 0.0f, 0.0f, 0.9f );
+
+  if( pm->ps->velocity[ 2 ] < 0 )
+    pm->ps->velocity[ 2 ] = 0;
+
+  VectorMA( pm->ps->velocity, 300.0f,
+            normal, pm->ps->velocity );
+
+  PM_AddEvent( EV_JUMP );
+
+  if( pm->cmd.forwardmove >= 0 )
+  {
+
+      PM_ForceLegsAnim( LEGS_JUMP );
+    pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
+  }
+  else
+  {
+      PM_ForceLegsAnim( LEGS_JUMPB );
+    pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
+  }
+
+  return qtrue;
+}
+
 
 /*
 =============
-PM_CheckJump
+PM_CheckWallJump
+Code Modified from Tremulous --Xamis
 =============
 */
-static qboolean PM_CheckJump( void ) {
-        if ( pm->ps->pm_flags & PMF_RESPAWNED ) {
-                return qfalse;          // don't allow jump until all buttons are up
-        }
+static qboolean PM_CheckWallJump( void )
+{
+	vec3_t  dir, forward, movedir, point;
+	vec3_t  refNormal = { 0.0f, 0.0f, 0.5f };
+	float   normalFraction = 1.0f;
+	float   cmdFraction = 1.0f;
+	float   upFraction = 6.0f;
+	trace_t trace;
 
-        if ( pm->cmd.upmove < 10 ) {
-                // not holding jump
-                return qfalse;
-        }
+	ProjectPointOnPlane( movedir, pml.forward, refNormal );
+	VectorNormalize( movedir );
 
-        // must wait for jump to be released
-        if ( pm->ps->pm_flags & PMF_JUMP_HELD ) {
-                // clear upmove so cmdscale doesn't lower running speed
-                pm->cmd.upmove = 0;
-                return qfalse;
-        }
+	if( pm->cmd.forwardmove < 0 )
+		VectorNegate( movedir, movedir );
 
-        pml.groundPlane = qfalse;               // jumping away
-        pml.walking = qfalse;
-        pm->ps->pm_flags |= PMF_JUMP_HELD;
+  //trace into direction we are moving
+	VectorMA( pm->ps->origin, 0.25f, movedir, point );
+	pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask );
 
-        pm->ps->groundEntityNum = ENTITYNUM_NONE;
-        if (pm->ps->stats[STAT_STAMINA] < 25 ){
-        pm->ps->velocity[2] = JUMP_VELOCITY/1.6; //Xamis less jump velocity when stamina low
-        }else{
-        pm->ps->velocity[2] = JUMP_VELOCITY;
-        }
-        PM_AddEvent( EV_JUMP );
+	if( trace.fraction < 1.0f &&
+		   !( trace.surfaceFlags & ( SURF_SKY | SURF_SLICK ) ) &&
+		   trace.plane.normal[ 2 ] < MIN_WALK_NORMAL )
+	{
+		if( !VectorCompare( trace.plane.normal, pm->ps->grapplePoint ) )
+		{
+			VectorCopy( trace.plane.normal, pm->ps->grapplePoint );
+		}
+	}
+	else
+		return qfalse;
 
-        if ( pm->cmd.forwardmove >= 0 ) {
-                PM_ForceLegsAnim( LEGS_JUMP );
-                pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
-        } else {
-                PM_ForceLegsAnim( LEGS_JUMPB );
-                pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
-        }
+	if( pm->ps->pm_flags & PMF_RESPAWNED )
+		return qfalse;    // don't allow jump until all buttons are up
 
-        return qtrue;
+	if( pm->cmd.upmove < 10 )
+    // not holding jump
+		return qfalse;
+
+  // must wait for jump to be released
+	if( pm->ps->pm_flags & PMF_JUMP_HELD &&
+		   pm->ps->grapplePoint[ 2 ] == 1.0f )
+	{
+    // clear upmove so cmdscale doesn't lower running speed
+		pm->cmd.upmove = 0;
+		return qfalse;
+	}
+
+
+	pml.groundPlane = qfalse;   // jumping away
+	pml.walking = qfalse;
+	pm->ps->pm_flags |= PMF_JUMP_HELD;
+
+	pm->ps->groundEntityNum = ENTITYNUM_NONE;
+
+	ProjectPointOnPlane( forward, pml.forward, pm->ps->grapplePoint );
+
+	VectorScale( pm->ps->grapplePoint, normalFraction, dir );
+
+	if( pm->cmd.forwardmove > 0 )
+		VectorMA( dir, cmdFraction, forward, dir );
+	else if( pm->cmd.forwardmove < 0 )
+		VectorMA( dir, -cmdFraction, forward, dir );
+
+
+	VectorMA( dir, upFraction, refNormal, dir );
+	VectorNormalize( dir );
+
+        VectorMA( pm->ps->velocity, 300.0f,
+		  dir, pm->ps->velocity );
+
+	if( VectorLength( pm->ps->velocity ) > 320 )
+	{
+		VectorNormalize( pm->ps->velocity );
+		VectorScale( pm->ps->velocity, 320, pm->ps->velocity );
+	}
+
+	PM_AddEvent( EV_JUMP );
+
+	if( pm->cmd.forwardmove >= 0 )
+	{
+		PM_ForceLegsAnim( LEGS_JUMP );
+		pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
+	}
+	else
+	{
+		PM_ForceLegsAnim( LEGS_JUMPB );
+		pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
+	}
+
+	return qtrue;
 }
 
 /*
@@ -587,8 +695,6 @@ static qboolean PM_CheckWaterJump( void ) {
         return qtrue;
 }
 
-//============================================================================
-
 
 /*
 ===================
@@ -600,8 +706,8 @@ Flying out of the water
 static void PM_WaterJumpMove( void ) {
         // waterjump has no control, but falls
 
-        PM_StepSlideMove( qtrue );
-
+ // PM_StepSlideMove( qtrue, qfalse );
+  PM_StepSlideMove( qtrue );
         pm->ps->velocity[2] -= pm->ps->gravity * pml.frametime;
         if (pm->ps->velocity[2] < 0) {
                 // cancel as soon as we are falling down again
@@ -739,8 +845,8 @@ static void PM_FlyMove( void ) {
         wishspeed = VectorNormalize(wishdir);
 
         PM_Accelerate (wishdir, wishspeed, pm_flyaccelerate);
-
         PM_StepSlideMove( qfalse );
+//        PM_StepSlideMove( qfalse, qfalse );
 }
 
 
@@ -758,7 +864,7 @@ static void PM_AirMove( void ) {
         float           wishspeed;
         float           scale;
         usercmd_t       cmd;
-
+        PM_CheckWallJump( );
         PM_Friction();
 
         fmove = pm->cmd.forwardmove;
@@ -805,8 +911,8 @@ static void PM_AirMove( void ) {
         else
                 PM_SlideMove ( qtrue );
 #endif
-
-        PM_StepSlideMove ( qtrue );
+        PM_SlideMove ( qtrue );
+        //PM_StepSlideMove( qtrue, qfalse );
 }
 
 /*
@@ -815,6 +921,7 @@ PM_GrappleMove
 
 ===================
 */
+/*
 static void PM_GrappleMove( void ) {
         vec3_t vel, v;
         float vlen;
@@ -834,7 +941,7 @@ static void PM_GrappleMove( void ) {
 
         pml.groundPlane = qfalse;
 }
-
+*/
 /*
 ===================
 PM_WalkMove
@@ -954,6 +1061,7 @@ static void PM_WalkMove( void ) {
                 return;
         }
 
+       // PM_StepSlideMove( qfalse, qfalse );
         PM_StepSlideMove( qfalse );
 
         //Com_Printf("velocity2 = %1.1f\n", VectorLength(pm->ps->velocity));
@@ -1263,7 +1371,7 @@ PM_GroundTrace
 static void PM_GroundTrace( void ) {
         vec3_t          point;
         trace_t         trace;
-
+        vec3_t      refNormal = { 0.0f, 0.0f, 1.0f };
         point[0] = pm->ps->origin[0];
         point[1] = pm->ps->origin[1];
         point[2] = pm->ps->origin[2] - 0.25;
@@ -1276,6 +1384,9 @@ static void PM_GroundTrace( void ) {
                 if ( !PM_CorrectAllSolid(&trace) )
                         return;
         }
+  //make sure that the surfNormal is reset to the ground
+        VectorCopy( refNormal, pm->ps->grapplePoint );
+
 
         // if the trace didn't hit anything, we are in free fall
         if ( trace.fraction == 1.0 ) {
@@ -1991,6 +2102,7 @@ PM_WallMove()
 
 ===================
 */
+/*
 static void PM_WallMove( void ) {
         int i;
         vec3_t wishvel;
@@ -2032,7 +2144,7 @@ static void PM_WallMove( void ) {
 
              PM_SlideMove( qfalse ); // move without gravity
 }
-
+*/
 
 
 /*
@@ -2282,7 +2394,6 @@ void PmoveSingle (pmove_t *pmove) {
                 // airborne
                 PM_AirMove();
         }
-
         PM_Animate();
 
         // set groundentity, watertype, and waterlevel

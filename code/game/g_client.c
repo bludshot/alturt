@@ -52,7 +52,7 @@ potential spawning position for Urban Terror.
 
 -------- KEYS --------
 team : team that this spawn belongs to ("red" or "blue")
-group : this spawn groups with others of same groupID. A team chooses spawns from a certain group. 
+group : this spawn groups with others of same groupID. A team chooses spawns from a certain group.
 g_gametype : a list of gametypes on which to use this spawn eg: "4, 5, 6"
 
 -------- NOTES --------
@@ -243,21 +243,21 @@ gentity_t *SelectRandomFurthestSpawnPoint ( vec3_t avoidPoint, vec3_t origin, ve
 			{
 				if (numSpots >= MAX_SPAWN_POINTS)
 					numSpots = MAX_SPAWN_POINTS - 1;
-					
+
 				for(j = numSpots; j > i; j--)
 				{
 					list_dist[j] = list_dist[j-1];
 					list_spot[j] = list_spot[j-1];
 				}
-				
+
 				list_dist[i] = dist;
 				list_spot[i] = spot;
-				
+
 				numSpots++;
 				break;
 			}
 		}
-		
+
 		if(i >= numSpots && numSpots < MAX_SPAWN_POINTS)
 		{
 			list_dist[numSpots] = dist;
@@ -265,7 +265,7 @@ gentity_t *SelectRandomFurthestSpawnPoint ( vec3_t avoidPoint, vec3_t origin, ve
 			numSpots++;
 		}
 	}
-	
+
 	if(!numSpots)
 	{
 		spot = G_Find(NULL, FOFS(classname), "info_player_deathmatch");
@@ -312,7 +312,7 @@ gentity_t *SelectSpawnPoint ( vec3_t avoidPoint, vec3_t origin, vec3_t angles, q
 		if ( spot == nearestSpot ) {
 			// last try
 			spot = SelectRandomDeathmatchSpawnPoint ( );
-		}		
+		}
 	}
 
 	// find a single player start spot
@@ -340,7 +340,7 @@ gentity_t *SelectInitialSpawnPoint( vec3_t origin, vec3_t angles, qboolean isbot
 	gentity_t	*spot;
 
 	spot = NULL;
-	
+
 	while ((spot = G_Find (spot, FOFS(classname), "info_player_deathmatch")) != NULL)
 	{
 		if(((spot->flags & FL_NO_BOTS) && isbot) ||
@@ -348,7 +348,7 @@ gentity_t *SelectInitialSpawnPoint( vec3_t origin, vec3_t angles, qboolean isbot
 		{
 			continue;
 		}
-		
+
 		if((spot->spawnflags & 0x01))
 			break;
 	}
@@ -416,7 +416,7 @@ void BodySink( gentity_t *ent ) {
 		// the body ques are never actually freed, they are just unlinked
 		trap_UnlinkEntity( ent );
 		ent->physicsObject = qfalse;
-		return;	
+		return;
 	}
 	ent->nextthink = level.time + 100;
 	ent->s.pos.trBase[2] -= 1;
@@ -677,7 +677,7 @@ static void ClientCleanName(const char *in, char *out, int outSize)
 
 	// discard leading spaces
 	for(; *in == ' '; in++);
-	
+
 	for(; *in && outpos < outSize - 1; in++)
 	{
 		out[outpos] = *in;
@@ -687,7 +687,7 @@ static void ClientCleanName(const char *in, char *out, int outSize)
 			// don't allow too many consecutive spaces
 			if(spaces > 2)
 				continue;
-			
+
 			spaces++;
 		}
 		else if(outpos > 0 && out[outpos - 1] == Q_COLOR_ESCAPE)
@@ -695,7 +695,7 @@ static void ClientCleanName(const char *in, char *out, int outSize)
 			if(Q_IsColorString(&out[outpos - 1]))
 			{
 				colorlessLen--;
-				
+
 				if(ColorIndex(*in) == 0)
 				{
 					// Disallow color black in names to prevent players
@@ -715,7 +715,7 @@ static void ClientCleanName(const char *in, char *out, int outSize)
 			spaces = 0;
 			colorlessLen++;
 		}
-		
+
 		outpos++;
 	}
 
@@ -794,7 +794,7 @@ void ClientUserinfoChanged( int clientNum ) {
 
 	if ( client->pers.connected == CON_CONNECTED ) {
 		if ( strcmp( oldname, client->pers.netname ) ) {
-			trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " renamed to %s\n\"", oldname, 
+			trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " renamed to %s\n\"", oldname,
 				client->pers.netname) );
 		}
 	}
@@ -810,7 +810,7 @@ void ClientUserinfoChanged( int clientNum ) {
 		client->pers.maxHealth = health;
 		client->pers.maxStamina = client->pers.maxHealth *3; //Xamis
 
-		
+
 		if ( client->pers.maxHealth < 1 || client->pers.maxHealth > 100 ) {
 			client->pers.maxHealth = 100;
 			client->pers.maxStamina = client->pers.maxHealth *3; //Xamis
@@ -923,25 +923,25 @@ void ClientUserinfoChanged( int clientNum ) {
 	strcpy(redTeam, Info_ValueForKey( userinfo, "g_redteam" ));
 	strcpy(blueTeam, Info_ValueForKey( userinfo, "g_blueteam" ));
 	strcpy(guid, Info_ValueForKey(userinfo, "cl_guid"));
-	
+
 	//blud updated these to include rr rb skin
 	// send over a subset of the userinfo keys so other clients can
 	// print scoreboards, display models, and play custom sounds
 	if (ent->r.svFlags & SVF_BOT)
 	{
 		s = va("n\\%s\\t\\%i\\model\\%s\\hmodel\\%s\\rr\\%d\\rb\\%d\\skin\\%s\\c1\\%s\\c2\\%s\\hc\\%i\\w\\%i\\l\\%i\\skill\\%s\\tt\\%d\\tl\\%d",
-			client->pers.netname, team, model, headModel, racered, raceblue, skin, c1, c2, 
+			client->pers.netname, team, model, headModel, racered, raceblue, skin, c1, c2,
 			client->pers.maxHealth, client->sess.wins, client->sess.losses,
 			Info_ValueForKey( userinfo, "skill" ), teamTask, teamLeader );
 	}
 	else
 	{
 		s = va("n\\%s\\guid\\%s\\t\\%i\\model\\%s\\hmodel\\%s\\rr\\%d\\rb\\%d\\skin\\%s\\g_redteam\\%s\\g_blueteam\\%s\\c1\\%s\\c2\\%s\\hc\\%i\\w\\%i\\l\\%i\\tt\\%d\\tl\\%d",
-			client->pers.netname, guid, client->sess.sessionTeam, model, headModel, racered, raceblue, skin, redTeam, blueTeam, c1, c2, 
+			client->pers.netname, guid, client->sess.sessionTeam, model, headModel, racered, raceblue, skin, redTeam, blueTeam, c1, c2,
 			client->pers.maxHealth, client->sess.wins, client->sess.losses, teamTask, teamLeader);
 	}
 
-	
+
 
 	trap_SetConfigstring( CS_PLAYERS+clientNum, s );
 
@@ -1143,16 +1143,16 @@ void ClientSpawn(gentity_t *ent) {
 	// do it before setting health back up, so farthest
 	// ranging doesn't count this client
 	if ( client->sess.sessionTeam == TEAM_SPECTATOR ) {
-		spawnPoint = SelectSpectatorSpawnPoint ( 
+		spawnPoint = SelectSpectatorSpawnPoint (
 						spawn_origin, spawn_angles);
 	} else if (g_gametype.integer >= GT_TEAM ) {
 		// all base oriented team games use the CTF spawn points
 #ifdef  XAMISDB
 		G_Printf( S_COLOR_BLUE "Using spawnPoint = SelectCTFSpawnPoint" );
 #endif
-		spawnPoint = SelectCTFSpawnPoint ( 
-						client->sess.sessionTeam, 
-						client->pers.teamState.state, 
+		spawnPoint = SelectCTFSpawnPoint (
+						client->sess.sessionTeam,
+						client->pers.teamState.state,
 						spawn_origin, spawn_angles,
 						!!(ent->r.svFlags & SVF_BOT));
 	}
@@ -1168,8 +1168,8 @@ void ClientSpawn(gentity_t *ent) {
 		else
 		{
 			// don't spawn near existing origin if possible
-			spawnPoint = SelectSpawnPoint ( 
-				client->ps.origin, 
+			spawnPoint = SelectSpawnPoint (
+				client->ps.origin,
 				spawn_origin, spawn_angles, !!(ent->r.svFlags & SVF_BOT));
 		}
 	}
@@ -1241,13 +1241,13 @@ void ClientSpawn(gentity_t *ent) {
 	ent->waterlevel = 0;
 	ent->watertype = 0;
 	ent->flags = 0;
-	
+
 	VectorCopy (playerMins, ent->r.mins);
 	VectorCopy (playerMaxs, ent->r.maxs);
 
 	client->ps.clientNum = index;
-	
-	
+
+
 		/*
 	--Xamis--
 
@@ -1260,14 +1260,14 @@ void ClientSpawn(gentity_t *ent) {
 	//grenade = gear.string[3];
 	//item1 = gear.string[4];
 	//item2 = gear.string[5];
-	//item3 = gear.string[6];	
+	//item3 = gear.string[6];
 
 
 	client->ps.stats[STAT_WEAPONS] = ( 1 << WP_KNIFE ); //should always have a knife --Xamis
 	client->ps.ammo[WP_KNIFE] = -1;
         client->ammoclip[WP_KNIFE] = -1;
-	
-	if( gear.string[0] == 'F'  ){ 
+
+	if( gear.string[0] == 'F'  ){
 		client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_BERETTA );
                 client->ammoclip[WP_BERETTA] = RoundCount(WP_BERETTA);
                 client->ps.ammo[WP_BERETTA] = 3;
@@ -1282,27 +1282,27 @@ void ClientSpawn(gentity_t *ent) {
                         client->ammoclip[WP_SPAS] = RoundCount(WP_SPAS);
                         client->ps.ammo[WP_SPAS] = 3;
 			break;
-		case 'I':	
+		case 'I':
 			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_MP5K );
                         client->ammoclip[WP_MP5K] = RoundCount(WP_MP5K);
                         client->ps.ammo[WP_MP5K] = 3;
 			break;
-		case 'J':	
+		case 'J':
 			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_UMP45 );
                         client->ammoclip[WP_UMP45] = RoundCount(WP_UMP45);
                         client->ps.ammo[WP_UMP45] = 3;
 			break;
-		case 'K':			
+		case 'K':
 			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_HK69 );
                         client->ammoclip[WP_HK69] = RoundCount(WP_HK69);
                         client->ps.ammo[WP_HK69] = 3;
 			break;
-		case 'L':		
+		case 'L':
 			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_LR300 );
                         client->ammoclip[WP_LR300] = RoundCount(WP_LR300);
                         client->ps.ammo[WP_LR300] = 3;
 			break;
-		case 'M':		
+		case 'M':
 			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_G36 );
                         client->ammoclip[WP_G36] = RoundCount(WP_G36);
                         client->ps.ammo[WP_G36] = 3;
@@ -1312,7 +1312,7 @@ void ClientSpawn(gentity_t *ent) {
                         client->ammoclip[WP_PSG1] = RoundCount(WP_PSG1);
                         client->ps.ammo[WP_PSG1] = 3;
 			break;
-		case 'Z':			
+		case 'Z':
 			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_SR8 );
                         client->ammoclip[WP_SR8] = RoundCount(WP_SR8);
                         client->ps.ammo[WP_SR8] = 3;
@@ -1338,12 +1338,12 @@ void ClientSpawn(gentity_t *ent) {
                         client->ammoclip[WP_SPAS] = RoundCount(WP_SPAS);
                         client->ps.ammo[WP_SPAS] = 3;
 			break;
-		case 'I':	
+		case 'I':
 			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_MP5K );
                         client->ammoclip[WP_MP5K] = RoundCount(WP_MP5K);
                         client->ps.ammo[WP_MP5K] = 3;
 			break;
-		case 'J':	
+		case 'J':
 			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_UMP45 );
                         client->ammoclip[WP_UMP45] = RoundCount(WP_UMP45);
                         client->ps.ammo[WP_UMP45] = 3;
@@ -1351,7 +1351,7 @@ void ClientSpawn(gentity_t *ent) {
 		default:
 			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_NONE );
 	}
-
+        VectorSet( ent->client->ps.grapplePoint, 0.0f, 0.0f, 1.0f );
 	// health will count down towards max_health
 	ent->health = client->ps.stats[STAT_HEALTH] = client->ps.stats[STAT_MAX_HEALTH];// removed + 25 Xamis
 	ent->stamina = client->ps.stats[STAT_STAMINA] = client->ps.stats[STAT_MAX_STAMINA];
@@ -1463,7 +1463,7 @@ void ClientDisconnect( int clientNum ) {
 	}
 
 	// send effect if they were completely connected
-	if ( ent->client->pers.connected == CON_CONNECTED 
+	if ( ent->client->pers.connected == CON_CONNECTED
 		&& ent->client->sess.sessionTeam != TEAM_SPECTATOR ) {
 		tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_OUT );
 		tent->s.clientNum = ent->s.clientNum;

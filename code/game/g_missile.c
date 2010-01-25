@@ -98,6 +98,7 @@ void G_ExplodeMissile( gentity_t *ent ) {
 ProximityMine_Explode
 ================
 */
+/*
 static void ProximityMine_Explode( gentity_t *mine ) {
 	G_ExplodeMissile( mine );
 	// if the prox mine has a trigger free it
@@ -106,22 +107,24 @@ static void ProximityMine_Explode( gentity_t *mine ) {
 		mine->activator = NULL;
 	}
 }
-
+*/
 /*
 ================
 ProximityMine_Die
 ================
 */
+/*
 static void ProximityMine_Die( gentity_t *ent, gentity_t *inflictor, gentity_t *attacker, int damage, int mod ) {
 	ent->think = ProximityMine_Explode;
 	ent->nextthink = level.time + 1;
 }
-
+*/
 /*
 ================
 ProximityMine_Trigger
 ================
 */
+/*
 void ProximityMine_Trigger( gentity_t *trigger, gentity_t *other, trace_t *trace ) {
 	vec3_t		v;
 	gentity_t	*mine;
@@ -157,12 +160,13 @@ void ProximityMine_Trigger( gentity_t *trigger, gentity_t *other, trace_t *trace
 
 	G_FreeEntity( trigger );
 }
-
+*/
 /*
 ================
 ProximityMine_Activate
 ================
 */
+/*
 static void ProximityMine_Activate( gentity_t *ent ) {
 	gentity_t	*trigger;
 	float		r;
@@ -196,12 +200,12 @@ static void ProximityMine_Activate( gentity_t *ent ) {
 	// set pointer to trigger so the entity can be freed when the mine explodes
 	ent->activator = trigger;
 }
-
+*/
 /*
 ================
 ProximityMine_ExplodeOnPlayer
 ================
-*/
+*//*
 static void ProximityMine_ExplodeOnPlayer( gentity_t *mine ) {
 	gentity_t	*player;
 
@@ -221,12 +225,13 @@ static void ProximityMine_ExplodeOnPlayer( gentity_t *mine ) {
 		G_ExplodeMissile( mine );
 	}
 }
-
+*/
 /*
 ================
 ProximityMine_Player
 ================
 */
+/*
 static void ProximityMine_Player( gentity_t *mine, gentity_t *player ) {
 	if( mine->s.eFlags & EF_NODRAW ) {
 		return;
@@ -259,6 +264,7 @@ static void ProximityMine_Player( gentity_t *mine, gentity_t *player ) {
 		mine->nextthink = level.time + 10 * 1000;
 	}
 }
+*/
 #endif
 
 /*
@@ -269,10 +275,6 @@ G_MissileImpact
 void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 	gentity_t		*other;
 	qboolean		hitClient = qfalse;
-#ifdef MISSIONPACK
-	vec3_t			forward, impactpoint, bouncedir;
-	int				eFlags;
-#endif
 	other = &g_entities[trace->entityNum];
 
 	// check for bounce
