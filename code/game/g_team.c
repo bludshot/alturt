@@ -753,7 +753,7 @@ int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, int team ) {
 
 	// Increase the team's score
 	AddTeamScore(ent->s.pos.trBase, other->client->sess.sessionTeam, 1);
-	Team_ForceGesture(other->client->sess.sessionTeam);
+	//Team_ForceGesture(other->client->sess.sessionTeam); //blud disabling auto-taunt on capture
 
 	other->client->pers.teamState.captures++;
 	// add the sprite over the player's head
