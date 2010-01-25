@@ -236,39 +236,6 @@ static void CG_ShotgunEjectBrass( centity_t *cent ) {
 }
 
 
-#ifdef MISSIONPACK
-/*
-==========================
-CG_NailgunEjectBrass
-==========================
-*/
-static void CG_NailgunEjectBrass( centity_t *cent ) {
-        localEntity_t   *smoke;
-        vec3_t                  origin;
-        vec3_t                  v[3];
-        vec3_t                  offset;
-        vec3_t                  xoffset;
-        vec3_t                  up;
-
-        AnglesToAxis( cent->lerpAngles, v );
-
-        offset[0] = 0;
-        offset[1] = -12;
-        offset[2] = 24;
-
-        xoffset[0] = offset[0] * v[0][0] + offset[1] * v[1][0] + offset[2] * v[2][0];
-        xoffset[1] = offset[0] * v[0][1] + offset[1] * v[1][1] + offset[2] * v[2][1];
-        xoffset[2] = offset[0] * v[0][2] + offset[1] * v[1][2] + offset[2] * v[2][2];
-        VectorAdd( cent->lerpOrigin, xoffset, origin );
-
-        VectorSet( up, 0, 0, 64 );
-
-        smoke = CG_SmokePuff( origin, up, 32, 1, 1, 1, 0.33f, 700, cg.time, 0, 0, cgs.media.smokePuffShader );
-        // use the optimized local entity add
-        smoke->leType = LE_SCALE_FADE;
-}
-#endif
-
 
 /*
 ==========================
@@ -453,170 +420,7 @@ static void CG_RocketTrail( centity_t *ent, const weaponInfo_t *wi ) {
 
 }
 
-#ifdef MISSIONPACK
-/*
-==========================
-CG_NailTrail
-==========================
-*/
-static void CG_NailTrail( centity_t *ent, const weaponInfo_t *wi ) {
-        int             step;
-        vec3_t  origin, lastPos;
-        int             t;
-        int             startTime, contents;
-        int             lastContents;
-        entityState_t   *es;
-        vec3_t  up;
-        localEntity_t   *smoke;
 
-        if ( cg_noProjectileTrail.integer ) {
-                return;
-        }
-
-        up[0] = 0;
-        up[1] = 0;
-        up[2] = 0;
-
-        step = 50;
-
-        es = &ent->currentState;
-        startTime = ent->trailTime;
-        t = step * ( (startTime + step) / step );
-
-        BG_EvaluateTrajectory( &es->pos, cg.time, origin );
-        contents = CG_PointContents( origin, -1 );
-
-        // if object (e.g. grenade) is stationary, don't toss up smoke
-        if ( es->pos.trType == TR_STATIONARY ) {
-                ent->trailTime = cg.time;
-                return;
-        }
-
-        BG_EvaluateTrajectory( &es->pos, ent->trailTime, lastPos );
-        lastContents = CG_PointContents( lastPos, -1 );
-
-        ent->trailTime = cg.time;
-
-        if ( contents & ( CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA ) ) {
-                if ( contents & lastContents & CONTENTS_WATER ) {
-                        CG_BubbleTrail( lastPos, origin, 8 );
-                }
-                return;
-        }
-
-        for ( ; t <= ent->trailTime ; t += step ) {
-                BG_EvaluateTrajectory( &es->pos, t, lastPos );
-
-                smoke = CG_SmokePuff( lastPos, up,
-                                          wi->trailRadius,
-                                          1, 1, 1, 0.33f,
-                                          wi->wiTrailTime,
-                                          t,
-                                          0,
-                                          0,
-                                          cgs.media.nailPuffShader );
-                // use the optimized local entity add
-                smoke->leType = LE_SCALE_FADE;
-        }
-
-}
-#endif
-
-/*
-==========================
-CG_NailTrail
-==========================
-*/
-static void CG_PlasmaTrail( centity_t *cent, const weaponInfo_t *wi ) {
-        localEntity_t   *le;
-        refEntity_t             *re;
-        entityState_t   *es;
-        vec3_t                  velocity, xvelocity, origin;
-        vec3_t                  offset, xoffset;
-        vec3_t                  v[3];
-        int                             t, startTime, step;
-
-        float   waterScale = 1.0f;
-
-        if ( cg_noProjectileTrail.integer || cg_oldPlasma.integer ) {
-                return;
-        }
-
-        step = 50;
-
-        es = &cent->currentState;
-        startTime = cent->trailTime;
-        t = step * ( (startTime + step) / step );
-
-        BG_EvaluateTrajectory( &es->pos, cg.time, origin );
-
-        le = CG_AllocLocalEntity();
-        re = &le->refEntity;
-
-        velocity[0] = 60 - 120 * crandom();
-        velocity[1] = 40 - 80 * crandom();
-        velocity[2] = 100 - 200 * crandom();
-
-        le->leType = LE_MOVE_SCALE_FADE;
-        le->leFlags = LEF_TUMBLE;
-        le->leBounceSoundType = LEBS_NONE;
-        le->leMarkType = LEMT_NONE;
-
-        le->startTime = cg.time;
-        le->endTime = le->startTime + 600;
-
-        le->pos.trType = TR_GRAVITY;
-        le->pos.trTime = cg.time;
-
-        AnglesToAxis( cent->lerpAngles, v );
-
-        offset[0] = 2;
-        offset[1] = 2;
-        offset[2] = 2;
-
-        xoffset[0] = offset[0] * v[0][0] + offset[1] * v[1][0] + offset[2] * v[2][0];
-        xoffset[1] = offset[0] * v[0][1] + offset[1] * v[1][1] + offset[2] * v[2][1];
-        xoffset[2] = offset[0] * v[0][2] + offset[1] * v[1][2] + offset[2] * v[2][2];
-
-        VectorAdd( origin, xoffset, re->origin );
-        VectorCopy( re->origin, le->pos.trBase );
-
-        if ( CG_PointContents( re->origin, -1 ) & CONTENTS_WATER ) {
-                waterScale = 0.10f;
-        }
-
-        xvelocity[0] = velocity[0] * v[0][0] + velocity[1] * v[1][0] + velocity[2] * v[2][0];
-        xvelocity[1] = velocity[0] * v[0][1] + velocity[1] * v[1][1] + velocity[2] * v[2][1];
-        xvelocity[2] = velocity[0] * v[0][2] + velocity[1] * v[1][2] + velocity[2] * v[2][2];
-        VectorScale( xvelocity, waterScale, le->pos.trDelta );
-
-        AxisCopy( axisDefault, re->axis );
-    re->shaderTime = cg.time / 1000.0f;
-    re->reType = RT_SPRITE;
-    re->radius = 0.25f;
-        re->customShader = cgs.media.railRingsShader;
-        le->bounceFactor = 0.3f;
-
-    re->shaderRGBA[0] = wi->flashDlightColor[0] * 63;
-    re->shaderRGBA[1] = wi->flashDlightColor[1] * 63;
-    re->shaderRGBA[2] = wi->flashDlightColor[2] * 63;
-    re->shaderRGBA[3] = 63;
-
-    le->color[0] = wi->flashDlightColor[0] * 0.2;
-    le->color[1] = wi->flashDlightColor[1] * 0.2;
-    le->color[2] = wi->flashDlightColor[2] * 0.2;
-    le->color[3] = 0.25f;
-
-        le->angles.trType = TR_LINEAR;
-        le->angles.trTime = cg.time;
-        le->angles.trBase[0] = rand()&31;
-        le->angles.trBase[1] = rand()&31;
-        le->angles.trBase[2] = rand()&31;
-        le->angles.trDelta[0] = 1;
-        le->angles.trDelta[1] = 0.5;
-        le->angles.trDelta[2] = 0;
-
-}
 /*
 ==========================
 CG_GrappleTrail
@@ -679,7 +483,7 @@ void CG_RegisterWeapon( int weaponNum ) {
         vec3_t                  mins, maxs;
         int                             i;
 // QUARANTINE - Weapon Animations - Added Variable
-        char filename[MAX_QPATH]; //Used to open animation.cfg files
+       // char filename[MAX_QPATH]; //Used to open animation.cfg files
 // END
         weaponInfo = &cg_weapons[weaponNum];
 
@@ -1182,53 +986,6 @@ static void CG_LightningBolt( centity_t *cent, vec3_t origin ) {
 */
 
 /*
-===============
-CG_SpawnRailTrail
-
-Origin will be the exact tag point, which is slightly
-different than the muzzle point used for determining hits.
-===============
-*/
-static void CG_SpawnRailTrail( centity_t *cent, vec3_t origin ) {
-
-}
-
-
-/*
-======================
-CG_MachinegunSpinAngle
-======================
-*/
-#define         SPIN_SPEED      0.9
-#define         COAST_TIME      1000
-static float    CG_MachinegunSpinAngle( centity_t *cent ) {
-        int             delta;
-        float   angle;
-        float   speed;
-
-        delta = cg.time - cent->pe.barrelTime;
-        if ( cent->pe.barrelSpinning ) {
-                angle = cent->pe.barrelAngle + delta * SPIN_SPEED;
-        } else {
-                if ( delta > COAST_TIME ) {
-                        delta = COAST_TIME;
-                }
-
-                speed = 0.5 * ( SPIN_SPEED + (float)( COAST_TIME - delta ) / COAST_TIME );
-                angle = cent->pe.barrelAngle + delta * speed;
-        }
-
-        if ( cent->pe.barrelSpinning == !(cent->currentState.eFlags & EF_FIRING) ) {
-                cent->pe.barrelTime = cg.time;
-                cent->pe.barrelAngle = AngleMod( angle );
-                cent->pe.barrelSpinning = !!(cent->currentState.eFlags & EF_FIRING);
-        }
-
-        return angle;
-}
-
-
-/*
 ========================
 CG_AddWeaponWithPowerups
 ========================
@@ -1268,7 +1025,6 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
         refEntity_t     gun; //this is used for thirdperson weapon and firstperson hands model Xamis
         refEntity_t     viewmainModel; //firstperson weapon model
         refEntity_t     holds;
-        refEntity_t     barrel;
         refEntity_t     flash;
         refEntity_t     silencer;
         refEntity_t     laser;
@@ -1300,7 +1056,6 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
         centity_t       *nonPredictedCent;
         orientation_t   lerped;
 
-        char                    path[MAX_QPATH];
 
         weaponNum = cent->currentState.weapon;
 
@@ -2087,8 +1842,6 @@ void CG_MissileHitWall( int weapon, int clientNum, vec3_t origin, vec3_t dir, im
         qboolean                alphaFade;
         qboolean                isSprite;
         int                             duration;
-        vec3_t                  sprOrg;
-        vec3_t                  sprVel;
 
         mark = 0;
         radius = 32;

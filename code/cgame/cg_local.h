@@ -505,6 +505,21 @@ typedef struct {
 // all cg.stepTime, cg.duckTime, cg.landTime, etc are set to cg.time when the action
 // occurs, and they will have visible effects for #define STEP_TIME or whatever msec after
 
+
+#define   MAXSMOOTHS          32
+
+typedef struct
+{
+  float     time;
+  float     timeMod;
+
+  vec3_t    rotAxis;
+  float     rotAngle;
+} smooth_t;
+
+
+
+
 #define MAX_PREDICTED_EVENTS	16
 
 typedef struct {
@@ -705,10 +720,10 @@ typedef struct {
 
 	//Xamis Invintory selection
 
-	int			activatedInventory;
-	int			currentInventory;
-	int Inventory[INVENTORYITEMS][WP_SMOKE];
-	int InventorySlot[INVENTORYITEMS];
+
+        vec3_t        lastVangles;                        // view smoothage
+        smooth_t      sList[ MAXSMOOTHS ];                // WW smoothing
+        vec3_t        lastNormal;
 
 
 } cg_t;
@@ -1141,6 +1156,7 @@ typedef struct {
 	int acceptLeader;
 	char acceptVoice[MAX_NAME_LENGTH];
 
+
 	// media
 	cgMedia_t		media;
 
@@ -1302,7 +1318,7 @@ void CG_ZoomUp_f( void );
 void CG_AddBufferedSound( sfxHandle_t sfx);
 
 void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demoPlayback );
-
+void        CG_addSmoothOp( vec3_t rotAxis, float rotAngle, float timeMod );
 
 //
 // cg_drawtools.c
