@@ -44,6 +44,7 @@ float   pm_airaccelerate = 1.0f;
 float   pm_wateraccelerate = 4.0f;
 float   pm_flyaccelerate = 8.0f;
 float   pm_ladderaccelerate = 4000; //Xamis
+float   pm_slideaccelerate = 4000;
 
 
 float   pm_friction = 6.0f;
@@ -51,11 +52,12 @@ float   pm_waterfriction = 1.0f;
 float   pm_flightfriction = 3.0f;
 float   pm_spectatorfriction = 5.0f;
 float   pm_ladderfriction = 4000; //Xamis
+float   pm_slidefriction = 2000;
 
 
 int             c_pmove = 0;
 
-
+qboolean PM_CheckPowerSlide( void );
 
 /*
 ===============
@@ -360,7 +362,6 @@ static void PM_Friction( void ) {
 
 
 
-
         // scale the velocity
         newspeed = speed - drop;
         if (newspeed < 0) {
@@ -614,17 +615,18 @@ static qboolean PM_CheckWallJump( void )
 
 	VectorScale( pm->ps->grapplePoint, normalFraction, dir );
 
+
 	if( pm->cmd.forwardmove > 0 )
 		VectorMA( dir, cmdFraction, forward, dir );
 	else if( pm->cmd.forwardmove < 0 )
 		VectorMA( dir, -cmdFraction, forward, dir );
-
 
 	VectorMA( dir, upFraction, refNormal, dir );
 	VectorNormalize( dir );
 
         VectorMA( pm->ps->velocity, 300.0f,
 		  dir, pm->ps->velocity );
+
 
 	if( VectorLength( pm->ps->velocity ) > 320 )
 	{
@@ -898,9 +900,13 @@ static void PM_AirMove( void ) {
         // though we don't have a groundentity
         // slide along the steep plane
         if ( pml.groundPlane ) {
+          pm->ps->pm_flags |= PMF_ONGROUND;
                 PM_ClipVelocity (pm->ps->velocity, pml.groundTrace.plane.normal,
                         pm->ps->velocity, OVERCLIP );
         }
+
+
+
 
 #if 0
         //ZOID:  If we are on the grapple, try stair-stepping
@@ -1596,7 +1602,7 @@ static void PM_Footsteps( void ) {
                   PM_ContinueTorsoAnim ( BOTH_CLIMB );
                   PM_ContinueLegsAnim  ( BOTH_CLIMB );
                         footstep = qtrue; //not sure why this isn't working, need more testing
-                                //Com_Printf("\nonladder  moving foosteps added\n");
+
                 }
                 else {
                   PM_ContinueTorsoAnim ( BOTH_CLIMB_IDLE );
@@ -1773,7 +1779,7 @@ static void PM_FinishWeaponChange( void ) {
         int             weapon;
 
         weapon = pm->cmd.weapon;
-        if ( weapon < WP_NONE || weapon >= WP_SMOKE ) {
+        if ( weapon < WP_NONE || weapon > WP_SMOKE ) {
                 weapon = WP_NONE;
         }
 
@@ -1812,6 +1818,143 @@ static void PM_TorsoAnimation( void ) {
         }
 }
 
+
+/*
+==================
+  RoundCount for Cmd_Reload --Xamis
+==================
+*/
+
+int RoundCount( int w )        {
+        //How much each clip holds
+  switch ( w ){
+    case WP_M4:
+    case WP_MP5K:
+    case WP_UMP45:
+    case WP_AK103:
+    case WP_G36:
+    case WP_LR300:
+      return 30;
+      break;
+    case WP_SPAS:
+      return 8;
+      break;
+    case WP_NEGEV:
+      return 80;
+      break;
+    case WP_SR8:
+      return 5;
+      break;
+    case WP_PSG1:
+      return 10;
+      break;
+    case WP_HK69:
+      return 1;
+      break;
+    default:
+      return 15;
+  }
+
+}
+/*
+==================
+  ReloadTime for Cmd_Reload  --Xamis
+==================
+*/
+int ReloadTime( int w )        {
+  switch ( w ){
+    case WP_AK103:
+      return 3450;
+      break;
+    case WP_MP5K:
+      return 2570;
+      break;
+    case WP_UMP45:
+      return 2740;
+    case WP_M4:
+    case WP_LR300:
+      return 2530;
+      break;
+    case WP_G36:
+      return 2400;
+      break;
+    case WP_SPAS:
+      return 1800;
+      break;
+    case WP_SR8:
+      return 1510;
+      break;
+    case WP_PSG1:
+      return 3000;
+      break;
+    case WP_DEAGLE:
+      return 3300;
+      break;
+    case WP_BERETTA:
+      return 1700;
+      break;
+    case WP_NEGEV:
+      return 5000;
+      break;
+    default:
+      return 3000;
+  }
+
+}
+
+int ReloadStartTime( int w )        {
+  switch ( w ){
+    case WP_SPAS:
+      return 1800;
+      break;
+    case WP_NEGEV:
+      return 2000;
+      break;
+    default:
+      return 0;
+  }
+
+}
+int ReloadEndTime( int w )        {
+  switch ( w ){
+    case WP_SPAS:
+      return 1800;
+      break;
+    case WP_NEGEV:
+      return 3000;
+      break;
+    default:
+      return 0;
+  }
+
+}
+
+//For weapon animations --Xamis
+void PM_Reload_Start( void ) {
+//  Com_Printf( "PM_Reload_Start called\n");
+  pm->ps->weaponstate = WEAPON_RELOADING;
+  pm->ps->weaponTime = ReloadStartTime( pm->ps->weapon );
+  if ( pm->ps->weapon == WP_NEGEV || pm->ps->weapon == WP_SPAS ){
+  PM_StartWeaponAnim( WPN_RELOAD_START );
+  }
+}
+//For weapon animations --Xamis
+void PM_Reload_Actual(void ) {
+  //Com_Printf( "PM_Reload_Actual called\n");
+  pm->ps->weaponstate = WEAPON_RELOADING_END;
+  pm->ps->weaponTime = ReloadTime( pm->ps->weapon );
+  PM_StartWeaponAnim( WPN_RELOAD );
+
+}
+//For weapon animations --Xamis
+void PM_Reload_End(void ) {
+ // Com_Printf( "PM_Reload_End called\n");
+  pm->ps->weaponstate = WEAPON_RELOADING_COMPLETE;
+  pm->ps->weaponTime = ReloadEndTime( pm->ps->weapon );
+  if ( pm->ps->weapon == WP_NEGEV || pm->ps->weapon == WP_SPAS ){
+  PM_StartWeaponAnim( WPN_RELOAD_END );
+  }
+}
 
 /*
 ==============
@@ -1869,7 +2012,6 @@ static int PM_WeaponTime( int weapon )
 }
 
 
-
 static void PM_Weapon( void ) {
 
         if ( pm->ps->pm_flags & PMF_RESPAWNED ) {
@@ -1908,11 +2050,30 @@ static void PM_Weapon( void ) {
                 return;
         }
 //If were in the process of reloading we can't fire  --Xamis
-        if ( pm->ps->weaponstate == WEAPON_RELOADING && pm->ps->weaponTime > 0 ) {
+        if ( pm->ps->weaponstate == WEAPON_RELOADING_START ) {
+          //Com_Printf( "calling PM_Reload_Start\n");
+          PM_Reload_Start();
           return;
- //If were in finished reloading, we're ready to fire, so set weaponstate
-        }if( pm->ps->weaponstate == WEAPON_RELOADING && pm->ps->weaponTime == 0 ) {
-          pm->ps->weaponstate = WEAPON_READY;
+        }if( pm->ps->weaponstate == WEAPON_RELOADING && pm->ps->weaponTime > 0 ) {
+          //Com_Printf( "weaponstate == WEAPON_RELOADING && pm->ps->weaponTime > 0\n");
+          return;
+        }
+        if ( pm->ps->weaponstate == WEAPON_RELOADING && pm->ps->weaponTime == 0 ) {
+         // Com_Printf( "calling PM_Reload_Actual\n");
+          PM_Reload_Actual();
+            return;
+
+
+        }if( pm->ps->weaponstate == WEAPON_RELOADING_END && pm->ps->weaponTime > 0 ) {
+          return;
+        }if( pm->ps->weaponstate == WEAPON_RELOADING_END && pm->ps->weaponTime == 0 ) {
+        //  Com_Printf( "calling PM_Reload_End\n");
+        PM_Reload_End();
+        return;
+        }if( pm->ps->weaponstate == WEAPON_RELOADING_COMPLETE && pm->ps->weaponTime > 0 ) {
+          return;
+        }if( pm->ps->weaponstate == WEAPON_RELOADING_COMPLETE && pm->ps->weaponTime == 0 ) {
+          pm->ps->weaponstate = WEAPON_READY; //If were in finished reloading, we're ready to fire, so set weaponstate
         }
 
         if ( pm->ps->weaponTime > 0 ) {
@@ -2055,6 +2216,8 @@ static void PM_DropTimers( void ) {
                         pm->ps->torsoTimer = 0;
                 }
         }
+
+
 }
 
 /*
@@ -2220,9 +2383,24 @@ static void PM_LadderMove( void ) {
 
              PM_SlideMove( qfalse );
 
+}
 
 
+void PM_PowerSlideMove( void ){
+    PM_ClipVelocity (pm->ps->velocity, pml.groundTrace.plane.normal,
+                     pm->ps->velocity, OVERCLIP );
+    VectorNormalize(pm->ps->velocity);
+    VectorScale(pm->ps->velocity, 500, pm->ps->velocity);
+}
 
+qboolean PM_CheckPowerSlide( void ){
+
+ // if( pm->ps->pm_flags & PMF_DUCKED && pml.groundPlane  && pm->xyspeed > 280  ){
+
+    //Com_Printf( "pm->ps->pm_flags & PMF_DUCKED && pm->xyspeed > 280\n");
+   // return qtrue;
+  //}else
+  return qfalse;
 }
 
 /*
@@ -2234,6 +2412,7 @@ PmoveSingle
 void trap_SnapVector( float *v );
 
 void PmoveSingle (pmove_t *pmove) {
+  int i;
         pm = pmove;
 
         // this counter lets us debug movement problems with a journal
@@ -2254,6 +2433,7 @@ void PmoveSingle (pmove_t *pmove) {
         if ( abs( pm->cmd.forwardmove ) > 64 || abs( pm->cmd.rightmove ) > 64 ) {
                 pm->cmd.buttons &= ~BUTTON_WALKING;
         }
+
 
 
 
@@ -2320,6 +2500,7 @@ void PmoveSingle (pmove_t *pmove) {
                 pm->ps->pm_flags &= ~PMF_JUMP_HELD;
         }
 
+
         // decide if backpedaling animations should be used
         if ( pm->cmd.forwardmove < 0 ) {
                 pm->ps->pm_flags |= PMF_BACKWARDS_RUN;
@@ -2368,31 +2549,32 @@ void PmoveSingle (pmove_t *pmove) {
 
         if ( pm->ps->pm_type == PM_DEAD ) {
                 PM_DeadMove ();
+                pm->ps->pm_flags &= ~PMF_ONGROUND;
         }
 
         PM_DropTimers();
-#ifdef MISSIONPACK
-        if ( pm->ps->powerups[PW_INVULNERABILITY] ) {
-                PM_InvulnerabilityMove();
-        } else
-#endif
         if ( pm->ps->powerups[PW_FLIGHT] ) {
                 // flight powerup doesn't allow jump and has different friction
                 PM_FlyMove();
-
+                pm->ps->pm_flags &= ~PMF_ONGROUND;
         } else if ( CheckLadder () != 0) {//Xamis
                 PM_LadderMove();
+                pm->ps->pm_flags &= ~PMF_ONGROUND;
         } else if (pm->ps->pm_flags & PMF_TIME_WATERJUMP) {
                 PM_WaterJumpMove();
+                pm->ps->pm_flags &= ~PMF_ONGROUND;
         } else if ( pm->waterlevel > 1 ) {
                 // swimming
                 PM_WaterMove();
+                pm->ps->pm_flags &= ~PMF_ONGROUND;
         } else if ( pml.walking ) {
                 // walking on ground
                 PM_WalkMove();
+                pm->ps->pm_flags |= PMF_ONGROUND;
         } else {
                 // airborne
                 PM_AirMove();
+                pm->ps->pm_flags &= ~PMF_ONGROUND;
         }
         PM_Animate();
 

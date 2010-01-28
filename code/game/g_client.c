@@ -1295,7 +1295,7 @@ void ClientSpawn(gentity_t *ent) {
 		case 'K':
 			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_HK69 );
                         client->ammoclip[WP_HK69] = RoundCount(WP_HK69);
-                        client->ps.ammo[WP_HK69] = 3;
+                        client->ps.ammo[WP_HK69] = 5;
 			break;
 		case 'L':
 			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_LR300 );
@@ -1325,7 +1325,7 @@ void ClientSpawn(gentity_t *ent) {
 		case 'c':
 			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_NEGEV );
                         client->ammoclip[WP_NEGEV] = RoundCount(WP_NEGEV);
-                        client->ps.ammo[WP_NEGEV] = 3;
+                        client->ps.ammo[WP_NEGEV] = 1;
 			break;
 		default:
 			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_NONE );

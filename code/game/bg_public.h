@@ -144,7 +144,10 @@ typedef enum {
 	WEAPON_DROPPING,
 	WEAPON_FIRING,
     WEAPON_FIRING2,
-    WEAPON_RELOADING
+    WEAPON_RELOADING,
+    WEAPON_RELOADING_START,
+    WEAPON_RELOADING_END,
+    WEAPON_RELOADING_COMPLETE
 } weaponstate_t;
 
 
@@ -168,7 +171,7 @@ typedef enum {
 #define PMF_SINGLE_MODE   	2048	// pull towards grapple location
 #define PMF_FOLLOW			4096	// spectate following another player
 #define PMF_SCOREBOARD		8192	// spectate as a scoreboard
-#define PMF_TIME_WALLJUMP       1024    //
+#define PMF_ONGROUND           1024    //
 
 
 #define	PMF_ALL_TIMES	(PMF_TIME_WATERJUMP|PMF_TIME_LAND|PMF_TIME_KNOCKBACK)
@@ -197,6 +200,7 @@ typedef struct {
 	int			waterlevel;
         int             burstCount;
 	float		xyspeed;
+        int             crouchSlideTime;
 	int 		groundentity;
 	// for fixed msec Pmove
 	int			pmove_fixed;
@@ -220,7 +224,7 @@ void Pmove (pmove_t *pmove);
 typedef enum {
 	STAT_HEALTH,
 	STAT_STAMINA, //Xamis
-        STAT_ROUNDS,
+        STAT_ROUNDS,//Xamis
 	STAT_HOLDABLE_ITEM,
 #ifdef MISSIONPACK
 	STAT_PERSISTANT_POWERUP,
@@ -593,6 +597,8 @@ typedef enum {
   WPN_READY_FIRE_IDLE,
   WPN_RELOAD,
   WPN_BOLT,
+  WPN_RELOAD_START,
+  WPN_RELOAD_END,
 
   MAX_WEAPON_ANIMATIONS
 } wpAnimNumber_t;
@@ -785,7 +791,7 @@ void	BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s
 qboolean	BG_PlayerTouchesItem( playerState_t *ps, entityState_t *item, int atTime );
 
 void      BG_GetClientNormal( const playerState_t *ps, vec3_t normal );
-
+int       BG_CalcSpread( playerState_t ps );
 
 #define ARENAS_PER_TIER		4
 #define MAX_ARENAS			1024
@@ -816,4 +822,11 @@ void      BG_GetClientNormal( const playerState_t *ps, vec3_t normal );
 #define KAMI_SHOCKWAVE_MAXRADIUS		1320
 #define KAMI_BOOMSPHERE_MAXRADIUS		720
 #define KAMI_SHOCKWAVE2_MAXRADIUS		704
+
+#define SPREAD_JUMPING 120.0;
+#define SPREAD_STANDING 5.0
+#define SPREAD_CROUCHING 0.0
+#define SPREAD_WALKING 30.0
+#define SPREAD_RUNNING 60.0
+#define SPREAD_SPRINTING 90.0
 

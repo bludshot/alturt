@@ -456,7 +456,14 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
 			}
 		}
 
-
+                if (  ent->slidedistance <= 0 ) {
+                  if ( ent->slidedistance < 130 ) {
+                    ent->slidedistance = 130;
+                  }
+                  if ( ent->slidedistance > 130 ) {
+                    ent->slidedistance = 130 ;
+                  }
+                 }
 		if ( client->ps.powerups[PW_REGEN] ) {
 			if ( ent->health < client->ps.stats[STAT_MAX_HEALTH]) {
 				ent->health += 15;
@@ -788,26 +795,29 @@ void ClientThink_real( gentity_t *ent ) {
 		// -- Xamis
 	if( ucmd->buttons & BUTTON_WALKING || client->ps.pm_flags & PMF_DUCKED ){ //if walking/ducking do nothing!
 		}else if  ( ent->stamina > 0 && ucmd->buttons & BUTTON_SPRINTING && pm.xyspeed > 5 ) {
-			client->ps.speed *= 1.5;
+			client->ps.speed *= 1.3;
 			ent->stamina--;
                 //if (ent->stamina <= client->ps.stats[STAT_MAX_STAMINA] *.2 ) {(G_AddEvent( ent, EV_PANTING, 0 );} //todo
 		}
 
 
 			// -- Xamis   Crude attempt at powerslide
-		/*
-	if( client->ps.pm_flags & PMF_DUCKED && pm.xyspeed > 250){
 
-			float temp_velocity;
-			float slide_velocity;
-			temp_velocity = client->ps.velocity[2];
-			slide_velocity = client->ps.velocity[2] -= 92;
-			client->ps.velocity[2]= slide_velocity;
+      if( client->ps.pm_flags & PMF_DUCKED && pm.xyspeed > 250 && ent->slidedistance > 0 && client->ps.pm_flags & PMF_ONGROUND){
+
+			//float temp_velocity;
+			//float slide_velocity;
+          VectorNormalize(client->ps.velocity);
+          VectorScale(client->ps.velocity, 300, client->ps.velocity);
+          ent->slidedistance--;
+		//	temp_velocity = client->ps.velocity[2];
+		//	slide_velocity = client->ps.velocity[2] -= 92;
+		//	client->ps.velocity[2]= slide_velocity;
 			//client->ps.velocity[2] = temp_velocity;
 
 		}
 
-		*/
+
 
 
 	if ( client->ps.powerups[PW_HASTE] ) {

@@ -142,8 +142,8 @@ void SnapVectorTowards( vec3_t v, vec3_t to ) {
 #ifdef MISSIONPACK
 #define CHAINGUN_SPREAD		600
 #endif
-#define MACHINEGUN_SPREAD	200
-#define DEAGLE_SPREAD		50
+#define MACHINEGUN_SPREAD	20
+#define DEAGLE_SPREAD		10
 #define	MACHINEGUN_DAMAGE	7
 #define	M4_DAMAGE	40 //12
 #define	AK103_DAMAGE	40 //16
@@ -154,17 +154,19 @@ void SnapVectorTowards( vec3_t v, vec3_t to ) {
 void Bullet_Fire (gentity_t *ent, float spread, int damage ) {
 	trace_t		tr;
 	vec3_t		end;
+        pmove_t         pm;
 #ifdef MISSIONPACK
 	vec3_t		impactpoint, bouncedir;
 #endif
+        float xyspeed;
 	float		r;
 	float		u;
 	gentity_t	*tent;
 	gentity_t	*traceEnt;
 	int			i, passent;
-
+        spread += BG_CalcSpread(ent->client->ps);
 	damage *= s_quadFactor;
-
+       // G_Printf ("spread = %f\n xyspeed = %f", spread, BG_CalcSpread(ent->client->ps) );
 	r = random() * M_PI * 2.0f;
 	u = sin(r) * crandom() * spread * 16;
 	r = cos(r) * crandom() * spread * 16;
@@ -713,39 +715,6 @@ void CalcMuzzlePointOrigin ( gentity_t *ent, vec3_t origin, vec3_t forward, vec3
 	SnapVector( muzzlePoint );
 }
 
-/*
-==================
-  RoundCount for Cmd_Reload --Xamis
-==================
-*/
-int RoundCount( int w )        {
-        //How much each clip holds
-  switch ( w ){
-    case WP_M4:
-    case WP_MP5K:
-    case WP_UMP45:
-    case WP_AK103:
-    case WP_G36:
-    case WP_LR300:
-      return 30;
-      break;
-    case WP_SPAS:
-      return 8;
-      break;
-    case WP_NEGEV:
-      return 80;
-      break;
-    case WP_SR8:
-      return 5;
-      break;
-    case WP_PSG1:
-      return 10;
-      break;
-    default:
-      return 15;
-  }
-
-}
 
 void Change_Mode(gentity_t *ent){
 //  int i;
@@ -796,90 +765,33 @@ void Change_Mode(gentity_t *ent){
 
 
 }
-
-/*
-==================
-  ReloadTime for Cmd_Reload  --Xamis
-==================
-*/
-int ReloadTime( int w )        {
-  switch ( w ){
-    case WP_AK103:
-      return 3450;
-      break;
-    case WP_MP5K:
-      return 2570;
-      break;
-    case WP_UMP45:
-      return 2740;
-    case WP_M4:
-    case WP_LR300:
-      return 2530;
-      break;
-    case WP_G36:
-      return 2400;
-      break;
-    case WP_SPAS:
-      return 1800;
-      break;
-    case WP_SR8:
-      return 1510;
-      break;
-    case WP_PSG1:
-      return 3000;
-      break;
-    case WP_DEAGLE:
-      return 3300;
-      break;
-    case WP_BERETTA:
-      return 1700;
-      break;
-    case WP_NEGEV:
-      return 2000;
-      break;
-    default:
-      return 3000;
-  }
-
-}
-
 /*
 ==================
   Cmd_Reload
 ==================
 */
-void Cmd_Reload( gentity_t *ent )       {
-  int weapon;
+
+void Cmd_Reload( gentity_t *ent ){
+
   int amt;
   int ammotoadd;
 
-  weapon = ent->client->ps.weapon;
-  amt = RoundCount(weapon);
+  amt = RoundCount(ent->client->ps.weapon);
   ammotoadd = amt;
-  if (ent->client->ps.ammo[weapon] == 0) return;
-  ent->client->ps.weaponstate = WEAPON_RELOADING;
-
-  ent->client->ps.weaponTime = ReloadTime( weapon );
-  PM_StartWeaponAnim( WPN_RELOAD );
-
-        //We can only add ammo(to weapon) what we need
-  if (ent->client->ammoclip[weapon] > 0)  {
-    ammotoadd -= ent->client->ammoclip[weapon];
+  if (ent->client->ps.ammo[ent->client->ps.weapon] == 0) return;
+  ent->client->ps.weaponstate = WEAPON_RELOADING_START;
+  if (ent->client->ammoclip[ent->client->ps.weapon] > 0)  {
+    ammotoadd -= ent->client->ammoclip[ent->client->ps.weapon];
   }
 
-        //We can only remove (from bag) what ammo we have
-  if (ent->client->ps.ammo[weapon] > 0)   {
-  ent->client->ps.ammo[weapon]--;
+  if (ent->client->ps.ammo[ent->client->ps.weapon] > 0)   {
+    ent->client->ps.ammo[ent->client->ps.weapon]--;
   }
 
-        //Add the ammo to weapon
-  ent->client->ammoclip[weapon] += ammotoadd;
-
+  ent->client->ammoclip[ent->client->ps.weapon] += ammotoadd;
 
 
 }
-
-
 /*
 ===============
 FireWeapon

@@ -631,9 +631,47 @@ void CG_RegisterWeapon( int weaponNum ) {
         strcat( path, "_view_ring.md3" );
         weaponInfo->vringModel = trap_R_RegisterModel( path );
 
+        strcpy( path, item->world_model[0] );
+        COM_StripExtension(path, path, sizeof(path));
+        strcat( path, "_view_box.md3" );
+        weaponInfo->vboxModel = trap_R_RegisterModel( path );
 
+        strcpy( path, item->world_model[0] );
+        COM_StripExtension(path, path, sizeof(path));
+        strcat( path, "_view_flap2.md3" );
+        weaponInfo->vflap2Model = trap_R_RegisterModel( path );
 
+        strcpy( path, item->world_model[0] );
+        COM_StripExtension(path, path, sizeof(path));
+        strcat( path, "_view_flap1.md3" );
+        weaponInfo->vflap1Model = trap_R_RegisterModel( path );
 
+        strcpy( path, item->world_model[0] );
+        COM_StripExtension(path, path, sizeof(path));
+        strcat( path, "_view_grenade.md3" );
+        weaponInfo->vgrenadeModel = trap_R_RegisterModel( path );
+
+        strcpy( path, item->world_model[0] );
+        COM_StripExtension(path, path, sizeof(path));
+        strcat( path, "_view_shell.md3" );
+        weaponInfo->vshellModel = trap_R_RegisterModel( path );
+
+        strcpy( path, item->world_model[0] );
+        COM_StripExtension(path, path, sizeof(path));
+        strcat( path, "_view_aim.md3" );
+        weaponInfo->vaimModel = trap_R_RegisterModel( path );
+
+        strcpy( path, item->world_model[0] );
+        COM_StripExtension(path, path, sizeof(path));
+        strcat( path, "_view_handle.md3" );
+        weaponInfo->vhandleModel = trap_R_RegisterModel( path );
+
+        strcpy( path, item->world_model[0] );
+        COM_StripExtension(path, path, sizeof(path));
+        strcat( path, "_view_bullet.md3" );
+        weaponInfo->vbulletModel = trap_R_RegisterModel( path );
+
+        weaponInfo->vs_shellModel = trap_R_RegisterModel( "models/weapons2/shells/s_shell.md3" );
 
         weaponInfo->handsModel = trap_R_RegisterModel( "models/weapons2/handskins/hands.md3" );
         weaponInfo->silencerModel = trap_R_RegisterModel( "models/weapons2/M4/M4_silencer.md3" );
@@ -1021,7 +1059,8 @@ sound should only be done on the world model case.
 */
 void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent, int team ) {
 
-
+        char            *tagname;
+        int             i = 0;
         refEntity_t     gun; //this is used for thirdperson weapon and firstperson hands model Xamis
         refEntity_t     viewmainModel; //firstperson weapon model
         refEntity_t     holds;
@@ -1049,7 +1088,9 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
         refEntity_t     vhandle;
         refEntity_t     vbullet;
         refEntity_t     vaim;
-
+        refEntity_t     vshell;
+        refEntity_t     vgrenade;
+        refEntity_t     vs_shell;
         vec3_t          angles;
         weapon_t        weaponNum;
         weaponInfo_t    *weapon;
@@ -1368,14 +1409,36 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
             CG_AddWeaponWithPowerups( &vbox, cent->currentState.powerups );
           }
 
-          if ( weapon->vbulletModel) {
+          if ( weaponNum == WP_NEGEV) {
             memset( &vbullet, 0, sizeof( vbullet ) );
+
             VectorCopy( parent->lightingOrigin, vbullet.lightingOrigin );
             vbullet.shadowPlane = parent->shadowPlane;
             vbullet.renderfx = parent->renderfx;
             vbullet.hModel = weapon->vbulletModel;
-            CG_PositionEntityOnTag( &vbullet, &gun, weapon->holdsModel , "tag_bullet" );
-            CG_AddWeaponWithPowerups( &vbullet, cent->currentState.powerups );
+
+          {
+          int rounds = cg.predictedPlayerState.stats[STAT_ROUNDS];
+          int j = 0;
+
+          if ( rounds > 10 )
+          rounds = 10;
+
+          rounds--;
+
+          if ( rounds > 0 )
+          for ( j=0; j<rounds; j++ )
+          {
+          tagname = va( "tag_bul0%i", j+1 );
+
+          CG_PositionEntityOnTag( &vbullet, &gun, weapon->holdsModel ,  tagname );
+          CG_AddWeaponWithPowerups( &vbullet, cent->currentState.powerups );
+       //   trap_R_AddRefEntityToScene( &part );
+  }
+
+  }
+
+
           }
 
           if ( weapon->vaimModel) {
@@ -1397,6 +1460,26 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
             vpin.hModel = weapon->vpinModel;
             CG_PositionEntityOnTag( &vpin, &gun, weapon->holdsModel , "tag_pin" );
             CG_AddWeaponWithPowerups( &vpin, cent->currentState.powerups );
+          }
+
+          if ( weapon->vshellModel) {
+            memset( &vshell, 0, sizeof( vshell ) );
+            VectorCopy( parent->lightingOrigin, vshell.lightingOrigin );
+            vshell.shadowPlane = parent->shadowPlane;
+            vshell.renderfx = parent->renderfx;
+            vshell.hModel = weapon->vshellModel;
+            CG_PositionEntityOnTag( &vshell, &gun, weapon->holdsModel , "tag_shell" );
+            CG_AddWeaponWithPowerups( &vshell, cent->currentState.powerups );
+          }
+
+          if ( weapon->vgrenadeModel) {
+            memset( &vgrenade, 0, sizeof( vgrenade ) );
+            VectorCopy( parent->lightingOrigin, vgrenade.lightingOrigin );
+            vgrenade.shadowPlane = parent->shadowPlane;
+            vgrenade.renderfx = parent->renderfx;
+            vgrenade.hModel = weapon->vgrenadeModel;
+            CG_PositionEntityOnTag( &vgrenade, &gun, weapon->holdsModel , "tag_grenade" );
+            CG_AddWeaponWithPowerups( &vgrenade, cent->currentState.powerups );
           }
 
           if ( weapon->vejectModel) {

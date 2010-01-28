@@ -155,11 +155,12 @@ struct gentity_s {
 	int			pain_debounce_time;
 	int			fly_sound_debounce_time;	// wind tunnel
 	int			last_move_time;
-	float		distance;//Xamis doors
+	float		        distance;//Xamis doors
 	int			health;
 	int			stamina; //Xamis
 	int			CloseWhenIdle;//Xamis
 	int			trigger_only; //Xamis
+        int                     slidedistance;
 
 
 	qboolean	takedamage;

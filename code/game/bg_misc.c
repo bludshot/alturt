@@ -1898,3 +1898,33 @@ void BG_GetClientNormal( const playerState_t *ps, vec3_t normal )
 {
     VectorSet( normal, 0.0f, 0.0f, 1.0f );
 }
+
+
+
+int BG_CalcSpread( playerState_t ps ) {
+  float spd = sqrt( ps.velocity[0]*ps.velocity[0] +
+      ps.velocity[1]*ps.velocity[1] +
+      ps.velocity[2]*ps.velocity[2]);
+
+  if ( (ps.velocity[2] > 2.0 ||
+        ps.velocity[2] < -2.0 ) &&
+        (spd >= 5.0) &&
+        ps.groundEntityNum == ENTITYNUM_NONE) return SPREAD_JUMPING;
+
+  if (spd < 5.0 )
+    return SPREAD_STANDING;
+
+  if (ps.pm_flags & PMF_DUCKED)
+    return SPREAD_CROUCHING;
+
+  if ( spd < 139.0 )
+    return SPREAD_WALKING;
+
+  if ( (spd >= 220.0) &&(spd < 280.0) )
+    return SPREAD_RUNNING;
+
+  if (spd >= 280.0)
+  return SPREAD_SPRINTING;
+
+  return 50;
+}

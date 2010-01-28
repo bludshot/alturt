@@ -63,7 +63,7 @@ typedef struct {
 	float maxCrouchedSpeed;// Xamis
 	float jumpPlayerSpeed;// Xamis
 	float dashPlayerSpeed;// Xamis
-
+        qboolean        sliding;
 
 
 

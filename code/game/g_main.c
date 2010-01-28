@@ -140,7 +140,7 @@ static cvarTable_t		gameCvarTable[] = {
 
 	{ &g_dedicated, "dedicated", "0", 0, 0, qfalse  },
 
-	{ &g_speed, "g_speed", "240", 0, 0, qtrue  }, //--Xamis-- changed speed from default 320, was too fast
+	{ &g_speed, "g_speed", "220", 0, 0, qtrue  }, //--Xamis-- changed speed from default 320, was too fast
 	{ &g_gravity, "g_gravity", "800", 0, 0, qtrue  },
 	{ &g_knockback, "g_knockback", "1000", 0, 0, qtrue  },
 	{ &g_quadfactor, "g_quadfactor", "3", 0, 0, qtrue  },
