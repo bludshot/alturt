@@ -41,6 +41,91 @@ An item fires all of its targets when it is picked up.  If the toucher can't car
 "count" override quantity or duration on most items.
 */
 
+wpinfo_t bg_weaponlist[] ={
+  {  //WP_NONE, //0
+    0,                // clipAmmo ammo that fits in the weapon
+    0             // rounds
+
+  },
+  { //WP_KNIFE, //1
+    -1,
+    -1
+  },
+  {// WP_BERETTA, //2
+    15,                // clipAmmo ammo that fits in the weapon
+    0             // rounds
+  },
+  { //WP_DEAGLE, //3
+    7,                // clipAmmo ammo that fits in the weapon
+    0             // rounds
+  },
+  { //WP_MP5K, //4
+
+    30,                // clipAmmo ammo that fits in the weapon
+    0             // rounds
+  },
+  { //WP_SPAS, //5
+
+    30,                // clipAmmo ammo that fits in the weapon
+    0             // rounds
+  },
+  { //WP_UMP45, //6
+
+    30,                // clipAmmo ammo that fits in the weapon
+    0             // rounds
+  },
+  { //WP_M4, //7
+
+    30,                // clipAmmo ammo that fits in the weapon
+    0             // rounds
+  },
+  { //WP_LR300, //8
+
+    30,                // clipAmmo ammo that fits in the weapon
+    0             // rounds
+  },
+  { //WP_G36, //9
+
+    30,                // clipAmmo ammo that fits in the weapon
+    0             // rounds
+  },
+  { //WP_AK103, //10
+
+    30,                // clipAmmo ammo that fits in the weapon
+    0             // rounds
+  },
+  { //WP_HK69, //11
+
+    1,                // clipAmmo ammo that fits in the weapon
+    0             // rounds
+  },
+  { //WP_NEGEV, //12
+
+    90,                // clipAmmo ammo that fits in the weapon
+    0             // rounds
+  },
+  { //WP_PSG1, //13
+
+    15,                // clipAmmo ammo that fits in the weapon
+    0             // rounds
+  },
+  { //WP_SR8, //14
+
+    5,                // clipAmmo ammo that fits in the weapon
+    0             // rounds
+  },
+  { //WP_HE,
+
+    2,                // clipAmmo ammo that fits in the weapon
+    0             // rounds
+  },
+  { //WP_SMOKE,
+
+    2,                // clipAmmo ammo that fits in the weapon
+    0             // rounds
+  }
+};
+
 gitem_t	bg_itemlist[] =
 {
 	{

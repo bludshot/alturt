@@ -242,7 +242,8 @@ void Cmd_Give_f (gentity_t *ent)
         {
           for ( i = 0 ; i < WP_SMOKE ; i++ ) {
                         ent->client->ps.ammo[i] = 999;
-                        ent->client->ammoclip[i] = 999;
+                       // ent->client->ammoclip[i] = RoundCount( i );
+                        bg_weaponlist[i].rounds = RoundCount( i );
                 }
                 if (!give_all)
                         return;

@@ -263,10 +263,11 @@ int Pickup_Weapon (gentity_t *ent, gentity_t *other) {
 
         /*Add_Ammo( other, ent->item->giTag, quantity );*/
         quantity = RoundCount(ent->item->giTag);
-        if (other->client->ammoclip[ent->item->giTag] > 0 )
+        if (bg_weaponlist[ent->item->giTag].rounds > 0 )
           Add_Ammo( other, ent->item->giTag, quantity );
         else
-          other->client->ammoclip[ent->item->giTag] = quantity;
+          bg_weaponlist[ent->item->giTag].rounds = quantity;
+        //  other->client->ammoclip[ent->item->giTag] = quantity;
 
 
 //	if (ent->item->giTag == WP_GRAPPLING_HOOK)

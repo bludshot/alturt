@@ -1043,12 +1043,13 @@ void SpectatorClientEndFrame( gentity_t *ent ) {
 			}
 		}
 	}
-
+/*
 	if ( ent->client->sess.spectatorState == SPECTATOR_SCOREBOARD ) {
 		ent->client->ps.pm_flags |= PMF_SCOREBOARD;
 	} else {
 		ent->client->ps.pm_flags &= ~PMF_SCOREBOARD;
 	}
+        */
 }
 
 /*
@@ -1128,7 +1129,7 @@ void ClientEndFrame( gentity_t *ent ) {
 
 	ent->client->ps.stats[STAT_HEALTH] = ent->health;	// FIXME: get rid of ent->health...
 	ent->client->ps.stats[STAT_STAMINA] = ent->stamina; //Xamis
-        ent->client->ps.stats[STAT_ROUNDS] = ent->client->ammoclip[ent->client->ps.weapon];//Xamis
+        ent->client->ps.stats[STAT_ROUNDS] = bg_weaponlist[ent->client->ps.weapon].rounds;//ent->client->ammoclip[ent->client->ps.weapon];//Xamis
 	G_SetClientSound (ent);
 
 	// set the latest infor

@@ -174,8 +174,8 @@ static void CG_ShotgunEjectBrass( centity_t *cent ) {
         if ( cg_brassTime.integer <= 0 ) {
                 return;
         }
-
-        for ( i = 0; i < 2; i++ ) {
+//   for ( i = 0; i < 2; i++ )  //Xamis, we only need one shell, not double barrel
+    {
                 float   waterScale = 1.0f;
 
                 le = CG_AllocLocalEntity();
@@ -710,7 +710,7 @@ void CG_RegisterWeapon( int weaponNum ) {
                         weaponInfo->flashSound[0] = trap_S_RegisterSound( "sound/weapons/sr8/sr8.wav", qfalse );
                         weaponInfo->silenceSound[0] = trap_S_RegisterSound( "sound/weapons/sr8/sr8.wav", qfalse );
                         weaponInfo->normalSound[0] = trap_S_RegisterSound( "sound/weapons/sr8/sr8.wav", qfalse );
-                        weaponInfo->ejectBrassFunc = CG_MachineGunEjectBrass;
+                       // weaponInfo->ejectBrassFunc = CG_MachineGunEjectBrass;
                         cgs.media.bulletExplosionShader = trap_R_RegisterShader( "bulletExplosion" );
                         break;
 
@@ -1030,6 +1030,8 @@ CG_AddWeaponWithPowerups
 */
 static void CG_AddWeaponWithPowerups( refEntity_t *gun, int powerups ) {
         // add powerup effects
+
+
         if ( powerups & ( 1 << PW_INVIS ) ) {
                 gun->customShader = cgs.media.invisShader;
                 trap_R_AddRefEntityToScene( gun );
@@ -1060,7 +1062,6 @@ sound should only be done on the world model case.
 void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent, int team ) {
 
         char            *tagname;
-        int             i = 0;
         refEntity_t     gun; //this is used for thirdperson weapon and firstperson hands model Xamis
         refEntity_t     viewmainModel; //firstperson weapon model
         refEntity_t     holds;
@@ -1090,7 +1091,6 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
         refEntity_t     vaim;
         refEntity_t     vshell;
         refEntity_t     vgrenade;
-        refEntity_t     vs_shell;
         vec3_t          angles;
         weapon_t        weaponNum;
         weaponInfo_t    *weapon;
@@ -1622,12 +1622,26 @@ void CG_AddViewWeapon( playerState_t *ps ) {
         // set up gun position
         CG_CalculateWeaponPosition( hand.origin, angles );
 
-        VectorMA( hand.origin, cg_gun_x.value, cg.refdef.viewaxis[0], hand.origin );
+
+        //if smallgun
+        if ( cg_gunsize.integer ){
+        VectorMA( hand.origin, cg_gun_x.value+3, cg.refdef.viewaxis[0], hand.origin );
         VectorMA( hand.origin, cg_gun_y.value, cg.refdef.viewaxis[1], hand.origin );
-        VectorMA( hand.origin, (cg_gun_z.value+fovOffset), cg.refdef.viewaxis[2], hand.origin );
+        VectorMA( hand.origin, (cg_gun_z.value+fovOffset)+2, cg.refdef.viewaxis[2], hand.origin );
 
         AnglesToAxis( angles, hand.axis );
+        //if smallgun
+        VectorScale(hand.axis[0], 0.30, hand.axis[0]);
+        VectorScale(hand.axis[1], 0.40, hand.axis[1]);
+        VectorScale(hand.axis[2], 0.40, hand.axis[2]);
+        }else{
 
+          VectorMA( hand.origin, cg_gun_x.value-1, cg.refdef.viewaxis[0], hand.origin );
+          VectorMA( hand.origin, cg_gun_y.value, cg.refdef.viewaxis[1], hand.origin );
+          VectorMA( hand.origin, (cg_gun_z.value+fovOffset), cg.refdef.viewaxis[2], hand.origin );
+
+          AnglesToAxis( angles, hand.axis );
+        }
         // map torso animations to weapon animations
         if ( cg_gun_frame.integer ) {
                 // development tool
@@ -1764,9 +1778,9 @@ void CG_NextWeapon_f( void ) {
         cg.weaponSelectTime = cg.time;
         original = cg.weaponSelect;
 
-        for ( i = 0 ; i < WP_SMOKE ; i++ ) {
+        for ( i = 0 ; i < WP_NUM_WEAPONS ; i++ ) {
                 cg.weaponSelect++;
-                if ( cg.weaponSelect == WP_SMOKE ) {
+                if ( cg.weaponSelect == WP_NUM_WEAPONS ) {
                         cg.weaponSelect = 0;
                 }
                 if ( cg.weaponSelect == WP_KNIFE ) {
@@ -1776,7 +1790,7 @@ void CG_NextWeapon_f( void ) {
                         break;
                 }
         }
-        if ( i == WP_SMOKE ) {
+        if ( i == WP_NUM_WEAPONS ) {
                 cg.weaponSelect = original;
         }
 }
@@ -1800,10 +1814,10 @@ void CG_PrevWeapon_f( void ) {
         cg.weaponSelectTime = cg.time;
         original = cg.weaponSelect;
 
-        for ( i = 0 ; i < WP_SMOKE ; i++ ) {
+        for ( i = 0 ; i < WP_NUM_WEAPONS ; i++ ) {
                 cg.weaponSelect--;
                 if ( cg.weaponSelect == -1 ) {
-                        cg.weaponSelect = WP_SMOKE - 1;
+                  cg.weaponSelect = WP_NUM_WEAPONS - 1;
                 }
                 if ( cg.weaponSelect == WP_KNIFE ) {
                         continue;               // never cycle to gauntlet
@@ -1812,7 +1826,7 @@ void CG_PrevWeapon_f( void ) {
                         break;
                 }
         }
-        if ( i == WP_SMOKE ) {
+        if ( i == WP_NUM_WEAPONS ) {
                 cg.weaponSelect = original;
         }
 }
@@ -1899,6 +1913,7 @@ void CG_FireWeapon( centity_t *cent ) {
         }
 
         // do brass ejection
+        if ( ent->weapon != WP_SPAS )
         if ( weap->ejectBrassFunc && cg_brassTime.integer > 0 ) {
                 weap->ejectBrassFunc( cent );
         }

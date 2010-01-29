@@ -2668,13 +2668,14 @@ static void CG_Draw2D(stereoFrame_t stereoFrame)
 	}
 }
 
-
+/*
 static void CG_DrawTourneyScoreboard( void ) {
 #ifdef MISSIONPACK
 #else
 	CG_DrawOldTourneyScoreboard();
 #endif
 }
+*/
 
 /*
 =====================
@@ -2689,14 +2690,14 @@ void CG_DrawActive( stereoFrame_t stereoView ) {
 		CG_DrawInformation();
 		return;
 	}
-
+/*
 	// optionally draw the tournement scoreboard instead
 	if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR &&
 		( cg.snap->ps.pm_flags & PMF_SCOREBOARD ) ) {
 		CG_DrawTourneyScoreboard();
 		return;
 	}
-
+*/
 	// clear around the rendered view if sized down
 	CG_TileClear();
 

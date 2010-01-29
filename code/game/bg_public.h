@@ -170,7 +170,7 @@ typedef enum {
 #define	PMF_USE_ITEM_HELD	16384
 #define PMF_SINGLE_MODE   	2048	// pull towards grapple location
 #define PMF_FOLLOW			4096	// spectate following another player
-#define PMF_SCOREBOARD		8192	// spectate as a scoreboard
+#define PMF_RELOADING		8192	// spectate as a scoreboard
 #define PMF_ONGROUND           1024    //
 
 
@@ -433,6 +433,7 @@ typedef enum {
 	EV_NOAMMO,
 	EV_CHANGE_WEAPON,
 	EV_FIRE_WEAPON,
+        EV_EJECT_CASING,
 
 	EV_USE_ITEM0,
 	EV_USE_ITEM1,
@@ -722,7 +723,15 @@ typedef struct gitem_s {
 	char		*sounds;		// string of all sounds this item will use
 } gitem_t;
 
+typedef struct wpinfo_s {
+     int             clipAmmo;       //ammo that fits in the weapon
+     int             rounds;
+  //const   int             wp_sort;
+} wpinfo_t;
+
+
 // included in both the game dll and the client
+extern  wpinfo_t bg_weaponlist[];
 extern	gitem_t	bg_itemlist[];
 extern	int		bg_numItems;
 
@@ -792,7 +801,7 @@ qboolean	BG_PlayerTouchesItem( playerState_t *ps, entityState_t *item, int atTim
 
 void      BG_GetClientNormal( const playerState_t *ps, vec3_t normal );
 int       BG_CalcSpread( playerState_t ps );
-
+int       RoundCount( int w );
 #define ARENAS_PER_TIER		4
 #define MAX_ARENAS			1024
 #define	MAX_ARENAS_TEXT		8192

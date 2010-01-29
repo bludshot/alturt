@@ -1008,5 +1008,5 @@ void	trap_SnapVector( float *v );
 
 //Xamis
 void Cmd_Reload( gentity_t *ent );
-int RoundCount( int w );
+//int RoundCount( int w );
 void Change_Mode(gentity_t *ent);

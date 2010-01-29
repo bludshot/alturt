@@ -802,12 +802,14 @@ PM_InvulnerabilityMove
 Only with the invulnerability powerup
 ===================
 */
+/*
 static void PM_InvulnerabilityMove( void ) {
         pm->cmd.forwardmove = 0;
         pm->cmd.rightmove = 0;
         pm->cmd.upmove = 0;
         VectorClear(pm->ps->velocity);
 }
+*/
 #endif
 
 /*
@@ -1837,7 +1839,7 @@ int RoundCount( int w )        {
       return 30;
       break;
     case WP_SPAS:
-      return 8;
+      return 1;
       break;
     case WP_NEGEV:
       return 80;
@@ -1879,7 +1881,7 @@ int ReloadTime( int w )        {
       return 2400;
       break;
     case WP_SPAS:
-      return 1800;
+      return 800;
       break;
     case WP_SR8:
       return 1510;
@@ -1894,7 +1896,7 @@ int ReloadTime( int w )        {
       return 1700;
       break;
     case WP_NEGEV:
-      return 5000;
+      return 285;
       break;
     default:
       return 3000;
@@ -1905,10 +1907,10 @@ int ReloadTime( int w )        {
 int ReloadStartTime( int w )        {
   switch ( w ){
     case WP_SPAS:
-      return 1800;
+      return 100;
       break;
     case WP_NEGEV:
-      return 2000;
+      return 1760;
       break;
     default:
       return 0;
@@ -1917,11 +1919,14 @@ int ReloadStartTime( int w )        {
 }
 int ReloadEndTime( int w )        {
   switch ( w ){
+    case WP_SR8:
+      return 1500;
+      break;
     case WP_SPAS:
-      return 1800;
+      return 800;
       break;
     case WP_NEGEV:
-      return 3000;
+      return 5190;
       break;
     default:
       return 0;
@@ -1929,32 +1934,6 @@ int ReloadEndTime( int w )        {
 
 }
 
-//For weapon animations --Xamis
-void PM_Reload_Start( void ) {
-//  Com_Printf( "PM_Reload_Start called\n");
-  pm->ps->weaponstate = WEAPON_RELOADING;
-  pm->ps->weaponTime = ReloadStartTime( pm->ps->weapon );
-  if ( pm->ps->weapon == WP_NEGEV || pm->ps->weapon == WP_SPAS ){
-  PM_StartWeaponAnim( WPN_RELOAD_START );
-  }
-}
-//For weapon animations --Xamis
-void PM_Reload_Actual(void ) {
-  //Com_Printf( "PM_Reload_Actual called\n");
-  pm->ps->weaponstate = WEAPON_RELOADING_END;
-  pm->ps->weaponTime = ReloadTime( pm->ps->weapon );
-  PM_StartWeaponAnim( WPN_RELOAD );
-
-}
-//For weapon animations --Xamis
-void PM_Reload_End(void ) {
- // Com_Printf( "PM_Reload_End called\n");
-  pm->ps->weaponstate = WEAPON_RELOADING_COMPLETE;
-  pm->ps->weaponTime = ReloadEndTime( pm->ps->weapon );
-  if ( pm->ps->weapon == WP_NEGEV || pm->ps->weapon == WP_SPAS ){
-  PM_StartWeaponAnim( WPN_RELOAD_END );
-  }
-}
 
 /*
 ==============
@@ -1986,7 +1965,7 @@ static int PM_WeaponTime( int weapon )
                         addTime = 800;
                         break;
                 case WP_SR8:
-                        addTime = 2500; //blud changed from 1500
+                        addTime = 1000; //Xamis, changed to accomodate bolt animation
                         break;
                 case WP_UMP45:
                         addTime = 150;
@@ -2013,6 +1992,7 @@ static int PM_WeaponTime( int weapon )
 
 
 static void PM_Weapon( void ) {
+
 
         if ( pm->ps->pm_flags & PMF_RESPAWNED ) {
                 return;
@@ -2045,51 +2025,79 @@ static void PM_Weapon( void ) {
         pm->ps->weaponTime -= pml.msec;
 
 
+
+
+
+
         if ( pm->ps->weaponstate == WEAPON_DROPPING && pm->ps->weaponTime > 0 ) {
         //      G_Printf("dropping: %i\n", pm->ps->weaponTime );
                 return;
         }
 //If were in the process of reloading we can't fire  --Xamis
+        if ( qtrue ){
         if ( pm->ps->weaponstate == WEAPON_RELOADING_START ) {
-          //Com_Printf( "calling PM_Reload_Start\n");
-          PM_Reload_Start();
-          return;
-        }if( pm->ps->weaponstate == WEAPON_RELOADING && pm->ps->weaponTime > 0 ) {
+          pm->ps->weaponTime = ReloadStartTime( pm->ps->weapon );
+          pm->ps->weaponstate = WEAPON_RELOADING;
+          if ( pm->ps->weapon == WP_NEGEV || pm->ps->weapon == WP_SPAS ){
+            PM_StartWeaponAnim( WPN_RELOAD_START );
+          //return;
+        }//if( pm->ps->weaponstate == WEAPON_RELOADING && pm->ps->weaponTime > 0 ) {
           //Com_Printf( "weaponstate == WEAPON_RELOADING && pm->ps->weaponTime > 0\n");
-          return;
+        //  return;
         }
-        if ( pm->ps->weaponstate == WEAPON_RELOADING && pm->ps->weaponTime == 0 ) {
-         // Com_Printf( "calling PM_Reload_Actual\n");
-          PM_Reload_Actual();
-            return;
+        if ( pm->ps->weaponstate == WEAPON_RELOADING && pm->ps->weaponTime <= 0 ) {
 
+          pm->ps->weaponTime = ReloadTime( pm->ps->weapon );
+          if ( pm->ps->weapon == WP_SPAS ){
+            bg_weaponlist[pm->ps->weapon].rounds++;
+            pm->ps->ammo[pm->ps->weapon]--;
+          }
+          if ( pm->cmd.buttons & BUTTON_RELOAD && pm->ps->weapon == WP_SPAS &&  bg_weaponlist[pm->ps->weapon].rounds < 8 ){
+          pm->ps->weaponstate = WEAPON_RELOADING;
+          }else{
+          pm->ps->weaponstate = WEAPON_RELOADING_END;
+          }
+          PM_StartWeaponAnim( WPN_RELOAD );
 
-        }if( pm->ps->weaponstate == WEAPON_RELOADING_END && pm->ps->weaponTime > 0 ) {
-          return;
-        }if( pm->ps->weaponstate == WEAPON_RELOADING_END && pm->ps->weaponTime == 0 ) {
-        //  Com_Printf( "calling PM_Reload_End\n");
-        PM_Reload_End();
-        return;
-        }if( pm->ps->weaponstate == WEAPON_RELOADING_COMPLETE && pm->ps->weaponTime > 0 ) {
-          return;
-        }if( pm->ps->weaponstate == WEAPON_RELOADING_COMPLETE && pm->ps->weaponTime == 0 ) {
+        }if( pm->ps->weaponstate == WEAPON_RELOADING_END && pm->ps->weaponTime <= 0 ) {
+
+          pm->ps->weaponTime = ReloadEndTime( pm->ps->weapon );
+          pm->ps->weaponstate = WEAPON_RELOADING_COMPLETE;
+          if ( pm->ps->weapon == WP_NEGEV || pm->ps->weapon == WP_SPAS){
+            PM_ContinueWeaponAnim( WPN_RELOAD_END );
+          }if ( pm->ps->weapon == WP_SR8 ){
+            PM_ContinueWeaponAnim( WPN_BOLT );
+          }
+         }if( pm->ps->weaponstate == WEAPON_RELOADING_COMPLETE && pm->ps->weaponTime <= 0 ) {
           pm->ps->weaponstate = WEAPON_READY; //If were in finished reloading, we're ready to fire, so set weaponstate
         }
-
+        }
         if ( pm->ps->weaponTime > 0 ) {
                 return;
         }
 
+        if ( pm->ps->pm_flags & PMF_RELOADING ){
+          PM_StartWeaponAnim( WPN_BOLT);
+          if ( pm->ps->weapon == WP_SR8)
+            pm->ps->weaponTime = 1500;
+          if ( pm->ps->weapon == WP_SPAS){
+            pm->ps->weaponTime = 200;
+            PM_AddEvent(EV_EJECT_CASING);
+          }
+          pm->ps->pm_flags &= ~PMF_RELOADING;
+
+          return;
+        }
     // check for weapon change
     // can't change if weapon is firing, but can change
     // again if lowering or raising
+
         if ( pm->ps->weaponstate == WEAPON_READY ) {
                 if ( pm->ps->weapon != pm->cmd.weapon) {
                         PM_BeginWeaponChange( pm->cmd.weapon );
                         return;
                 }
         }
-
 
     // change weapon if time
         if ( pm->ps->weaponstate == WEAPON_DROPPING ) {
@@ -2135,7 +2143,6 @@ static void PM_Weapon( void ) {
                 return;
         }
 
-
         if ( pm->ps->weapon <= WP_NONE )
                 return;
 
@@ -2156,15 +2163,16 @@ static void PM_Weapon( void ) {
                            pm->ps->weaponstate = WEAPON_FIRING;
                            pm->ps->weaponTime = PM_WeaponTime(pm->ps->weapon );
                            PM_AddEvent( EV_FIRE_WEAPON );
-                           if (pm->ps->weapon == WP_SR8 ){
-                           PM_StartWeaponAnim( WPN_BOLT);
+                           if (pm->ps->weapon == WP_SR8 || pm->ps->weapon == WP_SPAS ){
+                             pm->ps->pm_flags |= PMF_RELOADING;
+
                           }
 
                            if ( pm->ps->pm_flags & PMF_SINGLE_MODE || pm->ps->weapon == WP_DEAGLE || pm->ps->weapon == WP_BERETTA || pm->ps->weapon == WP_PSG1 || pm->ps->weapon == WP_SR8)
                                    {
                                            pm->ps->pm_flags |= PMF_SINGLE_SHOT;
 
-                                   }//pm->ps->ammo[pm->ps->weapon]--;
+                                   }
 
 }
 
@@ -2412,7 +2420,7 @@ PmoveSingle
 void trap_SnapVector( float *v );
 
 void PmoveSingle (pmove_t *pmove) {
-  int i;
+
         pm = pmove;
 
         // this counter lets us debug movement problems with a journal

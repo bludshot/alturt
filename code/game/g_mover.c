@@ -593,7 +593,9 @@ ReturnToPos1
 */
 void ReturnToPos1( gentity_t *ent ) {
 	MatchTeam( ent, MOVER_2TO1, level.time );
-	G_Printf( "ReturnToPos1 called\n");
+#ifdef XAMISDB
+        	G_Printf( "ReturnToPos1 called\n");
+#endif
 	// looping sound
 	ent->s.loopSound = ent->soundLoop;
 
@@ -640,10 +642,10 @@ void Reached_BinaryMover( gentity_t *ent ) {
 
 	if ( ent->moverState == MOVER_1TO2 ||
 		    ent->moverState == MOVER_STOP_1TO2 ) {
-					G_Printf( "Reached_BinaryMover moverState == MOVER_STOP_1TO2 or MOVER_1TO2 \n");
+					//G_Printf( "Reached_BinaryMover moverState == MOVER_STOP_1TO2 or MOVER_1TO2 \n");
         // reached pos2
 		SetMoverState( ent, MOVER_POS2, level.time );
-					G_Printf( "Reached_BinaryMover SetMoverState MOVER_POS2\n");
+					//G_Printf( "Reached_BinaryMover SetMoverState MOVER_POS2\n");
 
         // play sound
 		if ( ent->soundPos2 ) {
@@ -665,10 +667,10 @@ void Reached_BinaryMover( gentity_t *ent ) {
 		G_UseTargets( ent, ent->activator );
 		    } else if ( ent->moverState == MOVER_2TO1 ||
 			   ent->moverState == MOVER_STOP_2TO1 ) {
-				   G_Printf( "Reached_BinaryMover  moverState == MOVER_2TO1 or moverState == MOVER_STOP_2TO1\n");
+				  // G_Printf( "Reached_BinaryMover  moverState == MOVER_2TO1 or moverState == MOVER_STOP_2TO1\n");
         // reached pos1
 			SetMoverState( ent, MOVER_POS1, level.time );
-					G_Printf( "Reached_BinaryMover SetMoverState MOVER_POS1\n");
+				//	G_Printf( "Reached_BinaryMover SetMoverState MOVER_POS1\n");
         // play sound
 			 if ( ent->soundPos1 ) {
 			     G_AddEvent( ent, EV_GENERAL_SOUND, ent->soundPos1 );
@@ -725,7 +727,7 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
 	int		total;
 	int		partial;
 	if( ent->trigger_only){
-		G_Printf( "Use_BinaryMover ent->trigger_only\n" );
+		//G_Printf( "Use_BinaryMover ent->trigger_only\n" );
 	}
     // only the master should be used
 	if ( ent->flags & FL_TEAMSLAVE ) {
@@ -739,9 +741,9 @@ if(!(ent->trigger_only)){
 		    ent->moverState == MOVER_STOP_2TO1 ) {
         // start moving 50 msec later, becase if this was player
         // triggered, level.time hasn't been advanced yet
-		G_Printf( "Use_BinaryMover moverState == MOVER_STOP_1TO2 || moverState == MOVER_STOP_2TO1\n");
+		//G_Printf( "Use_BinaryMover moverState == MOVER_STOP_1TO2 || moverState == MOVER_STOP_2TO1\n");
 		MatchTeam( ent, ent->moverState , level.time );
-		G_Printf( "Use_BinaryMover %s MatchTeam called\n",ent->moverState );
+		//G_Printf( "Use_BinaryMover %s MatchTeam called\n",ent->moverState );
         // looping sound
 		ent->s.loopSound = ent->soundLoop;
 		return;
@@ -750,11 +752,11 @@ if(!(ent->trigger_only)){
 
 
 		    if ( ent->moverState == MOVER_POS1 ) {
-			G_Printf( "Use_BinaryMover moverState == MOVER_POS1\n");
+			//G_Printf( "Use_BinaryMover moverState == MOVER_POS1\n");
         // start moving 50 msec later, becase if this was player
         // triggered, level.time hasn't been advanced yet
 			    MatchTeam( ent, MOVER_1TO2, level.time + 50 );
-		G_Printf( "Use_BinaryMover MatchTeam MOVER_1TO2 called\n");
+		//G_Printf( "Use_BinaryMover MatchTeam MOVER_1TO2 called\n");
         // starting sound
 			    if ( ent->sound1to2 ) {
 					    G_AddEvent( ent, EV_GENERAL_SOUND, ent->sound1to2 );
@@ -772,11 +774,11 @@ if(!(ent->trigger_only)){
 
 
 		    if( ent->moverState == MOVER_POS2 && ent->wait > 0 ) {
-					G_Printf( "Use_BinaryMover moverState == MOVER_POS2 && ent->wait > 0\n");
+					//G_Printf( "Use_BinaryMover moverState == MOVER_POS2 && ent->wait > 0\n");
         // start moving 50 msec later, becase if this was player
         // triggered, level.time hasn't been advanced yet
 			    MatchTeam( ent, MOVER_2TO1, level.time + 50 );
-					G_Printf( "Use_BinaryMover MOVER_2TO1 MatchTeam called\n");
+					//G_Printf( "Use_BinaryMover MOVER_2TO1 MatchTeam called\n");
         // starting sound
 			    if ( ent->sound2to1 ) {
 					    G_AddEvent( ent, EV_GENERAL_SOUND, ent->sound2to1 );
@@ -791,14 +793,14 @@ if(!(ent->trigger_only)){
 			    }
 			    return;
 		    } else if ( ent->moverState == MOVER_POS2 && ent->wait > 0 ) { // this is for making the door stay up
-				G_Printf( "Use_BinaryMover moverState == MOVER_POS2 && ent->wait > 0\n");
+			//	G_Printf( "Use_BinaryMover moverState == MOVER_POS2 && ent->wait > 0\n");
 			    ent->nextthink = level.time + ent->wait;
 			    return;
 		    }
 
 		    if ( ent->moverState == MOVER_2TO1 && !(ent->trigger_only))
 		    {
-				G_Printf( "Use_BinaryMover ent->moverState == MOVER_2TO1 && !(ent->trigger_only)\n");
+			//	G_Printf( "Use_BinaryMover ent->moverState == MOVER_2TO1 && !(ent->trigger_only)\n");
 
 			    total = ent->s.pos.trDuration;
 
@@ -809,10 +811,10 @@ if(!(ent->trigger_only)){
 
 			    if( !(ent->flags & FL_OPENDOOR )){
 				    MatchTeam( ent, MOVER_2TO1, level.time - ( total - partial ) );
-				G_Printf( "Use_BinaryMover MatchTeam MOVER_2TO1\n");
+				//G_Printf( "Use_BinaryMover MatchTeam MOVER_2TO1\n");
 				}else
 				    SetMoverState(ent, MOVER_2TO1, level.time - ( total - partial ) );
-					G_Printf( "Use_BinaryMover SetMoverState MOVER_2TO1\n");
+				//	G_Printf( "Use_BinaryMover SetMoverState MOVER_2TO1\n");
 			    if ( ent->sound1to2 ) {
 					    G_AddEvent( ent, EV_GENERAL_SOUND, ent->sound1to2 );
 			    }
@@ -821,7 +823,7 @@ if(!(ent->trigger_only)){
 
 
 		    if ( ent->moverState == MOVER_1TO2 && !(ent->trigger_only)) {
-				G_Printf( "Use_BinaryMover moverState == MOVER_1TO2\n");
+				//G_Printf( "Use_BinaryMover moverState == MOVER_1TO2\n");
 				    total = ent->s.pos.trDuration;
 
 			    partial = level.time - ent->s.time;

@@ -474,7 +474,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	const char		*s;
 	int				clientNum;
 	clientInfo_t	*ci;
-        int           steptime = 200;
 	es = &cent->currentState;
 	event = es->event & ~EV_EVENT_BITS;
 
@@ -788,7 +787,15 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		DEBUGNAME("EV_FIRE_WEAPON");
 		CG_FireWeapon( cent );
 		break;
-
+        case EV_EJECT_CASING:
+        {
+          entityState_t *ent;
+          weaponInfo_t    *weap;
+          ent = &cent->currentState;
+          weap = &cg_weapons[ ent->weapon ];
+          weap->ejectBrassFunc( cent );
+            break;
+        }
 	case EV_USE_ITEM0:
 		DEBUGNAME("EV_USE_ITEM0");
 		CG_UseItem( cent );

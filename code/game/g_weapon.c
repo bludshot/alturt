@@ -154,11 +154,10 @@ void SnapVectorTowards( vec3_t v, vec3_t to ) {
 void Bullet_Fire (gentity_t *ent, float spread, int damage ) {
 	trace_t		tr;
 	vec3_t		end;
-        pmove_t         pm;
+
 #ifdef MISSIONPACK
 	vec3_t		impactpoint, bouncedir;
 #endif
-        float xyspeed;
 	float		r;
 	float		u;
 	gentity_t	*tent;
@@ -778,17 +777,27 @@ void Cmd_Reload( gentity_t *ent ){
 
   amt = RoundCount(ent->client->ps.weapon);
   ammotoadd = amt;
-  if (ent->client->ps.ammo[ent->client->ps.weapon] == 0) return;
+  if (ent->client->ps.ammo[ent->client->ps.weapon] == 0 || ent->client->ps.weapon == WP_KNIFE ) return;
+  if (ent->client->ps.weapon == WP_SPAS && bg_weaponlist[ent->client->ps.weapon].rounds > 7 ){
+    return;
+  }
+  if (ent->client->ps.weapon == WP_SPAS && bg_weaponlist[ent->client->ps.weapon].rounds <= 7 ){
+    if (ent->client->ps.weaponTime >0 ) return;
+    ent->client->ps.weaponstate = WEAPON_RELOADING_START;
+    return;
+  }
+
   ent->client->ps.weaponstate = WEAPON_RELOADING_START;
-  if (ent->client->ammoclip[ent->client->ps.weapon] > 0)  {
-    ammotoadd -= ent->client->ammoclip[ent->client->ps.weapon];
+  if (bg_weaponlist[ent->client->ps.weapon].rounds > 0)  {
+    ammotoadd -= bg_weaponlist[ent->client->ps.weapon].rounds;
   }
 
   if (ent->client->ps.ammo[ent->client->ps.weapon] > 0)   {
     ent->client->ps.ammo[ent->client->ps.weapon]--;
   }
 
-  ent->client->ammoclip[ent->client->ps.weapon] += ammotoadd;
+
+  bg_weaponlist[ent->client->ps.weapon].rounds += ammotoadd;
 
 
 }
@@ -800,8 +809,8 @@ FireWeapon
 void FireWeapon( gentity_t *ent ) {
 
 
-  if ( ent->client->ammoclip[ ent->client->ps.weapon ] != -1 || ent->s.weapon != WP_KNIFE  ) {
-    ent->client->ammoclip[ ent->client->ps.weapon ]--;
+  if ( bg_weaponlist[ent->client->ps.weapon].rounds != -1 || ent->s.weapon != WP_KNIFE  ) {
+    bg_weaponlist[ent->client->ps.weapon].rounds--;
   }
 
 	if (ent->client->ps.powerups[PW_QUAD] ) {
