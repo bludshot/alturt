@@ -225,18 +225,21 @@ typedef enum {
 	STAT_HEALTH,
 	STAT_STAMINA, //Xamis
         STAT_ROUNDS,//Xamis
+        STAT_CLIPS,//Xamis
 	STAT_HOLDABLE_ITEM,
 #ifdef MISSIONPACK
 	STAT_PERSISTANT_POWERUP,
 #endif
 	STAT_WEAPONS,					// 16 bit fields
         STAT_WEAPONS_EXT,
-	STAT_CWEAPONS,
+
 	STAT_ARMOR,
 	STAT_DEAD_YAW,					// look this direction when dead (FIXME: get rid of?)
 	STAT_CLIENTS_READY,				// bit mask of clients wishing to exit the intermission (FIXME: configstring?)
 	STAT_MAX_HEALTH,				// health / armor limit, changable by handicap
 	STAT_MAX_STAMINA, 	//Xamis
+        STAT_SMOKE,
+
 
 } statIndex_t;
 
@@ -251,7 +254,6 @@ qboolean BG_HasWeapon( int weapon, int stats[ ] );
 qboolean BG_HasSidearm (const  playerState_t *ps );
 qboolean BG_HasPrimary (const  playerState_t *ps );
 qboolean BG_HasSecondary (const  playerState_t *ps );
-void BG_ExtendedWeapons( int weapon, int stats[ ] );
 //int BG_WeaponModes( int weapon ) ;
 
 
@@ -349,8 +351,10 @@ typedef enum {
 	WP_NONE, //0
 
  WP_KNIFE, //1
+
  WP_BERETTA, //2
  WP_DEAGLE, //3
+
  WP_MP5K, //4
  WP_SPAS, //5
  WP_UMP45, //6
@@ -362,15 +366,12 @@ typedef enum {
  WP_NEGEV, //12
  WP_PSG1, //13
  WP_SR8, //14
- WP_HE,
- WP_SMOKE,
+
+ WP_HE, //15
+ WP_SMOKE, //16
 
 
  WP_NUM_WEAPONS
-// WP_GRAPPLING_HOOK,
-
-
-
 } weapon_t;
 
 typedef enum {
@@ -724,11 +725,20 @@ typedef struct gitem_s {
 } gitem_t;
 
 typedef struct wpinfo_s {
+ //    int             numClips;
      int             clipAmmo;       //ammo that fits in the weapon
      int             rounds;
-  //const   int             wp_sort;
+  const   int        wp_sort;
 } wpinfo_t;
 
+typedef enum {
+  WPS_NONE,
+  WPS_MELEE,
+  WPS_SIDEARM,
+  WPS_PRI_SEC,
+  WPS_GRENADE,
+  WPS_NUM_ITEMS
+} wp_sort_t;
 
 // included in both the game dll and the client
 extern  wpinfo_t bg_weaponlist[];
@@ -799,9 +809,14 @@ void	BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s
 
 qboolean	BG_PlayerTouchesItem( playerState_t *ps, entityState_t *item, int atTime );
 
+void        BG_PlayerTouchesSmoke(int num, int stats[] );
+qboolean  BG_PlayerInSmoke ( int stats[]);
+
 void      BG_GetClientNormal( const playerState_t *ps, vec3_t normal );
 int       BG_CalcSpread( playerState_t ps );
 int       RoundCount( int w );
+void      BG_PackWeapon( int weapon, int stats[ ] );
+
 #define ARENAS_PER_TIER		4
 #define MAX_ARENAS			1024
 #define	MAX_ARENAS_TEXT		8192
@@ -832,6 +847,12 @@ int       RoundCount( int w );
 #define KAMI_BOOMSPHERE_MAXRADIUS		720
 #define KAMI_SHOCKWAVE2_MAXRADIUS		704
 
+
+
+//ALTURT STUFF
+
+
+
 #define SPREAD_JUMPING 120.0;
 #define SPREAD_STANDING 5.0
 #define SPREAD_CROUCHING 0.0
@@ -839,3 +860,39 @@ int       RoundCount( int w );
 #define SPREAD_RUNNING 60.0
 #define SPREAD_SPRINTING 90.0
 
+
+#define ALTURT_SMOKENADETIME 120 // time the smoke nade will spawn smoke for each numbr
+#define ALTURT_SMOKEPUFF_NUMBER 100 // number of smokepuffs to spawn from serverside
+#define ALTURT_SMOKEBLEND_RANGE 96.0f // range of the blend effect clientside
+#define ALTURT_SMOKEPUFF_TIME 5500 // duration of a single smokepuff clientside
+#define ALTURT_SMOKEPUFF_RADIUS 256.0 // radius of a single smokepuff clientside
+#define ALTURT_SMOKENADE_DISTANCE 420 // how far the smokepuffs can flow
+
+// color of the smoke
+#define ALTURT_SMOKENADE_R_DEFAULT 0.30f
+#define ALTURT_SMOKENADE_G_DEFAULT 0.30f
+#define ALTURT_SMOKENADE_B_DEFAULT 0.30f
+
+#define ALTURT_SMOKENADE_R_TEAM_RED 1.00f
+#define ALTURT_SMOKENADE_G_TEAM_RED 0.40f
+#define ALTURT_SMOKENADE_B_TEAM_RED 0.20f
+
+#define ALTURT_SMOKENADE_R_TEAM_BLUE 0.20f
+#define ALTURT_SMOKENADE_G_TEAM_BLUE 0.40f
+#define ALTURT_SMOKENADE_B_TEAM_BLUE 1.00f
+
+// bitmasks
+#define ALTURT_SMOKEMASK_UP        0x0000c000
+#define ALTURT_SMOKEMASK_FORWARD   0x00003000
+#define ALTURT_SMOKEMASK_BACKWARD  0x00000c00
+#define ALTURT_SMOKEMASK_LEFT      0x00000300
+#define ALTURT_SMOKEMASK_RIGHT     0x000000c0
+#define ALTURT_SMOKEMASK_FLAGS     0x0000ffc0
+#define ALTURT_SMOKEMASK_RNDNUM    0x0000003f
+#define ALTURT_SMOKEMASK_SUP       14
+#define ALTURT_SMOKEMASK_SFORWARD  12
+#define ALTURT_SMOKEMASK_SBACKWARD 10
+#define ALTURT_SMOKEMASK_SLEFT     8
+#define ALTURT_SMOKEMASK_SRIGHT    6
+#define ALTURT_SMOKEMASK_VALUE     0x3
+#define SMOKE_FLAGS     0x0000ffc0

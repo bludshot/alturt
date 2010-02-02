@@ -249,7 +249,8 @@ typedef enum {
 	LEF_PUFF_DONT_SCALE  = 0x0001,			// do not scale size over time
 	LEF_TUMBLE			 = 0x0002,			// tumble over time, used for ejecting shells
 	LEF_SOUND1			 = 0x0004,			// sound 1 for kamikaze
-	LEF_SOUND2			 = 0x0008			// sound 2 for kamikaze
+	LEF_SOUND2			 = 0x0008,			// sound 2 for kamikaze
+        LEF_PUFF_DONT_FADE       = 0x0010
 } leFlag_t;
 
 typedef enum {
@@ -721,12 +722,16 @@ typedef struct {
 
 
 
-	//Xamis Invintory selection
+	//Xamis Inventory selection
 
+        int           markedweapon;
 
         vec3_t        lastVangles;                        // view smoothage
         smooth_t      sList[ MAXSMOOTHS ];                // WW smoothing
         vec3_t        lastNormal;
+
+       float                       smokeBlendAlpha;
+       qboolean       inSmoke;
 
 
 } cg_t;
@@ -826,6 +831,9 @@ typedef struct {
 	qhandle_t	shotgunSmokePuffShader;
         qhandle_t       handsBlueSkin; //Xamis
         qhandle_t       handsRedSkin; //Xamis
+
+        qhandle_t       viewSmokeShader;
+
 	qhandle_t	plasmaBallShader;
 	qhandle_t	waterBubbleShader;
 	qhandle_t	bloodTrailShader;
@@ -1159,7 +1167,6 @@ typedef struct {
 	int acceptLeader;
 	char acceptVoice[MAX_NAME_LENGTH];
 
-
 	// media
 	cgMedia_t		media;
 
@@ -1170,7 +1177,7 @@ typedef struct {
 extern	cgs_t			cgs;
 extern	cg_t			cg;
 extern	centity_t		cg_entities[MAX_GENTITIES];
-extern	weaponInfo_t	cg_weapons[MAX_WEAPONS];
+extern	weaponInfo_t	cg_weapons[MAX_WEAPONS*2];
 extern	itemInfo_t		cg_items[MAX_ITEMS];
 extern	markPoly_t		cg_markPolys[MAX_MARK_POLYS];
 

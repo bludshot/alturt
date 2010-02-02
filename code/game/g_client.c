@@ -1262,84 +1262,105 @@ void ClientSpawn(gentity_t *ent) {
 	//item2 = gear.string[5];
 	//item3 = gear.string[6];
 
-
-	client->ps.stats[STAT_WEAPONS] = ( 1 << WP_KNIFE ); //should always have a knife --Xamis
-	client->ps.ammo[WP_KNIFE] = -1;
-//        client->ammoclip[WP_KNIFE] = -1;
+        BG_PackWeapon( WP_KNIFE , ent->client->ps.stats );
+	//client->ps.stats[STAT_WEAPONS] = ( 1 << WP_KNIFE ); //should always have a knife --Xamis
+	//client->ps.ammo[WP_KNIFE] = -1;
         bg_weaponlist[WP_KNIFE].rounds = -1;
+        bg_weaponlist[WP_KNIFE].clipAmmo = -1;
+
+
 
 	if( gear.string[0] == 'F'  ){
-		client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_BERETTA );
-               // client->ammoclip[WP_BERETTA] = RoundCount(WP_BERETTA);
+		//client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_BERETTA );
+                BG_PackWeapon( WP_BERETTA , ent->client->ps.stats );
                 bg_weaponlist[WP_BERETTA].rounds = RoundCount(WP_BERETTA);
                 client->ps.ammo[WP_BERETTA] = 3;
+                bg_weaponlist[WP_BERETTA].clipAmmo = 3;
 	}else if( gear.string[0] == 'G'  ){
-		client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_DEAGLE );
-               // client->ammoclip[WP_DEAGLE] = RoundCount(WP_DEAGLE);
+		//client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_DEAGLE );
+                BG_PackWeapon( WP_DEAGLE , ent->client->ps.stats );
                 bg_weaponlist[WP_DEAGLE].rounds = RoundCount(WP_DEAGLE);
                 client->ps.ammo[WP_DEAGLE] = 3;
+                bg_weaponlist[WP_DEAGLE].clipAmmo = 3;
 	}
 	switch ( gear.string[1] ) {
 		case 'H':
-			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_SPAS );
-                       // client->[WP_SPAS] = 8;
+			//client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_SPAS );
+                        BG_PackWeapon(  WP_SPAS , ent->client->ps.stats );
                         bg_weaponlist[WP_SPAS].rounds = 8;
                         client->ps.ammo[WP_SPAS] = 16;
+                        bg_weaponlist[WP_SPAS].clipAmmo = 16;
 			break;
 		case 'I':
-			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_MP5K );
-                       // client->ammoclip[WP_MP5K] = RoundCount(WP_MP5K);
+			//client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_MP5K );
+                        BG_PackWeapon(  WP_MP5K , ent->client->ps.stats );
                         bg_weaponlist[WP_MP5K].rounds = RoundCount(WP_MP5K);
                         client->ps.ammo[WP_MP5K] = 3;
+                        bg_weaponlist[WP_MP5K].clipAmmo = 3;
 			break;
 		case 'J':
-			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_UMP45 );
-                       // client->ammoclip[WP_UMP45] = RoundCount(WP_UMP45);
+			//client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_UMP45 );
+                        BG_PackWeapon(  WP_UMP45 , ent->client->ps.stats );
                         bg_weaponlist[WP_UMP45].rounds = RoundCount(WP_UMP45);
                         client->ps.ammo[WP_UMP45] = 3;
+                        bg_weaponlist[WP_UMP45].clipAmmo = 3;
 			break;
 		case 'K':
-			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_HK69 );
-                        //client->ammoclip[WP_HK69] = RoundCount(WP_HK69);
+			//client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_HK69 );
+                  BG_PackWeapon(  WP_HK69 , ent->client->ps.stats );
                         bg_weaponlist[WP_HK69].rounds = RoundCount(WP_HK69);
                         client->ps.ammo[WP_HK69] = 5;
+                        bg_weaponlist[WP_HK69].clipAmmo = 5;
 			break;
 		case 'L':
-			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_LR300 );
-                       // client->ammoclip[WP_LR300] = RoundCount(WP_LR300);
+		//	client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_LR300 );
+                  BG_PackWeapon(  WP_LR300 , ent->client->ps.stats );
                         bg_weaponlist[WP_LR300].rounds = RoundCount(WP_LR300);
                         client->ps.ammo[WP_LR300] = 3;
+                        bg_weaponlist[WP_LR300].clipAmmo = 3;
 			break;
 		case 'M':
-			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_G36 );
-                       // client->ammoclip[WP_G36] = RoundCount(WP_G36);
+			//client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_G36 );
+                  BG_PackWeapon(  WP_G36 , ent->client->ps.stats );
                         bg_weaponlist[WP_G36].rounds = RoundCount(WP_G36);
                         client->ps.ammo[WP_G36] = 3;
+                        bg_weaponlist[WP_G36].clipAmmo = 3;
 			break;
 		case 'N':
-			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_PSG1 );
-                       // client->ammoclip[WP_PSG1] = RoundCount(WP_PSG1);
+			//client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_PSG1 );
+                  BG_PackWeapon(  WP_PSG1 , ent->client->ps.stats );
                         bg_weaponlist[WP_PSG1].rounds = RoundCount(WP_PSG1);
                         client->ps.ammo[WP_PSG1] = 3;
+                        bg_weaponlist[WP_PSG1].clipAmmo = 3;
 			break;
 		case 'Z':
-			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_SR8 );
-                       // client->ammoclip[WP_SR8] = RoundCount(WP_SR8);
-                        bg_weaponlist[WP_PSG1].rounds = RoundCount(WP_PSG1);
+			//client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_SR8 );
+                  BG_PackWeapon(  WP_SR8 , ent->client->ps.stats );
+                      bg_weaponlist[WP_SR8].rounds = RoundCount(WP_SR8);
                         client->ps.ammo[WP_SR8] = 3;
+                        bg_weaponlist[WP_SR8].clipAmmo = 3;
 			break;
 		case 'a':
-			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_AK103 );
-                       // client->ammoclip[WP_AK103] = RoundCount(WP_AK103);
+			//client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_AK103 );
+                  BG_PackWeapon(  WP_AK103 , ent->client->ps.stats );
                         bg_weaponlist[WP_AK103].rounds = RoundCount(WP_AK103);
                         client->ps.ammo[WP_AK103] = 3;
+                        bg_weaponlist[WP_AK103].clipAmmo = 3;
 			break;
 		case 'c':
-			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_NEGEV );
-                       // client->ammoclip[WP_NEGEV] = RoundCount(WP_NEGEV);
-                        bg_weaponlist[WP_AK103].rounds = RoundCount(WP_AK103);
+			//client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_NEGEV );
+                  BG_PackWeapon(  WP_NEGEV , ent->client->ps.stats );
+                  bg_weaponlist[WP_NEGEV].rounds = RoundCount(WP_NEGEV);
                         client->ps.ammo[WP_NEGEV] = 1;
+                        bg_weaponlist[WP_NEGEV].clipAmmo = 1;
 			break;
+          case 'e':
+                        //client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_NEGEV );
+            BG_PackWeapon(  WP_M4 , ent->client->ps.stats );
+            bg_weaponlist[WP_M4].rounds = RoundCount(WP_M4);
+            client->ps.ammo[WP_M4] = 3;
+            bg_weaponlist[WP_M4].clipAmmo = 3;
+            break;
 		default:
 			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_NONE );
 	}
@@ -1347,26 +1368,45 @@ void ClientSpawn(gentity_t *ent) {
 
 	switch ( gear.string[2] ) {
 		case 'H':
-			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_SPAS );
-                      //  client->ammoclip[WP_SPAS] = RoundCount(WP_SPAS);
+			//client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_SPAS );
+                  BG_PackWeapon(  WP_SPAS , ent->client->ps.stats );
                         bg_weaponlist[WP_SPAS].rounds = 8;
                         client->ps.ammo[WP_SPAS] = 16;
+                        bg_weaponlist[WP_SPAS].clipAmmo = 16;
 			break;
 		case 'I':
-			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_MP5K );
-                       // client->ammoclip[WP_MP5K] = RoundCount(WP_MP5K);
+			//client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_MP5K );
+                        BG_PackWeapon(  WP_MP5K , ent->client->ps.stats );
                         bg_weaponlist[WP_MP5K].rounds = RoundCount(WP_MP5K);
                         client->ps.ammo[WP_MP5K] = 3;
+                        bg_weaponlist[WP_MP5K].clipAmmo = 3;
 			break;
 		case 'J':
-			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_UMP45 );
-                       //client->ammoclip[WP_UMP45] = RoundCount(WP_UMP45);
+			//client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_UMP45 );
+                        BG_PackWeapon(  WP_UMP45 , ent->client->ps.stats );
                         bg_weaponlist[WP_UMP45].rounds = RoundCount(WP_UMP45);
                         client->ps.ammo[WP_UMP45] = 3;
+                        bg_weaponlist[WP_UMP45].clipAmmo = 3;
 			break;
 		default:
-			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_NONE );
+                        BG_PackWeapon(  WP_NONE , ent->client->ps.stats );
+
 	}
+
+
+        if( gear.string[3] == 'O'  ){
+        BG_PackWeapon( WP_HE , ent->client->ps.stats );
+        client->ps.ammo[WP_HE] = 2;
+        bg_weaponlist[WP_HE].rounds = 2;
+        bg_weaponlist[WP_HE].clipAmmo = 0;
+
+        }else if( gear.string[3] == 'Q'  ){
+          BG_PackWeapon( WP_SMOKE , ent->client->ps.stats );
+          bg_weaponlist[WP_SMOKE].rounds = 2;
+          bg_weaponlist[WP_SMOKE].clipAmmo = 0;
+        }
+
+
         VectorSet( ent->client->ps.grapplePoint, 0.0f, 0.0f, 1.0f );
 	// health will count down towards max_health
 	ent->health = client->ps.stats[STAT_HEALTH] = client->ps.stats[STAT_MAX_HEALTH];// removed + 25 Xamis
@@ -1414,8 +1454,8 @@ void ClientSpawn(gentity_t *ent) {
 		// select the highest weapon number available, after any
 		// spawn given items have fired
 		client->ps.weapon = 1;
-		for ( i = WP_SMOKE - 1 ; i > 0 ; i-- ) {
-			if ( client->ps.stats[STAT_WEAPONS] & ( 1 << i ) ) {
+		for ( i = WP_NUM_WEAPONS - 1 ; i > 0 ; i-- ) {
+                  if ( BG_HasWeapon( i, client->ps.stats) ) {
 				client->ps.weapon = i;
 				break;
 			}

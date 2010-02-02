@@ -43,7 +43,7 @@ void CG_CheckAmmo( void ) {
 	// see about how many seconds of ammo we have remaining
 	weapons = cg.snap->ps.stats[ STAT_WEAPONS ];
 	total = 0;
-	for ( i = WP_BERETTA ; i < WP_SMOKE ; i++ ) {
+        for ( i = 1 ; i < WP_NUM_WEAPONS ; i++ ) {
 		if ( ! ( weapons & ( 1 << i ) ) ) {
 			continue;
 		}
@@ -62,11 +62,13 @@ void CG_CheckAmmo( void ) {
 			case  WP_NEGEV:
 			case  WP_PSG1:
 			case  WP_SR8:
-			total += cg.snap->ps.ammo[i] * 1000;
-			break;
+                          total +=  bg_weaponlist[WP_BERETTA].clipAmmo * 1000;
+			//total += cg.snap->ps.ammo[i] * 1000;
+                       break;
 		default:
-			total += cg.snap->ps.ammo[i] * 200;
-			break;
+                        total +=  bg_weaponlist[i].clipAmmo* 200;
+			//total += cg.snap->ps.ammo[i] * 200;
+                        break;
 		}
 		if ( total >= 5000 ) {
 			cg.lowAmmoWarning = 0;
@@ -151,7 +153,7 @@ void CG_DamageFeedback( int yawByte, int pitchByte, int damage ) {
 		}
 
 		cg.v_dmg_roll = kick * left;
-		
+
 		cg.v_dmg_pitch = -kick * front;
 
 		if ( front <= 0.1 ) {
@@ -513,7 +515,7 @@ void CG_TransitionPlayerState( playerState_t *ps, playerState_t *ops ) {
 		cg.mapRestart = qfalse;
 	}
 
-	if ( cg.snap->ps.pm_type != PM_INTERMISSION 
+	if ( cg.snap->ps.pm_type != PM_INTERMISSION
 		&& ps->persistant[PERS_TEAM] != TEAM_SPECTATOR ) {
 		CG_CheckLocalSounds( ps, ops );
 	}

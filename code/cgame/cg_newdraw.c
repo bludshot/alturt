@@ -255,8 +255,9 @@ static void CG_DrawPlayerAmmoValue(rectDef_t *rect, float scale, vec4_t color, q
 	ps = &cg.snap->ps;
 
 	if ( cent->currentState.weapon ) {
-		value = ps->ammo[cent->currentState.weapon];
-		if ( value > -1 ) {
+          value = ps->stats[STAT_CLIPS];
+		//value = ps->ammo[cent->currentState.weapon];
+                if ( value > -1 ) {
 			if (shader) {
 		    trap_R_SetColor( color );
 				CG_DrawPic(rect->x, rect->y, rect->w, rect->h, shader);
@@ -949,7 +950,8 @@ float CG_GetValue(int ownerDraw) {
     break;
   case CG_PLAYER_AMMO_VALUE:
 		if ( cent->currentState.weapon ) {
-		  return ps->ammo[cent->currentState.weapon];
+                  return  ps->stats[STAT_CLIPS];
+		 //return ps->ammo[cent->currentState.weapon];
 		}
     break;
   case CG_PLAYER_SCORE:
@@ -1600,7 +1602,7 @@ void CG_OwnerDraw(float x, float y, float w, float h, float text_x, float text_y
     CG_DrawSelectedPlayerPowerup(&rect, ownerDrawFlags & CG_SHOW_2DONLY);
     break;
   case CG_PLAYER_HEAD:
-    CG_DrawPlayerHead(&rect, ownerDrawFlags & CG_SHOW_2DONLY);
+    //CG_DrawPlayerHead(&rect, ownerDrawFlags & CG_SHOW_2DONLY);
     break;
   case CG_PLAYER_ITEM:
     CG_DrawPlayerItem(&rect, scale, ownerDrawFlags & CG_SHOW_2DONLY);

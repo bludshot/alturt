@@ -345,14 +345,13 @@ struct gclient_s {
 #ifdef MISSIONPACK
 	gentity_t	*persistantPowerup;
 	int			portalID;
-	int			ammoTimes[WP_SMOKE];
+        int			ammoTimes[WP_NUM_WEAPONS];
 	int			invulnerabilityTime;
 #endif
 
 	char		*areabits;
 
-        int             ammoclip[MAX_WEAPONS];//Xamis
-        int             weaponMode[17];
+        int             weaponMode[WP_NUM_WEAPONS];
         char            *weaponModeChar;
 };
 
@@ -558,6 +557,7 @@ gentity_t *fire_rocket (gentity_t *self, vec3_t start, vec3_t dir);
 gentity_t *fire_bfg (gentity_t *self, vec3_t start, vec3_t dir);
 gentity_t *fire_grapple (gentity_t *self, vec3_t start, vec3_t dir);
 gentity_t *throw_grenade (gentity_t *self, vec3_t start, vec3_t aimdir); //Xamis
+gentity_t *throw_smoke (gentity_t *self, vec3_t start, vec3_t aimdir);
 #ifdef MISSIONPACK
 gentity_t *fire_nail( gentity_t *self, vec3_t start, vec3_t forward, vec3_t right, vec3_t up );
 gentity_t *fire_prox( gentity_t *self, vec3_t start, vec3_t aimdir );
@@ -1010,3 +1010,8 @@ void	trap_SnapVector( float *v );
 void Cmd_Reload( gentity_t *ent );
 //int RoundCount( int w );
 void Change_Mode(gentity_t *ent);
+void G_ExplodeSmokenade( gentity_t *ent );
+
+
+
+

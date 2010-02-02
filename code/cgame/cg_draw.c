@@ -417,6 +417,38 @@ void CG_DrawFlagModel( float x, float y, float w, float h, int team, qboolean fo
 }
 
 /*
+=================
+CG_DrawSmokeScreen
+=================
+*/
+void CG_DrawSmokeScreen(void) {
+  float       hcolor[4];
+
+  if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR) {
+    return;
+  }
+
+    // if not enabled
+//  if ( ! ( cg.snap->ps.stats[STAT_ACTIVE_ITEMS] & ( 1 << UI_NVG ) ) )
+//    return 0;
+
+  hcolor[0] = 0;
+  hcolor[1] = 0;
+  hcolor[2] = 0;
+
+  hcolor[3] = 0.3f;
+
+  CG_FillRect( 0,0,SCREEN_WIDTH,SCREEN_HEIGHT, hcolor);
+
+  //trap_R_SetColor( g_color_table[ColorIndex(COLOR_BLACK)] );
+  CG_DrawPic(0,0,SCREEN_WIDTH,SCREEN_HEIGHT, cgs.media.viewSmokeShader );
+  trap_R_SetColor( NULL );
+
+}
+
+
+
+/*
 ================
 CG_DrawStatusBarHead
 
@@ -471,8 +503,8 @@ static void CG_DrawStatusBarHead( float x ) {
 	angles[YAW] = cg.headStartYaw + ( cg.headEndYaw - cg.headStartYaw ) * frac;
 	angles[PITCH] = cg.headStartPitch + ( cg.headEndPitch - cg.headStartPitch ) * frac;
 
-	CG_DrawHead( x, 480 - size, size, size,
-				cg.snap->ps.clientNum, angles );
+	//CG_DrawHead( x, 480 - size, size, size,
+	//			cg.snap->ps.clientNum, angles );
 }
 #endif // MISSIONPACK
 
@@ -562,7 +594,7 @@ static void CG_DrawStatusBar( void ) {
 					   cg_weapons[ cent->currentState.weapon ].ammoModel, 0, origin, angles );
 	}*/
 
-	CG_DrawStatusBarHead( 185 + CHAR_WIDTH*3 + TEXT_ICON_SPACE );
+	//CG_DrawStatusBarHead( 185 + CHAR_WIDTH*3 + TEXT_ICON_SPACE );
 
 	if( cg.predictedPlayerState.powerups[PW_REDFLAG] ) {
 		CG_DrawStatusBarFlag( 185 + CHAR_WIDTH*3 + TEXT_ICON_SPACE + ICON_SIZE, TEAM_RED );
@@ -584,8 +616,9 @@ static void CG_DrawStatusBar( void ) {
 	// ammo
 	//
 	if ( cent->currentState.weapon ) {
-		value = ps->ammo[cent->currentState.weapon];
-		if ( value > -1 ) {
+		//value = ps->ammo[cent->currentState.weapon];
+                value = ps->stats[STAT_CLIPS];
+               		if ( value > -1 ) {
 			if ( cg.predictedPlayerState.weaponstate == WEAPON_FIRING
 				&& cg.predictedPlayerState.weaponTime > 100 ) {
 				// draw as dark grey when reloading
@@ -745,7 +778,7 @@ static float CG_DrawAttacker( float y ) {
 	angles[PITCH] = 0;
 	angles[YAW] = 180;
 	angles[ROLL] = 0;
-	CG_DrawHead( 640 - size, y, size, size, clientNum, angles );
+	//CG_DrawHead( 640 - size, y, size, size, clientNum, angles );
 
 	info = CG_ConfigString( CS_PLAYERS + clientNum );
 	name = Info_ValueForKey(  info, "n" );
@@ -2579,6 +2612,8 @@ static void CG_Draw2D(stereoFrame_t stereoFrame)
 	if ( cg.levelShot ) {
 		return;
 	}
+        if (BG_PlayerInSmoke (cg.snap->ps.stats))
+          CG_DrawSmokeScreen();
 
 	if ( cg_draw2D.integer == 0 ) {
 		return;
@@ -2666,6 +2701,8 @@ static void CG_Draw2D(stereoFrame_t stereoFrame)
 	if ( !cg.scoreBoardShowing) {
 		CG_DrawCenterString();
 	}
+
+
 }
 
 /*
@@ -2707,6 +2744,8 @@ void CG_DrawActive( stereoFrame_t stereoView ) {
 	// draw 3D view
 	trap_R_RenderScene( &cg.refdef );
 
+        //CG_DrawSmoke();
+       // CG_Printf(" CG_DrawSmoke() called\n" );
 	// draw status bar and other floating elements
  	CG_Draw2D(stereoView);
 }

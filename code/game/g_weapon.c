@@ -154,7 +154,6 @@ void SnapVectorTowards( vec3_t v, vec3_t to ) {
 void Bullet_Fire (gentity_t *ent, float spread, int damage ) {
 	trace_t		tr;
 	vec3_t		end;
-
 #ifdef MISSIONPACK
 	vec3_t		impactpoint, bouncedir;
 #endif
@@ -365,6 +364,26 @@ void weapon_grenadelauncher_fire (gentity_t *ent) {
 }
 
 //Xamis
+void weapon_smoke_throw (gentity_t *ent) {
+  gentity_t       *m;
+  vec3_t start;
+
+  VectorCopy(ent->s.pos.trBase, start);
+
+  start[2] += ent->client->ps.viewheight+8.0f;
+
+  forward[2] += 0.1f;
+
+  VectorNormalize( forward );
+
+  m = throw_smoke(ent, start, forward);
+        //m->damage *= s_quadFactor;
+        //m->splashDamage *= s_quadFactor;
+//      VectorAdd( m->s.pos.trDelta, ent->client->ps.velocity, m->s.pos.trDelta );      // "real" physics
+
+}
+
+
 void weapon_grenade_throw (gentity_t *ent) {
 	gentity_t	*m;
 	vec3_t start;
@@ -769,15 +788,15 @@ void Change_Mode(gentity_t *ent){
   Cmd_Reload
 ==================
 */
-
-void Cmd_Reload( gentity_t *ent ){
+void Cmd_Reload( gentity_t *ent )       {
 
   int amt;
   int ammotoadd;
 
   amt = RoundCount(ent->client->ps.weapon);
   ammotoadd = amt;
-  if (ent->client->ps.ammo[ent->client->ps.weapon] == 0 || ent->client->ps.weapon == WP_KNIFE ) return;
+  //if (ent->client->ps.ammo[ent->client->ps.weapon] == 0 || ent->client->ps.weapon == WP_KNIFE ) return;
+  if ( bg_weaponlist[ent->client->ps.weapon].clipAmmo == 0 || ent->client->ps.weapon == WP_KNIFE ) return;
   if (ent->client->ps.weapon == WP_SPAS && bg_weaponlist[ent->client->ps.weapon].rounds > 7 ){
     return;
   }
@@ -792,8 +811,10 @@ void Cmd_Reload( gentity_t *ent ){
     ammotoadd -= bg_weaponlist[ent->client->ps.weapon].rounds;
   }
 
-  if (ent->client->ps.ammo[ent->client->ps.weapon] > 0)   {
-    ent->client->ps.ammo[ent->client->ps.weapon]--;
+ // if (ent->client->ps.ammo[ent->client->ps.weapon] > 0)   {
+    if ( bg_weaponlist[ent->client->ps.weapon].clipAmmo > 0)   {
+    bg_weaponlist[ent->client->ps.weapon].clipAmmo--;
+  //  ent->client->ps.ammo[ent->client->ps.weapon]--;
   }
 
 
@@ -801,6 +822,8 @@ void Cmd_Reload( gentity_t *ent ){
 
 
 }
+
+
 /*
 ===============
 FireWeapon
@@ -871,11 +894,11 @@ void FireWeapon( gentity_t *ent ) {
 	case WP_HK69:
 			weapon_grenadelauncher_fire( ent );
 			break;
-		//case GN_SMOKE:
-		//	weapon_smoke_throw( ent );
-		//	break;
 		case WP_HE:
 			weapon_grenade_throw( ent );
+                        break;
+                case WP_SMOKE:
+                        weapon_smoke_throw( ent );
 		break;
 	default:
 // FIXME		G_Error( "Bad ent->s.weapon" );

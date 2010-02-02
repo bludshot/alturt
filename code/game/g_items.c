@@ -210,9 +210,11 @@ int Pickup_Holdable( gentity_t *ent, gentity_t *other ) {
 
 void Add_Ammo (gentity_t *ent, int weapon, int count)
 {
-	ent->client->ps.ammo[weapon] += count;
-	if ( ent->client->ps.ammo[weapon] > 200 ) {
+  bg_weaponlist[weapon].clipAmmo += count;
+  ent->client->ps.ammo[weapon] += count;
+        if ( ent->client->ps.ammo[weapon] > 200 ) {
 		ent->client->ps.ammo[weapon] = 200;
+
 	}
 }
 
@@ -259,15 +261,15 @@ int Pickup_Weapon (gentity_t *ent, gentity_t *other) {
 	}
 
 	// add the weapon
-	other->client->ps.stats[STAT_WEAPONS] |= ( 1 << ent->item->giTag );
-
+	//other->client->ps.stats[STAT_WEAPONS] |= ( 1 << ent->item->giTag );
+        BG_PackWeapon( ent->item->giTag, other->client->ps.stats );
         /*Add_Ammo( other, ent->item->giTag, quantity );*/
         quantity = RoundCount(ent->item->giTag);
         if (bg_weaponlist[ent->item->giTag].rounds > 0 )
           Add_Ammo( other, ent->item->giTag, quantity );
         else
           bg_weaponlist[ent->item->giTag].rounds = quantity;
-        //  other->client->ammoclip[ent->item->giTag] = quantity;
+
 
 
 //	if (ent->item->giTag == WP_GRAPPLING_HOOK)

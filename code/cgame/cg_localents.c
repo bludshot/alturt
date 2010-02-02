@@ -132,7 +132,7 @@ void CG_BloodTrail( localEntity_t *le ) {
 	for ( ; t <= t2; t += step ) {
 		BG_EvaluateTrajectory( &le->pos, t, newOrigin );
 
-		blood = CG_SmokePuff( newOrigin, vec3_origin, 
+		blood = CG_SmokePuff( newOrigin, vec3_origin,
 					  20,		// radius
 					  1, 1, 1, 1,	// color
 					  2000,		// trailTime
@@ -228,8 +228,8 @@ void CG_ReflectVelocity( localEntity_t *le, trace_t *trace ) {
 
 
 	// check for stop, making sure that even on low FPS systems it doesn't bobble
-	if ( trace->allsolid || 
-		( trace->plane.normal[2] > 0 && 
+	if ( trace->allsolid ||
+		( trace->plane.normal[2] > 0 &&
 		( le->pos.trDelta[2] < 40 || le->pos.trDelta[2] < -cg.frametime * le->pos.trDelta[2] ) ) ) {
 		le->pos.trType = TR_STATIONARY;
 	} else {
@@ -250,7 +250,7 @@ void CG_AddFragment( localEntity_t *le ) {
 		// sink into the ground if near the removal time
 		int		t;
 		float	oldZ;
-		
+
 		t = le->endTime - cg.time;
 		if ( t < SINK_TIME ) {
 			// we must use an explicit lighting origin, otherwise the
@@ -368,7 +368,13 @@ static void CG_AddMoveScaleFade( localEntity_t *le ) {
 		c = ( le->endTime - cg.time ) * le->lifeRate;
 	}
 
-	re->shaderRGBA[3] = 0xff * c * le->color[3];
+        if ( !( le->leFlags & LEF_PUFF_DONT_FADE ) ) {
+          re->shaderRGBA[3] = 0xff * c * le->color[3];
+        }
+        else
+        {
+          re->shaderRGBA[3] = 0xff * le->color[3];
+        }
 
 	if ( !( le->leFlags & LEF_PUFF_DONT_SCALE ) ) {
 		re->radius = le->radius * ( 1.0 - c ) + 8;
@@ -380,9 +386,11 @@ static void CG_AddMoveScaleFade( localEntity_t *le ) {
 	// so it doesn't add too much overdraw
 	VectorSubtract( re->origin, cg.refdef.vieworg, delta );
 	len = VectorLength( delta );
-	if ( len < le->radius ) {
-		CG_FreeLocalEntity( le );
-		return;
+	if ( len < le->radius -100.0 ) {
+          BG_PlayerTouchesSmoke( 1, cg.snap->ps.stats );
+          CG_FreeLocalEntity( le );
+          return;
+        }else {	BG_PlayerTouchesSmoke( 0, cg.snap->ps.stats );//CG_FreeLocalEntity( le );
 	}
 
 	trap_R_AddRefEntityToScene( re );

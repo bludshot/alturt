@@ -1129,7 +1129,8 @@ void ClientEndFrame( gentity_t *ent ) {
 
 	ent->client->ps.stats[STAT_HEALTH] = ent->health;	// FIXME: get rid of ent->health...
 	ent->client->ps.stats[STAT_STAMINA] = ent->stamina; //Xamis
-        ent->client->ps.stats[STAT_ROUNDS] = bg_weaponlist[ent->client->ps.weapon].rounds;//ent->client->ammoclip[ent->client->ps.weapon];//Xamis
+        ent->client->ps.stats[STAT_ROUNDS] = bg_weaponlist[ent->client->ps.weapon].rounds;//Xamis
+        ent->client->ps.stats[STAT_CLIPS] = bg_weaponlist[ent->client->ps.weapon].clipAmmo;
 	G_SetClientSound (ent);
 
 	// set the latest infor

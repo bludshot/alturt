@@ -794,7 +794,7 @@ void CG_RegisterWeapon( int weaponNum ) {
                 weaponInfo->missileModel = trap_R_RegisterModel( "models/weapons2/grenade/grenade.MD3" );
                 cgs.media.grenadeExplosionShader = trap_R_RegisterShader( "grenadeExplosion" );
                 break;
-/*      case WP_SMOKE:
+      case WP_SMOKE:
                 weaponInfo->missileModel = trap_R_RegisterModel( "models/weapons2/grenade/grenade.MD3" );
                 weaponInfo->missileTrailFunc = CG_GrenadeTrail;
                 weaponInfo->wiTrailTime = 2000;
@@ -802,7 +802,7 @@ void CG_RegisterWeapon( int weaponNum ) {
                 MAKERGB( weaponInfo->flashDlightColor, 1, 0.70f, 0 );
                 cgs.media.bulletExplosionShader = cgs.media.smokePuffShader;
                 break;
-*/
+
          default:
                 MAKERGB( weaponInfo->flashDlightColor, 1, 1, 1 );
                 weaponInfo->flashSound[0] = trap_S_RegisterSound( "sound/weapons/ak103/ak103.wav", qfalse );
@@ -1206,7 +1206,10 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 
         }
 
-        if ( ps && weapon->silencerModel && weaponNum != WP_KNIFE  && weaponNum != WP_HK69 && weaponNum != WP_SPAS && weaponNum != WP_HE && weaponNum != WP_SR8) {
+        if ( ps && weapon->silencerModel && weaponNum != WP_KNIFE
+             && weaponNum != WP_HK69 && weaponNum != WP_SPAS
+             && weaponNum != WP_HE && weaponNum != WP_SR8
+             && weaponNum != WP_SMOKE ) {
 
                 memset( &silencer, 0, sizeof( silencer ) );
                 VectorCopy( parent->lightingOrigin, silencer.lightingOrigin );
@@ -1227,7 +1230,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 
         if ( ps && weapon->laserModel && weaponNum != WP_KNIFE && weaponNum != WP_HK69
              && weaponNum != WP_SPAS && weaponNum != WP_HE && weaponNum != WP_SR8
-             && weaponNum != WP_AK103 && weaponNum != WP_NEGEV ) {
+             && weaponNum != WP_AK103 && weaponNum != WP_NEGEV && weaponNum != WP_SMOKE) {
 
                 memset( &laser, 0, sizeof( laser ) );
                 VectorCopy( parent->lightingOrigin, laser.lightingOrigin );
@@ -1625,14 +1628,14 @@ void CG_AddViewWeapon( playerState_t *ps ) {
 
         //if smallgun
         if ( cg_gunsize.integer ){
-        VectorMA( hand.origin, cg_gun_x.value+3, cg.refdef.viewaxis[0], hand.origin );
-        VectorMA( hand.origin, cg_gun_y.value, cg.refdef.viewaxis[1], hand.origin );
-        VectorMA( hand.origin, (cg_gun_z.value+fovOffset)+2, cg.refdef.viewaxis[2], hand.origin );
+        VectorMA( hand.origin, cg_gun_x.value+4, cg.refdef.viewaxis[0], hand.origin );
+        VectorMA( hand.origin, cg_gun_y.value+1, cg.refdef.viewaxis[1], hand.origin );
+        VectorMA( hand.origin, (cg_gun_z.value+fovOffset)-1, cg.refdef.viewaxis[2], hand.origin );
 
         AnglesToAxis( angles, hand.axis );
         //if smallgun
-        VectorScale(hand.axis[0], 0.30, hand.axis[0]);
-        VectorScale(hand.axis[1], 0.40, hand.axis[1]);
+        VectorScale(hand.axis[0], 0.40, hand.axis[0]);
+        VectorScale(hand.axis[1], 0.50, hand.axis[1]);
         VectorScale(hand.axis[2], 0.40, hand.axis[2]);
         }else{
 
@@ -1698,9 +1701,10 @@ void CG_DrawWeaponSelect( void ) {
         cg.itemPickupTime = 0;
 
         // count the number of weapons owned
-        bits = cg.snap->ps.stats[ STAT_WEAPONS ];
+        bits = (cg.snap->ps.stats[ STAT_WEAPONS ] | cg.snap->ps.stats[ STAT_WEAPONS_EXT ] << 16 );
+      //  bits = cg.snap->ps.stats[ STAT_WEAPONS ] + cg.snap->ps.stats[ STAT_WEAPONS_EXT ];
         count = 0;
-        for ( i = 1 ; i < MAX_WEAPONS ; i++ ) {
+        for ( i = 1 ; i < WP_NUM_WEAPONS ; i++ ) {
                 if ( bits & ( 1 << i ) ) {
                         count++;
                 }
@@ -1709,7 +1713,7 @@ void CG_DrawWeaponSelect( void ) {
         x = 320 - count * 20;
         y = 380;
 
-        for ( i = 1 ; i < MAX_WEAPONS ; i++ ) {
+        for ( i = 1 ; i < WP_NUM_WEAPONS ; i++ ) {
                 if ( !( bits & ( 1 << i ) ) ) {
                         continue;
                 }
@@ -1725,9 +1729,9 @@ void CG_DrawWeaponSelect( void ) {
                 }
 
                 // no ammo cross on top
-                if ( !cg.snap->ps.ammo[ i ] ) {
-                        CG_DrawPic( x, y, 32, 32, cgs.media.noammoShader );
-                }
+               // if ( !cg.snap->ps.ammo[ i ] ) {
+               //         CG_DrawPic( x, y, 32, 32, cgs.media.noammoShader );
+               // }
 
                 x += 40;
         }
@@ -1752,8 +1756,8 @@ CG_WeaponSelectable
 ===============
 */
 static qboolean CG_WeaponSelectable( int i ) {
-        // removed ammo check, we want to be able to cycle to weapon if it's empty --Xamis
-    if ( ! (BG_HasWeapon( i, cg.snap->ps.stats) ) ) { //sanity check  --Xamis
+
+    if ( ! (BG_HasWeapon( i, cg.snap->ps.stats) ) ) {
         return qfalse;
     }
     return qtrue;
@@ -1820,7 +1824,7 @@ void CG_PrevWeapon_f( void ) {
                   cg.weaponSelect = WP_NUM_WEAPONS - 1;
                 }
                 if ( cg.weaponSelect == WP_KNIFE ) {
-                        continue;               // never cycle to gauntlet
+                        continue;
                 }
                 if ( CG_WeaponSelectable( cg.weaponSelect ) ) {
                         break;
@@ -1838,7 +1842,6 @@ CG_Weapon_f
 */
 void CG_Weapon_f( void ) {
         int             num;
-
         if ( !cg.snap ) {
                 return;
         }
@@ -1848,16 +1851,15 @@ void CG_Weapon_f( void ) {
 
         num = atoi( CG_Argv( 1 ) );
 
-        if ( num < 1 || num > MAX_WEAPONS-1 ) {
-                return;
-        }
+     //   if ( num < 1 || num > MAX_WEAPONS-1 ) {
+      //          return;
+      //  }
 
         cg.weaponSelectTime = cg.time;
 
-        if ( ! ( cg.snap->ps.stats[STAT_WEAPONS] & ( 1 << num ) ) ) {
+          if ( ! ( BG_HasWeapon( num, cg.snap->ps.stats ) ) ) {
                 return;         // don't have the weapon
         }
-
         cg.weaponSelect = num;
 }
 
@@ -1888,8 +1890,8 @@ void CG_FireWeapon( centity_t *cent ) {
         if ( ent->weapon == WP_NONE ) {
                 return;
         }
-        if ( ent->weapon >= WP_SMOKE ) {
-                CG_Error( "CG_FireWeapon: ent->weapon >= WP_SMOKE" );
+        if ( ent->weapon >= WP_NUM_WEAPONS ) {
+          CG_Error( "CG_FireWeapon: ent->weapon >= WP_NUM_WEAPONS" );
                 return;
         }
         weap = &cg_weapons[ ent->weapon ];
@@ -1999,6 +2001,16 @@ void CG_MissileHitWall( int weapon, int clientNum, vec3_t origin, vec3_t dir, im
                 light = 300;
                 isSprite = qtrue;
                 break;
+
+          case WP_SMOKE:
+            mod = cgs.media.dishFlashModel;
+            shader = cgs.media.grenadeExplosionShader;
+            sfx = cgs.media.sfx_rockexp;
+            mark = cgs.media.burnMarkShader;
+            radius = 100;
+            light = 300;
+            isSprite = qtrue;
+            break;
         }
 
         if ( sfx ) {

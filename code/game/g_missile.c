@@ -67,6 +67,20 @@ void G_ExplodeMissile( gentity_t *ent ) {
 	vec3_t		dir;
 	vec3_t		origin;
 
+
+        if ( !Q_stricmp( ent->classname , "ut_weapon_grenade_smoke" ) ||
+              ent->s.weapon == WP_SMOKE ) {
+
+          ent->nextthink = level.time + 100;
+          ent->think = G_ExplodeSmokenade;
+          ent->s.generic1 = MF_SMOKE;
+          ent->r.svFlags |= SVF_BROADCAST;
+
+          return;
+              }
+
+
+
 	BG_EvaluateTrajectory( &ent->s.pos, level.time, origin );
 	SnapVector( origin );
 	G_SetOrigin( ent, origin );
@@ -79,6 +93,8 @@ void G_ExplodeMissile( gentity_t *ent ) {
 	G_AddEvent( ent, EV_MISSILE_MISS, DirToByte( dir ) );
 
 	ent->freeAfterEvent = qtrue;
+
+
 
 	// splash damage
 	if ( ent->splashDamage ) {
@@ -486,6 +502,154 @@ gentity_t *throw_grenade (gentity_t *self, vec3_t start, vec3_t dir) {
 }
 
 
+
+void G_ExplodeSmokenade( gentity_t *ent ) {
+
+    // clear the lower 16 bits (there will be the angle stored)
+  ent->s.frame &= SMOKE_FLAGS;
+
+  ent->s.generic1 = MF_SMOKE;
+  ent->r.svFlags |= SVF_BROADCAST;
+
+  if (ent->count <= 0) {
+
+    ent->nextthink = level.time + ALTURT_SMOKENADETIME;
+    ent->think = G_FreeEntity;
+    BG_PlayerTouchesSmoke( 0, ent->parent->client->ps.stats );
+
+
+  } else {
+
+
+    if ((ent->count % 10) == 0) {
+      trace_t tr;
+      vec3_t start, end, dir;
+
+      VectorCopy(ent->r.currentOrigin, start);
+      start[2]+=16.0;
+
+
+            // get a point that's not in any wall
+      while ( trap_PointContents( start, ent->s.number ) & CONTENTS_SOLID ) {
+        start[2] -= 2.0f;
+
+        if ( start[2] < ent->r.currentOrigin[2] ) {
+          start[2] = ent->r.currentOrigin[2]; // don't put the flashbang into the floor
+          break;
+        }
+      }
+
+            // first clear the old the old directions
+      ent->s.frame &= ~SMOKE_FLAGS;
+
+            // check UP
+      dir[0] = 0.0;
+      dir[1] = 0.0;
+      dir[2] = 1.0;
+      VectorMA( start, ALTURT_SMOKENADE_DISTANCE, dir, end);
+
+      trap_Trace( &tr, start, NULL, NULL, end, ent->s.number, MASK_SOLID);
+      if (tr.fraction > 1.0) tr.fraction = 1.0;
+      ent->s.frame |= ((int)(ALTURT_SMOKEMASK_VALUE*tr.fraction)) << ALTURT_SMOKEMASK_SUP;
+
+            // check LEFT
+      dir[0] = -1.0;
+      dir[1] = 0.0;
+      dir[2] = 0.0;
+      VectorMA( start, ALTURT_SMOKENADE_DISTANCE, dir, end);
+
+      trap_Trace( &tr, start, NULL, NULL, end, ent->s.number, MASK_SOLID);
+      if (tr.fraction > 1.0) tr.fraction = 1.0;
+      ent->s.frame |= ((int)(ALTURT_SMOKEMASK_VALUE*tr.fraction)) << ALTURT_SMOKEMASK_SLEFT;
+
+            // check RIGHT
+      dir[0] = 1.0;
+      dir[1] = 0.0;
+      dir[2] = 0.0;
+      VectorMA( start, ALTURT_SMOKENADE_DISTANCE, dir, end);
+
+      trap_Trace( &tr, start, NULL, NULL, end, ent->s.number, MASK_SOLID);
+      if (tr.fraction > 1.0) tr.fraction = 1.0;
+      ent->s.frame |= ((int)(ALTURT_SMOKEMASK_VALUE*tr.fraction)) << ALTURT_SMOKEMASK_SRIGHT;
+
+            // check FORWARD
+      dir[0] = 0.0;
+      dir[1] = 1.0;
+      dir[2] = 0.0;
+      VectorMA( start, ALTURT_SMOKENADE_DISTANCE, dir, end);
+
+      trap_Trace( &tr, start, NULL, NULL, end, ent->s.number, MASK_SOLID);
+      if (tr.fraction > 1.0) tr.fraction = 1.0;
+      ent->s.frame |= ((int)(ALTURT_SMOKEMASK_VALUE*tr.fraction)) << ALTURT_SMOKEMASK_SFORWARD;
+
+            // check BACKWARD
+      dir[0] = 0.0;
+      dir[1] = -1.0;
+      dir[2] = 0.0;
+      VectorMA( start, ALTURT_SMOKENADE_DISTANCE, dir, end);
+
+      trap_Trace( &tr, start, NULL, NULL, end, ent->s.number, MASK_SOLID);
+      if (tr.fraction > 1.0) tr.fraction = 1.0;
+      ent->s.frame |= ((int)(ALTURT_SMOKEMASK_VALUE*tr.fraction)) << ALTURT_SMOKEMASK_SBACKWARD;
+
+            // relink all assault fields
+//      assault_link_all( qfalse );
+
+    }
+
+    ent->count--;
+    ent->nextthink = level.time + ALTURT_SMOKENADETIME;
+    ent->think = G_ExplodeMissile;
+  }
+
+    // the same random seed for all players
+  ent->s.frame &= ~ALTURT_SMOKEMASK_RNDNUM;
+  ent->s.frame |= ((int)(64*random())) & ALTURT_SMOKEMASK_RNDNUM ;
+
+  trap_LinkEntity(ent);
+}
+
+/*
+=================
+fire_smoke
+=================
+*/
+gentity_t *throw_smoke (gentity_t *self, vec3_t start, vec3_t dir) {
+  gentity_t   *bolt;
+
+
+  VectorNormalize (dir);
+
+  bolt = G_Spawn();
+  bolt->classname = "ut_weapon_grenade_smoke";
+  bolt->nextthink = level.time + 2000;
+
+  bolt->think = G_ExplodeMissile;
+  bolt->s.eType = ET_MISSILE;
+  bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
+  bolt->s.weapon = WP_SMOKE;
+  bolt->s.eFlags = EF_BOUNCE_HALF;
+  bolt->r.ownerNum = self->s.number;
+  bolt->timestamp = level.time;
+  bolt->parent = self;
+  bolt->methodOfDeath = MOD_GRENADE;
+  bolt->splashMethodOfDeath = MOD_GRENADE_SPLASH;
+  bolt->clipmask = MASK_SHOT;
+  bolt->count = 100;
+  bolt->target_ent = NULL;
+
+
+  VectorScale( dir, 500 , bolt->s.pos.trDelta );
+
+  bolt->s.pos.trType = TR_GRAVITY;
+  bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;             // move a bit on the very first frame
+  VectorCopy( start, bolt->s.pos.trBase );
+  SnapVector( bolt->s.pos.trDelta );                  // save net bandwidth
+
+  VectorCopy (start, bolt->r.currentOrigin);
+
+  return bolt;
+}
 /*
 =================
 fire_grenade

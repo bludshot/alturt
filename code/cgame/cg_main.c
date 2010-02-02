@@ -85,7 +85,7 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, i
 cg_t				cg;
 cgs_t				cgs;
 centity_t			cg_entities[MAX_GENTITIES];
-weaponInfo_t		cg_weapons[MAX_WEAPONS];
+weaponInfo_t		cg_weapons[MAX_WEAPONS*2];
 itemInfo_t			cg_items[MAX_ITEMS];
 
 
@@ -856,7 +856,9 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.scoreboardScore = trap_R_RegisterShaderNoMip( "menu/tab/score.tga" );
 	cgs.media.scoreboardTime = trap_R_RegisterShaderNoMip( "menu/tab/time.tga" );
 
-	cgs.media.smokePuffShader = trap_R_RegisterShader( "smokePuff" );
+
+        cgs.media.viewSmokeShader = trap_R_RegisterShaderNoMip ( "viewsmokepuff" );
+        cgs.media.smokePuffShader = trap_R_RegisterShader( "SmokePuff" );
 	cgs.media.smokePuffRageProShader = trap_R_RegisterShader( "smokePuffRagePro" );
 	cgs.media.shotgunSmokePuffShader = trap_R_RegisterShader( "shotgunSmokePuff" );
         cgs.media.handsBlueSkin = trap_R_RegisterSkin( "models/weapons2/handskins/hand_swat.skin"); //Xamis
@@ -1898,7 +1900,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 
 	CG_InitConsoleCommands();
 
-	cg.weaponSelect = WP_M4;
+	cg.weaponSelect = WP_KNIFE;
 
 	cgs.redflag = cgs.blueflag = -1; // For compatibily, default to unset for
 	cgs.flagStatus = -1;

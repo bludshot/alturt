@@ -1753,12 +1753,16 @@ PM_BeginWeaponChange
 ===============
 */
 static void PM_BeginWeaponChange( int weapon ) {
-        if ( weapon <= WP_NONE || weapon >= WP_SMOKE ) {
+  if ( weapon <= WP_NONE || weapon >= WP_NUM_WEAPONS ) {
                 return;
         }
 
-        if ( !( pm->ps->stats[STAT_WEAPONS] & ( 1 << weapon ) ) ) {
-                return;
+     //   if ( !( pm->ps->stats[STAT_WEAPONS] & ( 1 << weapon ) ) ) {
+      //          return;
+      //  }
+
+        if ( !( BG_HasWeapon( weapon, pm->ps->stats ) ) ) {
+          return;
         }
 
         if ( pm->ps->weaponstate == WEAPON_DROPPING ) {
@@ -1781,13 +1785,14 @@ static void PM_FinishWeaponChange( void ) {
         int             weapon;
 
         weapon = pm->cmd.weapon;
-        if ( weapon < WP_NONE || weapon > WP_SMOKE ) {
+        if ( weapon < WP_NONE || weapon > WP_NUM_WEAPONS ) {
                 weapon = WP_NONE;
         }
 
-        if ( !( pm->ps->stats[STAT_WEAPONS] & ( 1 << weapon ) ) ) {
-                weapon = WP_NONE;
+        if ( !( BG_HasWeapon( weapon, pm->ps->stats ) ) ) {
+          return;
         }
+
 
         pm->ps->weapon = weapon;
         pm->ps->weaponstate = WEAPON_RAISING;
@@ -1984,7 +1989,7 @@ static int PM_WeaponTime( int weapon )
                         addTime = 3000;
                         break;
                 case WP_HE:
-              //case WP_SMOKE:
+                case WP_SMOKE:
                         addTime = 3000;
                         break;
         }return addTime;

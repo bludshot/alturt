@@ -25,6 +25,115 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../qcommon/q_shared.h"
 #include "bg_public.h"
 #define CGender "models/players/orion/helmet.md3"
+
+wpinfo_t bg_weaponlist[] ={
+  {  //WP_NONE, //0
+    0,                // clipAmmo ammo that fits in the weapon
+    0,             // rounds
+    0
+  },
+  { //WP_KNIFE, //1
+    -1,
+    -1,
+    WPS_MELEE
+  },
+  {// WP_BERETTA, //2
+    15,                // clipAmmo ammo that fits in the weapon
+    0,             // rounds
+    WPS_SIDEARM
+  },
+  { //WP_DEAGLE, //3
+    7,                // clipAmmo ammo that fits in the weapon
+    0,             // rounds
+    WPS_SIDEARM
+  },
+  { //WP_MP5K, //4
+
+    30,                // clipAmmo ammo that fits in the weapon
+    0,             // rounds
+    WPS_PRI_SEC
+  },
+  { //WP_SPAS, //5
+
+    30,                // clipAmmo ammo that fits in the weapon
+    0,             // rounds
+    WPS_PRI_SEC
+  },
+  { //WP_UMP45, //6
+
+    30,                // clipAmmo ammo that fits in the weapon
+    0,             // rounds
+    WPS_PRI_SEC
+  },
+  { //WP_M4, //7
+
+    30,                // clipAmmo ammo that fits in the weapon
+    0,             // rounds
+    WPS_PRI_SEC
+  },
+  { //WP_LR300, //8
+
+    30,                // clipAmmo ammo that fits in the weapon
+    0,             // rounds
+    WPS_PRI_SEC
+  },
+  { //WP_G36, //9
+
+    30,                // clipAmmo ammo that fits in the weapon
+    0,             // rounds
+    WPS_PRI_SEC
+  },
+  { //WP_AK103, //10
+
+    30,                // clipAmmo ammo that fits in the weapon
+    0,             // rounds
+    WPS_PRI_SEC
+  },
+  { //WP_HK69, //11
+
+    1,                // clipAmmo ammo that fits in the weapon
+    0,             // rounds
+    WPS_PRI_SEC
+  },
+  { //WP_NEGEV, //12
+
+    90,                // clipAmmo ammo that fits in the weapon
+    0,             // rounds
+    WPS_PRI_SEC
+  },
+  { //WP_PSG1, //13
+
+    15,                // clipAmmo ammo that fits in the weapon
+    0,             // rounds
+    WPS_PRI_SEC
+  },
+  { //WP_SR8, //14
+
+    5,                // clipAmmo ammo that fits in the weapon
+    0,             // rounds
+    WPS_PRI_SEC
+  },
+  { //WP_HE,
+
+    2,                // clipAmmo ammo that fits in the weapon
+    0,             // rounds
+    WPS_GRENADE
+  },
+  { //WP_SMOKE,
+
+    2,                // clipAmmo ammo that fits in the weapon
+    0,             // rounds
+    WPS_GRENADE
+  },
+  { //WP_NUM_WEAPONS,
+
+    0,                // clipAmmo ammo that fits in the weapon
+    0,             // rounds
+    0
+  }
+
+};
+
 /*QUAKED item_***** ( 0 0 0 ) (-16 -16 -16) (16 16 16) suspended
 DO NOT USE THIS CLASS, IT JUST HOLDS GENERAL INFORMATION.
 The suspended flag will allow items to hang in the air, otherwise they are dropped to the next surface.
@@ -36,95 +145,10 @@ An item fires all of its targets when it is picked up.  If the toucher can't car
 "notfree" if set to 1, don't spawn in free for all games
 "notteam" if set to 1, don't spawn in team games
 "notsingle" if set to 1, don't spawn in single player games
-"wait"	override the default wait before respawning.  -1 = never respawn automatically, which can be used with targeted spawning.
+"wait"  override the default wait before respawning.  -1 = never respawn automatically, which can be used with targeted spawning.
 "random" random number of plus or minus seconds varied from the respawn time
 "count" override quantity or duration on most items.
 */
-
-wpinfo_t bg_weaponlist[] ={
-  {  //WP_NONE, //0
-    0,                // clipAmmo ammo that fits in the weapon
-    0             // rounds
-
-  },
-  { //WP_KNIFE, //1
-    -1,
-    -1
-  },
-  {// WP_BERETTA, //2
-    15,                // clipAmmo ammo that fits in the weapon
-    0             // rounds
-  },
-  { //WP_DEAGLE, //3
-    7,                // clipAmmo ammo that fits in the weapon
-    0             // rounds
-  },
-  { //WP_MP5K, //4
-
-    30,                // clipAmmo ammo that fits in the weapon
-    0             // rounds
-  },
-  { //WP_SPAS, //5
-
-    30,                // clipAmmo ammo that fits in the weapon
-    0             // rounds
-  },
-  { //WP_UMP45, //6
-
-    30,                // clipAmmo ammo that fits in the weapon
-    0             // rounds
-  },
-  { //WP_M4, //7
-
-    30,                // clipAmmo ammo that fits in the weapon
-    0             // rounds
-  },
-  { //WP_LR300, //8
-
-    30,                // clipAmmo ammo that fits in the weapon
-    0             // rounds
-  },
-  { //WP_G36, //9
-
-    30,                // clipAmmo ammo that fits in the weapon
-    0             // rounds
-  },
-  { //WP_AK103, //10
-
-    30,                // clipAmmo ammo that fits in the weapon
-    0             // rounds
-  },
-  { //WP_HK69, //11
-
-    1,                // clipAmmo ammo that fits in the weapon
-    0             // rounds
-  },
-  { //WP_NEGEV, //12
-
-    90,                // clipAmmo ammo that fits in the weapon
-    0             // rounds
-  },
-  { //WP_PSG1, //13
-
-    15,                // clipAmmo ammo that fits in the weapon
-    0             // rounds
-  },
-  { //WP_SR8, //14
-
-    5,                // clipAmmo ammo that fits in the weapon
-    0             // rounds
-  },
-  { //WP_HE,
-
-    2,                // clipAmmo ammo that fits in the weapon
-    0             // rounds
-  },
-  { //WP_SMOKE,
-
-    2,                // clipAmmo ammo that fits in the weapon
-    0             // rounds
-  }
-};
 
 gitem_t	bg_itemlist[] =
 {
@@ -295,7 +319,7 @@ gitem_t	bg_itemlist[] =
   { "models/weapons2/g36/g36.md3",
   NULL, NULL, NULL},
 /* icon */		"icons/weapons/g36",
-/* pickup */	"G36",
+/* pickup */	"H&K G36",
 		40,
   IT_WEAPON,
   WP_G36,
@@ -322,7 +346,7 @@ gitem_t	bg_itemlist[] =
   { "models/weapons2/spas12/spas12.md3",
   NULL, NULL, NULL},
 /* icon */		"icons/weapons/spas12",
-/* pickup */	"Spas",
+/* pickup */	"Franchi SPAS-12",
 		40,
   IT_WEAPON,
   WP_SPAS,
@@ -349,7 +373,7 @@ gitem_t	bg_itemlist[] =
   { "models/weapons2/beretta/beretta.md3",
   NULL, NULL, NULL},
 /* icon */		"icons/weapons/beretta",
-/* pickup */	"beretta",
+/* pickup */	"Beretta 92g",
 		40,
   IT_WEAPON,
   WP_BERETTA,
@@ -430,7 +454,7 @@ gitem_t	bg_itemlist[] =
   { "models/weapons2/ak103/ak103.md3",
   NULL, NULL, NULL},
 /* icon */		"icons/weapons/ak103",
-/* pickup */	"ak103",
+/* pickup */	"AK-103",
 		40,
   IT_WEAPON,
   WP_AK103,
@@ -457,7 +481,7 @@ gitem_t	bg_itemlist[] =
   { "models/weapons2/mp5k/mp5k.md3",
   NULL, NULL, NULL},
 /* icon */		"icons/weapons/mp5k",
-/* pickup */	"mp5k",
+/* pickup */	"H&K MP5K",
 		40,
   IT_WEAPON,
   WP_MP5K,
@@ -505,19 +529,19 @@ gitem_t	bg_itemlist[] =
  count of 500  = 30 bullets 1 clip
  count of 1000 = 30 bullets 2 clips
 */
-// {
-//	 "ut_weapon_grenade_smoke",
-//  "sound/misc/w_pkup.wav",
-//  { "models/weapons2/grenade/grenade.md3",
-//  NULL, NULL, NULL},
-// /* icon */		"icons/weapons/grenade_smoke",
-// /* pickup */	"Smoke Grenades",
-//		40,
-//  IT_WEAPON,
-//  WP_SMOKE,
-// /* precache */ "",
-// /* sounds */ ""
-// },
+ {
+	 "ut_weapon_grenade_smoke",
+  "sound/misc/w_pkup.wav",
+  { "models/weapons2/grenade/grenade.md3",
+  NULL, NULL, NULL},
+ /* icon */		"icons/weapons/grenade_smoke",
+ /* pickup */	"Smoke Grenades",
+		40,
+  IT_WEAPON,
+  WP_SMOKE,
+ /* precache */ "",
+ /* sounds */ ""
+ },
 /*QUAKED ut_weapon_lr (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)
  -------- KEYS --------
  count: sets the amount of ammo given to the player when picked up (default 0).
@@ -538,7 +562,7 @@ gitem_t	bg_itemlist[] =
   { "models/weapons2/zm300/lr.md3",
   NULL, NULL, NULL},
 /* icon */		"icons/weapons/lr",
-/* pickup */	"LR300",
+/* pickup */	"LR300ML",
 		40,
   IT_WEAPON,
   WP_LR300,
@@ -565,7 +589,7 @@ gitem_t	bg_itemlist[] =
   { "models/weapons2/ump45/ump45.md3",
   NULL, NULL, NULL},
 /* icon */		"icons/weapons/ump45",
-/* pickup */	"ump45",
+/* pickup */	"H&K UMP45",
 		40,
   IT_WEAPON,
   WP_UMP45,
@@ -646,7 +670,7 @@ gitem_t	bg_itemlist[] =
   { "models/weapons2/sr8/sr8.md3",
   NULL, NULL, NULL},
 /* icon */		"icons/weapons/sr8",
-/* pickup */	"sr8",
+/* pickup */	"Remmington SR 8",
 		40,
   IT_WEAPON,
   WP_SR8,
@@ -1180,19 +1204,19 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
                 return qfalse;
             if ( BG_Secondary ( item->giTag  ) && BG_HasSecondary( ps ) ) //can only have 1 secondary weapon
                 return qfalse;
-		/*	if ( item->giTag == WP_HE ) {
-                if ( ps->ammo[WP_HE] < 2 )
+			if ( item->giTag == WP_HE ) {
+                  if ( bg_weaponlist[WP_HE].rounds < 2 )
                     return qtrue;
                 else
                     return qfalse;
             }
 			if ( item->giTag == WP_SMOKE ) {
-                if ( ps->ammo[ WP_SMOKE] < 2 )
+                   if ( bg_weaponlist[WP_SMOKE].rounds < 2 )
                     return qtrue;
                 else
                     return qfalse;
          }
-	  */
+
 // end
 
 
@@ -1752,7 +1776,34 @@ void BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s
 }
 
 
+void   BG_PlayerTouchesSmoke( int num, int stats[ ]){
+  stats[ STAT_SMOKE ] = num;
+}
+
+qboolean BG_PlayerInSmoke( int stats[ ] ){
+  if ( stats[ STAT_SMOKE ] == 1 ) return qtrue;
+        return qfalse;
+
+}
+
+
+
 // loadout related  -prototype in bg_public.h --xamis
+
+
+void BG_PackWeapon( int weapon, int stats[ ] )
+{
+  unsigned int  weaponList;
+    // create one big list with from our 2
+  weaponList = (unsigned int)stats[ STAT_WEAPONS ] | ((unsigned int)stats[ STAT_WEAPONS_EXT ] << 16 );
+    // add that bit to our "bigger list"
+  weaponList |= ( 1 << weapon );
+    // statweapons 1 is the lower half part ( 0-15)
+  stats[ STAT_WEAPONS ] = weaponList & 0x0000FFFF;
+    // weapons2 is the upper part ( 17-31 )
+  stats[ STAT_WEAPONS_EXT ] = ( weaponList & 0xFFFF0000 ) >> 16;
+}
+
 
 /*
 =====================
@@ -1762,9 +1813,14 @@ BG_HasWeapon
 
 qboolean BG_HasWeapon( int weapon, int stats[ ] )
 {
-    if (weapon < MAX_WEAPONS ) return (unsigned int)stats[STAT_WEAPONS] & (1 << weapon);
 
-    return (unsigned int) stats[STAT_CWEAPONS] & ( 1 << (weapon - 16) );
+    if (weapon < MAX_WEAPONS ){
+     // Com_Printf( "weapon = %i (unsigned int)stats[STAT_WEAPONS] & (1 << weapon) = %i\n", weapon,  (unsigned int)stats[STAT_WEAPONS] & (1 << weapon));
+      return (unsigned int)stats[STAT_WEAPONS] & (1 << weapon);
+    }
+  //  Com_Printf( "weapon - 16 = %i (unsigned int)stats[STAT_WEAPONS_EXT] & (1 << weapon) = %i\n",(weapon - 16),(unsigned int) stats[STAT_WEAPONS_EXT] & ( 1 << (weapon - 16) ));
+    return (unsigned int) stats[STAT_WEAPONS_EXT] & ( 1 << (weapon - 16) );
+
 }
 
 
@@ -1842,7 +1898,7 @@ int		BG_GetPrimary( int stats [ ] )
 {
     int i;
 
-    for ( i=WP_SMOKE-1;i>WP_NONE;i--)
+    for ( i=WP_NUM_WEAPONS-1;i>WP_NONE;i--)
     {
         if ( BG_HasWeapon( i, stats ) )
         {
@@ -1863,7 +1919,7 @@ int		BG_GetSecondary( int stats [ ] )
 {
     int i;
 
-    for ( i=WP_SMOKE-1;i>WP_NONE;i--)
+    for ( i=WP_NUM_WEAPONS-1;i>WP_NONE;i--)
     {
           if ( BG_HasWeapon( i, stats ) )
         {
@@ -2013,3 +2069,4 @@ int BG_CalcSpread( playerState_t ps ) {
 
   return 50;
 }
+

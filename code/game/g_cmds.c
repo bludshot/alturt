@@ -229,7 +229,7 @@ void Cmd_Give_f (gentity_t *ent)
                 if (!give_all)
                         return;
         }
-
+/*
         if (give_all || Q_stricmp(name, "weapons") == 0)
         {
                 ent->client->ps.stats[STAT_WEAPONS] = (1 << WP_SMOKE) - 1 -
@@ -237,12 +237,25 @@ void Cmd_Give_f (gentity_t *ent)
                 if (!give_all)
                         return;
         }
+*/
+        if (give_all || Q_stricmp(name, "weapons") == 0)
+        {
+          int x;
+
+          for ( x = WP_NUM_WEAPONS - 1; x > WP_NONE; x -- ) {
+
+            BG_PackWeapon( x, ent->client->ps.stats ); // add all weapons!
+          }
+          if (!give_all)
+            return;
+        }
+
 
         if (give_all || Q_stricmp(name, "ammo") == 0)
         {
-          for ( i = 0 ; i < WP_SMOKE ; i++ ) {
-                        ent->client->ps.ammo[i] = 999;
-                       // ent->client->ammoclip[i] = RoundCount( i );
+          for ( i = 0 ; i < WP_NUM_WEAPONS ; i++ ) {
+                      //  ent->client->ps.ammo[i] = 999;
+                        bg_weaponlist[i].clipAmmo = 999;
                         bg_weaponlist[i].rounds = RoundCount( i );
                 }
                 if (!give_all)

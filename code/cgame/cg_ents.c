@@ -434,13 +434,150 @@ static void CG_Missile( centity_t *cent ) {
 //      int     col;
 
         s1 = &cent->currentState;
-        if ( s1->weapon > WP_SMOKE ) {
+        if ( s1->weapon > WP_NUM_WEAPONS ) {
                 s1->weapon = 0;
         }
         weapon = &cg_weapons[s1->weapon];
 
         // calculate the axis
         VectorCopy( s1->angles, cent->lerpAngles);
+
+
+        if ( s1->generic1 == MF_SMOKE )
+        {
+          vec3_t up, orig;
+          localEntity_t *smoke;
+          int seed = cent->currentState.frame & ALTURT_SMOKEMASK_RNDNUM;
+          int radius = ALTURT_SMOKEPUFF_RADIUS + Q_random(&seed)*8;
+          int dummy;
+
+          dummy = (cent->currentState.frame & ALTURT_SMOKEMASK_RIGHT) >> ALTURT_SMOKEMASK_SRIGHT;
+          dummy += (cent->currentState.frame & ALTURT_SMOKEMASK_LEFT) >> ALTURT_SMOKEMASK_SLEFT;
+          dummy += (cent->currentState.frame & ALTURT_SMOKEMASK_FORWARD) >> ALTURT_SMOKEMASK_SFORWARD;
+          dummy += (cent->currentState.frame & ALTURT_SMOKEMASK_BACKWARD) >> ALTURT_SMOKEMASK_SBACKWARD;
+          dummy += (cent->currentState.frame & ALTURT_SMOKEMASK_UP) >> ALTURT_SMOKEMASK_SUP;
+          radius *= 1.0 + (float)dummy/15.0;
+
+          if ( CG_PointContents( cent->lerpOrigin, -1 ) &  CONTENTS_WATER   ) {
+
+            VectorCopy( cent->lerpOrigin, up );
+
+            up[0] += -10+Q_random(&seed)*20;
+            up[1] += -10+Q_random(&seed)*20;
+            up[2] += 5+Q_random(&seed)*5;
+
+            CG_BubbleTrail( cent->lerpOrigin , up, 4 );
+          }
+          else {
+            float distance;
+            // smoke blend
+            distance = Distance( cent->lerpOrigin, cg.refdef.vieworg );
+
+            if ( distance < ( ALTURT_SMOKEBLEND_RANGE * (1.0 + dummy / 15.0 ) ) ) {
+
+                // check the directions for the additional blend effect
+              if ( (32 + ((cent->currentState.frame & ALTURT_SMOKEMASK_RIGHT) >> ALTURT_SMOKEMASK_SRIGHT) *
+                    (int)(ALTURT_SMOKEBLEND_RANGE / ALTURT_SMOKEMASK_VALUE)) >
+                    (cg.refdef.vieworg[1] - cent->lerpOrigin[1])  )
+                cg.smokeBlendAlpha = 1.0f - distance/( ALTURT_SMOKEBLEND_RANGE * (1.0 + dummy/15.0));
+              else if ( (32 + ((cent->currentState.frame & ALTURT_SMOKEMASK_LEFT) >> ALTURT_SMOKEMASK_SLEFT) *
+                         (int)(ALTURT_SMOKEBLEND_RANGE / ALTURT_SMOKEMASK_VALUE)) >
+                         ( - cg.refdef.vieworg[1] + cent->lerpOrigin[1])  )
+                cg.smokeBlendAlpha = 1.0f - distance/( ALTURT_SMOKEBLEND_RANGE * (1.0 + dummy/15.0));
+              else if ( (32 + ((cent->currentState.frame & ALTURT_SMOKEMASK_FORWARD) >> ALTURT_SMOKEMASK_SFORWARD) *
+                         (int)(ALTURT_SMOKEBLEND_RANGE / ALTURT_SMOKEMASK_VALUE)) >
+                         ( cg.refdef.vieworg[0] - cent->lerpOrigin[0])  )
+                cg.smokeBlendAlpha = 1.0f - distance/( ALTURT_SMOKEBLEND_RANGE * (1.0 + dummy/15.0));
+              else if ( (32 + ((cent->currentState.frame & ALTURT_SMOKEMASK_BACKWARD) >> ALTURT_SMOKEMASK_SBACKWARD) *
+                         (int)(ALTURT_SMOKEBLEND_RANGE / ALTURT_SMOKEMASK_VALUE)) >
+                         ( - cg.refdef.vieworg[0] + cent->lerpOrigin[0])  )
+                cg.smokeBlendAlpha = 1.0f - distance/( ALTURT_SMOKEBLEND_RANGE * (1.0 + dummy/15.0));
+              else if ( (32 + ((cent->currentState.frame & ALTURT_SMOKEMASK_UP) >> ALTURT_SMOKEMASK_SUP) *
+                         (int)(ALTURT_SMOKEBLEND_RANGE / ALTURT_SMOKEMASK_VALUE)) >
+                         ( cg.refdef.vieworg[2] - cent->lerpOrigin[2])  )
+                cg.smokeBlendAlpha = 1.0f - distance/( ALTURT_SMOKEBLEND_RANGE * (1.0 + dummy/15.0));
+
+              if ( cg.smokeBlendAlpha > 0.8f )
+                cg.smokeBlendAlpha = 0.8f;
+            }
+
+            // main smokes
+            if ( cent->trailTime < cg.time ) {
+
+                // get the base speed for the smoke
+              up[0] = -6.0 + Q_random(&seed)*12;
+              up[1] = -6.0 + Q_random(&seed)*12;
+              up[2] =  4.0 + Q_random(&seed)*6;
+
+                // modify the speed according to open area stuff
+              if (up[0] > 0.0)
+                up[0] += Q_random(&seed)*14.0* ((cent->currentState.frame & ALTURT_SMOKEMASK_RIGHT) >> ALTURT_SMOKEMASK_SRIGHT);
+              if (up[0] < 0.0)
+                up[0] -= Q_random(&seed)*14.0* ((cent->currentState.frame & ALTURT_SMOKEMASK_LEFT) >> ALTURT_SMOKEMASK_SLEFT);
+
+              if (up[1] > 0.0)
+                up[1] += Q_random(&seed)*14.0* ((cent->currentState.frame & ALTURT_SMOKEMASK_FORWARD) >> ALTURT_SMOKEMASK_SFORWARD);
+              if (up[1] < 0.0)
+                up[1] -= Q_random(&seed)*14.0* ((cent->currentState.frame & ALTURT_SMOKEMASK_BACKWARD) >> ALTURT_SMOKEMASK_SBACKWARD);
+
+              if ( up[2] > 0.0 )
+                up[2] += Q_random(&seed)*12.0* ((cent->currentState.frame & ALTURT_SMOKEMASK_UP) >> ALTURT_SMOKEMASK_SUP);
+
+              VectorCopy(cent->lerpOrigin, orig);
+              orig[2] += 4.0;
+
+              switch ( cgs.clientinfo[ cent->currentState.clientNum ].team  ) {
+                case TEAM_RED:
+                  smoke = CG_SmokePuff( orig,
+                                        up,
+                                        radius,
+                                        ALTURT_SMOKENADE_R_TEAM_RED,
+                                        ALTURT_SMOKENADE_G_TEAM_RED,
+                                        ALTURT_SMOKENADE_B_TEAM_RED,
+                                        1.0,
+                                        ALTURT_SMOKEPUFF_TIME,
+                                        cg.time,
+                                        0,
+                                        LEF_PUFF_DONT_FADE,
+                                        cgs.media.smokePuffShader );
+                  break;
+                case TEAM_BLUE:
+                  smoke = CG_SmokePuff( orig,
+                                        up,
+                                        radius,
+                                        ALTURT_SMOKENADE_R_TEAM_BLUE,
+                                        ALTURT_SMOKENADE_G_TEAM_BLUE,
+                                        ALTURT_SMOKENADE_B_TEAM_BLUE,
+                                        1.0,
+                                        ALTURT_SMOKEPUFF_TIME,
+                                        cg.time,
+                                        0,
+                                        LEF_PUFF_DONT_FADE,
+                                        cgs.media.smokePuffShader );
+                  break;
+                default:
+                  smoke = CG_SmokePuff( orig,
+                                        up,
+                                        radius,
+                                        ALTURT_SMOKENADE_R_DEFAULT,
+                                        ALTURT_SMOKENADE_G_DEFAULT,
+                                        ALTURT_SMOKENADE_B_DEFAULT,
+                                        1.0,
+                                        ALTURT_SMOKEPUFF_TIME,
+                                        cg.time,
+                                        0,
+                                        LEF_PUFF_DONT_FADE,
+                                        cgs.media.smokePuffShader );
+                  break;
+              }
+
+              cent->trailTime = cg.time + ALTURT_SMOKENADETIME;
+            }
+          }
+        }
+
+
+
 
         // add trails
         if ( weapon->missileTrailFunc )
@@ -522,7 +659,7 @@ static void CG_Grapple( centity_t *cent ) {
         const weaponInfo_t              *weapon;
 
         s1 = &cent->currentState;
-        if ( s1->weapon > WP_SMOKE ) {
+        if ( s1->weapon > WP_NUM_WEAPONS ) {
                 s1->weapon = 0;
         }
         weapon = &cg_weapons[s1->weapon];

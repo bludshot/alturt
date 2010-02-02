@@ -205,7 +205,7 @@ void CG_LoadingClient( int clientNum ) {
 
 
 		Com_sprintf( iconName, MAX_QPATH, "models/players/%s/icon_%s.tga", model, skinToUseForIcon );
-		
+
 		loadingPlayerIcons[loadingPlayerIconCount] = trap_R_RegisterShaderNoMip( iconName );
 		if ( !loadingPlayerIcons[loadingPlayerIconCount] ) {
 			//Com_sprintf( iconName, MAX_QPATH, "models/players/characters/%s/icon_%s.tga", model, skin ); //blud was
@@ -266,7 +266,7 @@ void CG_DrawInformation( void ) {
 //	trap_R_DrawStretchPic( 0, 0, cgs.glconfig.vidWidth, cgs.glconfig.vidHeight, 0, 0, 2.5, 2, detail );
 
 	// draw the icons of things as they are loaded
-	CG_DrawLoadingIcons();
+	//CG_DrawLoadingIcons();
 
 	// the first 150 rows are reserved for the client connection
 	// screen to write into
