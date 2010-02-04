@@ -194,6 +194,9 @@ struct gentity_s {
 	float		random;
         qboolean        active;
 	gitem_t		*item;			// for bonus items
+
+
+
 };
 
 
@@ -255,6 +258,16 @@ typedef struct {
 #define MAX_NETNAME			36
 #define	MAX_VOTE_COUNT		3
 
+//xamis
+#define MELEE                   0
+#define SIDEARM                 1
+#define PRIMARY                 2
+#define SECONDARY               3
+#define NADE                    4
+#define MISC                    5
+#define INVENTORYITEMS  6
+
+
 // client data that stays across multiple respawns, but is cleared
 // on each level change or team change at ClientBegin()
 typedef struct {
@@ -272,12 +285,7 @@ typedef struct {
 	int			voteCount;			// to prevent people from constantly calling votes
 	int			teamVoteCount;		// to prevent people from constantly calling votes
 	qboolean	teamInfo;			// send team overlay updates?
-	//int		weapon_primary;
-	//int		weapon_secondary;
-
-
-
-
+        int             inventory[INVENTORYITEMS];
 
 } clientPersistant_t;
 
@@ -347,6 +355,7 @@ struct gclient_s {
 	int			portalID;
         int			ammoTimes[WP_NUM_WEAPONS];
 	int			invulnerabilityTime;
+
 #endif
 
 	char		*areabits;

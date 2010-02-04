@@ -559,95 +559,95 @@ Code Modified from Tremulous --Xamis
 */
 static qboolean PM_CheckWallJump( void )
 {
-	vec3_t  dir, forward, movedir, point;
-	vec3_t  refNormal = { 0.0f, 0.0f, 0.5f };
-	float   normalFraction = 1.0f;
-	float   cmdFraction = 1.0f;
-	float   upFraction = 6.0f;
-	trace_t trace;
+        vec3_t  dir, forward, movedir, point;
+        vec3_t  refNormal = { 0.0f, 0.0f, 0.5f };
+        float   normalFraction = 1.0f;
+        float   cmdFraction = 1.0f;
+        float   upFraction = 6.0f;
+        trace_t trace;
 
-	ProjectPointOnPlane( movedir, pml.forward, refNormal );
-	VectorNormalize( movedir );
+        ProjectPointOnPlane( movedir, pml.forward, refNormal );
+        VectorNormalize( movedir );
 
-	if( pm->cmd.forwardmove < 0 )
-		VectorNegate( movedir, movedir );
+        if( pm->cmd.forwardmove < 0 )
+                VectorNegate( movedir, movedir );
 
   //trace into direction we are moving
-	VectorMA( pm->ps->origin, 0.25f, movedir, point );
-	pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask );
+        VectorMA( pm->ps->origin, 0.25f, movedir, point );
+        pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask );
 
-	if( trace.fraction < 1.0f &&
-		   !( trace.surfaceFlags & ( SURF_SKY | SURF_SLICK ) ) &&
-		   trace.plane.normal[ 2 ] < MIN_WALK_NORMAL )
-	{
-		if( !VectorCompare( trace.plane.normal, pm->ps->grapplePoint ) )
-		{
-			VectorCopy( trace.plane.normal, pm->ps->grapplePoint );
-		}
-	}
-	else
-		return qfalse;
+        if( trace.fraction < 1.0f &&
+                   !( trace.surfaceFlags & ( SURF_SKY | SURF_SLICK ) ) &&
+                   trace.plane.normal[ 2 ] < MIN_WALK_NORMAL )
+        {
+                if( !VectorCompare( trace.plane.normal, pm->ps->grapplePoint ) )
+                {
+                        VectorCopy( trace.plane.normal, pm->ps->grapplePoint );
+                }
+        }
+        else
+                return qfalse;
 
-	if( pm->ps->pm_flags & PMF_RESPAWNED )
-		return qfalse;    // don't allow jump until all buttons are up
+        if( pm->ps->pm_flags & PMF_RESPAWNED )
+                return qfalse;    // don't allow jump until all buttons are up
 
-	if( pm->cmd.upmove < 10 )
+        if( pm->cmd.upmove < 10 )
     // not holding jump
-		return qfalse;
+                return qfalse;
 
   // must wait for jump to be released
-	if( pm->ps->pm_flags & PMF_JUMP_HELD &&
-		   pm->ps->grapplePoint[ 2 ] == 1.0f )
-	{
+        if( pm->ps->pm_flags & PMF_JUMP_HELD &&
+                   pm->ps->grapplePoint[ 2 ] == 1.0f )
+        {
     // clear upmove so cmdscale doesn't lower running speed
-		pm->cmd.upmove = 0;
-		return qfalse;
-	}
+                pm->cmd.upmove = 0;
+                return qfalse;
+        }
 
 
-	pml.groundPlane = qfalse;   // jumping away
-	pml.walking = qfalse;
-	pm->ps->pm_flags |= PMF_JUMP_HELD;
+        pml.groundPlane = qfalse;   // jumping away
+        pml.walking = qfalse;
+        pm->ps->pm_flags |= PMF_JUMP_HELD;
 
-	pm->ps->groundEntityNum = ENTITYNUM_NONE;
+        pm->ps->groundEntityNum = ENTITYNUM_NONE;
 
-	ProjectPointOnPlane( forward, pml.forward, pm->ps->grapplePoint );
+        ProjectPointOnPlane( forward, pml.forward, pm->ps->grapplePoint );
 
-	VectorScale( pm->ps->grapplePoint, normalFraction, dir );
+        VectorScale( pm->ps->grapplePoint, normalFraction, dir );
 
 
-	if( pm->cmd.forwardmove > 0 )
-		VectorMA( dir, cmdFraction, forward, dir );
-	else if( pm->cmd.forwardmove < 0 )
-		VectorMA( dir, -cmdFraction, forward, dir );
+        if( pm->cmd.forwardmove > 0 )
+                VectorMA( dir, cmdFraction, forward, dir );
+        else if( pm->cmd.forwardmove < 0 )
+                VectorMA( dir, -cmdFraction, forward, dir );
 
-	VectorMA( dir, upFraction, refNormal, dir );
-	VectorNormalize( dir );
+        VectorMA( dir, upFraction, refNormal, dir );
+        VectorNormalize( dir );
 
         VectorMA( pm->ps->velocity, 300.0f,
-		  dir, pm->ps->velocity );
+                  dir, pm->ps->velocity );
 
 
-	if( VectorLength( pm->ps->velocity ) > 320 )
-	{
-		VectorNormalize( pm->ps->velocity );
-		VectorScale( pm->ps->velocity, 320, pm->ps->velocity );
-	}
+        if( VectorLength( pm->ps->velocity ) > 320 )
+        {
+                VectorNormalize( pm->ps->velocity );
+                VectorScale( pm->ps->velocity, 320, pm->ps->velocity );
+        }
 
-	PM_AddEvent( EV_JUMP );
+        PM_AddEvent( EV_JUMP );
 
-	if( pm->cmd.forwardmove >= 0 )
-	{
-		PM_ForceLegsAnim( LEGS_JUMP );
-		pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
-	}
-	else
-	{
-		PM_ForceLegsAnim( LEGS_JUMPB );
-		pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
-	}
+        if( pm->cmd.forwardmove >= 0 )
+        {
+                PM_ForceLegsAnim( LEGS_JUMP );
+                pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
+        }
+        else
+        {
+                PM_ForceLegsAnim( LEGS_JUMPB );
+                pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
+        }
 
-	return qtrue;
+        return qtrue;
 }
 
 /*
@@ -1847,7 +1847,7 @@ int RoundCount( int w )        {
       return 1;
       break;
     case WP_NEGEV:
-      return 80;
+      return 90;
       break;
     case WP_SR8:
       return 5;
@@ -1858,8 +1858,14 @@ int RoundCount( int w )        {
     case WP_HK69:
       return 1;
       break;
-    default:
+    case WP_BERETTA:
       return 15;
+      break;
+    case WP_DEAGLE:
+      return 7;
+      break;
+    default:
+      return 2;
   }
 
 }
@@ -2025,13 +2031,16 @@ static void PM_Weapon( void ) {
         pm->ps->pm_flags &= ~PMF_USE_ITEM_HELD;
 }
 
+
+        if ( bg_weaponlist[pm->ps->weapon].rounds[pm->ps->clientNum]== 0){
+          if ( pm->ps->weapon == WP_SMOKE || pm->ps->weapon == WP_HE ){
+          PM_AddEvent( EV_NONADES );
+          }
+        }
+
     // make weapon function
         if ( pm->ps->weaponTime > 0 )
         pm->ps->weaponTime -= pml.msec;
-
-
-
-
 
 
         if ( pm->ps->weaponstate == WEAPON_DROPPING && pm->ps->weaponTime > 0 ) {
@@ -2045,19 +2054,19 @@ static void PM_Weapon( void ) {
           pm->ps->weaponstate = WEAPON_RELOADING;
           if ( pm->ps->weapon == WP_NEGEV || pm->ps->weapon == WP_SPAS ){
             PM_StartWeaponAnim( WPN_RELOAD_START );
-          //return;
-        }//if( pm->ps->weaponstate == WEAPON_RELOADING && pm->ps->weaponTime > 0 ) {
-          //Com_Printf( "weaponstate == WEAPON_RELOADING && pm->ps->weaponTime > 0\n");
-        //  return;
+          }
         }
         if ( pm->ps->weaponstate == WEAPON_RELOADING && pm->ps->weaponTime <= 0 ) {
 
           pm->ps->weaponTime = ReloadTime( pm->ps->weapon );
           if ( pm->ps->weapon == WP_SPAS ){
-            bg_weaponlist[pm->ps->weapon].rounds++;
-            pm->ps->ammo[pm->ps->weapon]--;
+
+            bg_weaponlist[pm->ps->weapon].rounds[pm->ps->clientNum]++;
+            bg_weaponlist[pm->ps->weapon].numClips[pm->ps->clientNum]--;
+            //pm->ps->ammo[pm->ps->weapon]--;
+           // Com_Printf("pm->ps->ammo[pm->ps->weapon] = %i\n", pm->ps->ammo[pm->ps->weapon] );
           }
-          if ( pm->cmd.buttons & BUTTON_RELOAD && pm->ps->weapon == WP_SPAS &&  bg_weaponlist[pm->ps->weapon].rounds < 8 ){
+          if ( pm->cmd.buttons & BUTTON_RELOAD && pm->ps->weapon == WP_SPAS &&  bg_weaponlist[pm->ps->weapon].rounds[pm->ps->clientNum] < 8 &&  bg_weaponlist[pm->ps->weapon].numClips[pm->ps->clientNum] > 0){
           pm->ps->weaponstate = WEAPON_RELOADING;
           }else{
           pm->ps->weaponstate = WEAPON_RELOADING_END;
@@ -2152,7 +2161,7 @@ static void PM_Weapon( void ) {
                 return;
 
                                 // check for out of ammo
-        if ( pm->ps->stats[STAT_ROUNDS] == 0 ) {
+        if ( pm->ps->stats[STAT_ROUNDS] <= 0 ) {
            PM_AddEvent( EV_NOAMMO );
            pm->ps->weaponTime = 550;
            pm->ps->weaponstate = WEAPON_READY;

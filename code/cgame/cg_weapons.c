@@ -519,7 +519,7 @@ void CG_RegisterWeapon( int weaponNum ) {
         }
 
         weaponInfo->weaponIcon = trap_R_RegisterShader( item->icon );
-        weaponInfo->ammoIcon = trap_R_RegisterShader( item->icon );
+        weaponInfo->ammoIcon = trap_R_RegisterShader( bg_weaponlist[ weaponNum ].ammoIcon );
 
         for ( ammo = bg_itemlist + 1 ; ammo->classname ; ammo++ ) {
                 if ( ammo->giType == IT_AMMO && ammo->giTag == weaponNum ) {
@@ -694,7 +694,6 @@ void CG_RegisterWeapon( int weaponNum ) {
                         weaponInfo->silenceSound[0] = trap_S_RegisterSound( "sound/weapons/m4/m4_sil.wav", qfalse );
                         weaponInfo->normalSound[0] = trap_S_RegisterSound( "sound/weapons/m4/m4.wav", qfalse );
                         weaponInfo->ejectBrassFunc = CG_MachineGunEjectBrass;
-                        cgs.media.bulletExplosionShader = trap_R_RegisterShader( "bulletExplosion" );
                         break;
                 case WP_PSG1:
                         MAKERGB( weaponInfo->flashDlightColor, 1, 1, 0 );
@@ -702,7 +701,6 @@ void CG_RegisterWeapon( int weaponNum ) {
                         weaponInfo->silenceSound[0] = trap_S_RegisterSound( "sound/weapons/psg1/psg1_sil.wav", qfalse );
                         weaponInfo->normalSound[0] = trap_S_RegisterSound( "sound/weapons/psg1/psg1.wav", qfalse );
                         weaponInfo->ejectBrassFunc = CG_MachineGunEjectBrass;
-                        cgs.media.bulletExplosionShader = trap_R_RegisterShader( "bulletExplosion" );
                         break;
 
                 case WP_SR8:
@@ -711,7 +709,6 @@ void CG_RegisterWeapon( int weaponNum ) {
                         weaponInfo->silenceSound[0] = trap_S_RegisterSound( "sound/weapons/sr8/sr8.wav", qfalse );
                         weaponInfo->normalSound[0] = trap_S_RegisterSound( "sound/weapons/sr8/sr8.wav", qfalse );
                        // weaponInfo->ejectBrassFunc = CG_MachineGunEjectBrass;
-                        cgs.media.bulletExplosionShader = trap_R_RegisterShader( "bulletExplosion" );
                         break;
 
                 case WP_AK103:
@@ -720,7 +717,6 @@ void CG_RegisterWeapon( int weaponNum ) {
                         weaponInfo->silenceSound[0] = trap_S_RegisterSound( "sound/weapons/ak103/ak103_sil.wav", qfalse );
                         weaponInfo->normalSound[0] = trap_S_RegisterSound( "sound/weapons/ak103/ak103.wav", qfalse );
                         weaponInfo->ejectBrassFunc = CG_MachineGunEjectBrass;
-                        cgs.media.bulletExplosionShader = trap_R_RegisterShader( "bulletExplosion" );
                         break;
 
                 case WP_LR300:
@@ -729,7 +725,6 @@ void CG_RegisterWeapon( int weaponNum ) {
                         weaponInfo->silenceSound[0] = trap_S_RegisterSound( "sound/weapons/zm300/lr_sil.wav", qfalse );
                         weaponInfo->normalSound[0] = trap_S_RegisterSound( "sound/weapons/zm300/lr.wav", qfalse );
                         weaponInfo->ejectBrassFunc = CG_MachineGunEjectBrass;
-                        cgs.media.bulletExplosionShader = trap_R_RegisterShader( "bulletExplosion" );
                         break;
 
                 case WP_G36:
@@ -738,7 +733,6 @@ void CG_RegisterWeapon( int weaponNum ) {
                         weaponInfo->silenceSound[0] = trap_S_RegisterSound( "sound/weapons/g36/g36_sil.wav", qfalse );
                         weaponInfo->normalSound[0] = trap_S_RegisterSound( "sound/weapons/g36/g36.wav", qfalse );
                         weaponInfo->ejectBrassFunc = CG_MachineGunEjectBrass;
-                        cgs.media.bulletExplosionShader = trap_R_RegisterShader( "bulletExplosion" );
                         break;
                 case WP_MP5K:
                         MAKERGB( weaponInfo->flashDlightColor, 1, 1, 0 );
@@ -746,7 +740,7 @@ void CG_RegisterWeapon( int weaponNum ) {
                         weaponInfo->silenceSound[0] = trap_S_RegisterSound( "sound/weapons/ump45/ump45_sil.wav", qfalse );
                         weaponInfo->normalSound[0] = trap_S_RegisterSound( "sound/weapons/mp5k/mp5k.wav", qfalse );
                         weaponInfo->ejectBrassFunc = CG_MachineGunEjectBrass;
-                        cgs.media.bulletExplosionShader = trap_R_RegisterShader( "bulletExplosion" );
+
                         break;
                 case WP_UMP45:
                         MAKERGB( weaponInfo->flashDlightColor, 1, 1, 0 );
@@ -754,7 +748,6 @@ void CG_RegisterWeapon( int weaponNum ) {
                         weaponInfo->silenceSound[0] = trap_S_RegisterSound( "sound/weapons/ump45/ump45_sil.wav", qfalse );
                         weaponInfo->normalSound[0] = trap_S_RegisterSound( "sound/weapons/ump45/ump45.wav", qfalse );
                         weaponInfo->ejectBrassFunc = CG_MachineGunEjectBrass;
-                        cgs.media.bulletExplosionShader = trap_R_RegisterShader( "bulletExplosion" );
                         break;
 
                 case WP_BERETTA:
@@ -763,7 +756,6 @@ void CG_RegisterWeapon( int weaponNum ) {
                         weaponInfo->silenceSound[0] = trap_S_RegisterSound( "sound/weapons/beretta/beretta_sil.wav", qfalse );
                         weaponInfo->normalSound[0] = trap_S_RegisterSound( "sound/weapons/beretta/beretta.wav", qfalse );
                         weaponInfo->ejectBrassFunc = CG_MachineGunEjectBrass;
-                        cgs.media.bulletExplosionShader = trap_R_RegisterShader( "bulletExplosion" );
                         break;
 
                 case WP_DEAGLE:
@@ -772,7 +764,6 @@ void CG_RegisterWeapon( int weaponNum ) {
                         weaponInfo->silenceSound[0] = trap_S_RegisterSound( "sound/weapons/de/de_sil.wav", qfalse );
                         weaponInfo->normalSound[0] = trap_S_RegisterSound( "sound/weapons/de/de.wav", qfalse );
                         weaponInfo->ejectBrassFunc = CG_MachineGunEjectBrass;
-                        cgs.media.bulletExplosionShader = trap_R_RegisterShader( "bulletExplosion" );
                         break;
                 case WP_SPAS:
                         MAKERGB( weaponInfo->flashDlightColor, 1, 1, 0 );
@@ -792,7 +783,6 @@ void CG_RegisterWeapon( int weaponNum ) {
                 break;
         case WP_HE:
                 weaponInfo->missileModel = trap_R_RegisterModel( "models/weapons2/grenade/grenade.MD3" );
-                cgs.media.grenadeExplosionShader = trap_R_RegisterShader( "grenadeExplosion" );
                 break;
       case WP_SMOKE:
                 weaponInfo->missileModel = trap_R_RegisterModel( "models/weapons2/grenade/grenade.MD3" );
@@ -800,7 +790,6 @@ void CG_RegisterWeapon( int weaponNum ) {
                 weaponInfo->wiTrailTime = 2000;
                 weaponInfo->trailRadius = 232;
                 MAKERGB( weaponInfo->flashDlightColor, 1, 0.70f, 0 );
-                cgs.media.bulletExplosionShader = cgs.media.smokePuffShader;
                 break;
 
          default:
@@ -853,6 +842,7 @@ void CG_RegisterItemVisuals( int itemNum ) {
                 }
         }
 }
+
 
 
 /*
@@ -1685,7 +1675,18 @@ void CG_DrawWeaponSelect( void ) {
         int             x, y, w;
         char    *name;
         float   *color;
+        float       hcolor[4];
+        float       hcolor2[4];
 
+        hcolor[0] = 0.0;
+        hcolor[1] = 0.0;
+        hcolor[2] = 0.0;
+        hcolor[3] = 0.6f;
+
+        hcolor2[0] = 0.2;
+        hcolor2[1] = 0.3;
+        hcolor2[2] = 0.8;
+        hcolor2[3] = 0.3f;
         // don't display if dead
         if ( cg.predictedPlayerState.stats[STAT_HEALTH] <= 0 ) {
                 return;
@@ -1701,31 +1702,47 @@ void CG_DrawWeaponSelect( void ) {
         cg.itemPickupTime = 0;
 
         // count the number of weapons owned
-        bits = (cg.snap->ps.stats[ STAT_WEAPONS ] | cg.snap->ps.stats[ STAT_WEAPONS_EXT ] << 16 );
+       bits = (cg.snap->ps.stats[ STAT_WEAPONS ] | cg.snap->ps.stats[ STAT_WEAPONS_EXT ] << 16 );
       //  bits = cg.snap->ps.stats[ STAT_WEAPONS ] + cg.snap->ps.stats[ STAT_WEAPONS_EXT ];
         count = 0;
         for ( i = 1 ; i < WP_NUM_WEAPONS ; i++ ) {
-                if ( bits & ( 1 << i ) ) {
+          if ( bits & ( 1 << i ) ) {
                         count++;
                 }
         }
 
         x = 320 - count * 20;
-        y = 380;
+        y = 400;
 
         for ( i = 1 ; i < WP_NUM_WEAPONS ; i++ ) {
-                if ( !( bits & ( 1 << i ) ) ) {
+          if (!( BG_HasWeapon(i, cg.snap->ps.stats ) )){//( !( bits & ( 1 << i ) ) ) {
                         continue;
                 }
 
                 CG_RegisterWeapon( i );
 
+
+
+                CG_FillRect( x-10, y-4, 68, 36, hcolor);
                 // draw weapon icon
-                CG_DrawPic( x, y, 32, 32, cg_weapons[i].weaponIcon );
+               // CG_DrawPic(x, y, 48, 32, cgs.media.backtileShader );
+                CG_DrawPic( x, y, 52, 34, cg_weapons[i].weaponIcon );
+                CG_DrawPic( x-10, y-4, 67, 37, cgs.media.selectShader );
 
                 // draw selection marker
                 if ( i == cg.weaponSelect ) {
-                        CG_DrawPic( x-4, y-4, 40, 40, cgs.media.selectShader );
+                       // CG_DrawPic( x-4, y-4, 56, 40, cgs.media.selectShader );
+                        CG_FillRect( x-10, y-4, 68, 36, hcolor2);
+
+                        if ( cg_weapons[ cg.weaponSelect ].item ) {
+                          name = cg_weapons[ cg.weaponSelect ].item->pickup_name;
+                          if ( name ) {
+                           // CG_DrawSmallStringColor(x-12, y-20, name, color);
+                            CG_DrawStringExt( x-10, y-20, name, color, qtrue, qtrue, 8, 10, 0 );
+
+                          }
+                        }
+
                 }
 
                 // no ammo cross on top
@@ -1733,18 +1750,21 @@ void CG_DrawWeaponSelect( void ) {
                //         CG_DrawPic( x, y, 32, 32, cgs.media.noammoShader );
                // }
 
-                x += 40;
+                x += 72;
         }
 
         // draw the selected name
+        /*
         if ( cg_weapons[ cg.weaponSelect ].item ) {
                 name = cg_weapons[ cg.weaponSelect ].item->pickup_name;
                 if ( name ) {
-                        w = CG_DrawStrlen( name ) * BIGCHAR_WIDTH;
+                       // w = CG_DrawStrlen( name ) * BIGCHAR_WIDTH;
+                  w = CG_DrawStrlen( name ) * SMALLCHAR_WIDTH;
                         x = ( SCREEN_WIDTH - w ) / 2;
-                        CG_DrawBigStringColor(x, y - 22, name, color);
+                        //CG_DrawBigStringColor(x, y - 22, name, color);
+                        CG_DrawSmallStringColor(x, y - 22, name, color);
                 }
-        }
+        }*/
 
         trap_R_SetColor( NULL );
 }
@@ -1761,6 +1781,29 @@ static qboolean CG_WeaponSelectable( int i ) {
         return qfalse;
     }
     return qtrue;
+}
+
+/*
+===================
+CG_OutOfNadesChange
+
+===================
+*/
+void CG_OutOfNadesChange( centity_t *cent ) {
+ /*
+  int             i;
+  entityState_t *ent;
+  ent = &cent->currentState;
+  cg.weaponSelectTime = cg.time;
+  if (!( ent->weapon == WP_HE || ent->weapon == WP_SMOKE) ) {
+    return;
+  }
+  for ( i = MAX_WEAPONS-1 ; i > 0 ; i-- ) {
+    if ( CG_WeaponSelectable( i ) ) {
+      cg.weaponSelect = i;
+      break;
+    }
+  } */
 }
 
 /*
@@ -1992,25 +2035,7 @@ void CG_MissileHitWall( int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 
                 radius = 8;
                 break;
-                case WP_HE:
-                mod = cgs.media.dishFlashModel;
-                shader = cgs.media.grenadeExplosionShader;
-                sfx = cgs.media.sfx_rockexp;
-                mark = cgs.media.burnMarkShader;
-                radius = 100;
-                light = 300;
-                isSprite = qtrue;
-                break;
 
-          case WP_SMOKE:
-            mod = cgs.media.dishFlashModel;
-            shader = cgs.media.grenadeExplosionShader;
-            sfx = cgs.media.sfx_rockexp;
-            mark = cgs.media.burnMarkShader;
-            radius = 100;
-            light = 300;
-            isSprite = qtrue;
-            break;
         }
 
         if ( sfx ) {

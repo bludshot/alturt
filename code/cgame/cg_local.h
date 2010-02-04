@@ -67,8 +67,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define STAT_MINUS			10	// num frame for '-' stats digit
 
 #define	ICON_SIZE			48
-#define	CHAR_WIDTH			24 //32 blud
-#define	CHAR_HEIGHT			36 //48 blud
+#define	CHAR_WIDTH			12//24 //32 blud
+#define	CHAR_HEIGHT			16//36 //48 blud
 #define	TEXT_ICON_SPACE		4
 
 #define	TEAMCHAT_WIDTH		80
@@ -95,14 +95,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define DEFAULT_REDTEAM_NAME		"Red Dragons"
 #define DEFAULT_BLUETEAM_NAME		"SWAT"
 
-//xamis
-#define MELEE			0
-#define SIDEARM			1
-#define PRIMARY			2
-#define SECONDARY		3
-#define NADE			4
-#define MISC			5
-#define INVENTORYITEMS	6
 
 
 
@@ -724,7 +716,6 @@ typedef struct {
 
 	//Xamis Inventory selection
 
-        int           markedweapon;
 
         vec3_t        lastVangles;                        // view smoothage
         smooth_t      sList[ MAXSMOOTHS ];                // WW smoothing
@@ -819,6 +810,7 @@ typedef struct {
 	qhandle_t	connectionShader;
 
 	qhandle_t	selectShader;
+        qhandle_t       backtileShader;
 	qhandle_t	viewBloodShader;
 	qhandle_t	tracerShader;
 	qhandle_t	crosshairShader[NUM_CROSSHAIRS];

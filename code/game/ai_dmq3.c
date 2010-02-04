@@ -4943,6 +4943,7 @@ void BotCheckEvents(bot_state_t *bs, entityState_t *state) {
 		case EV_ITEM_PICKUP:
 		case EV_GLOBAL_ITEM_PICKUP:
 		case EV_NOAMMO:
+                case EV_NONADES:
 		case EV_CHANGE_WEAPON:
 		case EV_FIRE_WEAPON:
 			//FIXME: either add to sound queue or mark player as someone making noise

@@ -75,18 +75,29 @@ Toss the weapon and powerups for the killed player
 */
 void TossClientItems( gentity_t *self ) {
 	gitem_t		*item;
+        gitem_t         *item1;
+        gitem_t         *item2;
+        gitem_t         *item3;
 	int			weapon;
+        int                     weapon1;
+        int                     weapon2;
+        int                     weapon3;
 	float		angle;
 	int			i;
 	gentity_t	*drop;
 
 	// drop the weapon if not a gauntlet or machinegun
-	weapon = self->s.weapon;
+        weapon = self->client->pers.inventory[PRIMARY];
+        weapon1 = self->client->pers.inventory[SECONDARY];
+        weapon2 = self->client->pers.inventory[NADE];
+        weapon3 = self->client->pers.inventory[SIDEARM];
+
 
 	// make a special check to see if they are changing to a new
 	// weapon that isn't the mg or gauntlet.  Without this, a client
 	// can pick up a weapon, be killed, and not drop the weapon because
 	// their weapon change hasn't completed yet and they are still holding the MG.
+        /*
 	if ( weapon == WP_KNIFE  ) {
 		if ( self->client->ps.weaponstate == WEAPON_DROPPING ) {
 			weapon = self->client->pers.cmd.weapon;
@@ -95,15 +106,38 @@ void TossClientItems( gentity_t *self ) {
 			weapon = WP_NONE;
 		}
 	}
-
-	if ( weapon > WP_KNIFE && self->client->ps.ammo[ weapon ] ) {
+*/
+        if ( weapon  ){//bg_weaponlist[weapon].rounds ) {
 		// find the item type for this weapon
 		item = BG_FindItemForWeapon( weapon );
-
+                self->client->pers.inventory[PRIMARY] = WP_NONE;
 		// spawn the item
 		Drop_Item( self, item, 0 );
 	}
 
+        if ( weapon1  ) {
+                // find the item type for this weapon
+          item1 = BG_FindItemForWeapon( weapon1 );
+          self->client->pers.inventory[SECONDARY] = WP_NONE;
+                // spawn the item
+          Drop_Item( self, item1, 0 );
+        }
+
+        if ( weapon2  ) {
+                // find the item type for this weapon
+          item2 = BG_FindItemForWeapon( weapon2 );
+          self->client->pers.inventory[NADE] = WP_NONE;
+                // spawn the item
+          Drop_Item( self, item2, 0 );
+        }
+
+        if ( weapon3 ) {
+                // find the item type for this weapon
+          item3 = BG_FindItemForWeapon( weapon3 );
+          self->client->pers.inventory[SIDEARM] = WP_NONE;
+                // spawn the item
+          Drop_Item( self, item2, 0 );
+        }
 	// drop all the powerups if not in teamplay
 	if ( g_gametype.integer != GT_TEAM ) {
 		angle = 45;

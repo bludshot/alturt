@@ -779,6 +779,13 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			trap_S_StartSound (NULL, es->number, CHAN_AUTO, cgs.media.noammoSound );
 		}
 		break;
+
+          case EV_NONADES:
+            DEBUGNAME("EV_NONADES");
+            if ( es->number == cg.snap->ps.clientNum ) {
+              CG_OutOfNadesChange(cent);
+            }
+            break;
 	case EV_CHANGE_WEAPON:
 		DEBUGNAME("EV_CHANGE_WEAPON");
 		trap_S_StartSound (NULL, es->number, CHAN_AUTO, cgs.media.selectSound );

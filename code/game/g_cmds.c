@@ -254,9 +254,9 @@ void Cmd_Give_f (gentity_t *ent)
         if (give_all || Q_stricmp(name, "ammo") == 0)
         {
           for ( i = 0 ; i < WP_NUM_WEAPONS ; i++ ) {
-                      //  ent->client->ps.ammo[i] = 999;
-                        bg_weaponlist[i].clipAmmo = 999;
-                        bg_weaponlist[i].rounds = RoundCount( i );
+                       // ent->client->ps.ammo[i] = 99;
+                        bg_weaponlist[i].numClips[ent->client->ps.clientNum] = 99;
+                        bg_weaponlist[i].rounds[ent->client->ps.clientNum] = RoundCount( i );
                 }
                 if (!give_all)
                         return;

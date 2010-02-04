@@ -562,6 +562,7 @@ static void CG_DrawStatusBar( void ) {
 	vec4_t		hcolor;
 	vec3_t		angles;
 	vec3_t		origin;
+        vec4_t          txtcolor;
 
 	static float colors[4][4] = {
 //		{ 0.2, 1.0, 0.2, 1.0 } , { 1.0, 0.2, 0.2, 1.0 }, {0.5, 0.5, 0.5, 1} };
@@ -631,9 +632,10 @@ static void CG_DrawStatusBar( void ) {
 				}
 			}
 			trap_R_SetColor( colors[color] );
-
-			CG_DrawField (0, 432, 3, value);
-			trap_R_SetColor( NULL );
+                       // CG_DrawChar(100, 430, 20,20, "x");
+                       // CG_DrawBigStringColor( 0, 430, "X", colors[color] );
+                        CG_DrawStringExt( 606, 436, "x", colors[color], qfalse, qtrue, 14, 20, 0 );
+                        CG_DrawField (606, 440, 2, value);
 
 			// if we didn't draw a 3D icon, draw a 2D icon for ammo
 			//if ( !cg_draw3dIcons.integer && cg_drawIcons.integer ) {
@@ -642,7 +644,7 @@ static void CG_DrawStatusBar( void ) {
 
 				icon = cg_weapons[ cg.predictedPlayerState.weapon ].ammoIcon;
 				if ( icon ) {
-					CG_DrawPic( CHAR_WIDTH*3 + TEXT_ICON_SPACE, 432, ICON_SIZE, ICON_SIZE, icon );
+                                  CG_DrawPic( 548 + CHAR_WIDTH*3 + TEXT_ICON_SPACE, 434, 24, 34, icon );
 				}
 			}
 		}
@@ -652,7 +654,7 @@ static void CG_DrawStatusBar( void ) {
 
 
 	//stamina Xamis
-
+/*
 	value = ps->stats[STAT_STAMINA];
 	if ( value > 300 ) {
 		trap_R_SetColor( colors[3] );	// white
@@ -663,11 +665,12 @@ static void CG_DrawStatusBar( void ) {
 		trap_R_SetColor( colors[color] );
 	} else {
 		trap_R_SetColor( colors[1] );	// red
-	}CG_DrawField ( 540, 432, 3, value);
-
+	}CG_DrawField ( 0, 432, 3, value);
+*/
 	//
 	// health
 	//
+        /*
 	value = ps->stats[STAT_HEALTH];
 	if ( value > 100 ) {
 		trap_R_SetColor( colors[3] );		// white
@@ -681,11 +684,11 @@ static void CG_DrawStatusBar( void ) {
 	}
 
 	// stretch the health up when taking damage
-	CG_DrawField ( 185, 432, 3, value);
+	CG_DrawField ( 0, 400, 3, value);
 	CG_ColorForHealth( hcolor );
 	trap_R_SetColor( hcolor );
 
-
+*/
 	//
 	// armor
 	//
@@ -706,31 +709,350 @@ static void CG_DrawStatusBar( void ) {
         //
         value = ps->stats[STAT_ROUNDS];
         if (value > -1 ) {
-        //First Draw the 3D Model of the Weapon
-          angles[YAW] = ( cg.time & 2047 ) * 360 / 2048.0;
-          origin[0] = 80;
-          origin[1] = 0;
-          origin[2] = 0;
-        //  CG_Draw3DModel( CHAR_WIDTH*3 + TEXT_ICON_SPACE, 360, 96,
-       //                   96, cg_weapons[ cent->currentState.weapon ].weaponModel,
-         //                 0, origin, angles );
-
         //Draw the Text
           trap_R_SetColor( colors[0] );
-          CG_DrawField (0, 384, 3, value);
+          CG_DrawField (554, 460, 3, value);
           trap_R_SetColor( NULL );
 
         // if we didn't draw a 3D icon, draw a 2D icon for weapon
-          if ( !cg_draw3dIcons.integer && cg_drawIcons.integer ) {
-            CG_DrawPic( CHAR_WIDTH*3 + TEXT_ICON_SPACE, 384, ICON_SIZE, ICON_SIZE,
-                        cg_weapons[ cg.predictedPlayerState.weapon ].weaponIcon );
-          }
         }
-
-
-
 }
 #endif
+
+
+
+void CG_DrawStatusHud( void )
+{
+    //  int x;
+    //  int y;
+  int base_x = 12;
+  int base_y = 386;
+
+  qhandle_t   background = trap_R_RegisterShaderNoMip( "gfx/hud/outline.tga" ),
+  //    frame = trap_R_RegisterShader( "gfx/hud/outline.tga" ),
+ // outline = trap_R_RegisterShader( "gfx/hud/outline.tga" ),
+                                         stamina[9];
+
+                                         stamina[0]  =       trap_R_RegisterShaderNoMip( "gfx/hud/stamina1.tga" );
+                                         stamina[1]  =       trap_R_RegisterShaderNoMip( "gfx/hud/stamina2.tga" );
+                                         stamina[2]  =       trap_R_RegisterShaderNoMip( "gfx/hud/stamina3.tga" );
+                                         stamina[3]  =       trap_R_RegisterShaderNoMip( "gfx/hud/stamina4.tga" );
+                                         stamina[4]  =       trap_R_RegisterShaderNoMip( "gfx/hud/stamina5.tga" );
+                                         stamina[5]  =       trap_R_RegisterShaderNoMip( "gfx/hud/stamina6.tga" );
+                                         stamina[6]  =       trap_R_RegisterShaderNoMip( "gfx/hud/stamina7.tga" );
+                                         stamina[7]  =       trap_R_RegisterShaderNoMip( "gfx/hud/stamina8.tga" );
+                                         stamina[8]  =       trap_R_RegisterShaderNoMip( "gfx/hud/stamina9.tga" );
+
+                                         {
+                                           vec4_t hcolor_alpha1 = { 0.8,0.8,0.6, 1.0 };
+                                            // hcolor_alpha1[3] = 1.0f;
+
+                                           trap_R_SetColor( hcolor_alpha1 );
+
+                                           CG_DrawPic( base_x + 0, base_y +0, 40,86, background );
+
+                                           trap_R_SetColor( NULL );
+                                         }
+
+
+                                         {
+                                           float healthV = cg.snap->ps.stats[STAT_HEALTH];
+                                           float temp;
+                                           vec4_t hColor2;
+                                           hColor2[0] = 0.4;
+                                           hColor2[1]= 0.2;
+                                           hColor2[2]  = 0.2;
+                                           hColor2[3] = 0.3f;
+
+
+                                           if ( healthV > 90 )
+                                           {
+                                             VectorCopy( colorWhite, hColor2 );
+                                             hColor2[3] = 0.3f;
+                                             healthV = 90;
+                                           }
+                                           trap_R_SetColor( hColor2 );
+                                           CG_DrawPic( base_x , base_y , 40,86, stamina[8] );
+                                           trap_R_SetColor( NULL );
+
+                                           hColor2[3] = 0.3f;
+                                           if ( healthV > 80 )
+                                           {
+                                             VectorCopy( colorWhite, hColor2 );
+                                             hColor2[3] = 0.3f;
+                                             healthV = 80;
+                                           }
+                                           trap_R_SetColor( hColor2 );
+                                           CG_DrawPic( base_x , base_y , 40,86, stamina[7] );
+                                           trap_R_SetColor( NULL );
+
+                                           hColor2[3] = 0.3f;
+
+                                           if ( healthV > 70 )
+                                           {
+                                             VectorCopy( colorWhite, hColor2 );
+                                             hColor2[3] = 0.3f;
+                                             healthV = 70;
+                                           }
+                                           trap_R_SetColor( hColor2 );
+                                           CG_DrawPic( base_x , base_y , 40,86, stamina[6] );
+                                           trap_R_SetColor( NULL );
+
+                                           hColor2[3] = 0.3f;
+
+                                           if ( healthV > 60 )
+                                           {
+                                             VectorCopy( colorWhite, hColor2 );
+                                             hColor2[3] = 0.3f;
+                                             healthV = 60;
+                                           }
+                                           trap_R_SetColor( hColor2 );
+                                           CG_DrawPic( base_x , base_y , 40,86, stamina[5] );
+                                           trap_R_SetColor( NULL );
+
+                                           hColor2[3] = 0.3f;
+
+                                           if ( healthV > 50 )
+                                           {
+                                             VectorCopy( colorWhite, hColor2 );
+                                             hColor2[3] = 0.3f;
+                                             healthV = 50;
+                                           }
+                                           trap_R_SetColor( hColor2 );
+                                           CG_DrawPic( base_x , base_y , 40,86, stamina[4] );
+                                           trap_R_SetColor( NULL );
+
+                                           hColor2[3] = 0.3f;
+
+
+                                           if ( healthV > 40 )
+                                           {
+                                             VectorCopy( colorWhite, hColor2 );
+                                             hColor2[3] = 0.3f;
+                                             healthV = 40;
+                                           }
+                                           trap_R_SetColor( hColor2 );
+                                           CG_DrawPic( base_x , base_y , 40,86, stamina[3] );
+                                           trap_R_SetColor( NULL );
+
+                                           hColor2[3] = 0.3f;
+
+                                           if ( healthV > 30 )
+                                           {
+                                             VectorCopy( colorWhite, hColor2 );
+                                             hColor2[3] = 0.3f;
+                                             healthV = 30;
+                                           }
+                                           trap_R_SetColor( hColor2 );
+                                           CG_DrawPic( base_x , base_y , 40,86, stamina[2] );
+                                           trap_R_SetColor( NULL );
+
+                                           hColor2[3] = 0.3f;
+
+                                           if ( healthV > 20 )
+                                           {
+                                             VectorCopy( colorWhite, hColor2 );
+                                             hColor2[3] = 0.3f;
+
+                                             healthV = 20;
+                                           }
+                                           trap_R_SetColor( hColor2 );
+                                           CG_DrawPic( base_x , base_y , 40,86, stamina[1] );
+                                           trap_R_SetColor( NULL );
+
+                                           hColor2[3] = 0.3f;
+
+                                           if ( healthV > 0 )
+                                           {
+                                             VectorCopy( colorWhite, hColor2 );
+                                             hColor2[3] = 0.3f;
+                                           }
+                                           trap_R_SetColor( hColor2 );
+                                           CG_DrawPic( base_x , base_y , 40,86, stamina[0] );
+                                           trap_R_SetColor( NULL );
+                                         }
+                                         //
+    // stamina buttons
+                                         //
+                                         {
+                                           float staminaV = cg.snap->ps.stats[STAT_STAMINA];
+                                           float temp;
+                                           vec4_t hColor= { 0.75,0.75,0.55, 1.0 };
+
+                                          // VectorCopy( colorWhite, hColor );
+
+                                           hColor[3] = 0.0f;
+
+
+                                           if ( staminaV > 800 )
+                                           {
+                                             temp = staminaV-800;
+
+                                             temp = temp/100.0f;
+
+                                             if ( temp > 1.0f )
+                                               temp = 1.0f;
+
+                                             hColor[3] = temp;
+                                             staminaV = 800;
+                                           }
+                                           trap_R_SetColor( hColor );
+                                           CG_DrawPic( base_x , base_y , 40,86, stamina[8] );
+                                           trap_R_SetColor( NULL );
+
+                                           hColor[3] = 0.0f;
+                                           if ( staminaV > 700 )
+                                           {
+                                             temp = staminaV-700;
+
+                                             temp = temp/100.0f;
+
+                                             if ( temp > 1.0f )
+                                               temp = 1.0f;
+
+                                             hColor[3] = temp;
+                                             staminaV = 700;
+                                           }
+                                           trap_R_SetColor( hColor );
+                                           CG_DrawPic( base_x , base_y , 40,86, stamina[7] );
+                                           trap_R_SetColor( NULL );
+
+                                           hColor[3] = 0.0f;
+
+                                           if ( staminaV > 600 )
+                                           {
+                                             temp = staminaV-600;
+
+                                             temp = temp/100.0f;
+
+                                             if ( temp > 1.0f )
+                                               temp = 1.0f;
+
+                                             hColor[3] = temp;
+                                             staminaV = 600;
+                                           }
+                                           trap_R_SetColor( hColor );
+                                           CG_DrawPic( base_x , base_y , 40,86, stamina[6] );
+                                           trap_R_SetColor( NULL );
+
+                                           hColor[3] = 0.0f;
+
+                                           if ( staminaV > 500 )
+                                           {
+                                             temp = staminaV-500;
+
+                                             temp = temp/100.0f;
+
+                                             if ( temp > 1.0f )
+                                               temp = 1.0f;
+
+                                             hColor[3] = temp;
+                                             staminaV = 500;
+                                           }
+                                           trap_R_SetColor( hColor );
+                                           CG_DrawPic( base_x , base_y , 40,86, stamina[5] );
+                                           trap_R_SetColor( NULL );
+
+                                           hColor[3] = 0.0f;
+
+                                           if ( staminaV > 400 )
+                                           {
+                                             temp = staminaV-400;
+
+                                             temp = temp/100.0f;
+
+                                             if ( temp > 1.0f )
+                                               temp = 1.0f;
+
+                                             hColor[3] = temp;
+                                             staminaV = 400;
+                                           }
+                                           trap_R_SetColor( hColor );
+                                           CG_DrawPic( base_x , base_y , 40,86, stamina[4] );
+                                           trap_R_SetColor( NULL );
+
+                                           hColor[3] = 0.0f;
+
+
+                                           if ( staminaV > 300 )
+                                           {
+                                             temp = staminaV-300;
+
+                                             temp = temp/100.0f;
+
+                                             if ( temp > 1.0f )
+                                               temp = 1.0f;
+
+                                             hColor[3] = temp;
+                                             staminaV = 300;
+                                           }
+                                           trap_R_SetColor( hColor );
+                                           CG_DrawPic( base_x , base_y , 40,86, stamina[3] );
+                                           trap_R_SetColor( NULL );
+
+                                           hColor[3] = 0.0f;
+
+                                           if ( staminaV > 200 )
+                                           {
+                                             temp = staminaV-200;
+
+                                             temp = temp/100.0f;
+
+                                             if ( temp > 1.0f )
+                                               temp = 1.0f;
+
+                                             hColor[3] = temp;
+                                             staminaV = 200;
+                                           }
+                                           trap_R_SetColor( hColor );
+                                           CG_DrawPic( base_x , base_y , 40,86, stamina[2] );
+                                           trap_R_SetColor( NULL );
+
+                                           hColor[3] = 0.0f;
+
+                                           if ( staminaV > 100 )
+                                           {
+                                             temp = staminaV-100;
+
+                                             temp = temp/100.0f;
+
+                                             if ( temp > 1.0f )
+                                               temp = 1.0f;
+
+                                             hColor[3] = temp;
+
+                                             staminaV = 100;
+                                           }
+                                           trap_R_SetColor( hColor );
+                                           CG_DrawPic( base_x , base_y , 40,86, stamina[1] );
+                                           trap_R_SetColor( NULL );
+
+                                           hColor[3] = 0.0f;
+
+                                           if ( staminaV > 0 )
+                                           {
+                                             temp = staminaV;
+
+                                             temp = temp/100.0f;
+
+                                             if ( temp > 1.0f )
+                                               temp = 1.0f;
+
+                                             hColor[3] = temp;
+                                           }
+                                           trap_R_SetColor( hColor );
+                                           CG_DrawPic( base_x , base_y , 40,86, stamina[0] );
+                                           trap_R_SetColor( NULL );
+                                         }
+
+
+
+
+                                         //
+    // rounds counter
+                                         //
+
+}
 
 /*
 ===========================================================================================
@@ -2676,7 +2998,7 @@ static void CG_Draw2D(stereoFrame_t stereoFrame)
 
 	CG_DrawVote();
 	CG_DrawTeamVote();
-
+        CG_DrawStatusHud();
 	CG_DrawLagometer();
 
 #ifdef MISSIONPACK

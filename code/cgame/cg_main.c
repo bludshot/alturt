@@ -877,6 +877,7 @@ static void CG_RegisterGraphics( void ) {
 
 	cgs.media.tracerShader = trap_R_RegisterShader( "gfx/misc/tracer" );
 	cgs.media.selectShader = trap_R_RegisterShader( "gfx/2d/select" );
+        cgs.media.backtileShader = trap_R_RegisterShader( "gfx/2d/backtile.jpg" );
 
 	for ( i = 0 ; i < NUM_CROSSHAIRS ; i++ ) {
 		cgs.media.crosshairShader[i] = trap_R_RegisterShader( va("gfx/2d/crosshair%c", 'a'+i) );
@@ -1050,6 +1051,8 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.shadowMarkShader = trap_R_RegisterShader( "markShadow" );
 	cgs.media.wakeMarkShader = trap_R_RegisterShader( "wake" );
 	cgs.media.bloodMarkShader = trap_R_RegisterShader( "bloodMark" );
+        cgs.media.bulletExplosionShader = trap_R_RegisterShader( "bulletExplosion" );
+        cgs.media.grenadeExplosionShader = trap_R_RegisterShader( "grenadeExplosion" );
 
 	// register the inline models
 	cgs.numInlineModels = trap_CM_NumInlineModels();
