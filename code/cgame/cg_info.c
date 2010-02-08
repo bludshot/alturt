@@ -72,7 +72,6 @@ CG_DrawLoadingBar
 void CG_DrawLoadingBar( int x, int y, int w, int h )
 {
   float real_width = 0;
-  char *text;
   vec4_t color;
   real_width = (float)( (float)cg.loadingbarState / (float)cg.loadingbarMax );
 
@@ -96,6 +95,7 @@ void CG_DrawLoadingBar( int x, int y, int w, int h )
 CG_DrawLoadingIcons
 ===================
 */
+/*
 static void CG_DrawLoadingIcons( void ) {
 	int		n;
 	int		x, y;
@@ -115,7 +115,7 @@ static void CG_DrawLoadingIcons( void ) {
 		CG_DrawPic( x, y, 32, 32, loadingItemIcons[n] );
 	}
 }
-
+*/
 
 /*
 ======================

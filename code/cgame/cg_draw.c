@@ -454,8 +454,8 @@ CG_DrawStatusBarHead
 
 ================
 */
-#ifndef MISSIONPACK
-
+//#ifndef MISSIONPACK
+/*
 static void CG_DrawStatusBarHead( float x ) {
 	vec3_t		angles;
 	float		size, stretch;
@@ -507,7 +507,7 @@ static void CG_DrawStatusBarHead( float x ) {
 	//			cg.snap->ps.clientNum, angles );
 }
 #endif // MISSIONPACK
-
+*/
 /*
 ================
 CG_DrawStatusBarFlag
@@ -559,10 +559,8 @@ static void CG_DrawStatusBar( void ) {
 	centity_t	*cent;
 	playerState_t	*ps;
 	int			value;
-	vec4_t		hcolor;
 	vec3_t		angles;
 	vec3_t		origin;
-        vec4_t          txtcolor;
         char *w;
         gitem_t                 *item;
 
@@ -717,8 +715,6 @@ static void CG_DrawStatusBar( void ) {
                ||cg.predictedPlayerState.weapon == WP_SMOKE
                || BG_Sidearm(cg.predictedPlayerState.weapon))){
           char *s;
-          int i;
-//          gitem_t                 *item;
 
           if ( value == 0 ){
             s = "Burst";
@@ -803,7 +799,6 @@ void CG_DrawStatusHud( void )
 
                                          {
                                            float healthV = cg.snap->ps.stats[STAT_HEALTH];
-                                           float temp;
                                            vec4_t hColor2;
                                            hColor2[0] = 0.4;
                                            hColor2[1]= 0.2;

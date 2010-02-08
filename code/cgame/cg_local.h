@@ -1770,6 +1770,8 @@ void	CG_ParticleSparks (vec3_t org, vec3_t vel, int duration, float x, float y, 
 void	CG_ParticleDust (centity_t *cent, vec3_t origin, vec3_t dir);
 void	CG_ParticleMisc (qhandle_t pshader, vec3_t origin, int size, int duration, float alpha);
 void	CG_ParticleExplosion (char *animStr, vec3_t origin, vec3_t vel, int duration, int sizeStart, int sizeEnd);
+
+
 extern qboolean		initparticles;
 int CG_NewParticleArea ( int num );
 

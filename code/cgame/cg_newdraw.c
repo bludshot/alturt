@@ -272,7 +272,7 @@ static void CG_DrawPlayerAmmoValue(rectDef_t *rect, float scale, vec4_t color, q
 
 }
 
-
+/*
 
 static void CG_DrawPlayerHead(rectDef_t *rect, qboolean draw2D) {
 	vec3_t		angles;
@@ -324,7 +324,7 @@ static void CG_DrawPlayerHead(rectDef_t *rect, qboolean draw2D) {
 
 	CG_DrawHead( x, rect->y, rect->w, rect->h, cg.snap->ps.clientNum, angles );
 }
-
+*/
 static void CG_DrawSelectedPlayerHealth( rectDef_t *rect, float scale, vec4_t color, qhandle_t shader, int textStyle ) {
 	clientInfo_t *ci;
 	int value;

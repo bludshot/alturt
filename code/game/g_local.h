@@ -1027,6 +1027,6 @@ void Cmd_Reload( gentity_t *ent );
 void Change_Mode(gentity_t *ent);
 void G_ExplodeSmokenade( gentity_t *ent );
 
-
+void    Set_Mode(gentity_t *ent);
 
 

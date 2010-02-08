@@ -1676,12 +1676,12 @@ void CG_DrawWeaponSelect( void ) {
         int             i;
         int             bits;
         int             count;
-        int             x, y, w;
+        int             x, y;
         char    *name;
         float   *color;
         float       hcolor[4];
         float       hcolor2[4];
-        char    *mapname;
+
         hcolor[0] = 0.0;
         hcolor[1] = 0.0;
         hcolor[2] = 0.0;
