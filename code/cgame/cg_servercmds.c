@@ -143,7 +143,6 @@ static void CG_ParseTeamInfo( void ) {
 	}
 }
 
-
 /*
 ================
 CG_ParseServerinfo
@@ -1058,6 +1057,8 @@ static void CG_ServerCommand( void ) {
 		CG_ParseScores();
 		return;
 	}
+
+
 
 	if ( !strcmp( cmd, "tinfo" ) ) {
 		CG_ParseTeamInfo();

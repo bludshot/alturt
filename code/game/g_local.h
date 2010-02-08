@@ -251,7 +251,10 @@ typedef struct {
 	spectatorState_t	spectatorState;
 	int			spectatorClient;	// for chasecam and follow mode
 	int			wins, losses;		// tournament stats
-	qboolean	teamLeader;			// true when this client is a team leader
+	qboolean	teamLeader;
+        		// true when this client is a team leader
+
+        int                 waiting;
 } clientSession_t;
 
 //
@@ -286,6 +289,7 @@ typedef struct {
 	int			teamVoteCount;		// to prevent people from constantly calling votes
 	qboolean	teamInfo;			// send team overlay updates?
         int             inventory[INVENTORYITEMS];
+
 
 } clientPersistant_t;
 
@@ -558,7 +562,7 @@ void TossClientCubes( gentity_t *self );
 // g_missile.c
 //
 void G_RunMissile( gentity_t *ent );
-
+void G_ExplodeMissile( gentity_t *ent );
 gentity_t *fire_blaster (gentity_t *self, vec3_t start, vec3_t aimdir);
 gentity_t *fire_plasma (gentity_t *self, vec3_t start, vec3_t aimdir);
 gentity_t *fire_grenade (gentity_t *self, vec3_t start, vec3_t aimdir);
@@ -567,6 +571,7 @@ gentity_t *fire_bfg (gentity_t *self, vec3_t start, vec3_t dir);
 gentity_t *fire_grapple (gentity_t *self, vec3_t start, vec3_t dir);
 gentity_t *throw_grenade (gentity_t *self, vec3_t start, vec3_t aimdir); //Xamis
 gentity_t *throw_smoke (gentity_t *self, vec3_t start, vec3_t aimdir);
+
 #ifdef MISSIONPACK
 gentity_t *fire_nail( gentity_t *self, vec3_t start, vec3_t forward, vec3_t right, vec3_t up );
 gentity_t *fire_prox( gentity_t *self, vec3_t start, vec3_t aimdir );
@@ -638,6 +643,7 @@ qboolean G_FilterPacket (char *from);
 // g_weapon.c
 //
 void FireWeapon( gentity_t *ent );
+void PM_arm_grenade( void );
 #ifdef MISSIONPACK
 void G_StartKamikaze( gentity_t *ent );
 #endif

@@ -621,8 +621,11 @@ static qboolean PM_CheckWallJump( void )
         else if( pm->cmd.forwardmove < 0 )
                 VectorMA( dir, -cmdFraction, forward, dir );
 
+
         VectorMA( dir, upFraction, refNormal, dir );
         VectorNormalize( dir );
+
+
 
         VectorMA( pm->ps->velocity, 300.0f,
                   dir, pm->ps->velocity );
@@ -1798,6 +1801,8 @@ static void PM_FinishWeaponChange( void ) {
         pm->ps->weaponstate = WEAPON_RAISING;
         pm->ps->weaponTime += 250;
         PM_StartTorsoAnim( TORSO_RAISE );
+
+        PM_AddEvent( EV_CHANGE_WEAPON );
 }
 
 
@@ -1809,15 +1814,18 @@ PM_TorsoAnimation
 */
 static void PM_TorsoAnimation( void ) {
         if ( pm->ps->weaponstate == WEAPON_READY ) {
-                if ( pm->ps->weapon == WP_KNIFE ) {
+          if ( pm->ps->weapon == WP_KNIFE || BG_Grenade(pm->ps->weapon) ) {
                         PM_ContinueTorsoAnim( TORSO_STAND2 );
                 } else if ( BG_Sidearm(pm->ps->weapon)){
-                  PM_StartTorsoAnim( TORSO_ATTACK_PISTOL );
+                  PM_StartTorsoAnim( TORSO_STAND_PISTOL );
                 }else{
                         PM_ContinueTorsoAnim( TORSO_STAND );
                 }
                 // QUARANTINE - Weapon Animation
 // Should always draw the weapon when it is just ready
+                if (BG_Grenade( pm->ps->weapon && (pm->ps->pm_flags & PMF_GRENADE_ARMED))){
+                  PM_ContinueWeaponAnim(WPN_READY_FIRE_IDLE);
+                }else
                 PM_ContinueWeaponAnim( WPN_IDLE );
 
 
@@ -1909,6 +1917,9 @@ int ReloadTime( int w )        {
     case WP_NEGEV:
       return 285;
       break;
+    case WP_HE:
+      return 800;
+      break;
     default:
       return 3000;
   }
@@ -1938,6 +1949,9 @@ int ReloadEndTime( int w )        {
       break;
     case WP_NEGEV:
       return 5190;
+      break;
+    case WP_HE:
+      return 500;
       break;
     default:
       return 0;
@@ -2002,6 +2016,9 @@ static int PM_WeaponTime( int weapon )
 }
 
 
+
+
+
 static void PM_Weapon( void ) {
 
 
@@ -2014,7 +2031,7 @@ static void PM_Weapon( void ) {
         if ( pm->ps->stats[STAT_HEALTH] <= 0 ) {
                 pm->ps->weapon = WP_NONE;
                 return;
-        }
+        }/*
         if ( pm->cmd.buttons & BUTTON_USE_HOLDABLE ) {
         if ( ! ( pm->ps->pm_flags & PMF_USE_ITEM_HELD ) ) {
         if ( bg_itemlist[pm->ps->stats[STAT_HOLDABLE_ITEM]].giTag == HI_MEDKIT
@@ -2029,18 +2046,49 @@ static void PM_Weapon( void ) {
 }
 } else {
         pm->ps->pm_flags &= ~PMF_USE_ITEM_HELD;
-}
+}*/
 
 
-        if ( bg_weaponlist[pm->ps->weapon].rounds[pm->ps->clientNum]== 0){
-          if ( pm->ps->weapon == WP_SMOKE || pm->ps->weapon == WP_HE ){
+        if(pm->ps->stats[STAT_CLIPS] <= 0 && BG_Grenade(pm->ps->weapon) ){
           PM_AddEvent( EV_NONADES );
-          }
         }
 
     // make weapon function
         if ( pm->ps->weaponTime > 0 )
         pm->ps->weaponTime -= pml.msec;
+        if ( pm->ps->weaponTime <= 0 )
+          pm->ps->weaponTime = 0;
+
+//check grenade fuse time
+        if ( bg_nadeTimer.fuseTime[pm->ps->clientNum]  > 0 )
+          bg_nadeTimer.fuseTime[pm->ps->clientNum] -= pml.msec;
+        if ( bg_nadeTimer.fuseTime[pm->ps->clientNum]  <= 0 ){
+          bg_nadeTimer.fuseTime[pm->ps->clientNum] = 0;
+          if(BG_Grenade(pm->ps->weapon) && pm->ps->pm_flags & PMF_GRENADE_ARMED){
+            bg_nadeTimer.throwStrength[pm->ps->clientNum]= 0;
+            pm->ps->weaponTime = 0;
+            PM_AddEvent( EV_FIRE_WEAPON );
+            pm->ps->pm_flags &= ~PMF_GRENADE_ARMED;
+            return;
+
+        }
+        }
+
+
+        if ( bg_nadeTimer.throwStrength[pm->ps->clientNum] < 80000 )
+          bg_nadeTimer.throwStrength[pm->ps->clientNum]+= pml.msec;
+        if ( bg_nadeTimer.throwStrength[pm->ps->clientNum] > 80000 )
+          bg_nadeTimer.throwStrength[pm->ps->clientNum]= 80000;
+
+//        Com_Printf ("Nade Throw strength is at %i\n", bg_nadeTimer.throwStrength[pm->ps->clientNum] );
+
+
+      //  Com_Printf  ( "bg_weaponlist[0].rounds[pm->ps->clientNum] = %i\n!( pm->ps->pm_flags & PMF_SINGLE_SHOT ) = %i\n",
+
+           // bg_weaponlist[0].rounds[pm->ps->clientNum], !( pm->ps->pm_flags & PMF_SINGLE_SHOT )
+           // );
+
+
 
 
         if ( pm->ps->weaponstate == WEAPON_DROPPING && pm->ps->weaponTime > 0 ) {
@@ -2049,6 +2097,7 @@ static void PM_Weapon( void ) {
         }
 //If were in the process of reloading we can't fire  --Xamis
         if ( qtrue ){
+
         if ( pm->ps->weaponstate == WEAPON_RELOADING_START ) {
           pm->ps->weaponTime = ReloadStartTime( pm->ps->weapon );
           pm->ps->weaponstate = WEAPON_RELOADING;
@@ -2063,8 +2112,7 @@ static void PM_Weapon( void ) {
 
             bg_weaponlist[pm->ps->weapon].rounds[pm->ps->clientNum]++;
             bg_weaponlist[pm->ps->weapon].numClips[pm->ps->clientNum]--;
-            //pm->ps->ammo[pm->ps->weapon]--;
-           // Com_Printf("pm->ps->ammo[pm->ps->weapon] = %i\n", pm->ps->ammo[pm->ps->weapon] );
+
           }
           if ( pm->cmd.buttons & BUTTON_RELOAD && pm->ps->weapon == WP_SPAS &&  bg_weaponlist[pm->ps->weapon].rounds[pm->ps->clientNum] < 8 &&  bg_weaponlist[pm->ps->weapon].numClips[pm->ps->clientNum] > 0){
           pm->ps->weaponstate = WEAPON_RELOADING;
@@ -2072,22 +2120,64 @@ static void PM_Weapon( void ) {
           pm->ps->weaponstate = WEAPON_RELOADING_END;
           }
           PM_StartWeaponAnim( WPN_RELOAD );
-
+          bg_weaponlist[0].rounds[pm->ps->clientNum] =0;
+          if (BG_Sidearm( pm->ps->weapon )){
+          PM_StartTorsoAnim(TORSO_RELOAD_PISTOL );
+          }else if (!(pm->ps->weapon == WP_SPAS || BG_Grenade( pm->ps->weapon )) ){
+          PM_StartTorsoAnim(TORSO_RELOAD_RIFLE );
+          }
         }if( pm->ps->weaponstate == WEAPON_RELOADING_END && pm->ps->weaponTime <= 0 ) {
 
           pm->ps->weaponTime = ReloadEndTime( pm->ps->weapon );
+
+
           pm->ps->weaponstate = WEAPON_RELOADING_COMPLETE;
+          if (BG_Grenade( pm->ps->weapon)){
+            PM_ContinueWeaponAnim(WPN_READY_FIRE_IDLE);
+          }
           if ( pm->ps->weapon == WP_NEGEV || pm->ps->weapon == WP_SPAS){
             PM_ContinueWeaponAnim( WPN_RELOAD_END );
           }if ( pm->ps->weapon == WP_SR8 ){
             PM_ContinueWeaponAnim( WPN_BOLT );
           }
          }if( pm->ps->weaponstate == WEAPON_RELOADING_COMPLETE && pm->ps->weaponTime <= 0 ) {
+           if (BG_Grenade( pm->ps->weapon)){
+             PM_ContinueWeaponAnim(WPN_READY_FIRE_IDLE);
+
+           }
           pm->ps->weaponstate = WEAPON_READY; //If were in finished reloading, we're ready to fire, so set weaponstate
         }
         }
         if ( pm->ps->weaponTime > 0 ) {
                 return;
+        }
+
+
+        if ( bg_weaponlist[0].rounds[pm->ps->clientNum] <= 2
+             &&  bg_weaponlist[0].rounds[pm->ps->clientNum] > 0
+             && !( pm->ps->pm_flags & PMF_SINGLE_SHOT )
+             &&  bg_weaponlist[pm->ps->weapon].rounds[pm->ps->clientNum] >0){
+          Com_Printf("burstcount is %i", bg_weaponlist[0].rounds[pm->ps->clientNum]);
+          pm->ps->weaponTime = PM_WeaponTime(pm->ps->weapon );
+          PM_AddEvent( EV_FIRE_WEAPON );
+          PM_StartWeaponAnim( WPN_FIRE );
+          pm->ps->weaponstate = WEAPON_FIRING;
+          bg_weaponlist[0].rounds[pm->ps->clientNum]++;
+          if( bg_weaponlist[0].rounds[pm->ps->clientNum] == 3)
+            pm->ps->pm_flags |= PMF_SINGLE_SHOT;
+          return;
+             }
+
+
+
+
+        if ((pm->cmd.buttons & 1) ) {
+          if(BG_Grenade(pm->ps->weapon) && pm->ps->pm_flags & PMF_GRENADE_ARMED && pm->ps->weaponstate == WEAPON_READY ){
+            pm->ps->weaponTime += 50;
+            PM_ContinueWeaponAnim(WPN_READY_FIRE_IDLE);
+            pm->ps->weaponstate = WEAPON_RELOADING_COMPLETE;
+            return;
+          }
         }
 
         if ( pm->ps->pm_flags & PMF_RELOADING ){
@@ -2121,7 +2211,7 @@ static void PM_Weapon( void ) {
 
         if ( pm->ps->weaponstate == WEAPON_RAISING ) {
                 pm->ps->weaponstate = WEAPON_READY;
-                if ( pm->ps->weapon == WP_KNIFE ) {
+                if ( pm->ps->weapon == WP_KNIFE || BG_Grenade(pm->ps->weapon ) ) {
                   PM_StartTorsoAnim( TORSO_STAND2 );
                 } else if ( BG_Sidearm(pm->ps->weapon)){
                   PM_StartTorsoAnim( TORSO_STAND_PISTOL );
@@ -2136,18 +2226,41 @@ static void PM_Weapon( void ) {
         }
 
 
+
     // check for fire
         if (!(pm->cmd.buttons & 1) ) {
+          //Com_Printf ("!pm->cmd.buttons & 1 pm->burstCount = %i\n", pm->burstCount );
 
+          if(BG_Grenade(pm->ps->weapon) && pm->ps->pm_flags & PMF_GRENADE_ARMED){
+            PM_StartWeaponAnim( WPN_FIRE );
+            pm->ps->weaponstate = WEAPON_FIRING;
+            pm->ps->weaponTime = PM_WeaponTime(pm->ps->weapon );
+            PM_AddEvent( EV_FIRE_WEAPON );
+            PM_StartTorsoAnim( TORSO_ATTACK_GRENADE );
+            pm->ps->pm_flags &= ~PMF_GRENADE_ARMED;
+            return;
+          }else{
                 pm->ps->weaponTime = 0;
 
                 pm->ps->weaponstate = WEAPON_READY;
                 PM_StartWeaponAnim( WPN_IDLE );
 
         // remove flag
-                if ( pm->ps->pm_flags & PMF_SINGLE_SHOT )
+                if ( pm->ps->pm_flags & PMF_SINGLE_SHOT ){
                         pm->ps->pm_flags &= ~PMF_SINGLE_SHOT;
+                       // pm->burstCount = 0;
+
+                        bg_weaponlist[0].rounds[pm->ps->clientNum] = 0;
+                }
                 return;
+          }
+        }
+
+
+        if(BG_Grenade(pm->ps->weapon) && pm->ps->pm_flags & PMF_GRENADE_ARMED ){
+          pm->ps->weaponTime = 50;
+          PM_StartWeaponAnim(WPN_READY_FIRE_IDLE);
+          return;
         }
 
     // single shot mode
@@ -2161,19 +2274,38 @@ static void PM_Weapon( void ) {
                 return;
 
                                 // check for out of ammo
-        if ( pm->ps->stats[STAT_ROUNDS] <= 0 ) {
+        if ( (pm->ps->stats[STAT_ROUNDS] == 0 && !BG_Grenade(pm->ps->weapon))
+             || (pm->ps->stats[STAT_CLIPS] == 0 && BG_Grenade(pm->ps->weapon) )) {
            PM_AddEvent( EV_NOAMMO );
            pm->ps->weaponTime = 550;
            pm->ps->weaponstate = WEAPON_READY;
            PM_ContinueWeaponAnim( WPN_IDLE );
            return;
-        }else if ( BG_Sidearm(pm->ps->weapon)){
+             }
+            if ( BG_Grenade(pm->ps->weapon) && !(pm->ps->pm_flags & PMF_GRENADE_ARMED)){
+               pm->ps->weaponstate = WEAPON_RELOADING;
+               pm->ps->pm_flags |= PMF_GRENADE_ARMED;
+               bg_nadeTimer.fuseTime[pm->ps->clientNum] = 6000;
+               bg_nadeTimer.throwStrength[pm->ps->clientNum] = 62000;
+               return;
+             }
+
+
+
+         if ( BG_Sidearm(pm->ps->weapon)){
           PM_StartTorsoAnim( TORSO_ATTACK_PISTOL );
-        }else
-          PM_StartTorsoAnim( TORSO_ATTACK );
-                          PM_StartWeaponAnim( WPN_FIRE );
+         }else if ( pm->ps->weapon == WP_KNIFE){
+           PM_StartTorsoAnim( TORSO_ATTACK_KNIFE );
+         }else if ( pm->ps->weapon == WP_SPAS){
+           PM_StartTorsoAnim( TORSO_ATTACK_PUMPGUN );
+         }else{
+          PM_StartTorsoAnim( TORSO_ATTACK_RIFLE );
+         }
+          PM_StartWeaponAnim( WPN_FIRE );
 
-
+          if( bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] == 0 )
+          bg_weaponlist[0].rounds[pm->ps->clientNum]++;
+         // Com_Printf("burstcount is %i", bg_weaponlist[0].rounds[pm->ps->clientNum]);
                            pm->ps->weaponstate = WEAPON_FIRING;
                            pm->ps->weaponTime = PM_WeaponTime(pm->ps->weapon );
                            PM_AddEvent( EV_FIRE_WEAPON );
@@ -2182,7 +2314,12 @@ static void PM_Weapon( void ) {
 
                           }
 
-                           if ( pm->ps->pm_flags & PMF_SINGLE_MODE || pm->ps->weapon == WP_DEAGLE || pm->ps->weapon == WP_BERETTA || pm->ps->weapon == WP_PSG1 || pm->ps->weapon == WP_SR8)
+                           if ( pm->ps->pm_flags & PMF_SINGLE_MODE
+                                || pm->ps->weapon == WP_DEAGLE
+                                || pm->ps->weapon == WP_BERETTA
+                                || pm->ps->weapon == WP_PSG1
+                                || pm->ps->weapon == WP_SR8
+                                || BG_Grenade(pm->ps->weapon))
                                    {
                                            pm->ps->pm_flags |= PMF_SINGLE_SHOT;
 
@@ -2446,6 +2583,9 @@ void PmoveSingle (pmove_t *pmove) {
         pm->watertype = 0;
         pm->waterlevel = 0;
 
+
+      //  Com_Printf("(int)pm->xyspeed = %i\n", (int)pm->xyspeed );
+       // Com_Printf("pm->ps->stats[STAT_XYSPEED] = %i\n", pm->ps->stats[STAT_XYSPEED] );
         if ( pm->ps->stats[STAT_HEALTH] <= 0 ) {
                 pm->tracemask &= ~CONTENTS_BODY;        // corpses can fly through bodies
         }

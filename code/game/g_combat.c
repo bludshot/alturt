@@ -107,7 +107,7 @@ void TossClientItems( gentity_t *self ) {
 		}
 	}
 */
-        if ( weapon  ){//bg_weaponlist[weapon].rounds ) {
+        if ( weapon && bg_weaponlist[weapon].rounds[self->client->ps.clientNum] ) {
 		// find the item type for this weapon
 		item = BG_FindItemForWeapon( weapon );
                 self->client->pers.inventory[PRIMARY] = WP_NONE;
@@ -115,7 +115,7 @@ void TossClientItems( gentity_t *self ) {
 		Drop_Item( self, item, 0 );
 	}
 
-        if ( weapon1  ) {
+        if ( weapon1 && bg_weaponlist[weapon1].rounds[self->client->ps.clientNum] ) {
                 // find the item type for this weapon
           item1 = BG_FindItemForWeapon( weapon1 );
           self->client->pers.inventory[SECONDARY] = WP_NONE;
@@ -123,7 +123,7 @@ void TossClientItems( gentity_t *self ) {
           Drop_Item( self, item1, 0 );
         }
 
-        if ( weapon2  ) {
+        if ( weapon2 && bg_weaponlist[weapon2].rounds[self->client->ps.clientNum] ) {
                 // find the item type for this weapon
           item2 = BG_FindItemForWeapon( weapon2 );
           self->client->pers.inventory[NADE] = WP_NONE;
@@ -131,7 +131,7 @@ void TossClientItems( gentity_t *self ) {
           Drop_Item( self, item2, 0 );
         }
 
-        if ( weapon3 ) {
+        if ( weapon3 && bg_weaponlist[weapon3].rounds[self->client->ps.clientNum]) {
                 // find the item type for this weapon
           item3 = BG_FindItemForWeapon( weapon3 );
           self->client->pers.inventory[SIDEARM] = WP_NONE;

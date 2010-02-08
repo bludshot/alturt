@@ -237,7 +237,7 @@ SHOTGUN
 
 // DEFAULT_SHOTGUN_SPREAD and DEFAULT_SHOTGUN_COUNT     are in bg_public.h, because
 // client predicts same spreads
-#define DEFAULT_SHOTGUN_DAMAGE  10
+#define DEFAULT_SHOTGUN_DAMAGE  20
 
 qboolean ShotgunPellet( vec3_t start, vec3_t end, gentity_t *ent ) {
         trace_t         tr;
@@ -403,6 +403,30 @@ void weapon_grenade_throw (gentity_t *ent) {
 
 }
 
+
+void weapon_grenade_arm( gentity_t *self ){
+
+  gentity_t     *bolt;
+
+  bolt = G_Spawn();
+  bolt->classname = "ut_weapon_grenade_he";
+  bolt->nextthink = level.time + 3000;
+  bolt->think = G_ExplodeMissile;
+  bolt->s.eType = ET_MISSILE;
+  bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
+  bolt->s.weapon = WP_HE;
+  bolt->s.eFlags = EF_BOUNCE_HALF;
+  bolt->r.ownerNum = self->s.number;
+  bolt->timestamp = level.time;
+  bolt->parent = self;
+  bolt->damage = 100;
+  bolt->splashDamage = 100;
+  bolt->splashRadius = 150;
+  bolt->methodOfDeath = MOD_GRENADE;
+  bolt->splashMethodOfDeath = MOD_GRENADE_SPLASH;
+  bolt->clipmask = MASK_SHOT;
+  bolt->target_ent = NULL;
+}
 /*
 =================
 weapon_railgun_fire
@@ -733,7 +757,36 @@ void CalcMuzzlePointOrigin ( gentity_t *ent, vec3_t origin, vec3_t forward, vec3
         SnapVector( muzzlePoint );
 }
 
+void Set_Mode(gentity_t *ent){
+//  G_Printf ("Set_Mode called\n");
+  switch (weapmodes_save.string[ent->client->ps.weapon] ){
 
+
+    case '0':
+  bg_weaponlist[ ent->client->ps.weapon ].weapMode[ent->client->ps.clientNum]
+      = ent->client->ps.stats[STAT_MODE]
+      = ent->client->weaponMode[ ent->client->ps.weapon ]
+      = 0;
+      ent->client->ps.pm_flags &= ~PMF_SINGLE_MODE;
+  break;
+    case '1':
+      bg_weaponlist[ ent->client->ps.weapon ].weapMode[ent->client->ps.clientNum]
+          = ent->client->ps.stats[STAT_MODE]
+          = ent->client->weaponMode[ ent->client->ps.weapon ]
+          = 1;
+      ent->client->ps.pm_flags |= PMF_SINGLE_MODE;
+      if ( ent->client->ps.weapon == WP_MP5K || ent->client->ps.weapon == WP_UMP45 )
+        Change_Mode(ent);
+      break;
+    case '2':
+      bg_weaponlist[ ent->client->ps.weapon ].weapMode[ent->client->ps.clientNum]
+          = ent->client->ps.stats[STAT_MODE]
+          = ent->client->weaponMode[ ent->client->ps.weapon ]
+          = 2;
+      ent->client->ps.pm_flags &= ~PMF_SINGLE_MODE;
+      break;
+  }
+}
 void Change_Mode(gentity_t *ent){
 //  int i;
  ent->client->weaponModeChar = weapmodes_save.string;
@@ -741,25 +794,35 @@ void Change_Mode(gentity_t *ent){
  //G_Printf( "weaponModeChar: %s\n", ent->client->weaponModeChar);
 
 
-  if ( ent->client->weaponMode[ ent->client->ps.weapon ] < -1 || ent->client->weaponMode[ ent->client->ps.weapon ] >2 )
-    ent->client->weaponMode[ ent->client->ps.weapon ] =-1;
+
 
  ent->client->weaponMode[ ent->client->ps.weapon ]++;
+ if ( ent->client->ps.weapon == WP_MP5K || ent->client->ps.weapon == WP_UMP45 ){
+   if (ent->client->weaponMode[ ent->client->ps.weapon ] == 1 )
+     ent->client->weaponMode[ ent->client->ps.weapon ]++;
+ }
+ if ( ent->client->weaponMode[ ent->client->ps.weapon ] > 2 || ent->client->weaponMode[ ent->client->ps.weapon ] >2 )
+   ent->client->weaponMode[ ent->client->ps.weapon ] =0;
+
+
+ bg_weaponlist[ ent->client->ps.weapon ].weapMode[ent->client->ps.clientNum] = ent->client->ps.stats[STAT_MODE]= ent->client->weaponMode[ ent->client->ps.weapon ];
  // G_Printf( "WeaponMode set to: %i\n", ent->client->weaponMode[ ent->client->ps.weapon ]);
 
 
  switch (ent->client->weaponMode[ ent->client->ps.weapon ]){
-    case 0:
+
+
+   case 0:
         weapmodes_save.string[ent->client->ps.weapon]= '0';
         ent->client->ps.pm_flags &= ~PMF_SINGLE_MODE;
         break;
-    case 1:
-      weapmodes_save.string[ent->client->ps.weapon]= '1';
-      ent->client->ps.pm_flags &= ~PMF_SINGLE_MODE;
-      break;
+   case 1:
+     weapmodes_save.string[ent->client->ps.weapon]= '1';
+     ent->client->ps.pm_flags |= PMF_SINGLE_MODE;
+     break;
     case 2:
       weapmodes_save.string[ent->client->ps.weapon]= '2';
-      ent->client->ps.pm_flags |= PMF_SINGLE_MODE;
+      ent->client->ps.pm_flags &= ~PMF_SINGLE_MODE;
       break;
     default:
       weapmodes_save.string[ent->client->ps.weapon]= '2';
@@ -790,11 +853,16 @@ void Change_Mode(gentity_t *ent){
 */
 void Cmd_Reload( gentity_t *ent )       {
 
+
   int amt;
   int ammotoadd;
 
   amt = RoundCount(ent->client->ps.weapon);
   ammotoadd = amt;
+
+  if (BG_Grenade(ent->client->ps.weapon))
+    return;
+
   //if (ent->client->ps.ammo[ent->client->ps.weapon] == 0 || ent->client->ps.weapon == WP_KNIFE ) return;
   if ( bg_weaponlist[ent->client->ps.weapon].numClips[ent->client->ps.clientNum] == 0 || ent->client->ps.weapon == WP_KNIFE ) return;
   if (ent->client->ps.weapon == WP_SPAS && bg_weaponlist[ent->client->ps.weapon].rounds[ent->client->ps.clientNum] > 7 ){
@@ -833,12 +901,16 @@ FireWeapon
 void FireWeapon( gentity_t *ent ) {
 
 
-  if ( bg_weaponlist[ent->client->ps.weapon].rounds[ent->client->ps.clientNum] != -1 || ent->s.weapon != WP_KNIFE  ) {
+  if ( bg_weaponlist[ent->client->ps.weapon].rounds[ent->client->ps.clientNum] != -1
+       || ent->s.weapon != WP_KNIFE
+       ||!(BG_Grenade(ent->client->ps.weapon)) ) {
     bg_weaponlist[ent->client->ps.weapon].rounds[ent->client->ps.clientNum]--;
   }
+  if (BG_Grenade(ent->client->ps.weapon))
+        bg_weaponlist[ent->client->ps.weapon].numClips[ent->client->ps.clientNum]--;
 
-  if ( (ent->client->ps.weapon == WP_HE || ent->client->ps.weapon == WP_SMOKE)
-        && bg_weaponlist[ent->client->ps.weapon].rounds[ent->client->ps.clientNum] == 0){
+  if ( (BG_Grenade(ent->client->ps.weapon))
+        && bg_weaponlist[ent->client->ps.weapon].numClips[ent->client->ps.clientNum] <= 0){
     BG_RemoveWeapon( ent->client->ps.weapon, ent->client->ps.stats);
         }
 
@@ -901,6 +973,7 @@ void FireWeapon( gentity_t *ent ) {
                         weapon_grenadelauncher_fire( ent );
                         break;
                 case WP_HE:
+                        //weapon_grenade_arm( ent );
                         weapon_grenade_throw( ent );
                         break;
                 case WP_SMOKE:

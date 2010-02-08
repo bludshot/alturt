@@ -740,7 +740,7 @@ if desired.
 */
 void ClientUserinfoChanged( int clientNum ) {
         gentity_t *ent;
-        int             teamTask, teamLeader, team, health;
+        int           teamTask, teamLeader, team, health;
         int             racered, raceblue; //blud
         char    *s;
         char    skin[MAX_QPATH]; //blud
@@ -780,6 +780,7 @@ void ClientUserinfoChanged( int clientNum ) {
         } else {
                 client->pers.predictItemPickup = qtrue;
         }
+
 
         // set name
         Q_strncpyz ( oldname, client->pers.netname, sizeof( oldname ) );
@@ -1420,16 +1421,16 @@ void ClientSpawn(gentity_t *ent) {
         BG_PackWeapon( WP_HE , ent->client->ps.stats );
        // client->ps.ammo[WP_HE] = 2;
        // client->clipammo[WP_HE] = 2;
-        bg_weaponlist[WP_HE].numClips[ent->client->ps.clientNum] = 0;
-        bg_weaponlist[WP_HE].rounds[ ent->client->ps.clientNum]=RoundCount(WP_HE);
+        bg_weaponlist[WP_HE].rounds[ent->client->ps.clientNum] = 0;
+        bg_weaponlist[WP_HE].numClips[ ent->client->ps.clientNum]=RoundCount(WP_HE);
         client->pers.inventory[NADE]= WP_HE;
 
         }else if( gear.string[3] == 'Q'  ){
           BG_PackWeapon( WP_SMOKE , ent->client->ps.stats );
          // client->ps.ammo[WP_SMOKE] = 2;
         //  client->[WP_SMOKE] = 2;
-          bg_weaponlist[WP_HE].rounds[ ent->client->ps.clientNum]=RoundCount(WP_HE);
-          bg_weaponlist[WP_SMOKE].numClips[ent->client->ps.clientNum] = 0;
+          bg_weaponlist[WP_HE].numClips[ ent->client->ps.clientNum]=RoundCount(WP_HE);
+          bg_weaponlist[WP_SMOKE].rounds[ent->client->ps.clientNum] = 0;
           client->pers.inventory[NADE]= WP_SMOKE;
 
         }else {
@@ -1442,6 +1443,7 @@ void ClientSpawn(gentity_t *ent) {
         // health will count down towards max_health
         ent->health = client->ps.stats[STAT_HEALTH] = client->ps.stats[STAT_MAX_HEALTH];// removed + 25 Xamis
         ent->stamina = client->ps.stats[STAT_STAMINA] = client->ps.stats[STAT_MAX_STAMINA];
+
 
         G_SetOrigin( ent, spawn_origin );
         VectorCopy( spawn_origin, client->ps.origin );

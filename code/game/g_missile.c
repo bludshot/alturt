@@ -471,7 +471,9 @@ gentity_t *throw_grenade (gentity_t *self, vec3_t start, vec3_t dir) {
 
 	bolt = G_Spawn();
 	bolt->classname = "ut_weapon_grenade_he";
-	bolt->nextthink = level.time + 3000;
+        bolt->nextthink = level.time + bg_nadeTimer.fuseTime[self->s.number];// level.time + 3000;
+        G_Printf("bg_nadeTimer.fuseTime[self->s.number] = %i\n",bg_nadeTimer.fuseTime[self->s.number]);
+        G_Printf("self->s.number = %i\n",self->s.number);
 	bolt->think = G_ExplodeMissile;
 	bolt->s.eType = ET_MISSILE;
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
@@ -480,16 +482,16 @@ gentity_t *throw_grenade (gentity_t *self, vec3_t start, vec3_t dir) {
 	bolt->r.ownerNum = self->s.number;
 	bolt->timestamp = level.time;
 	bolt->parent = self;
-	bolt->damage = 100;
-	bolt->splashDamage = 100;
-	bolt->splashRadius = 150;
+	bolt->damage = 500;
+	bolt->splashDamage = 300;
+	bolt->splashRadius = 300;
 	bolt->methodOfDeath = MOD_GRENADE;
 	bolt->splashMethodOfDeath = MOD_GRENADE_SPLASH;
 	bolt->clipmask = MASK_SHOT;
 	bolt->target_ent = NULL;
 
-
-	VectorScale( dir, 500 , bolt->s.pos.trDelta );
+        G_Printf("bg_nadeTimer.throwStrength[self->s.number]/10 = %i\n",bg_nadeTimer.throwStrength[self->s.number]/10);
+        VectorScale( dir, (bg_nadeTimer.throwStrength[self->s.number]/100 ), bolt->s.pos.trDelta );
 
 	bolt->s.pos.trType = TR_GRAVITY;
 	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;		// move a bit on the very first frame
@@ -534,7 +536,7 @@ void G_ExplodeSmokenade( gentity_t *ent ) {
         start[2] -= 2.0f;
 
         if ( start[2] < ent->r.currentOrigin[2] ) {
-          start[2] = ent->r.currentOrigin[2]; // don't put the flashbang into the floor
+          start[2] = ent->r.currentOrigin[2];
           break;
         }
       }

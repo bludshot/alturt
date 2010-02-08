@@ -1509,7 +1509,11 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
         }
 
         // add the flash
-          if ( cg.time - cent->muzzleFlashTime > MUZZLE_FLASH_TIME && !cent->pe.railgunFlash  && weaponNum != WP_KNIFE) {
+          if ( cg.time - cent->muzzleFlashTime > MUZZLE_FLASH_TIME && !cent->pe.railgunFlash
+               && weaponNum != WP_KNIFE
+               && weaponNum != WP_HE
+               &&!(BG_Grenade(weaponNum))
+             ) {
                         return; //removed some stuff, trying to prevent flash on knife, looked real dumb  --Xamis
                 }
 
@@ -1528,7 +1532,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
         angles[ROLL] = crandom() * 10;
         AnglesToAxis( angles, flash.axis );
 
-        if (weaponNum != WP_KNIFE){
+        if (weaponNum != WP_KNIFE &&!(BG_Grenade(weaponNum))){
         if (ps )
           CG_PositionRotatedEntityOnTag( &flash, &gun, weapon->holdsModel, "tag_flash");
         else
@@ -1677,7 +1681,7 @@ void CG_DrawWeaponSelect( void ) {
         float   *color;
         float       hcolor[4];
         float       hcolor2[4];
-
+        char    *mapname;
         hcolor[0] = 0.0;
         hcolor[1] = 0.0;
         hcolor[2] = 0.0;
@@ -1687,6 +1691,8 @@ void CG_DrawWeaponSelect( void ) {
         hcolor2[1] = 0.3;
         hcolor2[2] = 0.8;
         hcolor2[3] = 0.3f;
+
+
         // don't display if dead
         if ( cg.predictedPlayerState.stats[STAT_HEALTH] <= 0 ) {
                 return;
@@ -1790,20 +1796,20 @@ CG_OutOfNadesChange
 ===================
 */
 void CG_OutOfNadesChange( centity_t *cent ) {
- /*
+
   int             i;
   entityState_t *ent;
   ent = &cent->currentState;
   cg.weaponSelectTime = cg.time;
-  if (!( ent->weapon == WP_HE || ent->weapon == WP_SMOKE) ) {
-    return;
-  }
+ // if (!( BG_Grenade(ent->weapon)) ) {
+  //  return;
+ // }
   for ( i = MAX_WEAPONS-1 ; i > 0 ; i-- ) {
     if ( CG_WeaponSelectable( i ) ) {
       cg.weaponSelect = i;
       break;
     }
-  } */
+  }
 }
 
 /*

@@ -833,7 +833,7 @@ static void CG_RegisterGraphics( void ) {
 	CG_LoadingString( cgs.mapname );
 
 	trap_R_LoadWorldMap( cgs.mapname );
-
+        CG_LoadingBarUpdate(10);
 	// precache status bar pics
 	CG_LoadingString( "game media" );
 
@@ -863,7 +863,7 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.shotgunSmokePuffShader = trap_R_RegisterShader( "shotgunSmokePuff" );
         cgs.media.handsBlueSkin = trap_R_RegisterSkin( "models/weapons2/handskins/hand_swat.skin"); //Xamis
         cgs.media.handsRedSkin = trap_R_RegisterSkin( "models/weapons2/handskins/hand_tag.skin"); //Xamis
-
+        CG_LoadingBarUpdate(10);
 #ifdef MISSIONPACK
 	cgs.media.nailPuffShader = trap_R_RegisterShader( "nailtrail" );
 	cgs.media.blueProxMine = trap_R_RegisterModel( "models/weaphits/proxmineb.md3" );
@@ -882,7 +882,7 @@ static void CG_RegisterGraphics( void ) {
 	for ( i = 0 ; i < NUM_CROSSHAIRS ; i++ ) {
 		cgs.media.crosshairShader[i] = trap_R_RegisterShader( va("gfx/2d/crosshair%c", 'a'+i) );
 	}
-
+        CG_LoadingBarUpdate(10);
 	cgs.media.backTileShader = trap_R_RegisterShader( "gfx/2d/backtile" );
 	cgs.media.noammoShader = trap_R_RegisterShader( "icons/noammo" );
 
@@ -894,7 +894,7 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.invisShader = trap_R_RegisterShader("powerups/invisibility" );
 	cgs.media.regenShader = trap_R_RegisterShader("powerups/regen" );
 	cgs.media.hastePuffShader = trap_R_RegisterShader("hasteSmokePuff" );
-
+        CG_LoadingBarUpdate(10);
 #ifdef MISSIONPACK
 	if ( cgs.gametype == GT_CTF || cgs.gametype == GT_BOMB || cg_buildScript.integer ) {
 #else
@@ -959,7 +959,7 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.redKamikazeShader = trap_R_RegisterShader( "models/weaphits/kamikred" );
 	cgs.media.dustPuffShader = trap_R_RegisterShader("hasteSmokePuff" );
 #endif
-
+        CG_LoadingBarUpdate(10);
 	if ( cgs.gametype >= GT_TEAM || cg_buildScript.integer ) {
 		cgs.media.friendShader = trap_R_RegisterShader( "sprites/foe" );
 		cgs.media.redQuadShader = trap_R_RegisterShader("powerups/blueflag" );
@@ -968,7 +968,7 @@ static void CG_RegisterGraphics( void ) {
 		cgs.media.blueKamikazeShader = trap_R_RegisterShader( "models/weaphits/kamikblu" );
 #endif
 	}
-
+        CG_LoadingBarUpdate(10);
 	cgs.media.armorModel = trap_R_RegisterModel( "models/powerups/armor/armor_yel.md3" );
 	cgs.media.armorIcon  = trap_R_RegisterShaderNoMip( "icons/iconr_yellow" );
 
@@ -980,6 +980,7 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.gibChest = trap_R_RegisterModel( "models/gibs/chest.md3" );
 	cgs.media.gibFist = trap_R_RegisterModel( "models/gibs/fist.md3" );
 	cgs.media.gibFoot = trap_R_RegisterModel( "models/gibs/foot.md3" );
+        CG_LoadingBarUpdate(10);
 	cgs.media.gibForearm = trap_R_RegisterModel( "models/gibs/forearm.md3" );
 	cgs.media.gibIntestine = trap_R_RegisterModel( "models/gibs/intestine.md3" );
 	cgs.media.gibLeg = trap_R_RegisterModel( "models/gibs/leg.md3" );
@@ -989,7 +990,7 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.glass01 = trap_R_RegisterModel( "models/breakable/glass/GLASS1.MD3" );
 	cgs.media.glass02 = trap_R_RegisterModel( "models/breakable/glass/GLASS2.MD3" );
 	cgs.media.glass03 = trap_R_RegisterModel( "models/breakable/glass/GLASS3.MD3" );
-
+        CG_LoadingBarUpdate(10);
 	cgs.media.smoke2 = trap_R_RegisterModel( "models/weapons2/shells/s_shell.md3" );
 
 	cgs.media.balloonShader = trap_R_RegisterShader( "sprites/balloon3" );
@@ -1020,7 +1021,7 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.heartShader = trap_R_RegisterShaderNoMip( "ui/assets/statusbar/selectedhealth.tga" );
 
 #endif
-
+        CG_LoadingBarUpdate(10);
 	cgs.media.invulnerabilityPowerupModel = trap_R_RegisterModel( "models/powerups/shield/shield.md3" );
 	cgs.media.medalImpressive = trap_R_RegisterShaderNoMip( "medal_impressive" );
 	cgs.media.medalExcellent = trap_R_RegisterShaderNoMip( "medal_excellent" );
@@ -1053,7 +1054,7 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.bloodMarkShader = trap_R_RegisterShader( "bloodMark" );
         cgs.media.bulletExplosionShader = trap_R_RegisterShader( "bulletExplosion" );
         cgs.media.grenadeExplosionShader = trap_R_RegisterShader( "grenadeExplosion" );
-
+        CG_LoadingBarUpdate(10);
 	// register the inline models
 	cgs.numInlineModels = trap_CM_NumInlineModels();
 	for ( i = 1 ; i < cgs.numInlineModels ; i++ ) {
@@ -1107,6 +1108,7 @@ static void CG_RegisterGraphics( void ) {
 
 #endif
 	CG_ClearParticles ();
+        CG_LoadingBarUpdate(10);
 /*
 	for (i=1; i<MAX_PARTICLES_AREAS; i++)
 	{
@@ -1888,6 +1890,10 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	memset( cg_items, 0, sizeof(cg_items) );
 
 	cg.clientNum = clientNum;
+
+        CG_LoadBarInit();
+
+        CG_LoadingBarSetMax( 100 );
 
 	cgs.processedSnapshotNum = serverMessageNum;
 	cgs.serverCommandSequence = serverCommandSequence;

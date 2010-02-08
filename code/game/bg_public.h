@@ -147,7 +147,9 @@ typedef enum {
     WEAPON_RELOADING,
     WEAPON_RELOADING_START,
     WEAPON_RELOADING_END,
-    WEAPON_RELOADING_COMPLETE
+    WEAPON_RELOADING_COMPLETE,
+    WEAPON_ARMING,
+    WEAPON_ARMED
 } weaponstate_t;
 
 
@@ -167,7 +169,8 @@ typedef enum {
 #define PMF_TIME_KNOCKBACK      64              // pm_time is an air-accelerate only time
 #define PMF_TIME_WATERJUMP      256             // pm_time is waterjump
 #define PMF_RESPAWNED           512             // clear after attack and jump buttons come up
-#define PMF_USE_ITEM_HELD       16384
+//#define PMF_USE_ITEM_HELD       16384
+#define PMF_GRENADE_ARMED       16384
 #define PMF_SINGLE_MODE         2048    // pull towards grapple location
 #define PMF_FOLLOW                      4096    // spectate following another player
 #define PMF_RELOADING           8192    // spectate as a scoreboard
@@ -198,7 +201,6 @@ typedef struct {
 
         int                     watertype;
         int                     waterlevel;
-        int             burstCount;
         float           xyspeed;
         int             crouchSlideTime;
         int             groundentity;
@@ -224,6 +226,7 @@ void Pmove (pmove_t *pmove);
 typedef enum {
         STAT_HEALTH,
         STAT_STAMINA, //Xamis
+        STAT_MODE,//Xamis
         STAT_ROUNDS,//Xamis
         STAT_CLIPS,//Xamis
         STAT_HOLDABLE_ITEM,
@@ -239,6 +242,7 @@ typedef enum {
         STAT_MAX_HEALTH,                                // health / armor limit, changable by handicap
         STAT_MAX_STAMINA,       //Xamis
         STAT_SMOKE,
+        STAT_XYSPEED,
 
 
 } statIndex_t;
@@ -574,6 +578,12 @@ typedef enum {
         TORSO_STAND_PISTOL,
         TORSO_RUN_ATTACK_PISTOL,
 
+        TORSO_RELOAD_PISTOL,
+        TORSO_RELOAD_RIFLE,
+        TORSO_ATTACK_RIFLE,
+        TORSO_ATTACK_PUMPGUN,
+        TORSO_ATTACK_GRENADE,
+        TORSO_ATTACK_KNIFE,
         TORSO_GETFLAG,
         TORSO_GUARDBASE,
         TORSO_PATROL,
@@ -618,6 +628,12 @@ typedef struct animation_s {
         int             flipflop;                       // true if animation should flipflop back to base
 } animation_t;
 
+
+
+typedef struct nadeInfo_s{
+int fuseTime[MAX_CLIENTS];
+int throwStrength[MAX_CLIENTS];
+} nadeInfo_t;
 
 // flip the togglebit every time an animation
 // changes so a restart of the same anim can be detected
@@ -729,8 +745,9 @@ typedef struct gitem_s {
 //Xamis ammo system to deal with max_weapons limit
 typedef struct wpinfo_s {
   char            *ammoIcon;
-     int             numClips[MAX_CLIENTS];
-     int             rounds[MAX_CLIENTS];
+  int             weapMode[MAX_CLIENTS];
+  int             numClips[MAX_CLIENTS];
+  int             rounds[MAX_CLIENTS];
   const   int        wp_sort;
 } wpinfo_t;
 
@@ -751,6 +768,7 @@ typedef enum {
 
 // included in both the game dll and the client
 extern  wpinfo_t bg_weaponlist[];
+extern  nadeInfo_t bg_nadeTimer;
 extern  gitem_t bg_itemlist[];
 extern  int             bg_numItems;
 

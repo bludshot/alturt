@@ -212,6 +212,10 @@ void Add_Ammo (gentity_t *ent, int weapon, int count)
 {
   bg_weaponlist[weapon].numClips[ent->client->ps.clientNum] += count;
   //ent->client->ps.ammo[weapon] += count;
+  if ( BG_Grenade(weapon) && bg_weaponlist[weapon].numClips[ent->client->ps.clientNum] > 2 ) {
+    bg_weaponlist[weapon].numClips[ent->client->ps.clientNum] = 2;
+
+  }
   if ( bg_weaponlist[weapon].numClips[ent->client->ps.clientNum] > 200 ) {
     bg_weaponlist[weapon].numClips[ent->client->ps.clientNum] = 200;
 
@@ -264,9 +268,11 @@ int Pickup_Weapon (gentity_t *ent, gentity_t *other) {
         //other->client->ps.stats[STAT_WEAPONS] |= ( 1 << ent->item->giTag );
         BG_PackWeapon( ent->item->giTag, other->client->ps.stats );
         /*Add_Ammo( other, ent->item->giTag, quantity );*/
+
+        //Must add clipcount!!! Xamis
         quantity = RoundCount(ent->item->giTag);
         if (bg_weaponlist[ent->item->giTag].rounds[ other->client->ps.clientNum] > 0 )
-          Add_Ammo( other, ent->item->giTag, quantity );
+          Add_Ammo( other, ent->item->giTag, ( quantity ));
         else
           bg_weaponlist[ent->item->giTag].rounds[ other->client->ps.clientNum] = quantity;
 

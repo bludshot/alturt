@@ -563,6 +563,8 @@ static void CG_DrawStatusBar( void ) {
 	vec3_t		angles;
 	vec3_t		origin;
         vec4_t          txtcolor;
+        char *w;
+        gitem_t                 *item;
 
 	static float colors[4][4] = {
 //		{ 0.2, 1.0, 0.2, 1.0 } , { 1.0, 0.2, 0.2, 1.0 }, {0.5, 0.5, 0.5, 1} };
@@ -635,8 +637,12 @@ static void CG_DrawStatusBar( void ) {
                        // CG_DrawChar(100, 430, 20,20, "x");
                        // CG_DrawBigStringColor( 0, 430, "X", colors[color] );
                         CG_DrawStringExt( 606, 436, "x", colors[color], qfalse, qtrue, 14, 20, 0 );
-                        CG_DrawField (606, 440, 2, value);
 
+                        if ( cg.predictedPlayerState.weapon == WP_SPAS ){
+                          CG_DrawField (606, 440, 3, value);
+                        }else{
+                        CG_DrawField (606, 440, 2, value);
+                        }
 			// if we didn't draw a 3D icon, draw a 2D icon for ammo
 			//if ( !cg_draw3dIcons.integer && cg_drawIcons.integer ) {
 			if (1) { //blud changing this so it always does it because I got rid of the 3D ammo.
@@ -704,11 +710,51 @@ static void CG_DrawStatusBar( void ) {
 
 	}
 
+
+        //weapon mode
+        value = ps->stats[STAT_MODE];
+        if (!( cg.predictedPlayerState.weapon == WP_HE
+               ||cg.predictedPlayerState.weapon == WP_SMOKE
+               || BG_Sidearm(cg.predictedPlayerState.weapon))){
+          char *s;
+          int i;
+//          gitem_t                 *item;
+
+          if ( value == 0 ){
+            s = "Burst";
+          }
+          if ( value == 1 ){
+            s = "Semi Automatic";
+          }
+          if ( value == 2 ){
+            s = "Automatic";
+          }
+        //Draw the Text
+          trap_R_SetColor( colors[0] );
+          CG_DrawStringExt( 570, 450, s, colors[color], qfalse, qtrue, 4, 6, 0 );
+
+        }
+
+      //  for ( i = 0; i < WP_NUM_WEAPONS; i++){
+       //   if ( bg_itemlist[i].giTag == cg.predictedPlayerState.weapon ){
+        //    w = bg_itemlist[i].pickup_name;
+        //    break;
+   //       }
+     //   }
+        for ( item = bg_itemlist + 1 ; item->classname ; item++ ) {
+          if ( item->giType == IT_WEAPON && item->giTag == cg.predictedPlayerState.weapon ) {
+            w = item->pickup_name;
+            break;
+          }
+        }
+
+        CG_DrawStringExt( 536, 470, w, colors[color], qfalse, qtrue, 4, 6, 0 );
+        trap_R_SetColor( NULL );
         //
 // ammo in gun
         //
         value = ps->stats[STAT_ROUNDS];
-        if (value > -1 ) {
+        if (value > -1  && !( cg.predictedPlayerState.weapon == WP_HE ||cg.predictedPlayerState.weapon == WP_SMOKE  )) {
         //Draw the Text
           trap_R_SetColor( colors[0] );
           CG_DrawField (554, 460, 3, value);
@@ -744,7 +790,7 @@ void CG_DrawStatusHud( void )
                                          stamina[8]  =       trap_R_RegisterShaderNoMip( "gfx/hud/stamina9.tga" );
 
                                          {
-                                           vec4_t hcolor_alpha1 = { 0.8,0.8,0.6, 1.0 };
+                                           vec4_t hcolor_alpha1 = { 1.0,1.0,1.0, 1.0 };
                                             // hcolor_alpha1[3] = 1.0f;
 
                                            trap_R_SetColor( hcolor_alpha1 );
@@ -772,7 +818,7 @@ void CG_DrawStatusHud( void )
                                              healthV = 90;
                                            }
                                            trap_R_SetColor( hColor2 );
-                                           CG_DrawPic( base_x , base_y , 40,86, stamina[8] );
+                                           CG_DrawPic( base_x , base_y , 40,86, stamina[0] );
                                            trap_R_SetColor( NULL );
 
                                            hColor2[3] = 0.3f;
@@ -783,7 +829,7 @@ void CG_DrawStatusHud( void )
                                              healthV = 80;
                                            }
                                            trap_R_SetColor( hColor2 );
-                                           CG_DrawPic( base_x , base_y , 40,86, stamina[7] );
+                                           CG_DrawPic( base_x , base_y , 40,86, stamina[1] );
                                            trap_R_SetColor( NULL );
 
                                            hColor2[3] = 0.3f;
@@ -795,7 +841,7 @@ void CG_DrawStatusHud( void )
                                              healthV = 70;
                                            }
                                            trap_R_SetColor( hColor2 );
-                                           CG_DrawPic( base_x , base_y , 40,86, stamina[6] );
+                                           CG_DrawPic( base_x , base_y , 40,86, stamina[2] );
                                            trap_R_SetColor( NULL );
 
                                            hColor2[3] = 0.3f;
@@ -807,7 +853,7 @@ void CG_DrawStatusHud( void )
                                              healthV = 60;
                                            }
                                            trap_R_SetColor( hColor2 );
-                                           CG_DrawPic( base_x , base_y , 40,86, stamina[5] );
+                                           CG_DrawPic( base_x , base_y , 40,86, stamina[3] );
                                            trap_R_SetColor( NULL );
 
                                            hColor2[3] = 0.3f;
@@ -832,7 +878,7 @@ void CG_DrawStatusHud( void )
                                              healthV = 40;
                                            }
                                            trap_R_SetColor( hColor2 );
-                                           CG_DrawPic( base_x , base_y , 40,86, stamina[3] );
+                                           CG_DrawPic( base_x , base_y , 40,86, stamina[5] );
                                            trap_R_SetColor( NULL );
 
                                            hColor2[3] = 0.3f;
@@ -844,7 +890,7 @@ void CG_DrawStatusHud( void )
                                              healthV = 30;
                                            }
                                            trap_R_SetColor( hColor2 );
-                                           CG_DrawPic( base_x , base_y , 40,86, stamina[2] );
+                                           CG_DrawPic( base_x , base_y , 40,86, stamina[6] );
                                            trap_R_SetColor( NULL );
 
                                            hColor2[3] = 0.3f;
@@ -857,7 +903,7 @@ void CG_DrawStatusHud( void )
                                              healthV = 20;
                                            }
                                            trap_R_SetColor( hColor2 );
-                                           CG_DrawPic( base_x , base_y , 40,86, stamina[1] );
+                                           CG_DrawPic( base_x , base_y , 40,86, stamina[7] );
                                            trap_R_SetColor( NULL );
 
                                            hColor2[3] = 0.3f;
@@ -868,7 +914,7 @@ void CG_DrawStatusHud( void )
                                              hColor2[3] = 0.3f;
                                            }
                                            trap_R_SetColor( hColor2 );
-                                           CG_DrawPic( base_x , base_y , 40,86, stamina[0] );
+                                           CG_DrawPic( base_x , base_y , 40,86, stamina[8] );
                                            trap_R_SetColor( NULL );
                                          }
                                          //
@@ -877,7 +923,7 @@ void CG_DrawStatusHud( void )
                                          {
                                            float staminaV = cg.snap->ps.stats[STAT_STAMINA];
                                            float temp;
-                                           vec4_t hColor= { 0.75,0.75,0.55, 1.0 };
+                                           vec4_t hColor= { 0.75,0.75,0.35, 1.0 };
 
                                           // VectorCopy( colorWhite, hColor );
 
@@ -897,7 +943,7 @@ void CG_DrawStatusHud( void )
                                              staminaV = 800;
                                            }
                                            trap_R_SetColor( hColor );
-                                           CG_DrawPic( base_x , base_y , 40,86, stamina[8] );
+                                           CG_DrawPic( base_x , base_y , 40,86, stamina[0] );
                                            trap_R_SetColor( NULL );
 
                                            hColor[3] = 0.0f;
@@ -914,7 +960,7 @@ void CG_DrawStatusHud( void )
                                              staminaV = 700;
                                            }
                                            trap_R_SetColor( hColor );
-                                           CG_DrawPic( base_x , base_y , 40,86, stamina[7] );
+                                           CG_DrawPic( base_x , base_y , 40,86, stamina[1] );
                                            trap_R_SetColor( NULL );
 
                                            hColor[3] = 0.0f;
@@ -932,7 +978,7 @@ void CG_DrawStatusHud( void )
                                              staminaV = 600;
                                            }
                                            trap_R_SetColor( hColor );
-                                           CG_DrawPic( base_x , base_y , 40,86, stamina[6] );
+                                           CG_DrawPic( base_x , base_y , 40,86, stamina[2] );
                                            trap_R_SetColor( NULL );
 
                                            hColor[3] = 0.0f;
@@ -950,7 +996,7 @@ void CG_DrawStatusHud( void )
                                              staminaV = 500;
                                            }
                                            trap_R_SetColor( hColor );
-                                           CG_DrawPic( base_x , base_y , 40,86, stamina[5] );
+                                           CG_DrawPic( base_x , base_y , 40,86, stamina[3] );
                                            trap_R_SetColor( NULL );
 
                                            hColor[3] = 0.0f;
@@ -987,7 +1033,7 @@ void CG_DrawStatusHud( void )
                                              staminaV = 300;
                                            }
                                            trap_R_SetColor( hColor );
-                                           CG_DrawPic( base_x , base_y , 40,86, stamina[3] );
+                                           CG_DrawPic( base_x , base_y , 40,86, stamina[5] );
                                            trap_R_SetColor( NULL );
 
                                            hColor[3] = 0.0f;
@@ -1005,7 +1051,7 @@ void CG_DrawStatusHud( void )
                                              staminaV = 200;
                                            }
                                            trap_R_SetColor( hColor );
-                                           CG_DrawPic( base_x , base_y , 40,86, stamina[2] );
+                                           CG_DrawPic( base_x , base_y , 40,86, stamina[6] );
                                            trap_R_SetColor( NULL );
 
                                            hColor[3] = 0.0f;
@@ -1024,7 +1070,7 @@ void CG_DrawStatusHud( void )
                                              staminaV = 100;
                                            }
                                            trap_R_SetColor( hColor );
-                                           CG_DrawPic( base_x , base_y , 40,86, stamina[1] );
+                                           CG_DrawPic( base_x , base_y , 40,86, stamina[7] );
                                            trap_R_SetColor( NULL );
 
                                            hColor[3] = 0.0f;
@@ -1041,7 +1087,7 @@ void CG_DrawStatusHud( void )
                                              hColor[3] = temp;
                                            }
                                            trap_R_SetColor( hColor );
-                                           CG_DrawPic( base_x , base_y , 40,86, stamina[0] );
+                                           CG_DrawPic( base_x , base_y , 40,86, stamina[8] );
                                            trap_R_SetColor( NULL );
                                          }
 
@@ -1371,6 +1417,30 @@ static float CG_DrawTeamOverlay( float y, qboolean right, qboolean upper ) {
 
 	return ret_y;
 //#endif
+}
+
+
+
+#define cg_mapX 20
+#define cg_mapY 20
+#define MAP_BACK_HEIGHT 80
+#define MAP_BACK_WIDTH 80
+
+static void CG_DrawMap( void ) {
+  char                    path[MAX_QPATH];
+  qhandle_t   mapBackShader;
+                                      strcpy( path, cgs.mapname );
+                                      COM_StripExtension(path, path, sizeof(path));
+                                      strcat( path, ".tga" );
+ mapBackShader = trap_R_RegisterShaderNoMip( path );
+
+                                      if ( cg.snap->ps.pm_flags & PMF_FOLLOW )
+                                        return;
+
+                                      CG_DrawPic( cg_mapX - MAP_BACK_WIDTH/2,
+                                          cg_mapY - MAP_BACK_HEIGHT/2,
+                                          MAP_BACK_WIDTH,
+                                          MAP_BACK_HEIGHT, mapBackShader );
 }
 
 
@@ -3000,7 +3070,7 @@ static void CG_Draw2D(stereoFrame_t stereoFrame)
 	CG_DrawTeamVote();
         CG_DrawStatusHud();
 	CG_DrawLagometer();
-
+        CG_DrawMap();
 #ifdef MISSIONPACK
 	if (!cg_paused.integer) {
 		CG_DrawUpperRight(stereoFrame);

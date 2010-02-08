@@ -94,7 +94,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define DEFAULT_REDTEAM_NAME		"Red Dragons"
 #define DEFAULT_BLUETEAM_NAME		"SWAT"
-
+#define ITEM_TEXTSTYLE_SHADOWED 3
 
 
 
@@ -162,6 +162,8 @@ typedef struct {
 	int				barrelTime;
 	qboolean		barrelSpinning;
 } playerEntity_t;
+
+
 
 //=================================================
 
@@ -466,7 +468,6 @@ typedef struct weaponInfo_s {
 	sfxHandle_t		firingSound;
 	qboolean		loopFireSound;
 
-
 } weaponInfo_t;
 
 
@@ -713,7 +714,6 @@ typedef struct {
 	qboolean		testGun;
 
 
-
 	//Xamis Inventory selection
 
 
@@ -723,6 +723,10 @@ typedef struct {
 
        float                       smokeBlendAlpha;
        qboolean       inSmoke;
+
+
+       int                  loadingbarState;
+       int                 loadingbarMax;
 
 
 } cg_t;
@@ -1423,7 +1427,7 @@ void CG_CheckEvents( centity_t *cent );
 const char	*CG_PlaceString( int rank );
 void CG_EntityEvent( centity_t *cent, vec3_t position );
 void CG_PainEvent( centity_t *cent, int health );
-
+void CG_OutOfNadesChange(centity_t *cent);
 
 //
 // cg_ents.c
@@ -1528,6 +1532,11 @@ void CG_LoadingString( const char *s );
 void CG_LoadingItem( int itemNum );
 void CG_LoadingClient( int clientNum );
 void CG_DrawInformation( void );
+void CG_LoadingBarUpdate( int amount ); //Xamis
+void CG_LoadBarInit( void );//Xamis
+void CG_LoadingBarSetMax( int maximum );//Xamis
+
+
 
 //
 // cg_scoreboard.c

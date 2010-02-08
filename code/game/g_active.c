@@ -565,6 +565,10 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
                         FireWeapon( ent );
                         break;
 
+                  case EV_CHANGE_WEAPON:
+                    Set_Mode(ent);
+                    break;
+
                 case EV_USE_ITEM1:              // teleporter
                         // drop flags in CTF
                         item = NULL;
@@ -707,6 +711,7 @@ void ClientThink_real( gentity_t *ent ) {
         int                     oldEventSequence;
         int                     msec;
         usercmd_t       *ucmd;
+        float           xyspeed;
 
         client = ent->client;
 
@@ -791,19 +796,27 @@ void ClientThink_real( gentity_t *ent ) {
         // set speed
         client->ps.speed = g_speed.value; // --info-- g_speed set in g_main.c --Xamis--
 
+        xyspeed = sqrt( client->ps.velocity[0] * client->ps.velocity[0]
+            +  client->ps.velocity[1] * client->ps.velocity[1] );
 
                 // -- Xamis
-        if( ucmd->buttons & BUTTON_WALKING || client->ps.pm_flags & PMF_DUCKED ){ //if walking/ducking do nothing!
-                }else if  ( ent->stamina > 0 && ucmd->buttons & BUTTON_SPRINTING && pm.xyspeed > 5 ) {
+        if( ucmd->buttons & BUTTON_WALKING || client->ps.pm_flags & PMF_DUCKED ){
+          //if walking/ducking do nothing!
+         // G_Printf( "ucmd->buttons & BUTTON_WALKING || client->ps.pm_flags & PMF_DUCKED\n");
+
+        }else if  ( client->ps.stats[STAT_STAMINA] > 0 && ucmd->buttons & BUTTON_SPRINTING && (int)xyspeed > 5  ) {
                         client->ps.speed *= 1.3;
                         ent->stamina--;
+                      //  G_Printf( "sprint activated");
                 //if (ent->stamina <= client->ps.stats[STAT_MAX_STAMINA] *.2 ) {(G_AddEvent( ent, EV_PANTING, 0 );} //todo
-                }
-
+        }
+        //  G_Printf( "client->ps.stats[STAT_STAMINA] = %i ucmd->buttons & BUTTON_SPRINTING = %i xyspeed = %i\n",
+           //         client->ps.stats[STAT_STAMINA],ucmd->buttons & BUTTON_SPRINTING, (int)xyspeed
+           //       );
 
                         // -- Xamis   Crude attempt at powerslide
 
-      if( client->ps.pm_flags & PMF_DUCKED && pm.xyspeed > 250 && ent->slidedistance > 0 && client->ps.pm_flags & PMF_ONGROUND){
+      if( client->ps.pm_flags & PMF_DUCKED && xyspeed > 250 && ent->slidedistance > 0 && client->ps.pm_flags & PMF_ONGROUND){
 
                         //float temp_velocity;
                         //float slide_velocity;
@@ -815,10 +828,7 @@ void ClientThink_real( gentity_t *ent ) {
                 //      client->ps.velocity[2]= slide_velocity;
                         //client->ps.velocity[2] = temp_velocity;
 
-                }
-
-
-
+ }
 
         if ( client->ps.powerups[PW_HASTE] ) {
                 client->ps.speed *= 1.3;
@@ -1026,7 +1036,13 @@ void SpectatorClientEndFrame( gentity_t *ent ) {
                 } else if ( clientNum == -2 ) {
                         clientNum = level.follow2;
                 }
+
+
                 if ( clientNum >= 0 ) {
+
+
+
+
                         cl = &level.clients[ clientNum ];
                         if ( cl->pers.connected == CON_CONNECTED && cl->sess.sessionTeam != TEAM_SPECTATOR ) {
                                 flags = (cl->ps.eFlags & ~(EF_VOTED | EF_TEAMVOTED)) | (ent->client->ps.eFlags & (EF_VOTED | EF_TEAMVOTED));
@@ -1043,13 +1059,7 @@ void SpectatorClientEndFrame( gentity_t *ent ) {
                         }
                 }
         }
-/*
-        if ( ent->client->sess.spectatorState == SPECTATOR_SCOREBOARD ) {
-                ent->client->ps.pm_flags |= PMF_SCOREBOARD;
-        } else {
-                ent->client->ps.pm_flags &= ~PMF_SCOREBOARD;
-        }
-        */
+
 }
 
 /*
