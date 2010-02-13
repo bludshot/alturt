@@ -1674,56 +1674,45 @@ void CG_AddViewWeapon( playerState_t *ps ) {
 
         //if smallgun
         if ( cg_gunsize.integer ){
-        VectorMA( hand.origin, cg_gun_x.value+4, cg.refdef.viewaxis[0], hand.origin );
-        VectorMA( hand.origin, cg_gun_y.value+1, cg.refdef.viewaxis[1], hand.origin );
-        VectorMA( hand.origin, (cg_gun_z.value+fovOffset)-1, cg.refdef.viewaxis[2], hand.origin );
+			VectorMA( hand.origin, cg_gun_x.value+4, cg.refdef.viewaxis[0], hand.origin );
+			VectorMA( hand.origin, cg_gun_y.value+1, cg.refdef.viewaxis[1], hand.origin );
+			VectorMA( hand.origin, (cg_gun_z.value+fovOffset)-1, cg.refdef.viewaxis[2], hand.origin );
 
-        AnglesToAxis( angles, hand.axis );
-        //if smallgun
-        VectorScale(hand.axis[0], 0.40, hand.axis[0]);
-        VectorScale(hand.axis[1], 0.50, hand.axis[1]);
-        VectorScale(hand.axis[2], 0.40, hand.axis[2]);
-        }else{
-	ci = &cgs.clientinfo[ cent->currentState.clientNum ]; //blud moved this up out of the ifelse below, because I need it all the time for my CG_AddPlayerWeapon call 
-	//blud: I hope this doesn't reduce perfomance or something??? This isn't being done 30 times a second or anything is it?
+			AnglesToAxis( angles, hand.axis );
+			//if smallgun
+			VectorScale(hand.axis[0], 0.40, hand.axis[0]);
+			VectorScale(hand.axis[1], 0.50, hand.axis[1]);
+			VectorScale(hand.axis[2], 0.40, hand.axis[2]);
 
-	// map torso animations to weapon animations
-	if ( cg_gun_frame.integer ) {
-		// development tool
-		hand.frame = hand.oldframe = cg_gun_frame.integer;
-		hand.backlerp = 0;
-	} else {
-		// get clientinfo for animation map
-		//ci = &cgs.clientinfo[ cent->currentState.clientNum ]; //blud I moved this old line to above the if (see comment above)
-		hand.frame = CG_MapTorsoToWeaponFrame( ci, cent->pe.torso.frame );
-		hand.oldframe = CG_MapTorsoToWeaponFrame( ci, cent->pe.torso.oldFrame );
-		hand.backlerp = cent->pe.torso.backlerp;
-	}
+		}else{
+			VectorMA( hand.origin, cg_gun_x.value-1, cg.refdef.viewaxis[0], hand.origin );
+			VectorMA( hand.origin, cg_gun_y.value, cg.refdef.viewaxis[1], hand.origin );
+			VectorMA( hand.origin, (cg_gun_z.value+fovOffset), cg.refdef.viewaxis[2], hand.origin );
 
-          VectorMA( hand.origin, cg_gun_x.value-1, cg.refdef.viewaxis[0], hand.origin );
-          VectorMA( hand.origin, cg_gun_y.value, cg.refdef.viewaxis[1], hand.origin );
-          VectorMA( hand.origin, (cg_gun_z.value+fovOffset), cg.refdef.viewaxis[2], hand.origin );
+			AnglesToAxis( angles, hand.axis );
+		}
 
-          AnglesToAxis( angles, hand.axis );
-        }
-        // map torso animations to weapon animations
-        if ( cg_gun_frame.integer ) {
-                // development tool
-                hand.frame = hand.oldframe = cg_gun_frame.integer;
-                hand.backlerp = 0;
-        } else {
-                // get clientinfo for animation map
-                ci = &cgs.clientinfo[ cent->currentState.clientNum ];
-                hand.frame = CG_MapTorsoToWeaponFrame( ci, cent->pe.torso.frame );
-                hand.oldframe = CG_MapTorsoToWeaponFrame( ci, cent->pe.torso.oldFrame );
-                hand.backlerp = cent->pe.torso.backlerp;
-        }
+		ci = &cgs.clientinfo[ cent->currentState.clientNum ]; //blud moved this up out of the ifelse below, because I need it all the time for my CG_AddPlayerWeapon call 
+		//blud: I hope this doesn't reduce perfomance or something??? This isn't being done 30 times a second or anything is it? (oh well even if it is that might be fine I have no idea)
+
+		// map torso animations to weapon animations
+		if ( cg_gun_frame.integer ) {
+			// development tool
+			hand.frame = hand.oldframe = cg_gun_frame.integer;
+			hand.backlerp = 0;
+		} else {
+			// get clientinfo for animation map
+			//ci = &cgs.clientinfo[ cent->currentState.clientNum ]; //blud I moved this old line to above the if (see comment above)
+			hand.frame = CG_MapTorsoToWeaponFrame( ci, cent->pe.torso.frame );
+			hand.oldframe = CG_MapTorsoToWeaponFrame( ci, cent->pe.torso.oldFrame );
+			hand.backlerp = cent->pe.torso.backlerp;
+		}
 
         hand.hModel = weapon->handsModel;
         hand.renderfx = RF_DEPTHHACK | RF_FIRST_PERSON | RF_MINLIGHT;
 
         // add everything onto the hand
-        CG_AddPlayerWeapon( &hand, ps, &cg.predictedPlayerEntity, ps->persistant[PERS_TEAM] );
+        CG_AddPlayerWeapon( &hand, ps, &cg.predictedPlayerEntity, ps->persistant[PERS_TEAM], ci->modelName, ci->skin );
 }
 
 /*
