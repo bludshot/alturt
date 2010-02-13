@@ -1049,7 +1049,7 @@ The main player will have this called for BOTH cases, so effects like light and
 sound should only be done on the world model case.
 =============
 */
-void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent, int team ) {
+void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent, int team, const char *modelName, const char *skin) {
 
         char            *tagname;
         refEntity_t     gun; //this is used for thirdperson weapon and firstperson hands model Xamis
@@ -1120,18 +1120,70 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 
 
 
-        if(!ps)
-        gun.hModel = weapon->weaponModel;
-        if(ps){
-          gun.hModel = weapon->holdsModel;
-          if ( team == 1 ){
-            gun.customSkin = cgs.media.handsRedSkin;
-          }else
-            gun.customSkin = cgs.media.handsBlueSkin;
-        }//CG_Printf( "Team Number is %i\n", team );
-        if (!gun.hModel) {
-                return;
-        }
+	if(!ps)
+	{
+		gun.hModel = weapon->weaponModel;
+	}
+
+	if(ps)
+	{
+		gun.hModel = weapon->holdsModel;
+		
+		if (cgs.gametype >= GT_TEAM)
+		{
+			if ( team == 1 )
+			{
+				gun.customSkin = cgs.media.handsRedSkin;
+			}
+			else
+			{
+				gun.customSkin = cgs.media.handsBlueSkin;
+			}
+		}
+		else //this is a non-team GT
+		{
+			//if the player is using an UrT model, give them hand skins that match their skin
+			if (strcmp(modelName, "orion") == 0 || strcmp(modelName, "athena") == 0)
+			{
+				//need to set their hands skin based on their skin
+				if (strcmp(skin, "cyan") == 0){
+					gun.customSkin = cgs.media.handsCyanSkin; }
+				else if (strcmp(skin, "darkred") == 0){
+					gun.customSkin = cgs.media.handsDarkredSkin; }
+				else if (strcmp(skin, "default") == 0){
+					gun.customSkin = cgs.media.handsDefaultSkin; }
+				else if (strcmp(skin, "green") == 0){
+					gun.customSkin = cgs.media.handsGreenSkin; }
+				else if (strcmp(skin, "orange") == 0){
+					gun.customSkin = cgs.media.handsOrangeSkin; }
+				else if (strcmp(skin, "purple") == 0){
+					gun.customSkin = cgs.media.handsPurpleSkin; }
+				else if (strcmp(skin, "red") == 0){
+					gun.customSkin = cgs.media.handsRedSkin; }
+				else if (strcmp(skin, "red2") == 0){
+					gun.customSkin = cgs.media.handsRed2Skin; }
+				else if (strcmp(skin, "blue") == 0){
+					gun.customSkin = cgs.media.handsBlueSkin; }
+				else if (strcmp(skin, "blue2") == 0){
+					gun.customSkin = cgs.media.handsBlue2Skin; }
+				else if (strcmp(skin, "yellow") == 0){
+					gun.customSkin = cgs.media.handsYellowSkin; }
+				else {
+					gun.customSkin = cgs.media.handsDefaultSkin;
+				}
+			}
+			else //they are using a q3 model
+			{
+				//this is a default black hands for if player is using a q3 model
+				gun.customSkin = cgs.media.handsQ3modelSkin;
+			}
+		}
+	}//CG_Printf( "Team Number is %i\n", team );
+
+	if (!gun.hModel)
+	{
+		return;
+	}
 
         if ( !ps ) {
                 // add weapon ready sound
@@ -1632,6 +1684,21 @@ void CG_AddViewWeapon( playerState_t *ps ) {
         VectorScale(hand.axis[1], 0.50, hand.axis[1]);
         VectorScale(hand.axis[2], 0.40, hand.axis[2]);
         }else{
+	ci = &cgs.clientinfo[ cent->currentState.clientNum ]; //blud moved this up out of the ifelse below, because I need it all the time for my CG_AddPlayerWeapon call 
+	//blud: I hope this doesn't reduce perfomance or something??? This isn't being done 30 times a second or anything is it?
+
+	// map torso animations to weapon animations
+	if ( cg_gun_frame.integer ) {
+		// development tool
+		hand.frame = hand.oldframe = cg_gun_frame.integer;
+		hand.backlerp = 0;
+	} else {
+		// get clientinfo for animation map
+		//ci = &cgs.clientinfo[ cent->currentState.clientNum ]; //blud I moved this old line to above the if (see comment above)
+		hand.frame = CG_MapTorsoToWeaponFrame( ci, cent->pe.torso.frame );
+		hand.oldframe = CG_MapTorsoToWeaponFrame( ci, cent->pe.torso.oldFrame );
+		hand.backlerp = cent->pe.torso.backlerp;
+	}
 
           VectorMA( hand.origin, cg_gun_x.value-1, cg.refdef.viewaxis[0], hand.origin );
           VectorMA( hand.origin, cg_gun_y.value, cg.refdef.viewaxis[1], hand.origin );
