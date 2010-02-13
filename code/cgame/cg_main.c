@@ -861,8 +861,18 @@ static void CG_RegisterGraphics( void ) {
         cgs.media.smokePuffShader = trap_R_RegisterShader( "SmokePuff" );
 	cgs.media.smokePuffRageProShader = trap_R_RegisterShader( "smokePuffRagePro" );
 	cgs.media.shotgunSmokePuffShader = trap_R_RegisterShader( "shotgunSmokePuff" );
-        cgs.media.handsBlueSkin = trap_R_RegisterSkin( "models/weapons2/handskins/hand_swat.skin"); //Xamis
-        cgs.media.handsRedSkin = trap_R_RegisterSkin( "models/weapons2/handskins/hand_tag.skin"); //Xamis
+        cgs.media.handsBlueSkin = trap_R_RegisterSkin( "models/weapons2/handskins/hand_blue.skin"); //Xamis
+        cgs.media.handsRedSkin = trap_R_RegisterSkin( "models/weapons2/handskins/hand_red.skin"); //Xamis
+		cgs.media.handsBlue2Skin = trap_R_RegisterSkin( "models/weapons2/handskins/hand_blue2.skin"); //blud
+		cgs.media.handsRed2Skin = trap_R_RegisterSkin( "models/weapons2/handskins/hand_red2.skin"); //blud
+		cgs.media.handsCyanSkin = trap_R_RegisterSkin( "models/weapons2/handskins/hand_cyan.skin"); //blud
+		cgs.media.handsDarkredSkin = trap_R_RegisterSkin( "models/weapons2/handskins/hand_darkred.skin"); //blud
+		cgs.media.handsDefaultSkin = trap_R_RegisterSkin( "models/weapons2/handskins/hand_default.skin"); //blud
+		cgs.media.handsGreenSkin = trap_R_RegisterSkin( "models/weapons2/handskins/hand_green.skin"); //blud
+		cgs.media.handsOrangeSkin = trap_R_RegisterSkin( "models/weapons2/handskins/hand_orange.skin"); //blud
+		cgs.media.handsPurpleSkin = trap_R_RegisterSkin( "models/weapons2/handskins/hand_purple.skin"); //blud
+		cgs.media.handsQ3modelSkin = trap_R_RegisterSkin( "models/weapons2/handskins/hand_q3model.skin"); //blud
+		cgs.media.handsYellowSkin = trap_R_RegisterSkin( "models/weapons2/handskins/hand_yellow.skin"); //blud
         CG_LoadingBarUpdate(10);
 #ifdef MISSIONPACK
 	cgs.media.nailPuffShader = trap_R_RegisterShader( "nailtrail" );
