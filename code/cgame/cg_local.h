@@ -830,6 +830,16 @@ typedef struct {
 
         qhandle_t       viewSmokeShader;
 
+		qhandle_t       handsBlue2Skin; //blud
+		qhandle_t       handsRed2Skin; //blud
+		qhandle_t       handsCyanSkin; //blud
+		qhandle_t       handsDarkredSkin; //blud
+		qhandle_t       handsDefaultSkin; //blud
+		qhandle_t       handsGreenSkin; //blud
+		qhandle_t       handsOrangeSkin; //blud
+		qhandle_t       handsPurpleSkin; //blud
+		qhandle_t       handsQ3modelSkin; //blud
+		qhandle_t       handsYellowSkin; //blud
 	qhandle_t	plasmaBallShader;
 	qhandle_t	waterBubbleShader;
 	qhandle_t	bloodTrailShader;
@@ -1463,7 +1473,7 @@ void CG_Bullet( vec3_t origin, int sourceEntityNum, vec3_t normal, qboolean fles
 void CG_RailTrail( clientInfo_t *ci, vec3_t start, vec3_t end );
 void CG_GrappleTrail( centity_t *ent, const weaponInfo_t *wi );
 void CG_AddViewWeapon (playerState_t *ps);
-void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent, int team );
+void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent, int team, const char *modelName, const char *skin); //blud added modelName and skin args
 void CG_DrawWeaponSelect( void );
 
 
