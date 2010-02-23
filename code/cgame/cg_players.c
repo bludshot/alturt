@@ -347,7 +347,7 @@ static qboolean	CG_FindClientModelFile( char *filename, int length, clientInfo_t
 		if ( cgs.gametype < GT_TEAM )
 		{
 			//the non-team GT skin that they asked for doesn't exist so set it to a valid one (default, which must exist)
-			Com_sprintf( filename, length, "models/players/%s/%s_%s.%s", modelName, base, "default", ext );
+			Com_sprintf( filename, length, "models/players/%s/%s.%s", modelName, base, ext );
 			Com_sprintf( ci->skinName, 8, "default" );
 
 			//we'll check if it exists just in case even though it pretty much must exist.
@@ -390,7 +390,7 @@ static qboolean	CG_FindClientHeadFile( char *filename, int length, clientInfo_t 
 		if ( cgs.gametype < GT_TEAM )
 		{
 			//the non-team GT skin that they asked for doesn't exist so set it to a valid one (default, which must exist)
-			Com_sprintf( filename, length, "models/players/%s/%s_%s.%s", headModelName, base, "default", ext );
+			Com_sprintf( filename, length, "models/players/%s/%s.%s", headModelName, base, ext );
 			Com_sprintf( ci->headSkinName, 8, "default" );
 
 			//we'll check if it exists just in case even though it pretty much must exist.
@@ -458,7 +458,7 @@ static qboolean	CG_RegisterClientSkin( clientInfo_t *ci, const char *teamName, c
 	if (!ci->torsoSkin) {
 		Com_Printf( "Torso skin load failure: %s\n", filename );
 	}
-	
+
 	if ( CG_FindClientHeadFile( filename, sizeof(filename), ci, teamName, modelName, skinName, "head", "skin" ) ) {
 		ci->headSkin = trap_R_RegisterSkin( filename );
 	}
@@ -492,7 +492,7 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 	char newTeamName[MAX_QPATH*2];
 
 
-	
+
 	if ( headModelName[0] == '\0' ) {
 		headName = modelName;
 	}
@@ -673,7 +673,7 @@ static void CG_LoadClientInfo( int clientNum, clientInfo_t *ci ) {
 			} else {
 				Q_strncpyz(teamname, DEFAULT_REDTEAM_NAME, sizeof(teamname) );
 			}
-			if ( !CG_RegisterClientModelname( ci, DEFAULT_TEAM_MODEL, ci->skinName, DEFAULT_TEAM_HEAD, ci->skinName, teamname ) ) { 
+			if ( !CG_RegisterClientModelname( ci, DEFAULT_TEAM_MODEL, ci->skinName, DEFAULT_TEAM_HEAD, ci->skinName, teamname ) ) {
 				CG_Error( "DEFAULT_TEAM_MODEL / skin (%s/%s) failed to register", DEFAULT_TEAM_MODEL, ci->skinName );
 			}
 		} else {
@@ -969,7 +969,7 @@ void CG_NewClientInfo( int clientNum ) {
 	v = Info_ValueForKey( configstring, "rr" );
 	newInfo.racered = atoi( v );
 
-	
+
 	// raceblue blud
 	v = Info_ValueForKey( configstring, "rb" );
 	newInfo.raceblue = atoi( v );
@@ -983,7 +983,7 @@ void CG_NewClientInfo( int clientNum ) {
 
 
 
-	//blud: 
+	//blud:
 	// We have set the skin and model above correctly for non-team GTs
 	// Now we will re-set the skin and model correctly for team GTs if this is a team GT
 
@@ -2410,7 +2410,7 @@ void CG_Player( centity_t *cent ) {
 		return;
 	}
 
-	torso.customSkin = ci->torsoSkin;
+	//torso.customSkin = ci->torsoSkin;
 
 	VectorCopy( cent->lerpOrigin, torso.lightingOrigin );
 
