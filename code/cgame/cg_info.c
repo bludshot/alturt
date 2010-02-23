@@ -75,9 +75,9 @@ void CG_DrawLoadingBar( int x, int y, int w, int h )
   vec4_t color;
   real_width = (float)( (float)cg.loadingbarState / (float)cg.loadingbarMax );
 
-  color[0] = 0.6;
-  color[1] = 0.6;
-  color[2] = 1.0;
+  color[0] = 0.6f;
+  color[1] = 0.6f;
+  color[2] = 1.0f;
   color[3] = 0.3f;
 
   if ( real_width > 1.0f )

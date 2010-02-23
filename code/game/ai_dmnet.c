@@ -195,7 +195,7 @@ int BotNearbyGoal(bot_state_t *bs, int tfl, bot_goal_t *ltg, float range) {
 	if (BotGoForAir(bs, tfl, ltg, range)) return qtrue;
 	//if the bot is carrying the enemy flag
 	if (BotCTFCarryingFlag(bs)) {
-		//if the bot is just a few secs away from the base 
+		//if the bot is just a few secs away from the base
 		if (trap_AAS_AreaTravelTimeToGoalArea(bs->areanum, bs->origin,
 				bs->teamgoal.areanum, TFL_DEFAULT) < 300) {
 			//make the range really small
@@ -1292,26 +1292,20 @@ BotSelectActivateWeapon
 */
 int BotSelectActivateWeapon(bot_state_t *bs) {
 	//
-	if (bs->inventory[INVENTORY_MACHINEGUN] > 0 && bs->inventory[INVENTORY_BULLETS] > 0)
-		return WEAPONINDEX_MACHINEGUN;
-	else if (bs->inventory[INVENTORY_SHOTGUN] > 0 && bs->inventory[INVENTORY_SHELLS] > 0)
-		return WEAPONINDEX_SHOTGUN;
-	else if (bs->inventory[INVENTORY_PLASMAGUN] > 0 && bs->inventory[INVENTORY_CELLS] > 0)
-		return WEAPONINDEX_PLASMAGUN;
-	else if (bs->inventory[INVENTORY_LIGHTNING] > 0 && bs->inventory[INVENTORY_LIGHTNINGAMMO] > 0)
-		return WEAPONINDEX_LIGHTNING;
-#ifdef MISSIONPACK
-	else if (bs->inventory[INVENTORY_CHAINGUN] > 0 && bs->inventory[INVENTORY_BELT] > 0)
-		return WEAPONINDEX_CHAINGUN;
-	else if (bs->inventory[INVENTORY_NAILGUN] > 0 && bs->inventory[INVENTORY_NAILS] > 0)
-		return WEAPONINDEX_NAILGUN;
-#endif
-	else if (bs->inventory[INVENTORY_RAILGUN] > 0 && bs->inventory[INVENTORY_SLUGS] > 0)
-		return WEAPONINDEX_RAILGUN;
-	else if (bs->inventory[INVENTORY_ROCKETLAUNCHER] > 0 && bs->inventory[INVENTORY_ROCKETS] > 0)
-		return WEAPONINDEX_ROCKET_LAUNCHER;
-	else if (bs->inventory[INVENTORY_BFG10K] > 0 && bs->inventory[INVENTORY_BFGAMMO] > 0)
-		return WEAPONINDEX_BFG;
+	if (bs->inventory[INVENTORY_M4] > 0 && bs->inventory[INVENTORY_BULLETS] > 0)
+		return WEAPONINDEX_M4;
+	else if (bs->inventory[INVENTORY_SPAS] > 0 && bs->inventory[INVENTORY_SHELLS] > 0)
+		return WEAPONINDEX_SPAS;
+        else if (bs->inventory[INVENTORY_LR300] > 0 && bs->inventory[INVENTORY_BULLETS] > 0)
+          return WEAPONINDEX_LR300;
+	else if (bs->inventory[INVENTORY_HK69] > 0 && bs->inventory[INVENTORY_GRENADES] > 0)
+          return WEAPONINDEX_HK69;
+        else if (bs->inventory[INVENTORY_MP5K] > 0 && bs->inventory[INVENTORY_BULLETS] > 0)
+		return WEAPONINDEX_MP5K;
+        else if (bs->inventory[INVENTORY_UMP45] > 0 && bs->inventory[INVENTORY_BULLETS] > 0)
+		return WEAPONINDEX_UMP45;
+        else if (bs->inventory[INVENTORY_SR8] > 0 && bs->inventory[INVENTORY_BULLETS] > 0)
+		return WEAPONINDEX_SR8;
 	else {
 		return -1;
 	}
@@ -1395,12 +1389,8 @@ void BotClearPath(bot_state_t *bs, bot_moveresult_t *moveresult) {
 			VectorSubtract(target, bs->eye, dir);
 			vectoangles(dir, moveresult->ideal_viewangles);
 			// if the bot has a weapon that does splash damage
-			if (bs->inventory[INVENTORY_PLASMAGUN] > 0 && bs->inventory[INVENTORY_CELLS] > 0)
-				moveresult->weapon = WEAPONINDEX_PLASMAGUN;
-			else if (bs->inventory[INVENTORY_ROCKETLAUNCHER] > 0 && bs->inventory[INVENTORY_ROCKETS] > 0)
-				moveresult->weapon = WEAPONINDEX_ROCKET_LAUNCHER;
-			else if (bs->inventory[INVENTORY_BFG10K] > 0 && bs->inventory[INVENTORY_BFGAMMO] > 0)
-				moveresult->weapon = WEAPONINDEX_BFG;
+			if (bs->inventory[INVENTORY_HK69] > 0 && bs->inventory[INVENTORY_GRENADES] > 0)
+				moveresult->weapon = WEAPONINDEX_HK69;
 			else {
 				moveresult->weapon = 0;
 			}

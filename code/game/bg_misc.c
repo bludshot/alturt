@@ -26,135 +26,136 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "bg_public.h"
 #define CGender "models/players/orion/helmet.md3"
 
+bg_misc_t bg_ps; //flags
 
 nadeInfo_t bg_nadeTimer;
+
+wp_sort_t bg_inventory;
 
 wpinfo_t bg_weaponlist[] ={
   {  //WP_NONE, //0
     "",
     {0}, //weapMode
     {0},                // numClips ammo that fits in the weapon
-    {0},             // rounds
-    0
+    {0}             // rounds
+
   },
   { //WP_KNIFE, //1
     "icons/ammo/kbar",
     {0}, //weapMode
     {-1},
-    {-1},
-    WPS_MELEE
+    {-1}
   },
   {// WP_BERETTA, //2
     "icons/ammo/beretta",
     {0}, //weapMode
     {0},                // numClips ammo that fits in the weapon
-    {0},             // rounds
-    WPS_SIDEARM
+    {0}             // rounds
   },
   { //WP_DEAGLE, //3
     "icons/ammo/deserteagle",
     {0}, //weapMode
     {0},               // numClips ammo that fits in the weapon
-    {0},             // rounds
-    WPS_SIDEARM
+    {0}             // rounds
+
   },
   { //WP_MP5K, //4
     "icons/ammo/mp5k",
     {0}, //weapMode
     {0},                // numClips ammo that fits in the weapon
-    {0},             // rounds
-    WPS_PRI_SEC
+    {0}             // rounds
+
   },
   { //WP_SPAS, //5
     "icons/ammo/spas12",
     {0}, //weapMode
     {0},               // numClips ammo that fits in the weapon
-    {0},             // rounds
-    WPS_PRI_SEC
+    {0}             // rounds
+
   },
   { //WP_UMP45, //6
     "icons/ammo/ump45",
     {0}, //weapMode
     {0},                // numClips ammo that fits in the weapon
-    {0},             // rounds
-    WPS_PRI_SEC
+    {0}             // rounds
+
   },
   { //WP_M4, //7
     "icons/ammo/m4",
     {0}, //weapMode
     {0},                // numClips ammo that fits in the weapon
-    {0},             // rounds
-    WPS_PRI_SEC
+    {0}             // rounds
+
   },
   { //WP_LR300, //8
     "icons/ammo/lr",
     {0}, //weapMode
     {0},                // numClips ammo that fits in the weapon
-    {0},             // rounds
-    WPS_PRI_SEC
+    {0}             // rounds
+
   },
   { //WP_G36, //9
     "icons/ammo/g36",
     {0}, //weapMode
     {0},                // numClips ammo that fits in the weapon
-    {0},             // rounds
-    WPS_PRI_SEC
+    {0}             // rounds
+
   },
   { //WP_AK103, //10
     "icons/ammo/ak103",
     {0}, //weapMode
     {0},              // numClips ammo that fits in the weapon
-    {0},             // rounds
-    WPS_PRI_SEC
+    {0}             // rounds
+
   },
   { //WP_HK69, //11
     "icons/ammo/hk69",
     {0}, //weapMode
     {0},               // numClips ammo that fits in the weapon
-    {0},             // rounds
-    WPS_PRI_SEC
+    {0}             // rounds
+
   },
   { //WP_NEGEV, //12
     "icons/ammo/negev",
     {0}, //weapMode
     {0},                // numClips ammo that fits in the weapon
-    {0},             // rounds
-    WPS_PRI_SEC
+    {0}             // rounds
+
   },
   { //WP_PSG1, //13
     "icons/ammo/psg1",
     {0}, //weapMode
     {0},                // numClips ammo that fits in the weapon
-    {0},             // rounds
-    WPS_PRI_SEC
+    {0}             // rounds
+
   },
   { //WP_SR8, //14
     "icons/ammo/sr8",
     {0}, //weapMode
     {0},               // numClips ammo that fits in the weapon
-    {0},             // rounds
-    WPS_PRI_SEC
+    {0}             // rounds
+
   },
   { //WP_HE,
     "icons/ammo/grenade_he",
     {0}, //weapMode
     {0},                // numClips ammo that fits in the weapon
-    {0},             // rounds
-    WPS_GRENADE
+    {0}             // rounds
+
   },
   { //WP_SMOKE,
     "icons/ammo/grenade_smoke",
     {0}, //weapMode
     {0},                // numClips ammo that fits in the weapon
-    {0},             // rounds
-    WPS_GRENADE
+    {0}             // rounds
+
   },
   { //WP_NUM_WEAPONS,
     "",
     {0}, //weapMode
     {0},                // numClips ammo that fits in the weapon
-    {0},             // rounds
-    0
+    {0}             // rounds
+
   }
 
 };
@@ -196,7 +197,7 @@ gitem_t bg_itemlist[] =
         // ARMOR
         //
 
-/*QUAKED item_armor_shard (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
+/*QUAKED item_armor_shard (.3 .3 1) (-16 -16 -16) (16 16 16) suspended  1
 */
         {
                 "item_armor_shard",
@@ -213,7 +214,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
         },
 
-/*QUAKED item_armor_combat (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
+/*QUAKED item_armor_combat (.3 .3 1) (-16 -16 -16) (16 16 16) suspended   2
 */
         {
                 "item_armor_combat",
@@ -229,7 +230,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
         },
 
-/*QUAKED item_armor_body (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
+/*QUAKED item_armor_body (.3 .3 1) (-16 -16 -16) (16 16 16) suspended   3
 */
         {
                 "item_armor_body",
@@ -248,7 +249,7 @@ gitem_t bg_itemlist[] =
         //
         // health
         //
-/*QUAKED item_health_small (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
+/*QUAKED item_health_small (.3 .3 1) (-16 -16 -16) (16 16 16) suspended   4
 */
         {
                 "item_health_small",
@@ -265,7 +266,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
         },
 
-/*QUAKED item_health (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
+/*QUAKED item_health (.3 .3 1) (-16 -16 -16) (16 16 16) suspended   5
 */
         {
                 "item_health",
@@ -282,7 +283,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
         },
 
-/*QUAKED item_health_large (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
+/*QUAKED item_health_large (.3 .3 1) (-16 -16 -16) (16 16 16) suspended   6
 */
         {
                 "item_health_large",
@@ -299,7 +300,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
         },
 
-/*QUAKED item_health_mega (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
+/*QUAKED item_health_mega (.3 .3 1) (-16 -16 -16) (16 16 16) suspended    7
 */
         {
                 "item_health_mega",
@@ -324,7 +325,7 @@ gitem_t bg_itemlist[] =
 
 
 
-/*QUAKED ut_weapon_g36 (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)
+/*QUAKED ut_weapon_g36 (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)    8
  -------- KEYS --------
  count: sets the amount of ammo given to the player when picked up (default 0).
  gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
@@ -351,7 +352,7 @@ gitem_t bg_itemlist[] =
 /* precache */ "",
 /* sounds */ ""
  },
-/*QUAKED ut_weapon_spas12 (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)
+/*QUAKED ut_weapon_spas12 (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)   9
  -------- KEYS --------
  count: sets the amount of ammo given to the player when picked up (default 0).
  gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
@@ -378,7 +379,7 @@ gitem_t bg_itemlist[] =
 /* precache */ "",
 /* sounds */ ""
  },
-/*QUAKED ut_weapon_beretta (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)
+/*QUAKED ut_weapon_beretta (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)    10
  -------- KEYS --------
  count: sets the amount of ammo given to the player when picked up (default 0).
  gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
@@ -405,7 +406,7 @@ gitem_t bg_itemlist[] =
 /* precache */ "",
 /* sounds */ ""
  },
-/*QUAKED ut_weapon_grenade_he (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)
+/*QUAKED ut_weapon_grenade_he (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)   11
  -------- KEYS --------
  count: sets the amount of ammo given to the player when picked up (default 0).
  gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
@@ -432,7 +433,7 @@ gitem_t bg_itemlist[] =
 /* precache */ "",
 /* sounds */ ""
  },
-/*QUAKED ut_weapon_knife (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)
+/*QUAKED ut_weapon_knife (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)    12
  -------- KEYS --------
  count: sets the amount of ammo given to the player when picked up (default 0).
  gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
@@ -459,7 +460,7 @@ gitem_t bg_itemlist[] =
 /* precache */ "",
 /* sounds */ ""
  },
-/*QUAKED ut_weapon_ak103 (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)
+/*QUAKED ut_weapon_ak103 (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)    13
  -------- KEYS --------
  count: sets the amount of ammo given to the player when picked up (default 0).
  gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
@@ -486,7 +487,7 @@ gitem_t bg_itemlist[] =
 /* precache */ "",
 /* sounds */ ""
  },
-/*QUAKED ut_weapon_mp5k (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)
+/*QUAKED ut_weapon_mp5k (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)   14
  -------- KEYS --------
  count: sets the amount of ammo given to the player when picked up (default 0).
  gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
@@ -513,7 +514,7 @@ gitem_t bg_itemlist[] =
 /* precache */ "",
 /* sounds */ ""
  },
-/*QUAKED ut_weapon_deagle (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)
+/*QUAKED ut_weapon_deagle (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)   15
  -------- KEYS --------
  count: sets the amount of ammo given to the player when picked up (default 0).
  gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
@@ -540,7 +541,7 @@ gitem_t bg_itemlist[] =
 /* precache */ "",
 /* sounds */ ""
  },
-/*QUAKED ut_weapon_grenade_smoke (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)
+/*QUAKED ut_weapon_grenade_smoke (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)    16
  -------- KEYS --------
  count: sets the amount of ammo given to the player when picked up (default 0).
  gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
@@ -567,7 +568,7 @@ gitem_t bg_itemlist[] =
  /* precache */ "",
  /* sounds */ ""
  },
-/*QUAKED ut_weapon_lr (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)
+/*QUAKED ut_weapon_lr (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)   17
  -------- KEYS --------
  count: sets the amount of ammo given to the player when picked up (default 0).
  gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
@@ -594,7 +595,7 @@ gitem_t bg_itemlist[] =
 /* precache */ "",
 /* sounds */ ""
  },
-/*QUAKED ut_weapon_ump45 (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)
+/*QUAKED ut_weapon_ump45 (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)    18
  -------- KEYS --------
  count: sets the amount of ammo given to the player when picked up (default 0).
  gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
@@ -621,7 +622,7 @@ gitem_t bg_itemlist[] =
 /* precache */ "",
 /* sounds */ ""
  },
-/*QUAKED ut_weapon_hk69 (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)
+/*QUAKED ut_weapon_hk69 (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)   19
  -------- KEYS --------
  count: sets the amount of ammo given to the player when picked up (default 0).
  gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
@@ -648,7 +649,7 @@ gitem_t bg_itemlist[] =
 /* precache */ "",
 /* sounds */ "sound/weapons/grenade/hgrenb1a.wav sound/weapons/grenade/hgrenb2a.wav"
  },
-/*QUAKED ut_weapon_psg1 (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)
+/*QUAKED ut_weapon_psg1 (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)   20
  -------- KEYS --------
  count: sets the amount of ammo given to the player when picked up (default 0).
  gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
@@ -675,7 +676,7 @@ gitem_t bg_itemlist[] =
 /* precache */ "",
 /* sounds */ ""
  },
-/*QUAKED ut_weapon_sr8 (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)
+/*QUAKED ut_weapon_sr8 (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)  21
  -------- KEYS --------
  count: sets the amount of ammo given to the player when picked up (default 0).
  gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
@@ -702,7 +703,7 @@ gitem_t bg_itemlist[] =
 /* precache */ "",
 /* sounds */ ""
  },
-/*QUAKED ut_weapon_negev (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)
+/*QUAKED ut_weapon_negev (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)  22
  -------- KEYS --------
  count: sets the amount of ammo given to the player when picked up (default 0).
  gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
@@ -729,7 +730,7 @@ gitem_t bg_itemlist[] =
 /* precache */ "",
 /* sounds */ ""
  },
-/*QUAKED ut_weapon_m4 (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)
+/*QUAKED ut_weapon_m4 (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)  23
  -------- KEYS --------
  count: sets the amount of ammo given to the player when picked up (default 0).
  gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
@@ -778,7 +779,7 @@ gitem_t bg_itemlist[] =
         // AMMO ITEMS
         //
 
-/*QUAKED ammo_shells (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
+/*QUAKED ammo_shells (.3 .3 1) (-16 -16 -16) (16 16 16) suspended  24
 */
         {
                 "ammo_shells",
@@ -794,7 +795,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
         },
 
-/*QUAKED ammo_bullets (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
+/*QUAKED ammo_bullets (.3 .3 1) (-16 -16 -16) (16 16 16) suspended  25
 */
         {
                 "ammo_bullets",
@@ -810,7 +811,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
         },
 
-/*QUAKED ammo_grenades (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
+/*QUAKED ammo_grenades (.3 .3 1) (-16 -16 -16) (16 16 16) suspended  26
 */
         {
                 "ammo_grenades",
@@ -829,25 +830,13 @@ gitem_t bg_itemlist[] =
         //Equipment Items
         //
 
- /*QUAKED ut_item_silencer (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)
+ /*QUAKED ut_item_silencer (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)  27
  -------- KEYS --------
  gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
  -------- SPAWNFLAGS --------
  spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
  */
- {
-         "ut_item_silencer",
-  "sound/misc/w_pkup.wav",
-  { "models/weapons2/m4/m4_silencer.md3",
-  NULL, NULL, NULL},
-/* icon */              "icons/items/silencer",
-/* pickup */    "Silencer",
-                60,
-  IT_HOLDABLE,
-  HI_SILENCER,
-/* precache */ "",
-/* sounds */ ""
- },
+
 /*QUAKED ut_item_nvg (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)
  -------- KEYS --------
  gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
@@ -862,25 +851,12 @@ gitem_t bg_itemlist[] =
  spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
 */
 
-/*QUAKED ut_item_laser (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)
+/*QUAKED ut_item_laser (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)  28
  -------- KEYS --------
  gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
  -------- SPAWNFLAGS --------
  spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
 */
- {
-         "ut_item_laser",
-  "sound/misc/w_pkup.wav",
-  { "models/weapons2/m4/m4_laser.md3",
-  NULL, NULL, NULL},
-/* icon */              "icons/items/laser",
-/* pickup */    "Laser Sight",
-                60,
-  IT_HOLDABLE,
-  HI_LASER,
-/* precache */ "",
-/* sounds */ ""
- },
 
 /*QUAKED ut_item_medkit (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)
  gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
@@ -888,47 +864,17 @@ gitem_t bg_itemlist[] =
  spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
 */
 
-/*QUAKED ut_item_helmet (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)
+/*QUAKED ut_item_helmet (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)  29
  -------- KEYS --------
  gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
  -------- SPAWNFLAGS --------
  spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
 */
- {
-         "ut_item_helmet",
-  "sound/misc/w_pkup.wav",
-  { CGender,
-  NULL, NULL, NULL},
-/* icon */              "icons/items/helmet",
-/* pickup */    "Helmet",
-                60,
-  IT_HOLDABLE,
-  HI_HELMET,
-/* precache */ "",
-/* sounds */ ""
- },
-
-
-
         //
         // HOLDABLE ITEMS
         //
-/*QUAKED holdable_teleporter (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-        {
-                "holdable_teleporter",
-                "sound/items/holdable.wav",
-        { "models/powerups/holdable/teleporter.md3",
-                NULL, NULL, NULL},
-/* icon */              "icons/teleporter",
-/* pickup */    "Personal Teleporter",
-                60,
-                IT_HOLDABLE,
-                HI_TELEPORTER,
-/* precache */ "",
-/* sounds */ ""
-        },
-/*QUAKED holdable_medkit (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
+
+/*QUAKED holdable_medkit (.3 .3 1) (-16 -16 -16) (16 16 16) suspended   31
 */
         {
                 "holdable_medkit",
@@ -949,109 +895,109 @@ gitem_t bg_itemlist[] =
         //
         // POWERUP ITEMS
         //
-/*QUAKED item_quad (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
+
+        /*QUAKED item_quad (.3 .3 1) (-16 -16 -16) (16 16 16) suspended   32
+        */
         {
-                "item_quad",
-                "sound/items/quaddamage.wav",
-        { "models/powerups/instant/quad.md3",
-        "models/powerups/instant/quad_ring.md3",
-                NULL, NULL },
+          "item_quad",
+          "sound/items/quaddamage.wav",
+          { "models/powerups/instant/quad.md3",
+          "models/powerups/instant/quad_ring.md3",
+          NULL, NULL },
 /* icon */              "icons/quad",
-/* pickup */    "Quad Damage",
+/* pickup */    "Kevlar Vest",
                 30,
                 IT_POWERUP,
-                PW_QUAD,
+                PW_VEST,
 /* precache */ "",
 /* sounds */ "sound/items/damage2.wav sound/items/damage3.wav"
         },
 
-/*QUAKED item_enviro (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
+/*QUAKED item_enviro (.3 .3 1) (-16 -16 -16) (16 16 16) suspended   33
 */
         {
-                "item_enviro",
-                "sound/items/protect.wav",
-        { "models/powerups/instant/enviro.md3",
-                "models/powerups/instant/enviro_ring.md3",
-                NULL, NULL },
-/* icon */              "icons/envirosuit",
-/* pickup */    "Battle Suit",
-                30,
+          "ut_item_helmet",
+          "sound/misc/w_pkup.wav",
+          { CGender,
+          NULL, NULL, NULL},
+/* icon */              "icons/items/helmet",
+/* pickup */    "Helmet",
+                60,
                 IT_POWERUP,
-                PW_BATTLESUIT,
+                PW_HELMET,
 /* precache */ "",
 /* sounds */ "sound/items/airout.wav sound/items/protect3.wav"
         },
 
-/*QUAKED item_haste (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
+/*QUAKED item_haste (.3 .3 1) (-16 -16 -16) (16 16 16) suspended   34
 */
         {
-                "item_haste",
-                "sound/items/haste.wav",
-        { "models/powerups/instant/haste.md3",
-                "models/powerups/instant/haste_ring.md3",
-                NULL, NULL },
-/* icon */              "icons/haste",
-/* pickup */    "Speed",
-                30,
+          "ut_item_laser",
+          "sound/misc/w_pkup.wav",
+          { "models/weapons2/m4/m4_laser.md3",
+          NULL, NULL, NULL},
+/* icon */              "icons/items/laser",
+/* pickup */    "Laser Sight",
+                60,
                 IT_POWERUP,
-                PW_HASTE,
+                PW_LASERSIGHT,
 /* precache */ "",
 /* sounds */ ""
         },
 
-/*QUAKED item_invis (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
+/*QUAKED item_invis (.3 .3 1) (-16 -16 -16) (16 16 16) suspended   35
 */
         {
-                "item_invis",
-                "sound/items/invisibility.wav",
-        { "models/powerups/instant/invis.md3",
-                "models/powerups/instant/invis_ring.md3",
-                NULL, NULL },
-/* icon */              "icons/invis",
-/* pickup */    "Invisibility",
-                30,
+          "ut_item_silencer",
+          "sound/misc/w_pkup.wav",
+          { "models/weapons2/m4/m4_silencer.md3",
+          NULL, NULL, NULL},
+/* icon */              "icons/items/silencer",
+/* pickup */    "Silencer",
+                60,
                 IT_POWERUP,
-                PW_INVIS,
+                PW_SILENCER,
 /* precache */ "",
 /* sounds */ ""
         },
 
-/*QUAKED item_regen (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
+/*QUAKED item_regen (.3 .3 1) (-16 -16 -16) (16 16 16) suspended   36
 */
         {
-                "item_regen",
-                "sound/items/regeneration.wav",
-        { "models/powerups/instant/regen.md3",
-                "models/powerups/instant/regen_ring.md3",
-                NULL, NULL },
+          "item_regen",
+          "sound/items/regeneration.wav",
+          { "models/powerups/instant/regen.md3",
+          "models/powerups/instant/regen_ring.md3",
+          NULL, NULL },
 /* icon */              "icons/regen",
-/* pickup */    "Regeneration",
+/* pickup */    "Ammo",
                 30,
                 IT_POWERUP,
-                PW_REGEN,
+                PW_AMMO,
 /* precache */ "",
 /* sounds */ "sound/items/regen.wav"
         },
 
-/*QUAKED item_flight (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
+/*QUAKED item_flight (.3 .3 1) (-16 -16 -16) (16 16 16) suspended   37
 */
         {
-                "item_flight",
-                "sound/items/flight.wav",
-        { "models/powerups/instant/flight.md3",
-                "models/powerups/instant/flight_ring.md3",
-                NULL, NULL },
+          "item_flight",
+          "sound/items/flight.wav",
+          { "models/powerups/instant/flight.md3",
+          "models/powerups/instant/flight_ring.md3",
+          NULL, NULL },
 /* icon */              "icons/flight",
-/* pickup */    "Flight",
+/* pickup */    "nvg",
                 60,
                 IT_POWERUP,
-                PW_FLIGHT,
+                PW_NVG,
 /* precache */ "",
 /* sounds */ "sound/items/flight.wav"
         },
 
-/*QUAKED team_CTF_redflag (1 0 0) (-16 -16 -16) (16 16 16)
+
+
+/*QUAKED team_CTF_redflag (1 0 0) (-16 -16 -16) (16 16 16)   38
 Only in CTF games
 */
         {
@@ -1068,7 +1014,7 @@ Only in CTF games
 /* sounds */ ""
         },
 
-/*QUAKED team_CTF_blueflag (0 0 1) (-16 -16 -16) (16 16 16)
+/*QUAKED team_CTF_blueflag (0 0 1) (-16 -16 -16) (16 16 16)   39
 Only in CTF games
 */
         {
@@ -1209,12 +1155,10 @@ This needs to be the same for client side prediction and server use.
 */
 qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const playerState_t *ps ) {
         gitem_t *item;
-#ifdef MISSIONPACK
-        int             upperBound;
-#endif
+int i;
 
         if ( ent->modelindex < 1 || ent->modelindex >= bg_numItems ) {
-                Com_Error( ERR_DROP, "BG_CanItemBeGrabbed: index out of range" );
+          Com_Error( ERR_DROP, "BG_CanItemBeGrabbed: index %i out of range", ent->modelindex );
         }
 
         item = &bg_itemlist[ent->modelindex];
@@ -1223,22 +1167,28 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
         case IT_WEAPON:
 
 // Xamis
-                        if ( BG_Sidearm  ( item->giTag ) && BG_HasSidearm ( ps ) ) //can only have 1 sidearm
-                return qfalse;
-                        if ( BG_Primary ( item->giTag ) && BG_HasPrimary( ps ) ) //can only have 1 primary weapon
-                return qfalse;
-            if ( BG_Secondary ( item->giTag  ) && BG_HasSecondary( ps ) ) //can only have 1 secondary weapon
-                return qfalse;
-                        if ( item->giTag == WP_HE ) {
-                          if (  bg_weaponlist[WP_HE].numClips[ ps->clientNum] < 2 )
-                    return qtrue;
-                else
-                    return qfalse;
+          if( ps->weaponTime > 0)
+            return qfalse;
+            if ( BG_Sidearm( item->giTag )  ){
+            if (bg_inventory.sort[ps->clientNum][SIDEARM] == item->giTag
+                || !(bg_inventory.sort[ps->clientNum][SIDEARM]))
+
+              return qtrue; //can only have 1 sidearm
             }
-                        if ( item->giTag == WP_SMOKE ) {
-                          if (  bg_weaponlist[WP_SMOKE].numClips[ ps->clientNum] < 2 )
-                    return qtrue;
-                else
+            if ( BG_Primary ( item->giTag )  ){
+              if (bg_inventory.sort[ps->clientNum][PRIMARY] == item->giTag
+                  || !(bg_inventory.sort[ps->clientNum][PRIMARY]))
+                return qtrue; //can only have 1 sidearm
+            }
+            if ( BG_Secondary( item->giTag )  ){
+              if (bg_inventory.sort[ps->clientNum][SECONDARY] == item->giTag
+                  || !(bg_inventory.sort[ps->clientNum][SECONDARY]))
+                return qtrue; //can only have 1 sidearm
+            }
+            if ( BG_Grenade(item->giTag) ) {
+              if (  bg_weaponlist[item->giTag].numClips[ ps->clientNum] < 2 )
+                   // return qtrue;
+              //  else
                     return qfalse;
          }
 
@@ -1253,25 +1203,25 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
 
         case IT_ARMOR:
 #ifdef MISSIONPACK
-                if( bg_itemlist[ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_SCOUT ) {
-                        return qfalse;
-                }
+          //      if( bg_itemlist[ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_SCOUT ) {
+           //             return qfalse;
+           //     }
 
                 // we also clamp armor to the maxhealth for handicapping
-                if( bg_itemlist[ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
-                        upperBound = ps->stats[STAT_MAX_HEALTH];
-                }
-                else {
-                        upperBound = ps->stats[STAT_MAX_HEALTH] * 2;
-                }
+           //     if( bg_itemlist[ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
+          //              upperBound = ps->stats[STAT_MAX_HEALTH];
+           //     }
+          //      else {
+            //            upperBound = ps->stats[STAT_MAX_HEALTH] * 2;
+            //    }
 
-                if ( ps->stats[STAT_ARMOR] >= upperBound ) {
-                        return qfalse;
-                }
+            //    if ( ps->stats[STAT_ARMOR] >= upperBound ) {
+             //           return qfalse;
+           //     }
 #else
-                if ( ps->stats[STAT_ARMOR] >= ps->stats[STAT_MAX_HEALTH] * 2 ) {
-                        return qfalse;
-                }
+//                if ( ps->stats[STAT_ARMOR] >= ps->stats[STAT_MAX_HEALTH] * 2 ) {
+//                        return qfalse;
+//                }
 #endif
                 return qtrue;
 
@@ -1279,32 +1229,33 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
                 // small and mega healths will go over the max, otherwise
                 // don't pick up if already at max
 #ifdef MISSIONPACK
-                if( bg_itemlist[ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
-                        upperBound = ps->stats[STAT_MAX_HEALTH];
-                }
-                else
+             //   if( bg_itemlist[ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
+             //           upperBound = ps->stats[STAT_MAX_HEALTH];
+              //  }
+             //   else
 #endif
                 if ( item->quantity == 5 || item->quantity == 100 ) {
-                        if ( ps->stats[STAT_HEALTH] >= ps->stats[STAT_MAX_HEALTH] * 2 ) {
+                        if ( ps->stats[STAT_HEALTH] >= STAT_MAX_HEALTH * 2 ) {
                                 return qfalse;
                         }
                         return qtrue;
                 }
 
-                if ( ps->stats[STAT_HEALTH] >= ps->stats[STAT_MAX_HEALTH] ) {
+                if ( ps->stats[STAT_HEALTH] >= STAT_MAX_HEALTH ) {
                         return qfalse;
                 }
                 return qtrue;
 
         case IT_POWERUP:
-                return qtrue;   // powerups are always picked up
+return qtrue;
+             // powerups are always picked up
 
 #ifdef MISSIONPACK
         case IT_PERSISTANT_POWERUP:
                 // can only hold one item at a time
-                if ( ps->stats[STAT_PERSISTANT_POWERUP] ) {
-                        return qfalse;
-                }
+//                if ( ps->stats[STAT_PERSISTANT_POWERUP] ) {
+//                        return qfalse;
+               // }
 
                 // check team only
                 if( ( ent->generic1 & 2 ) && ( ps->persistant[PERS_TEAM] != TEAM_RED ) ) {
@@ -1314,7 +1265,7 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
                         return qfalse;
                 }
 
-                return qtrue;
+                return qfalse;
 #endif
 
         case IT_TEAM: // team items, such as flags
@@ -1361,10 +1312,10 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
 
         case IT_HOLDABLE:
                 // can only hold one item at a time
-                if ( ps->stats[STAT_HOLDABLE_ITEM] ) {
+//                if ( ps->stats[STAT_HOLDABLE_ITEM] ) {
                         return qfalse;
-                }
-                return qtrue;
+//                }
+              //  return qtrue;
 
         case IT_BAD:
             Com_Error( ERR_DROP, "BG_CanItemBeGrabbed: IT_BAD" );
@@ -1503,6 +1454,7 @@ char *eventnames[] = {
 
         "EV_NOAMMO",
         "EV_NONADES",
+        "EV_POWERSLIDE",
         "EV_CHANGE_WEAPON",
         "EV_FIRE_WEAPON",
 
@@ -1550,7 +1502,7 @@ char *eventnames[] = {
         "EV_DEATH3",
         "EV_OBITUARY",
 
-        "EV_POWERUP_QUAD",
+        "EV_POWERUP_SILENCER",
         "EV_POWERUP_BATTLESUIT",
         "EV_POWERUP_REGEN",
 
@@ -1615,11 +1567,6 @@ void BG_TouchJumpPad( playerState_t *ps, entityState_t *jumppad ) {
 
         // spectators don't use jump pads
         if ( ps->pm_type != PM_NORMAL ) {
-                return;
-        }
-
-        // flying characters don't hit bounce pads
-        if ( ps->powerups[PW_FLIGHT] ) {
                 return;
         }
 
@@ -1803,16 +1750,19 @@ void BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s
 
 
 void   BG_PlayerTouchesSmoke( int num, int stats[ ]){
-  stats[ STAT_SMOKE ] = num;
+//  stats[ STAT_SMOKE ] = num;
 }
 
 qboolean BG_PlayerInSmoke( int stats[ ] ){
-  if ( stats[ STAT_SMOKE ] == 1 ) return qtrue;
+//  if ( stats[ STAT_SMOKE ] == 1 ) return qtrue;
         return qfalse;
 
 }
 
-
+void BG_SelectItem( int item, int stats[ ] )
+{
+  stats[STAT_SELECTED_ITEM]=item;
+}
 
 // loadout related  -prototype in bg_public.h --xamis
 
@@ -1852,7 +1802,6 @@ void BG_RemoveWeapon( int weapon, int stats[ ] )
       BG_PackWeapon( i, stats );
     }
   }
-
 }
 
 /*

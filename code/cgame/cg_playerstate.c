@@ -208,6 +208,7 @@ void CG_Respawn( void ) {
 
         // select the weapon the server says we are using
         cg.weaponSelect = cg.snap->ps.weapon;
+
 }
 
 extern char *eventnames[];
@@ -495,6 +496,10 @@ CG_TransitionPlayerState
 ===============
 */
 void CG_TransitionPlayerState( playerState_t *ps, playerState_t *ops ) {
+
+  clientInfo_t *ci;
+  ci = &cgs.clientinfo[ ps->clientNum ];
+
         // check for changing follow mode
         if ( ps->clientNum != ops->clientNum ) {
                 cg.thisFrameTeleport = qtrue;
@@ -511,6 +516,12 @@ void CG_TransitionPlayerState( playerState_t *ps, playerState_t *ops ) {
         if ( ps->persistant[PERS_SPAWN_COUNT] != ops->persistant[PERS_SPAWN_COUNT] ) {
                 CG_Respawn();
         }
+
+        //Deaths --Xamis
+        if ( ps->persistant[PERS_KILLED] !=  ci->deaths ) {
+          ci->deaths = ps->persistant[PERS_KILLED];
+        }
+
 
         if ( cg.mapRestart ) {
                 CG_Respawn();

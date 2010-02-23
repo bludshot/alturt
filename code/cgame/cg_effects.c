@@ -96,7 +96,7 @@ CG_SmokePuff
 Adds a smoke puff or blood trail localEntity.
 =====================
 */
-localEntity_t *CG_SmokePuff( const vec3_t p, const vec3_t vel, 
+localEntity_t *CG_SmokePuff( const vec3_t p, const vec3_t vel,
 				   float radius,
 				   float r, float g, float b, float a,
 				   float duration,
@@ -129,7 +129,7 @@ localEntity_t *CG_SmokePuff( const vec3_t p, const vec3_t vel,
 		le->lifeRate = 1.0 / ( le->endTime - le->startTime );
 	}
 	le->color[0] = r;
-	le->color[1] = g; 
+	le->color[1] = g;
 	le->color[2] = b;
 	le->color[3] = a;
 
@@ -402,10 +402,10 @@ void CG_ScorePlum( int client, vec3_t org, int score ) {
 	le->endTime = cg.time + 4000;
 	le->lifeRate = 1.0 / ( le->endTime - le->startTime );
 
-	
+
 	le->color[0] = le->color[1] = le->color[2] = le->color[3] = 1.0;
 	le->radius = score;
-	
+
 	VectorCopy( org, le->pos.trBase );
 	if (org[2] >= lastPos[2] - 20 && org[2] <= lastPos[2] + 20) {
 		le->pos.trBase[2] -= 20;
@@ -430,7 +430,7 @@ void CG_ScorePlum( int client, vec3_t org, int score ) {
 CG_MakeExplosion
 ====================
 */
-localEntity_t *CG_MakeExplosion( vec3_t origin, vec3_t dir, 
+localEntity_t *CG_MakeExplosion( vec3_t origin, vec3_t dir,
 								qhandle_t hModel, qhandle_t shader,
 								int msec, qboolean isSprite ) {
 	float			ang;
@@ -505,7 +505,7 @@ void CG_Bleed( vec3_t origin, int entityNum ) {
 
 	ex->startTime = cg.time;
 	ex->endTime = ex->startTime + 500;
-	
+
 	VectorCopy ( origin, ex->refEntity.origin);
 	ex->refEntity.reType = RT_SPRITE;
 	ex->refEntity.rotation = rand() % 360;
@@ -723,34 +723,34 @@ void CG_BigExplode( vec3_t playerOrigin ) {
  void CG_LaunchGlass( vec3_t origin, vec3_t velocity, qhandle_t hModel ) {
 	 localEntity_t	*le;
 	 refEntity_t		*re;
- 
+
 	 le = CG_AllocLocalEntity();
 	 re = &le->refEntity;
- 
+
 	 le->leType = LE_FRAGMENT;
 	 le->startTime = cg.time;
 	 le->endTime = le->startTime + 30000 + random() * 3000;
- 
+
 	 VectorCopy( origin, re->origin );
 	 AxisCopy( axisDefault, re->axis );
 	 re->hModel = hModel;
- 
+
 	 le->pos.trType = TR_GRAVITY;
 	 VectorCopy( origin, le->pos.trBase );
 	 VectorCopy( velocity, le->pos.trDelta );
 	 le->pos.trTime = cg.time;
- 
-	 le->bounceFactor = 0.3;
- 
+
+	 le->bounceFactor = 0.3f;
+
 	 le->leFlags = LEF_TUMBLE;
 	 le->leBounceSoundType = LEBS_BRASS;
 	 le->leMarkType = LEMT_NONE;
  }
- 
+
  /*
  ===================
  CG_BreakGlass Xamis
- 
+
  Generated a bunch of glass shards launching out from the glass location
  ===================
  */
@@ -765,7 +765,7 @@ void CG_BigExplode( vec3_t playerOrigin ) {
 	 int     states[] = {1,2,3};
  	// Get the size of the array
 	 int     numstates = sizeof(states)/sizeof(states[0]);
- 
+
  	// Countdown "count" so this will subtract 1 from the "count"
  	// X many times. X being the "count" value
 	 while ( count-- ) {
@@ -791,4 +791,4 @@ void CG_BigExplode( vec3_t playerOrigin ) {
 		 }
 	 }
  }
- 
+

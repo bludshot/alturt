@@ -52,7 +52,7 @@ float   pm_waterfriction = 1.0f;
 float   pm_flightfriction = 3.0f;
 float   pm_spectatorfriction = 5.0f;
 float   pm_ladderfriction = 4000; //Xamis
-float   pm_slidefriction = 2000;
+float   pm_slidefriction = 0;
 
 
 int             c_pmove = 0;
@@ -340,11 +340,6 @@ static void PM_Friction( void ) {
                 drop += speed*pm_waterfriction*pm->waterlevel*pml.frametime;
         }
 
-        // apply flying friction
-        if ( pm->ps->powerups[PW_FLIGHT]) {
-                drop += speed*pm_flightfriction*pml.frametime;
-        }
-
         if ( pm->ps->pm_type == PM_SPECTATOR) {
                 drop += speed*pm_spectatorfriction*pml.frametime;
         }
@@ -577,8 +572,8 @@ static qboolean PM_CheckWallJump( void )
         pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask );
 
         if( trace.fraction < 1.0f &&
-                   !( trace.surfaceFlags & ( SURF_SKY | SURF_SLICK ) ) &&
-                   trace.plane.normal[ 2 ] < MIN_WALK_NORMAL )
+                  !( trace.surfaceFlags & ( SURF_SKY | SURF_SLICK ) ) &&
+                  trace.plane.normal[ 2 ] < MIN_WALK_NORMAL )
         {
                 if( !VectorCompare( trace.plane.normal, pm->ps->grapplePoint ) )
                 {
@@ -597,7 +592,7 @@ static qboolean PM_CheckWallJump( void )
 
   // must wait for jump to be released
         if( pm->ps->pm_flags & PMF_JUMP_HELD &&
-                   pm->ps->grapplePoint[ 2 ] == 1.0f )
+                  pm->ps->grapplePoint[ 2 ] == 1.0f )
         {
     // clear upmove so cmdscale doesn't lower running speed
                 pm->cmd.upmove = 0;
@@ -711,7 +706,7 @@ Flying out of the water
 static void PM_WaterJumpMove( void ) {
         // waterjump has no control, but falls
 
- // PM_StepSlideMove( qtrue, qfalse );
+// PM_StepSlideMove( qtrue, qfalse );
   PM_StepSlideMove( qtrue );
         pm->ps->velocity[2] -= pm->ps->gravity * pml.frametime;
         if (pm->ps->velocity[2] < 0) {
@@ -1072,7 +1067,7 @@ static void PM_WalkMove( void ) {
                 return;
         }
 
-       // PM_StepSlideMove( qfalse, qfalse );
+      // PM_StepSlideMove( qfalse, qfalse );
         PM_StepSlideMove( qfalse );
 
         //Com_Printf("velocity2 = %1.1f\n", VectorLength(pm->ps->velocity));
@@ -1622,14 +1617,17 @@ static void PM_Footsteps( void ) {
 
         if ( pm->ps->groundEntityNum == ENTITYNUM_NONE ) {
 
-                if ( pm->ps->powerups[PW_INVULNERABILITY] ) {
-                        PM_ContinueLegsAnim( LEGS_IDLECR );
-                }
+
                 // airborne leaves position in cycle intact, but doesn't advance
                 if ( pm->waterlevel > 1 ) {
                         PM_ContinueLegsAnim( LEGS_SWIM );
                 }
                 return;
+        }
+
+        if ( bg_ps.bg_flags[pm->ps->clientNum] & BGF_POWERSLIDE ) {
+          PM_ContinueLegsAnim( LEGS_IDLECR );
+          return;
         }
 
         // if not trying to move
@@ -1650,7 +1648,8 @@ footstep = qfalse;
 
         if ( pm->ps->pm_flags & PMF_DUCKED ) {
                 bobmove = 0;    // dont bob while crouched --Xamis Value was .5
-                if ( pm->ps->pm_flags & PMF_BACKWARDS_RUN ) {
+
+                 if ( pm->ps->pm_flags & PMF_BACKWARDS_RUN ) {
                         PM_ContinueLegsAnim( LEGS_BACKCR );
                 }
                 else {
@@ -1760,11 +1759,9 @@ static void PM_BeginWeaponChange( int weapon ) {
                 return;
         }
 
-     //   if ( !( pm->ps->stats[STAT_WEAPONS] & ( 1 << weapon ) ) ) {
-      //          return;
-      //  }
 
         if ( !( BG_HasWeapon( weapon, pm->ps->stats ) ) ) {
+        //  Com_Printf("!( BG_HasWeapon( weapon, pm->ps->stats ) )weapon = %i\n", weapon );
           return;
         }
 
@@ -2031,26 +2028,11 @@ static void PM_Weapon( void ) {
         if ( pm->ps->stats[STAT_HEALTH] <= 0 ) {
                 pm->ps->weapon = WP_NONE;
                 return;
-        }/*
-        if ( pm->cmd.buttons & BUTTON_USE_HOLDABLE ) {
-        if ( ! ( pm->ps->pm_flags & PMF_USE_ITEM_HELD ) ) {
-        if ( bg_itemlist[pm->ps->stats[STAT_HOLDABLE_ITEM]].giTag == HI_MEDKIT
-        && pm->ps->stats[STAT_HEALTH] >= pm->ps->stats[STAT_MAX_HEALTH] ) {
-                // don't use medkit if at max health
-} else {
-        pm->ps->pm_flags |= PMF_USE_ITEM_HELD;
-        PM_AddEvent( EV_USE_ITEM0 + bg_itemlist[pm->ps->stats[STAT_HOLDABLE_ITEM]].giTag );
-        pm->ps->stats[STAT_HOLDABLE_ITEM] = 0;
-}
-        return;
-}
-} else {
-        pm->ps->pm_flags &= ~PMF_USE_ITEM_HELD;
-}*/
+        }
 
-
-        if(pm->ps->stats[STAT_CLIPS] <= 0 && BG_Grenade(pm->ps->weapon) ){
-          PM_AddEvent( EV_NONADES );
+        if(pm->ps->stats[STAT_CLIPS] <= 0 ){
+        if(BG_Grenade(pm->ps->weapon) )
+         PM_AddEvent( EV_NONADES );
         }
 
     // make weapon function
@@ -2058,7 +2040,6 @@ static void PM_Weapon( void ) {
         pm->ps->weaponTime -= pml.msec;
         if ( pm->ps->weaponTime <= 0 )
           pm->ps->weaponTime = 0;
-
 //check grenade fuse time
         if ( bg_nadeTimer.fuseTime[pm->ps->clientNum]  > 0 )
           bg_nadeTimer.fuseTime[pm->ps->clientNum] -= pml.msec;
@@ -2080,19 +2061,9 @@ static void PM_Weapon( void ) {
         if ( bg_nadeTimer.throwStrength[pm->ps->clientNum] > 80000 )
           bg_nadeTimer.throwStrength[pm->ps->clientNum]= 80000;
 
-//        Com_Printf ("Nade Throw strength is at %i\n", bg_nadeTimer.throwStrength[pm->ps->clientNum] );
-
-
-      //  Com_Printf  ( "bg_weaponlist[0].rounds[pm->ps->clientNum] = %i\n!( pm->ps->pm_flags & PMF_SINGLE_SHOT ) = %i\n",
-
-           // bg_weaponlist[0].rounds[pm->ps->clientNum], !( pm->ps->pm_flags & PMF_SINGLE_SHOT )
-           // );
-
-
-
 
         if ( pm->ps->weaponstate == WEAPON_DROPPING && pm->ps->weaponTime > 0 ) {
-        //      G_Printf("dropping: %i\n", pm->ps->weaponTime );
+
                 return;
         }
 //If were in the process of reloading we can't fire  --Xamis
@@ -2127,10 +2098,7 @@ static void PM_Weapon( void ) {
           PM_StartTorsoAnim(TORSO_RELOAD_RIFLE );
           }
         }if( pm->ps->weaponstate == WEAPON_RELOADING_END && pm->ps->weaponTime <= 0 ) {
-
           pm->ps->weaponTime = ReloadEndTime( pm->ps->weapon );
-
-
           pm->ps->weaponstate = WEAPON_RELOADING_COMPLETE;
           if (BG_Grenade( pm->ps->weapon)){
             PM_ContinueWeaponAnim(WPN_READY_FIRE_IDLE);
@@ -2140,11 +2108,10 @@ static void PM_Weapon( void ) {
           }if ( pm->ps->weapon == WP_SR8 ){
             PM_ContinueWeaponAnim( WPN_BOLT );
           }
-         }if( pm->ps->weaponstate == WEAPON_RELOADING_COMPLETE && pm->ps->weaponTime <= 0 ) {
-           if (BG_Grenade( pm->ps->weapon)){
-             PM_ContinueWeaponAnim(WPN_READY_FIRE_IDLE);
-
-           }
+        }if( pm->ps->weaponstate == WEAPON_RELOADING_COMPLETE && pm->ps->weaponTime <= 0 ) {
+          if (BG_Grenade( pm->ps->weapon)){
+            PM_ContinueWeaponAnim(WPN_READY_FIRE_IDLE);
+          }
           pm->ps->weaponstate = WEAPON_READY; //If were in finished reloading, we're ready to fire, so set weaponstate
         }
         }
@@ -2152,12 +2119,10 @@ static void PM_Weapon( void ) {
                 return;
         }
 
-
         if ( bg_weaponlist[0].rounds[pm->ps->clientNum] <= 2
-             &&  bg_weaponlist[0].rounds[pm->ps->clientNum] > 0
-             && !( pm->ps->pm_flags & PMF_SINGLE_SHOT )
-             &&  bg_weaponlist[pm->ps->weapon].rounds[pm->ps->clientNum] >0){
-          Com_Printf("burstcount is %i", bg_weaponlist[0].rounds[pm->ps->clientNum]);
+            &&  bg_weaponlist[0].rounds[pm->ps->clientNum] > 0
+            && !( pm->ps->pm_flags & PMF_SINGLE_SHOT )
+            &&  bg_weaponlist[pm->ps->weapon].rounds[pm->ps->clientNum] >0){
           pm->ps->weaponTime = PM_WeaponTime(pm->ps->weapon );
           PM_AddEvent( EV_FIRE_WEAPON );
           PM_StartWeaponAnim( WPN_FIRE );
@@ -2166,10 +2131,7 @@ static void PM_Weapon( void ) {
           if( bg_weaponlist[0].rounds[pm->ps->clientNum] == 3)
             pm->ps->pm_flags |= PMF_SINGLE_SHOT;
           return;
-             }
-
-
-
+            }
 
         if ((pm->cmd.buttons & 1) ) {
           if(BG_Grenade(pm->ps->weapon) && pm->ps->pm_flags & PMF_GRENADE_ARMED && pm->ps->weaponstate == WEAPON_READY ){
@@ -2195,10 +2157,9 @@ static void PM_Weapon( void ) {
     // check for weapon change
     // can't change if weapon is firing, but can change
     // again if lowering or raising
-
         if ( pm->ps->weaponstate == WEAPON_READY ) {
                 if ( pm->ps->weapon != pm->cmd.weapon) {
-                        PM_BeginWeaponChange( pm->cmd.weapon );
+                  PM_BeginWeaponChange( pm->ps->weapon );
                         return;
                 }
         }
@@ -2226,11 +2187,8 @@ static void PM_Weapon( void ) {
         }
 
 
-
     // check for fire
         if (!(pm->cmd.buttons & 1) ) {
-          //Com_Printf ("!pm->cmd.buttons & 1 pm->burstCount = %i\n", pm->burstCount );
-
           if(BG_Grenade(pm->ps->weapon) && pm->ps->pm_flags & PMF_GRENADE_ARMED){
             PM_StartWeaponAnim( WPN_FIRE );
             pm->ps->weaponstate = WEAPON_FIRING;
@@ -2248,14 +2206,13 @@ static void PM_Weapon( void ) {
         // remove flag
                 if ( pm->ps->pm_flags & PMF_SINGLE_SHOT ){
                         pm->ps->pm_flags &= ~PMF_SINGLE_SHOT;
-                       // pm->burstCount = 0;
+                      // pm->burstCount = 0;
 
                         bg_weaponlist[0].rounds[pm->ps->clientNum] = 0;
                 }
                 return;
           }
         }
-
 
         if(BG_Grenade(pm->ps->weapon) && pm->ps->pm_flags & PMF_GRENADE_ARMED ){
           pm->ps->weaponTime = 50;
@@ -2275,55 +2232,54 @@ static void PM_Weapon( void ) {
 
                                 // check for out of ammo
         if ( (pm->ps->stats[STAT_ROUNDS] == 0 && !BG_Grenade(pm->ps->weapon))
-             || (pm->ps->stats[STAT_CLIPS] == 0 && BG_Grenade(pm->ps->weapon) )) {
-           PM_AddEvent( EV_NOAMMO );
-           pm->ps->weaponTime = 550;
-           pm->ps->weaponstate = WEAPON_READY;
-           PM_ContinueWeaponAnim( WPN_IDLE );
-           return;
-             }
+            || (pm->ps->stats[STAT_CLIPS] == 0 && BG_Grenade(pm->ps->weapon) )) {
+          PM_AddEvent( EV_NOAMMO );
+          pm->ps->weaponTime = 550;
+          pm->ps->weaponstate = WEAPON_READY;
+          PM_ContinueWeaponAnim( WPN_IDLE );
+          return;
+            }
             if ( BG_Grenade(pm->ps->weapon) && !(pm->ps->pm_flags & PMF_GRENADE_ARMED)){
-               pm->ps->weaponstate = WEAPON_RELOADING;
-               pm->ps->pm_flags |= PMF_GRENADE_ARMED;
-               bg_nadeTimer.fuseTime[pm->ps->clientNum] = 6000;
-               bg_nadeTimer.throwStrength[pm->ps->clientNum] = 62000;
-               return;
-             }
+              pm->ps->weaponstate = WEAPON_RELOADING;
+              pm->ps->pm_flags |= PMF_GRENADE_ARMED;
+              bg_nadeTimer.fuseTime[pm->ps->clientNum] = 6000;
+              bg_nadeTimer.throwStrength[pm->ps->clientNum] = 62000;
+              return;
+            }
 
 
 
-         if ( BG_Sidearm(pm->ps->weapon)){
+        if ( BG_Sidearm(pm->ps->weapon)){
           PM_StartTorsoAnim( TORSO_ATTACK_PISTOL );
-         }else if ( pm->ps->weapon == WP_KNIFE){
-           PM_StartTorsoAnim( TORSO_ATTACK_KNIFE );
-         }else if ( pm->ps->weapon == WP_SPAS){
-           PM_StartTorsoAnim( TORSO_ATTACK_PUMPGUN );
-         }else{
+        }else if ( pm->ps->weapon == WP_KNIFE){
+          PM_StartTorsoAnim( TORSO_ATTACK_KNIFE );
+        }else if ( pm->ps->weapon == WP_SPAS){
+          PM_StartTorsoAnim( TORSO_ATTACK_PUMPGUN );
+        }else{
           PM_StartTorsoAnim( TORSO_ATTACK_RIFLE );
-         }
+        }
           PM_StartWeaponAnim( WPN_FIRE );
 
           if( bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] == 0 )
           bg_weaponlist[0].rounds[pm->ps->clientNum]++;
-         // Com_Printf("burstcount is %i", bg_weaponlist[0].rounds[pm->ps->clientNum]);
-                           pm->ps->weaponstate = WEAPON_FIRING;
-                           pm->ps->weaponTime = PM_WeaponTime(pm->ps->weapon );
-                           PM_AddEvent( EV_FIRE_WEAPON );
-                           if (pm->ps->weapon == WP_SR8 || pm->ps->weapon == WP_SPAS ){
-                             pm->ps->pm_flags |= PMF_RELOADING;
+                          pm->ps->weaponstate = WEAPON_FIRING;
+                          pm->ps->weaponTime = PM_WeaponTime(pm->ps->weapon );
+                          PM_AddEvent( EV_FIRE_WEAPON );
+                          if (pm->ps->weapon == WP_SR8 || pm->ps->weapon == WP_SPAS ){
+                            pm->ps->pm_flags |= PMF_RELOADING;
 
                           }
 
-                           if ( pm->ps->pm_flags & PMF_SINGLE_MODE
+                          if ( pm->ps->pm_flags & PMF_SINGLE_MODE
                                 || pm->ps->weapon == WP_DEAGLE
                                 || pm->ps->weapon == WP_BERETTA
                                 || pm->ps->weapon == WP_PSG1
                                 || pm->ps->weapon == WP_SR8
                                 || BG_Grenade(pm->ps->weapon))
-                                   {
-                                           pm->ps->pm_flags |= PMF_SINGLE_SHOT;
+                                  {
+                                          pm->ps->pm_flags |= PMF_SINGLE_SHOT;
 
-                                   }
+                                  }
 
 }
 
@@ -2439,7 +2395,7 @@ static void PM_WallMove( void ) {
 
         if ( pml.groundPlane ) {
                 return;
-             }
+            }
 
 
         if ( !scale ) {
@@ -2464,7 +2420,7 @@ static void PM_WallMove( void ) {
         PM_Accelerate (wishdir, wishspeed, pm_ladderaccelerate);
 
 
-             PM_SlideMove( qfalse ); // move without gravity
+            PM_SlideMove( qfalse ); // move without gravity
 }
 */
 
@@ -2531,33 +2487,33 @@ static void PM_LadderMove( void ) {
         PM_Accelerate (wishdir, wishspeed, pm_ladderaccelerate);
 
         if ( pml.groundPlane && DotProduct( pm->ps->velocity,
-             pml.groundTrace.plane.normal ) < 0 ) {
-                     vel = VectorLength(pm->ps->velocity);
-                     PM_ClipVelocity (pm->ps->velocity, pml.groundTrace.plane.normal,
+            pml.groundTrace.plane.normal ) < 0 ) {
+                    vel = VectorLength(pm->ps->velocity);
+                    PM_ClipVelocity (pm->ps->velocity, pml.groundTrace.plane.normal,
                                       pm->ps->velocity, OVERCLIP );
 
-                     VectorNormalize(pm->ps->velocity);
-                     VectorScale(pm->ps->velocity, vel, pm->ps->velocity);
-             }
+                    VectorNormalize(pm->ps->velocity);
+                    VectorScale(pm->ps->velocity, vel, pm->ps->velocity);
+            }
 
-             PM_SlideMove( qfalse );
+            PM_SlideMove( qfalse );
 
 }
 
 
 void PM_PowerSlideMove( void ){
     PM_ClipVelocity (pm->ps->velocity, pml.groundTrace.plane.normal,
-                     pm->ps->velocity, OVERCLIP );
+                    pm->ps->velocity, OVERCLIP );
     VectorNormalize(pm->ps->velocity);
     VectorScale(pm->ps->velocity, 500, pm->ps->velocity);
 }
 
 qboolean PM_CheckPowerSlide( void ){
 
- // if( pm->ps->pm_flags & PMF_DUCKED && pml.groundPlane  && pm->xyspeed > 280  ){
+// if( pm->ps->pm_flags & PMF_DUCKED && pml.groundPlane  && pm->xyspeed > 280  ){
 
     //Com_Printf( "pm->ps->pm_flags & PMF_DUCKED && pm->xyspeed > 280\n");
-   // return qtrue;
+  // return qtrue;
   //}else
   return qfalse;
 }
@@ -2585,7 +2541,7 @@ void PmoveSingle (pmove_t *pmove) {
 
 
       //  Com_Printf("(int)pm->xyspeed = %i\n", (int)pm->xyspeed );
-       // Com_Printf("pm->ps->stats[STAT_XYSPEED] = %i\n", pm->ps->stats[STAT_XYSPEED] );
+      // Com_Printf("pm->ps->stats[STAT_XYSPEED] = %i\n", pm->ps->stats[STAT_XYSPEED] );
         if ( pm->ps->stats[STAT_HEALTH] <= 0 ) {
                 pm->tracemask &= ~CONTENTS_BODY;        // corpses can fly through bodies
         }
@@ -2715,11 +2671,7 @@ void PmoveSingle (pmove_t *pmove) {
         }
 
         PM_DropTimers();
-        if ( pm->ps->powerups[PW_FLIGHT] ) {
-                // flight powerup doesn't allow jump and has different friction
-                PM_FlyMove();
-                pm->ps->pm_flags &= ~PMF_ONGROUND;
-        } else if ( CheckLadder () != 0) {//Xamis
+        if ( CheckLadder () != 0) {//Xamis
                 PM_LadderMove();
                 pm->ps->pm_flags &= ~PMF_ONGROUND;
         } else if (pm->ps->pm_flags & PMF_TIME_WATERJUMP) {
@@ -2796,9 +2748,6 @@ void Pmove (pmove_t *pmove) {
                 }
                 pmove->cmd.serverTime = pmove->ps->commandTime + msec;
                 PmoveSingle( pmove );
-
-
-
                 if ( pmove->ps->pm_flags & PMF_JUMP_HELD ) {
                         pmove->cmd.upmove = 20;
                 }

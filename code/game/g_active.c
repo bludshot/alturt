@@ -97,7 +97,7 @@ Check for lava / slime contents and drowning
 =============
 */
 void P_WorldEffects( gentity_t *ent ) {
-        qboolean        envirosuit;
+//        qboolean        envirosuit;
         int                     waterlevel;
 
         if ( ent->client->noclip ) {
@@ -107,16 +107,16 @@ void P_WorldEffects( gentity_t *ent ) {
 
         waterlevel = ent->waterlevel;
 
-        envirosuit = ent->client->ps.powerups[PW_BATTLESUIT] > level.time;
+//        envirosuit = ent->client->ps.powerups[PW_BATTLESUIT] > level.time;
 
         //
         // check for drowning
         //
         if ( waterlevel == 3 ) {
                 // envirosuit give air
-                if ( envirosuit ) {
-                        ent->client->airOutTime = level.time + 10000;
-                }
+             //   if ( envirosuit ) {
+            //            ent->client->airOutTime = level.time + 10000;
+             //   }
 
                 // if out of air, start drowning
                 if ( ent->client->airOutTime < level.time) {
@@ -157,9 +157,9 @@ void P_WorldEffects( gentity_t *ent ) {
                 if (ent->health > 0
                         && ent->pain_debounce_time <= level.time        ) {
 
-                        if ( envirosuit ) {
-                                G_AddEvent( ent, EV_POWERUP_BATTLESUIT, 0 );
-                        } else {
+                       // if ( envirosuit ) {
+                         //       G_AddEvent( ent, EV_POWERUP_BATTLESUIT, 0 );
+                       // } else {
                                 if (ent->watertype & CONTENTS_LAVA) {
                                         G_Damage (ent, NULL, NULL, NULL, NULL,
                                                 30*waterlevel, 0, MOD_LAVA);
@@ -169,7 +169,7 @@ void P_WorldEffects( gentity_t *ent ) {
                                         G_Damage (ent, NULL, NULL, NULL, NULL,
                                                 10*waterlevel, 0, MOD_SLIME);
                                 }
-                        }
+                       // }
                 }
         }
 }
@@ -403,6 +403,7 @@ Actions that happen once a second
 void ClientTimerActions( gentity_t *ent, int msec ) {
         usercmd_t       *ucmd; // ---Xamis
         gclient_t       *client;
+        float           xyspeed;
 #ifdef MISSIONPACK
         int                     maxHealth;
 #endif
@@ -415,33 +416,11 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
 
         ucmd = &ent->client->pers.cmd;   // ---Xamis
 
+        xyspeed = sqrt( client->ps.velocity[0] * client->ps.velocity[0]
+            +  client->ps.velocity[1] * client->ps.velocity[1] );
 
                 // regenerate
-#ifdef MISSIONPACK
-                if( bg_itemlist[client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
-                        maxHealth = client->ps.stats[STAT_MAX_HEALTH] / 2;
-                }
-                else if ( client->ps.powerups[PW_REGEN] ) {
-                        maxHealth = client->ps.stats[STAT_MAX_HEALTH];
-                }
-                else {
-                        maxHealth = 0;
-                }
-                if( maxHealth ) {
-                        if ( ent->health < maxHealth ) {
-                                ent->health += 15;
-                                if ( ent->health > maxHealth * 1.1 ) {
-                                        ent->health = maxHealth * 1.1;
-                                }
-                                G_AddEvent( ent, EV_POWERUP_REGEN, 0 );
-                        } else if ( ent->health < maxHealth * 2) {
-                                ent->health += 5;
-                                if ( ent->health > maxHealth * 2 ) {
-                                        ent->health = maxHealth * 2;
-                                }
-                                G_AddEvent( ent, EV_POWERUP_REGEN, 0 );
-                        }
-#else
+
 //--Xamis   Sprinting/Stamina
 
                 if ( !( ucmd->buttons & BUTTON_SPRINTING  ) ) {
@@ -451,45 +430,28 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
                         if ( ent->stamina > ent->health*9 ) {
                                 ent->stamina = ent->health*9 ;
                         }
-                        if ( ent->stamina > client->ps.stats[STAT_MAX_STAMINA] ) {
-                                ent->stamina = client->ps.stats[STAT_MAX_STAMINA] ;
+                        if ( ent->stamina > STAT_MAX_STAMINA ) {
+                                ent->stamina = STAT_MAX_STAMINA;
                         }
                 }
 
-                if (  ent->slidedistance <= 0 ) {
-                  if ( ent->slidedistance < 130 ) {
-                    ent->slidedistance = 130;
+                if ( !(bg_ps.bg_flags[client->ps.clientNum] & BGF_POWERSLIDE )) {
+                  if ( ent->slidedistance < xyspeed /1.9 ) {
+                    ent->slidedistance = xyspeed /1.9;
                   }
-                  if ( ent->slidedistance > 130 ) {
-                    ent->slidedistance = 130 ;
+                  if ( ent->slidedistance > xyspeed /1.9 ) {
+                    ent->slidedistance = xyspeed /1.9 ;
                   }
                  }
-                if ( client->ps.powerups[PW_REGEN] ) {
-                        if ( ent->health < client->ps.stats[STAT_MAX_HEALTH]) {
-                                ent->health += 15;
-                                if ( ent->health > client->ps.stats[STAT_MAX_HEALTH] * 1.1 ) {
-                                        ent->health = client->ps.stats[STAT_MAX_HEALTH] * 1.1;
-                                }
-                                G_AddEvent( ent, EV_POWERUP_REGEN, 0 );
-                        } else if ( ent->health < client->ps.stats[STAT_MAX_HEALTH] * 2) {
-                                ent->health += 5;
-                                if ( ent->health > client->ps.stats[STAT_MAX_HEALTH] * 2 ) {
-                                        ent->health = client->ps.stats[STAT_MAX_HEALTH] * 2;
-                                }
-                                G_AddEvent( ent, EV_POWERUP_REGEN, 0 );
-                        }
-#endif
-                } else {
                         // count down health when over max
-                        if ( ent->health > client->ps.stats[STAT_MAX_HEALTH] ) {
+                        if ( ent->health > STAT_MAX_HEALTH ) {
                                 ent->health--;
                         }
-                }
 
                 // count down armor when over max
-                if ( client->ps.stats[STAT_ARMOR] > client->ps.stats[STAT_MAX_HEALTH] ) {
-                        client->ps.stats[STAT_ARMOR]--;
-                }
+//                if ( client->ps.stats[STAT_ARMOR] > STAT_MAX_HEALTH ) {
+ //                       client->ps.stats[STAT_ARMOR]--;
+ //               }
         }
 
 }
@@ -569,6 +531,11 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
                     Set_Mode(ent);
                     break;
 
+                  case EV_NONADES:
+                    UT_DropWeapon ( ent );
+                    break;
+
+
                 case EV_USE_ITEM1:              // teleporter
                         // drop flags in CTF
                         item = NULL;
@@ -623,7 +590,7 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
                         break;
 
                 case EV_USE_ITEM2:              // medkit
-                        ent->health = ent->client->ps.stats[STAT_MAX_HEALTH] + 25;
+                        ent->health = STAT_MAX_HEALTH + 25;
 
                         break;
 
@@ -712,7 +679,7 @@ void ClientThink_real( gentity_t *ent ) {
         int                     msec;
         usercmd_t       *ucmd;
         float           xyspeed;
-
+        int i;
         client = ent->client;
 
         // don't think if the client is not yet connected (and thus not yet spawned in)
@@ -799,6 +766,23 @@ void ClientThink_real( gentity_t *ent ) {
         xyspeed = sqrt( client->ps.velocity[0] * client->ps.velocity[0]
             +  client->ps.velocity[1] * client->ps.velocity[1] );
 
+    /*
+        G_Printf("bg_inventory.item[ent->client->ps.clientNum][0] = %i\n",
+                  bg_inventory.item[ent->client->ps.clientNum][0]);
+        G_Printf("ent->client->ps.powerups[ bg_inventory.item[ent->client->ps.clientNum][0]] = %i\n",
+                 ent->client->ps.powerups[ bg_inventory.item[ent->client->ps.clientNum][0]]);
+        */
+        for( i = 0; i < 3; i++){
+        if( bg_inventory.item[ent->client->ps.clientNum][i] && !(ent->client->ps.powerups[ bg_inventory.item[ent->client->ps.clientNum][i]] )){
+
+          UT_SpawnPowerup ( ent, bg_inventory.item[ent->client->ps.clientNum][i]);
+          G_Printf("spawned powerup!\n");
+          if(!ent->client->ps.stats[STAT_SELECTED_ITEM]){
+            G_Printf("setting powerup to %i!\n", bg_inventory.item[ent->client->ps.clientNum][i]);
+          ent->client->ps.stats[STAT_SELECTED_ITEM]=bg_inventory.item[ent->client->ps.clientNum][i];
+          }
+        }
+        }
                 // -- Xamis
         if( ucmd->buttons & BUTTON_WALKING || client->ps.pm_flags & PMF_DUCKED ){
           //if walking/ducking do nothing!
@@ -808,31 +792,31 @@ void ClientThink_real( gentity_t *ent ) {
                         client->ps.speed *= 1.3;
                         ent->stamina--;
                       //  G_Printf( "sprint activated");
-                //if (ent->stamina <= client->ps.stats[STAT_MAX_STAMINA] *.2 ) {(G_AddEvent( ent, EV_PANTING, 0 );} //todo
+                //if (ent->stamina <= STAT_MAX_STAMINA *.2 ) {(G_AddEvent( ent, EV_PANTING, 0 );} //todo
         }
         //  G_Printf( "client->ps.stats[STAT_STAMINA] = %i ucmd->buttons & BUTTON_SPRINTING = %i xyspeed = %i\n",
            //         client->ps.stats[STAT_STAMINA],ucmd->buttons & BUTTON_SPRINTING, (int)xyspeed
            //       );
 
                         // -- Xamis   Crude attempt at powerslide
+      if( client->ps.pm_flags & PMF_DUCKED
+          && xyspeed > 250 && ent->slidedistance > 0
+          && client->ps.pm_flags & PMF_ONGROUND){
 
-      if( client->ps.pm_flags & PMF_DUCKED && xyspeed > 250 && ent->slidedistance > 0 && client->ps.pm_flags & PMF_ONGROUND){
-
-                        //float temp_velocity;
-                        //float slide_velocity;
+          bg_ps.bg_flags[client->ps.clientNum] |= BGF_POWERSLIDE;
           VectorNormalize(client->ps.velocity);
           VectorScale(client->ps.velocity, 300, client->ps.velocity);
           ent->slidedistance--;
+          G_AddEvent(ent, EV_POWERSLIDE, 0);
+          //LEGS_IDLECR
                 //      temp_velocity = client->ps.velocity[2];
                 //      slide_velocity = client->ps.velocity[2] -= 92;
                 //      client->ps.velocity[2]= slide_velocity;
                         //client->ps.velocity[2] = temp_velocity;
 
- }
+ }else
+   bg_ps.bg_flags[client->ps.clientNum] &= ~BGF_POWERSLIDE;
 
-        if ( client->ps.powerups[PW_HASTE] ) {
-                client->ps.speed *= 1.3;
-        }
 
         // Let go of the hook if we aren't firing
 //      if ( client->ps.weapon == WP_GRAPPLING_HOOK &&
@@ -1091,6 +1075,7 @@ void ClientEndFrame( gentity_t *ent ) {
 
 #ifdef MISSIONPACK
         // set powerup for player animation
+        /*
         if( bg_itemlist[ent->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
                 ent->client->ps.powerups[PW_GUARD] = level.time;
         }
@@ -1105,7 +1090,7 @@ void ClientEndFrame( gentity_t *ent ) {
         }
         if ( ent->client->invulnerabilityTime > level.time ) {
                 ent->client->ps.powerups[PW_INVULNERABILITY] = level.time;
-        }
+        } */
 #endif
 
         // save network bandwidth
@@ -1140,7 +1125,6 @@ void ClientEndFrame( gentity_t *ent ) {
         ent->client->ps.stats[STAT_HEALTH] = ent->health;       // FIXME: get rid of ent->health...
         ent->client->ps.stats[STAT_STAMINA] = ent->stamina; //Xamis
         ent->client->ps.stats[STAT_ROUNDS] = bg_weaponlist[ent->client->ps.weapon].rounds[ent->client->ps.clientNum];//Xamis
-       // ent->client->ps.stats[STAT_ROUNDS] = ent->client->clipammo[ent->client->ps.weapon];
         ent->client->ps.stats[STAT_CLIPS] = bg_weaponlist[ent->client->ps.weapon].numClips[ent->client->ps.clientNum];
         //ent->client->ps.stats[STAT_CLIPS] = ent->client->ps.ammo[ent->client->ps.weapon];
         G_SetClientSound (ent);

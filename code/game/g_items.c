@@ -119,12 +119,13 @@ int Pickup_Powerup( gentity_t *ent, gentity_t *other ) {
 
 #ifdef MISSIONPACK
 int Pickup_PersistantPowerup( gentity_t *ent, gentity_t *other ) {
+  /*
         int             clientNum;
         char    userinfo[MAX_INFO_STRING];
         float   handicap;
         int             max;
 
-        other->client->ps.stats[STAT_PERSISTANT_POWERUP] = ent->item - bg_itemlist;
+//        other->client->ps.stats[STAT_PERSISTANT_POWERUP] = ent->item - bg_itemlist;
         other->client->persistantPowerup = ent;
 
         switch( ent->item->giTag ) {
@@ -139,8 +140,8 @@ int Pickup_PersistantPowerup( gentity_t *ent, gentity_t *other ) {
 
                 other->health = max;
                 other->client->ps.stats[STAT_HEALTH] = max;
-                other->client->ps.stats[STAT_MAX_HEALTH] = max;
-                other->client->ps.stats[STAT_ARMOR] = max;
+                //STAT_MAX_HEALTH = max;
+               // other->client->ps.stats[STAT_ARMOR] = max;
                 other->client->pers.maxHealth = max;
                 other->client->ps.stats[STAT_STAMINA] = max; //Xamis probably don't need these, since not using PW_GUARD but just in case
                 other->client->pers.maxStamina = max; //Xamis
@@ -155,7 +156,7 @@ int Pickup_PersistantPowerup( gentity_t *ent, gentity_t *other ) {
                         handicap = 100.0f;
                 }
                 other->client->pers.maxHealth = handicap;
-                other->client->ps.stats[STAT_ARMOR] = 0;
+//                other->client->ps.stats[STAT_ARMOR] = 0;
                 break;
 
         case PW_DOUBLER:
@@ -187,7 +188,7 @@ int Pickup_PersistantPowerup( gentity_t *ent, gentity_t *other ) {
                 other->client->pers.maxHealth = handicap;
                 break;
         }
-
+*/
         return -1;
 }
 
@@ -196,11 +197,11 @@ int Pickup_PersistantPowerup( gentity_t *ent, gentity_t *other ) {
 
 int Pickup_Holdable( gentity_t *ent, gentity_t *other ) {
 
-        other->client->ps.stats[STAT_HOLDABLE_ITEM] = ent->item - bg_itemlist;
+//        other->client->ps.stats[STAT_HOLDABLE_ITEM] = ent->item - bg_itemlist;
 
-        if( ent->item->giTag == HI_KAMIKAZE ) {
-                other->client->ps.eFlags |= EF_KAMIKAZE;
-        }
+ //       if( ent->item->giTag == HI_KAMIKAZE ) {
+ //               other->client->ps.eFlags |= EF_KAMIKAZE;
+ //       }
 
         return RESPAWN_HOLDABLE;
 }
@@ -210,14 +211,31 @@ int Pickup_Holdable( gentity_t *ent, gentity_t *other ) {
 
 void Add_Ammo (gentity_t *ent, int weapon, int count)
 {
-  bg_weaponlist[weapon].numClips[ent->client->ps.clientNum] += count;
+  int clips;
+  int rounds;
+  if ( BG_Grenade(weapon) ){
+    bg_weaponlist[weapon].numClips[ent->client->ps.clientNum] += count;
+  }else{
+    clips = count / RoundCount(weapon);
+    rounds = count % RoundCount(weapon);
+    if( rounds == 0 && clips > 0){
+     clips--;
+     rounds = RoundCount(weapon);
+    }
+G_Printf("count = %i, clips = %i, rounds = %i\n", count, clips, rounds );
+
+G_Printf("clips before add = %i\n", bg_weaponlist[weapon].numClips[ent->client->ps.clientNum] );
+G_Printf("rounds before add = %i\n", bg_weaponlist[weapon].rounds[ent->client->ps.clientNum] );
+  bg_weaponlist[weapon].rounds[ent->client->ps.clientNum] += rounds;
+  bg_weaponlist[weapon].numClips[ent->client->ps.clientNum] += clips;
+  }
   //ent->client->ps.ammo[weapon] += count;
   if ( BG_Grenade(weapon) && bg_weaponlist[weapon].numClips[ent->client->ps.clientNum] > 2 ) {
     bg_weaponlist[weapon].numClips[ent->client->ps.clientNum] = 2;
 
   }
-  if ( bg_weaponlist[weapon].numClips[ent->client->ps.clientNum] > 200 ) {
-    bg_weaponlist[weapon].numClips[ent->client->ps.clientNum] = 200;
+  if ( bg_weaponlist[weapon].rounds[ent->client->ps.clientNum] > RoundCount(weapon) ) {
+    bg_weaponlist[weapon].rounds[ent->client->ps.clientNum] = RoundCount(weapon);
 
         }
 }
@@ -269,12 +287,19 @@ int Pickup_Weapon (gentity_t *ent, gentity_t *other) {
         BG_PackWeapon( ent->item->giTag, other->client->ps.stats );
         /*Add_Ammo( other, ent->item->giTag, quantity );*/
 
+        //rounds =   quantity % RoundCount(ent->item->giTag);
+      //  clips =    quantity / RoundCount(ent->item->giTag);
+      //  if (rounds == 0 && clips > 0 ){
+      //    rounds =   RoundCount(ent->item->giTag);
+       //   clips--;
+      //  }
         //Must add clipcount!!! Xamis
-        quantity = RoundCount(ent->item->giTag);
-        if (bg_weaponlist[ent->item->giTag].rounds[ other->client->ps.clientNum] > 0 )
+    //    quantity = RoundCount(ent->item->giTag);
+    //    if (bg_weaponlist[ent->item->giTag].rounds[ other->client->ps.clientNum] > 0 )
           Add_Ammo( other, ent->item->giTag, ( quantity ));
-        else
-          bg_weaponlist[ent->item->giTag].rounds[ other->client->ps.clientNum] = quantity;
+          G_Printf("quantity = %i\n", quantity );
+     //   else
+     //     bg_weaponlist[ent->item->giTag].rounds[ other->client->ps.clientNum] = quantity;
 
 
 
@@ -298,15 +323,15 @@ int Pickup_Health (gentity_t *ent, gentity_t *other) {
 
         // small and mega healths will go over the max
 #ifdef MISSIONPACK
-        if( other->client && bg_itemlist[other->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
-                max = other->client->ps.stats[STAT_MAX_HEALTH];
-        }
-        else
+//        if( other->client && bg_itemlist[other->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
+//                max = STAT_MAX_HEALTH;
+//        }
+//        else
 #endif
         if ( ent->item->quantity != 5 && ent->item->quantity != 100 ) {
-                max = other->client->ps.stats[STAT_MAX_HEALTH];
+                max = STAT_MAX_HEALTH;
         } else {
-                max = other->client->ps.stats[STAT_MAX_HEALTH] * 2;
+                max = STAT_MAX_HEALTH * 2;
         }
 
         if ( ent->count ) {
@@ -334,26 +359,26 @@ int Pickup_Health (gentity_t *ent, gentity_t *other) {
 //======================================================================
 
 int Pickup_Armor( gentity_t *ent, gentity_t *other ) {
-#ifdef MISSIONPACK
+#ifdef MISSIONPACK/*
         int             upperBound;
 
         other->client->ps.stats[STAT_ARMOR] += ent->item->quantity;
 
         if( other->client && bg_itemlist[other->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
-                upperBound = other->client->ps.stats[STAT_MAX_HEALTH];
+                upperBound = STAT_MAX_HEALTH;
         }
         else {
-                upperBound = other->client->ps.stats[STAT_MAX_HEALTH] * 2;
+                upperBound = STAT_MAX_HEALTH * 2;
         }
 
         if ( other->client->ps.stats[STAT_ARMOR] > upperBound ) {
                 other->client->ps.stats[STAT_ARMOR] = upperBound;
-        }
+        } */
 #else
-        other->client->ps.stats[STAT_ARMOR] += ent->item->quantity;
-        if ( other->client->ps.stats[STAT_ARMOR] > other->client->ps.stats[STAT_MAX_HEALTH] * 2 ) {
-                other->client->ps.stats[STAT_ARMOR] = other->client->ps.stats[STAT_MAX_HEALTH] * 2;
-        }
+//        other->client->ps.stats[STAT_ARMOR] += ent->item->quantity;
+ //       if ( other->client->ps.stats[STAT_ARMOR] > STAT_MAX_HEALTH * 2 ) {
+ //               other->client->ps.stats[STAT_ARMOR] = STAT_MAX_HEALTH * 2;
+ //       }
 #endif
 
         return RESPAWN_ARMOR;
@@ -407,20 +432,6 @@ void RespawnItem( gentity_t *ent ) {
                 te->r.svFlags |= SVF_BROADCAST;
         }
 
-        if ( ent->item->giType == IT_HOLDABLE && ent->item->giTag == HI_KAMIKAZE ) {
-                // play powerup spawn sound to all clients
-                gentity_t       *te;
-
-                // if the powerup respawn sound should Not be global
-                if (ent->speed) {
-                        te = G_TempEntity( ent->s.pos.trBase, EV_GENERAL_SOUND );
-                }
-                else {
-                        te = G_TempEntity( ent->s.pos.trBase, EV_GLOBAL_SOUND );
-                }
-                te->s.eventParm = G_SoundIndex( "sound/items/kamikazerespawn.wav" );
-                te->r.svFlags |= SVF_BROADCAST;
-        }
 
         // play the normal respawn sound only to nearby clients
         G_AddEvent( ent, EV_ITEM_RESPAWN, 0 );
@@ -456,11 +467,11 @@ void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
         switch( ent->item->giType ) {
         case IT_WEAPON:
                 respawn = Pickup_Weapon(ent, other);
-//              predict = qfalse;
+              predict = qfalse;
                 break;
         case IT_AMMO:
                 respawn = Pickup_Ammo(ent, other);
-//              predict = qfalse;
+              predict = qfalse;
                 break;
         case IT_ARMOR:
                 respawn = Pickup_Armor(ent, other);
@@ -570,6 +581,321 @@ void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
 }
 
 
+void UT_SelectItem( gentity_t *ent, int dir ){
+  int original, i;
+
+  original = ent->client->ps.stats[STAT_SELECTED_ITEM];
+
+  for ( i = 1 ; i < PW_NUM_POWERUPS ; i++ ) {
+
+    ent->client->ps.stats[STAT_SELECTED_ITEM]++;
+
+    if ( ent->client->ps.stats[STAT_SELECTED_ITEM] == PW_NUM_POWERUPS ) {
+          //  CG_Printf("ps->stats[STAT_SELECTED_ITEM] == PW_NUM_POWERUP\n");
+      ent->client->ps.stats[STAT_SELECTED_ITEM] = 1;
+    }
+    if ( ent->client->ps.powerups[ ent->client->ps.stats[STAT_SELECTED_ITEM] ] ) {
+           // CG_Printf("ps->stats[STAT_SELECTED_ITEM]= %i\n",
+           //           ps->stats[STAT_SELECTED_ITEM]);
+      break;
+    }
+
+
+  }
+  if ( i == PW_NUM_POWERUPS ) {
+    ent->client->ps.stats[STAT_SELECTED_ITEM] = original;
+  }
+
+}
+
+/*
+================
+LaunchWeapon
+
+spawns a weapon and tosses it forward . adding clips
+================
+*/
+gentity_t *LaunchPowerup( gitem_t *item, vec3_t origin, vec3_t velocity, int clips, int x, int y ) {
+  gentity_t   *dropped;
+
+
+
+  dropped = G_Spawn();
+
+  dropped->s.eType = ET_ITEM;
+  dropped->s.modelindex = item - bg_itemlist; // store item number in modelindex
+  dropped->s.modelindex2 = 1;                 // This is non-zero is it's a dropped item
+
+  dropped->classname = item->classname;
+  dropped->item = item;
+  VectorSet (dropped->r.mins, -ITEM_RADIUS, -ITEM_RADIUS, -3);
+  VectorSet (dropped->r.maxs, ITEM_RADIUS, ITEM_RADIUS, 3);
+  dropped->r.contents = CONTENTS_TRIGGER;
+
+
+  origin[0] += 10;
+  origin[1] += 10;
+ // G_Printf("origin = 0:%f, 1:%f,2:%f\n", origin[0], origin[1],  origin[2] );
+  G_SetOrigin( dropped, origin );
+
+  dropped->s.groundEntityNum = -1;
+  dropped->s.pos.trType = TR_GRAVITY;
+  dropped->s.pos.trTime = level.time;
+  VectorCopy( velocity, dropped->s.pos.trDelta );
+
+  dropped->s.eFlags |= EF_BOUNCE_HALF;
+
+  dropped->flags = FL_DROPPED_ITEM;
+
+  dropped->touch = Touch_Item;
+
+
+//  dropped->s.apos.trBase[YAW] = rand() % 360;
+//  dropped->s.apos.trBase[ROLL] = 90;
+    // clips
+  dropped->count = 10000;
+  dropped->think = G_FreeEntity;
+  dropped->nextthink = level.time + 2000; // remove after 20 seconds
+  trap_LinkEntity (dropped);
+ // G_Printf("trBase[YAW] = %i, trBase[ROLL] = %i\n",(int)dropped->s.apos.trBase[YAW], (int)dropped->s.apos.trBase[ROLL] );
+  return dropped;
+}
+
+/*
+================
+Drop_Weapon
+
+Drops weapons, and adds the current clips to the spawned entity...
+================
+*/
+gentity_t *SpawnPowerup( gentity_t *ent, gitem_t *item, float angle, int clips, int x, int y ) {
+  vec3_t      velocity,forward;
+  vec3_t      angles;
+  vec3_t      origin;
+
+  VectorCopy( ent->s.apos.trBase, angles );
+  angles[YAW] += angle;
+  angles[PITCH] = 0;  // always forward
+
+  AngleVectors( ent->client->ps.viewangles, forward, NULL, NULL );
+  VectorScale( forward, 250, velocity );
+  velocity[2] += 200;
+
+  VectorCopy(ent->client->ps.origin,origin );
+  origin[2] += 10;
+
+
+    // add this
+  return LaunchPowerup( item, origin, velocity, clips, x, y  );
+}
+
+
+/*
+================
+Drop_Weapon
+
+Drops current Weapon
+================
+*/
+void UT_SpawnPowerup ( gentity_t *ent, int i)
+{
+  gclient_t   *client;
+  gitem_t             *item;
+
+  client = ent->client;
+
+  if ( ent->client->ps.pm_flags & PMF_FOLLOW )
+    return;
+
+  item = BG_FindItemForPowerup( i );
+
+  SpawnPowerup( ent, item, 90, 1, 10, 10 );
+
+
+
+}
+
+/*
+================
+LaunchWeapon
+
+spawns a weapon and tosses it forward . adding clips
+================
+*/
+gentity_t *LaunchWeapon( gitem_t *item, vec3_t origin, vec3_t velocity, int clips, int x, int y ) {
+  gentity_t   *dropped;
+
+
+
+  dropped = G_Spawn();
+
+  dropped->s.eType = ET_ITEM;
+  dropped->s.modelindex = item - bg_itemlist; // store item number in modelindex
+  dropped->s.modelindex2 = 1;                 // This is non-zero is it's a dropped item
+
+  dropped->classname = item->classname;
+  dropped->item = item;
+  VectorSet (dropped->r.mins, -ITEM_RADIUS, -ITEM_RADIUS, -3);
+  VectorSet (dropped->r.maxs, ITEM_RADIUS, ITEM_RADIUS, 3);
+  dropped->r.contents = CONTENTS_TRIGGER;
+
+
+  origin[0] += x;
+  origin[1] += y;
+ // G_Printf("origin = 0:%f, 1:%f,2:%f\n", origin[0], origin[1],  origin[2] );
+  G_SetOrigin( dropped, origin );
+
+  dropped->s.groundEntityNum = -1;
+  dropped->s.pos.trType = TR_GRAVITY;
+  dropped->s.pos.trTime = level.time;
+  VectorCopy( velocity, dropped->s.pos.trDelta );
+
+  dropped->s.eFlags |= EF_BOUNCE_HALF;
+
+  dropped->flags = FL_DROPPED_ITEM;
+
+  dropped->touch = Touch_Item;
+
+
+  dropped->s.apos.trBase[YAW] = rand() % 360;
+  dropped->s.apos.trBase[ROLL] = 90;
+    // clips
+  dropped->count = clips;
+  dropped->think = G_FreeEntity;
+  if (clips <= 0 )
+  dropped->nextthink = level.time + 0; // remove now!
+  else
+  dropped->nextthink = level.time + 20000; // remove after 20 seconds
+  trap_LinkEntity (dropped);
+  //G_Printf("trBase[YAW] = %i, trBase[ROLL] = %i\n",(int)dropped->s.apos.trBase[YAW], (int)dropped->s.apos.trBase[ROLL] );
+  return dropped;
+}
+
+/*
+================
+Drop_Weapon
+
+Drops weapons, and adds the current clips to the spawned entity...
+================
+*/
+gentity_t *Drop_Weapon( gentity_t *ent, gitem_t *item, float angle, int clips, int x, int y ) {
+  vec3_t      velocity,forward;
+  vec3_t      angles;
+  vec3_t      origin;
+
+  VectorCopy( ent->s.apos.trBase, angles );
+  angles[YAW] += angle;
+  angles[PITCH] = 0;  // always forward
+
+  AngleVectors( ent->client->ps.viewangles, forward, NULL, NULL );
+  VectorScale( forward, 250, velocity );
+  velocity[2] += 200;
+
+  VectorCopy(ent->client->ps.origin,origin );
+  origin[2] += 10;
+
+
+    // add this
+  return LaunchWeapon( item, origin, velocity, clips, x, y  );
+}
+
+
+/*
+================
+Drop_Weapon
+
+Drops current Weapon
+================
+*/
+void UT_DropWeapon ( gentity_t *ent)
+{
+  gclient_t   *client;
+  gitem_t             *item;
+  int ammo;
+  int weapon;
+
+  client = ent->client;
+  weapon = client->ps.weapon;
+  ammo = bg_weaponlist[weapon].rounds[client->ps.clientNum]
+      + bg_weaponlist[weapon].numClips[client->ps.clientNum]
+      * RoundCount(weapon);
+
+  if ( ent->client->ps.pm_flags & PMF_FOLLOW )
+    return;
+
+  if (client->ps.weaponstate != WEAPON_READY)
+    return;
+
+  if (ent->s.weapon <= WP_KNIFE)
+  {
+    return;
+  }
+  item = BG_FindItemForWeapon( client->ps.weapon );
+
+  if ( BG_Grenade( weapon ) && bg_weaponlist[weapon].numClips[client->ps.clientNum] > 1 )
+  {
+    bg_weaponlist[weapon].numClips[client->ps.clientNum]--;
+  }
+  else
+  {
+
+    if ( BG_Grenade( weapon ) )
+      bg_weaponlist[weapon].numClips[client->ps.clientNum] = 0;
+  }
+  client->ps.weapon = WP_NONE;
+
+  if ( weapon == bg_inventory.sort[client->ps.clientNum][PRIMARY])
+    bg_inventory.sort[client->ps.clientNum][PRIMARY] = WP_NONE;
+  if ( weapon == bg_inventory.sort[client->ps.clientNum][SECONDARY])
+    bg_inventory.sort[client->ps.clientNum][SECONDARY] = WP_NONE;
+  if ( weapon == bg_inventory.sort[client->ps.clientNum][SIDEARM])
+    bg_inventory.sort[client->ps.clientNum][SIDEARM] = WP_NONE;
+  if ( weapon == bg_inventory.sort[client->ps.clientNum][NADE])
+    bg_inventory.sort[client->ps.clientNum][NADE] = WP_NONE;
+
+  if ( BG_Grenade( weapon ) )
+  Drop_Weapon( ent, item, random()*360, bg_weaponlist[weapon].numClips[client->ps.clientNum], 0, 0 );
+  else {
+  Drop_Weapon( ent, item, random()*360, ammo, 0, 0 );
+  }
+  bg_weaponlist[weapon].rounds[client->ps.clientNum] = 0;
+  bg_weaponlist[weapon].numClips[client->ps.clientNum] = 0;
+
+  for ( ; ; ){
+    if ( bg_inventory.sort[client->ps.clientNum][PRIMARY] ){
+      client->ps.weapon = bg_inventory.sort[client->ps.clientNum][PRIMARY];
+    break;
+  }
+  else if ( bg_inventory.sort[client->ps.clientNum][SECONDARY]){
+
+    client->ps.weapon = bg_inventory.sort[client->ps.clientNum][SECONDARY];
+    break;
+  }
+  else if ( bg_inventory.sort[client->ps.clientNum][SIDEARM]){
+
+    client->ps.weapon = bg_inventory.sort[client->ps.clientNum][SIDEARM];
+  break;
+  }
+  else if ( bg_inventory.sort[client->ps.clientNum][NADE]){
+
+    client->ps.weapon = bg_inventory.sort[client->ps.clientNum][NADE];
+    break;
+  }
+  else{
+    client->ps.weapon = bg_inventory.sort[client->ps.clientNum][MELEE];
+  break;
+  }
+  }
+  trap_SendConsoleCommand(client->ps.clientNum, va("weapon %i \n", client->ps.weapon ));
+  ent->client->ps.weaponstate = WEAPON_READY;
+
+  BG_RemoveWeapon( weapon, ent->client->ps.stats );
+ // UT_SpawnPowerup ( ent, PW_SILENCER);
+  //SpawnSilencer(ent );
+}
+
+
+
 //======================================================================
 
 /*
@@ -597,11 +923,14 @@ gentity_t *LaunchItem( gitem_t *item, vec3_t origin, vec3_t velocity ) {
         dropped->touch = Touch_Item;
 
         G_SetOrigin( dropped, origin );
+
+
         dropped->s.pos.trType = TR_GRAVITY;
         dropped->s.pos.trTime = level.time;
         VectorCopy( velocity, dropped->s.pos.trDelta );
 
-        dropped->s.eFlags |= EF_BOUNCE_HALF;
+
+       // dropped->s.eFlags |= EF_BOUNCE_HALF;
 #ifdef MISSIONPACK
         if ((g_gametype.integer == GT_CTF || g_gametype.integer == GT_BOMB)                     && item->giType == IT_TEAM) { // Special case for CTF flags
 #else
@@ -632,6 +961,7 @@ Spawns an item and tosses it forward
 gentity_t *Drop_Item( gentity_t *ent, gitem_t *item, float angle ) {
         vec3_t  velocity;
         vec3_t  angles;
+        int i;
 
         VectorCopy( ent->s.apos.trBase, angles );
         angles[YAW] += angle;
@@ -640,6 +970,14 @@ gentity_t *Drop_Item( gentity_t *ent, gitem_t *item, float angle ) {
         AngleVectors( angles, velocity, NULL, NULL );
         VectorScale( velocity, 150, velocity );
         velocity[2] += 200 + crandom() * 50;
+
+      /*  for(i=0; i < 3; i++ )
+          if (bg_inventory.item[ent->client->ps.clientNum][i] = item->giTag && item->giType == IT_POWERUP){
+          G_Printf(" bg_inventory.item[ent->client->ps.clientNum][%i] = 0\n", i);
+          bg_inventory.item[ent->client->ps.clientNum][i] = 0;
+
+          }
+        */
 
         return LaunchItem( item, ent->s.pos.trBase, velocity );
 }
@@ -670,6 +1008,7 @@ void FinishSpawningItem( gentity_t *ent ) {
         trace_t         tr;
         vec3_t          dest;
 
+
         VectorSet( ent->r.mins, -ITEM_RADIUS, -ITEM_RADIUS, -ITEM_RADIUS );
         VectorSet( ent->r.maxs, ITEM_RADIUS, ITEM_RADIUS, ITEM_RADIUS );
 
@@ -682,7 +1021,7 @@ void FinishSpawningItem( gentity_t *ent ) {
         // useing an item causes it to respawn
         ent->use = Use_Item;
 
-        if ( ent->spawnflags & 1 ) {
+        if ( 0/*ent->spawnflags & 1*/ ) {
                 // suspended
                 G_SetOrigin( ent, ent->s.origin );
         } else {
@@ -700,7 +1039,7 @@ void FinishSpawningItem( gentity_t *ent ) {
 
                 G_SetOrigin( ent, tr.endpos );
         }
-
+        G_Printf ("FinishSpawningItem: %s startsolid at %s\n", ent->classname, vtos(ent->s.origin));
         // team slaves and targeted items aren't present at start
         if ( ( ent->flags & FL_TEAMSLAVE ) || ent->targetname ) {
                 ent->s.eFlags |= EF_NODRAW;
@@ -712,10 +1051,10 @@ void FinishSpawningItem( gentity_t *ent ) {
         if ( ent->item->giType == IT_POWERUP ) {
                 float   respawn;
 
-                respawn = 45 + crandom() * 15;
+                respawn = 45;
                 ent->s.eFlags |= EF_NODRAW;
                 ent->r.contents = 0;
-                ent->nextthink = level.time + respawn * 1000;
+                ent->nextthink = level.time + respawn * 10;
                 ent->think = RespawnItem;
                 return;
         }
@@ -909,7 +1248,7 @@ void G_SpawnItem (gentity_t *ent, gitem_t *item) {
         ent->nextthink = level.time + FRAMETIME * 2;
         ent->think = FinishSpawningItem;
 
-        ent->physicsBounce = 0.50;              // items are bouncy
+        ent->physicsBounce = 0.0;              // items are bouncy
 
         if ( item->giType == IT_POWERUP ) {
                 G_SoundIndex( "sound/items/poweruprespawn.wav" );

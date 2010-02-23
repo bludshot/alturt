@@ -160,7 +160,7 @@ struct gentity_s {
 	int			stamina; //Xamis
 	int			CloseWhenIdle;//Xamis
 	int			trigger_only; //Xamis
-        int                     slidedistance;
+        float                     slidedistance;
 
 
 	qboolean	takedamage;
@@ -261,14 +261,24 @@ typedef struct {
 #define MAX_NETNAME			36
 #define	MAX_VOTE_COUNT		3
 
-//xamis
-#define MELEE                   0
-#define SIDEARM                 1
-#define PRIMARY                 2
-#define SECONDARY               3
-#define NADE                    4
-#define MISC                    5
-#define INVENTORYITEMS  6
+
+
+
+#define LOC_NULL                        0
+#define LOC_HEAD                        1
+#define LOC_FACE                        2
+#define LOC_CHEST                       3
+#define LOC_STOMACH                     4
+#define LOC_BACK                        5
+#define LOC_RIGHTARM            6
+#define LOC_LEFTARM                     7
+#define LOC_RIGHTLEG            8
+#define LOC_LEFTLEG                     9
+#define LOC_BLEED                       10
+#define LOC_THROAT    11
+#define LOC_KNEE      12
+
+
 
 
 // client data that stays across multiple respawns, but is cleared
@@ -501,6 +511,8 @@ void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace);
 void ClearRegisteredItems( void );
 void RegisterItem( gitem_t *item );
 void SaveRegisteredItems( void );
+gentity_t *Drop_Weapon( gentity_t *ent, gitem_t *item, float angle, int clips, int x, int y );
+void UT_SpawnPowerup ( gentity_t *ent, int i);
 
 //
 // g_utils.c
@@ -548,6 +560,8 @@ void TossClientItems( gentity_t *self );
 void TossClientPersistantPowerups( gentity_t *self );
 #endif
 void TossClientCubes( gentity_t *self );
+
+void QDECL PrintMsg( gentity_t *ent, const char *fmt, ... );
 
 // damage flags
 #define DAMAGE_RADIUS				0x00000001	// damage was indirect
@@ -1028,5 +1042,5 @@ void Change_Mode(gentity_t *ent);
 void G_ExplodeSmokenade( gentity_t *ent );
 
 void    Set_Mode(gentity_t *ent);
-
+void UT_DropWeapon ( gentity_t *ent);
 

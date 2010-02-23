@@ -26,6 +26,210 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
 /*
+==============
+
+LOCATIONAL DAMAGE
+( needs to be improved [damn new PPMs] )
++done
+
+==============
+*/
+qboolean pointinback (gentity_t *self, vec3_t point)
+{
+  vec3_t      vec;
+  float       dot;
+  vec3_t      forward;
+
+  if ( !self->client )
+    return qfalse;
+
+  AngleVectors (self->client->ps.viewangles, forward, NULL, NULL);
+  VectorSubtract (point, self->r.currentOrigin, vec);
+  VectorNormalize (vec);
+  dot = DotProduct (vec, forward);
+
+  if (dot < 0.3)
+    return qtrue;
+  return qfalse;
+}
+qboolean pointinfront (gentity_t *self, vec3_t point, float mod)
+{
+  vec3_t      vec;
+  float       dot;
+  vec3_t      forward;
+
+  if ( !self->client )
+    return qfalse;
+
+  AngleVectors (self->client->ps.viewangles, forward, NULL, NULL);
+  VectorCopy(self->r.currentOrigin, vec);
+  vec[2]+=mod;
+  VectorSubtract (point, vec, vec);
+  VectorNormalize (vec);
+  dot = DotProduct (vec, forward);
+
+  if (dot < 0.3)
+    return qfalse;
+  return qtrue;
+}
+qboolean pointabove (gentity_t *self, vec3_t point)
+{
+  vec3_t      vec;
+  float       dot;
+  vec3_t      up;
+
+  if ( !self->client )
+    return qfalse;
+
+  AngleVectors (self->client->ps.viewangles, NULL, NULL, up);
+  VectorSubtract (point, self->r.currentOrigin, vec);
+  VectorNormalize (vec);
+  dot = DotProduct (vec, up);
+
+  if (dot > 0.3)
+    return qtrue;
+  return qfalse;
+}
+qboolean pointbelow (gentity_t *self, vec3_t point)
+{
+  vec3_t      vec;
+  float       dot;
+  vec3_t      up;
+
+  if ( !self->client )
+    return qfalse;
+
+  AngleVectors (self->client->ps.viewangles, NULL, NULL, up);
+  VectorSubtract (point, self->r.currentOrigin, vec);
+  VectorNormalize (vec);
+  dot = DotProduct (vec, up);
+
+  if (dot < -0.3)
+    return qtrue;
+  return qfalse;
+}
+qboolean inback (gentity_t *self, vec3_t point, float mod)
+{
+  vec3_t      vec;
+  float       dot;
+  vec3_t      forward;
+
+  AngleVectors (self->s.angles, forward, NULL, NULL);
+  VectorCopy(self->r.currentOrigin, vec);
+  vec[2]+=mod;
+  VectorSubtract (point, vec, vec);
+  VectorNormalize (vec);
+  dot = DotProduct (vec, forward);
+
+  if (dot < -0.3)
+    return qtrue;
+  return qfalse;
+}
+/*
+=================
+NSQ3 GetLocationalDamage
+by: dX
+date: around 10th feburary 2k
+return value: returns damage as #define
+=================
+*/
+
+
+int CheckLocationDamage ( gentity_t *targ, vec3_t point, int mod) {
+  vec3_t bulletPath;
+  vec3_t bulletAngle;
+
+  float clientHeight;
+  float clientFeetZ;
+  float clientRotation;
+  float bulletHeight;
+  int bulletRotation;
+  int impactRotation;
+  int inback = 0;
+
+  float headMod = 7.8f;
+  float chestMod = 22.0f;
+  float stomachMod = 14.0f;
+
+  if ( targ->client && ( targ->client->ps.pm_flags & PMF_DUCKED ) )
+  {
+    headMod = 18.96f;
+    chestMod = 31.16f;
+    stomachMod = 26.19f; // where the stomach begins
+  }
+
+
+    // Point[2] is the REAL world Z. We want Z relative to the clients feet
+
+    // Where the feet are at
+  clientFeetZ  = targ->r.currentOrigin[2] + targ->r.mins[2];
+    // How tall the client is
+  clientHeight = targ->r.maxs[2] - targ->r.mins[2];
+    // Where the bullet struck
+  bulletHeight = point[2] - clientFeetZ;
+
+    // Get a vector aiming from the client to the bullet hit
+  VectorSubtract(targ->r.currentOrigin, point, bulletPath);
+    // Convert it into PITCH, ROLL, YAW
+  vectoangles(bulletPath, bulletAngle);
+
+  clientRotation = targ->client->ps.viewangles[YAW];
+  bulletRotation = bulletAngle[YAW];
+
+  impactRotation = abs(clientRotation-bulletRotation);
+
+  impactRotation += 45; // just to make it easier to work with
+  impactRotation = impactRotation % 360; // Keep it in the 0-359 range
+
+  if (impactRotation < 90)
+    inback = 1;
+  else if (impactRotation < 180)
+    inback = 2;
+  else if (impactRotation < 270)
+    inback = 0;
+  else if (impactRotation < 360)
+    inback = 3;
+
+  if (/*g_debugDamage.integer ==*/ 1) G_Printf("Bulletheight: %f || Clientheight: %f || mod: %i\n", bulletHeight, clientHeight, mod);
+
+    // The upper body never changes height, just distance from the feet
+  if ( (bulletHeight > clientHeight - headMod) ) {
+    /*if (g_debugDamage.integer == 1)*/ G_Printf("Headshot\n");
+    return LOC_HEAD;
+  } else if ( (bulletHeight > clientHeight - headMod ) && (inback == 0) ) {
+/*    if (g_debugDamage.integer == 1) */G_Printf("Faceshot\n");
+    return  LOC_FACE;
+  } else if ( (bulletHeight > clientHeight ) ) {
+/*    if (g_debugDamage.integer == 1) */G_Printf("Headshot\n");
+    return LOC_HEAD;
+  } else if ( (bulletHeight > clientHeight - stomachMod) && (inback == 0) ) {
+/*    if (g_debugDamage.integer == 1) */G_Printf("Chestshot\n");
+    return LOC_CHEST;
+  } else if ( (bulletHeight > clientHeight - stomachMod) && (inback == 2) ) {
+/*    if (g_debugDamage.integer == 1) */G_Printf("Rightarmshot\n");
+    return LOC_RIGHTARM;
+  } else if ( (bulletHeight > clientHeight - stomachMod) && (inback == 3) ) {
+/*    if (g_debugDamage.integer == 1) */G_Printf("Leftarmshot\n");
+    return LOC_LEFTARM;
+  } else if ( (bulletHeight > clientHeight - chestMod) && (inback == 1) ) {
+/*    if (g_debugDamage.integer == 1) */G_Printf("Backshot\n");
+    return LOC_BACK;
+  } else if ( (bulletHeight > clientHeight - chestMod) ) {
+/*    if (g_debugDamage.integer == 1)*/ G_Printf("Stomachshot\n");
+    return LOC_STOMACH;
+  } else if ( inback == 2 || inback == 0) {
+/*    if (g_debugDamage.integer == 1) */G_Printf("Rightlegshot\n");
+    return LOC_RIGHTLEG;
+  } else {
+/*    if (g_debugDamage.integer == 1) */G_Printf("Leftlegshot\n");
+    return LOC_LEFTLEG;
+  }
+
+}
+
+
+
+/*
 ============
 ScorePlum
 ============
@@ -85,59 +289,64 @@ void TossClientItems( gentity_t *self ) {
 	float		angle;
 	int			i;
 	gentity_t	*drop;
+        int ammo = 0;
 
-	// drop the weapon if not a gauntlet or machinegun
-        weapon = self->client->pers.inventory[PRIMARY];
-        weapon1 = self->client->pers.inventory[SECONDARY];
-        weapon2 = self->client->pers.inventory[NADE];
-        weapon3 = self->client->pers.inventory[SIDEARM];
+	//drop the weapon if not a gauntlet or machinegun
+        weapon = bg_inventory.sort[self->client->ps.clientNum][PRIMARY];
+        weapon1 = bg_inventory.sort[self->client->ps.clientNum][SECONDARY];
+        weapon2 = bg_inventory.sort[self->client->ps.clientNum][NADE];
+        weapon3 = bg_inventory.sort[self->client->ps.clientNum][SIDEARM];
 
 
 	// make a special check to see if they are changing to a new
 	// weapon that isn't the mg or gauntlet.  Without this, a client
 	// can pick up a weapon, be killed, and not drop the weapon because
 	// their weapon change hasn't completed yet and they are still holding the MG.
-        /*
-	if ( weapon == WP_KNIFE  ) {
-		if ( self->client->ps.weaponstate == WEAPON_DROPPING ) {
-			weapon = self->client->pers.cmd.weapon;
-		}
-		if ( !( self->client->ps.stats[STAT_WEAPONS] & ( 1 << weapon ) ) ) {
-			weapon = WP_NONE;
-		}
-	}
-*/
+
         if ( weapon && bg_weaponlist[weapon].rounds[self->client->ps.clientNum] ) {
 		// find the item type for this weapon
 		item = BG_FindItemForWeapon( weapon );
-                self->client->pers.inventory[PRIMARY] = WP_NONE;
+                bg_inventory.sort[self->client->ps.clientNum][PRIMARY] = WP_NONE;
+                ammo =bg_weaponlist[weapon].rounds[self->client->ps.clientNum]
+                    + bg_weaponlist[weapon].numClips[self->client->ps.clientNum]
+                    * RoundCount(weapon);
 		// spawn the item
-		Drop_Item( self, item, 0 );
+                Drop_Weapon(self, item, random()*360, ammo, 0, 0 );
 	}
 
         if ( weapon1 && bg_weaponlist[weapon1].rounds[self->client->ps.clientNum] ) {
                 // find the item type for this weapon
           item1 = BG_FindItemForWeapon( weapon1 );
-          self->client->pers.inventory[SECONDARY] = WP_NONE;
+          bg_inventory.sort[self->client->ps.clientNum][SECONDARY] = WP_NONE;
+          ammo =bg_weaponlist[weapon1].rounds[self->client->ps.clientNum]
+              + bg_weaponlist[weapon1].numClips[self->client->ps.clientNum]
+              * RoundCount(weapon1);
                 // spawn the item
-          Drop_Item( self, item1, 0 );
+          Drop_Weapon(self, item1, random()*360, ammo, 25, 25 );
         }
 
-        if ( weapon2 && bg_weaponlist[weapon2].rounds[self->client->ps.clientNum] ) {
+        if ( weapon2 && bg_weaponlist[weapon2].numClips[self->client->ps.clientNum] ) {
                 // find the item type for this weapon
           item2 = BG_FindItemForWeapon( weapon2 );
-          self->client->pers.inventory[NADE] = WP_NONE;
+          bg_inventory.sort[self->client->ps.clientNum][NADE] = WP_NONE;
+          ammo =bg_weaponlist[weapon2].rounds[self->client->ps.clientNum]
+              + bg_weaponlist[weapon2].numClips[self->client->ps.clientNum]
+              * RoundCount(weapon2);
                 // spawn the item
-          Drop_Item( self, item2, 0 );
+          Drop_Weapon(self, item2, random()*360, ammo ,-25, -25 );
         }
 
         if ( weapon3 && bg_weaponlist[weapon3].rounds[self->client->ps.clientNum]) {
                 // find the item type for this weapon
           item3 = BG_FindItemForWeapon( weapon3 );
-          self->client->pers.inventory[SIDEARM] = WP_NONE;
+          bg_inventory.sort[self->client->ps.clientNum][SIDEARM] = WP_NONE;
+          ammo =bg_weaponlist[weapon3].rounds[self->client->ps.clientNum]
+              + bg_weaponlist[weapon3].numClips[self->client->ps.clientNum]
+              * RoundCount(weapon3);
                 // spawn the item
-          Drop_Item( self, item2, 0 );
+          Drop_Weapon(self, item3, random()*360, ammo, 25, -25 );
         }
+     //   G_Printf("%i rounds of ammo dropped\n", ammo);
 	// drop all the powerups if not in teamplay
 	if ( g_gametype.integer != GT_TEAM ) {
 		angle = 45;
@@ -156,10 +365,22 @@ void TossClientItems( gentity_t *self ) {
 				angle += 45;
 			}
 		}
-	}
+        }
+        for ( i = 0; i < PW_NUM_POWERUPS; i++){
+        self->client->ps.powerups[ i ] = 0;
+
+        }
+        for ( i = 0; i < 3; i++){
+          bg_inventory.item[self->client->ps.clientNum][i] = 0;
+        }
+
 }
 
+
+
+
 #ifdef MISSIONPACK
+
 
 /*
 =================
@@ -236,7 +457,7 @@ void TossClientPersistantPowerups( gentity_t *ent ) {
 	powerup->r.contents = CONTENTS_TRIGGER;
 	trap_LinkEntity( powerup );
 
-	ent->client->ps.stats[STAT_PERSISTANT_POWERUP] = 0;
+//	ent->client->ps.stats[STAT_PERSISTANT_POWERUP] = 0;
 	ent->client->persistantPowerup = NULL;
 }
 #endif
@@ -722,7 +943,7 @@ CheckArmor
 */
 int CheckArmor (gentity_t *ent, int damage, int dflags)
 {
-	gclient_t	*client;
+/*	gclient_t	*client;
 	int			save;
 	int			count;
 
@@ -747,8 +968,8 @@ int CheckArmor (gentity_t *ent, int damage, int dflags)
 		return 0;
 
 	client->ps.stats[STAT_ARMOR] -= save;
-
-	return save;
+*/
+	return 0;
 }
 
 /*
@@ -827,6 +1048,23 @@ int G_InvulnerabilityEffect( gentity_t *targ, vec3_t dir, vec3_t point, vec3_t i
 	}
 }
 
+
+qboolean HasPowerup( gentity_t *ent, int powerup )
+{
+  if (!ent)
+    return qfalse;
+  if (!ent->client)
+    return qfalse;
+
+
+  if (ent->client->ps.powerups[powerup] > 0 )
+    return qtrue;
+
+
+  return qfalse;
+}
+
+
 /*
 ============
 T_Damage
@@ -850,7 +1088,6 @@ dflags		these flags are used to control how T_Damage works
 	DAMAGE_NO_PROTECTION	kills godmode, armor, everything
 ============
 */
-
 void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			   vec3_t dir, vec3_t point, int damage, int dflags, int mod ) {
 	gclient_t	*client;
@@ -859,65 +1096,201 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	int			asave;
 	int			knockback;
 	int			max;
+        int                     dummy;
+        int                 HitLocation = LOC_NULL;
+        qboolean    bleeding = qfalse;
+        qboolean    headblown = qfalse;
+//        qboolean    spray_blood = qfalse;
+        float               through_vest = 1;
+
 #ifdef MISSIONPACK
 	vec3_t		bouncedir, impactpoint;
 #endif
 
 	if (!targ->takedamage) {
-		return;
+          return;
 	}
 
 	// the intermission has allready been qualified for, so don't
 	// allow any extra scoring
 	if ( level.intermissionQueued ) {
-		return;
+          return;
 	}
-#ifdef MISSIONPACK
-	if ( targ->client && mod != MOD_JUICED) {
-		if ( targ->client->invulnerabilityTime > level.time) {
-			if ( dir && point ) {
-				G_InvulnerabilityEffect( targ, dir, point, impactpoint, bouncedir );
-			}
-			return;
-		}
-	}
-#endif
 	if ( !inflictor ) {
 		inflictor = &g_entities[ENTITYNUM_WORLD];
 	}
 	if ( !attacker ) {
 		attacker = &g_entities[ENTITYNUM_WORLD];
 	}
-/* removed, --xamis-- Don't want to open doors by shooting
-	// shootable doors / buttons don't actually have any health
-	if ( targ->s.eType == ET_MOVER ) {
-		if ( targ->use && targ->moverState == MOVER_POS1 ) {
-			targ->use( targ, inflictor, attacker );
-		}
-		return;
-	}
-*/
 		// Xamis
 	if ( targ->s.eType == ET_BREAKABLE ) {
 		targ->health -= damage;
 		G_BreakGlass( targ, point );
-		return;
+                return;
 	}
+        take = damage;
+        if ( mod == MOD_FALLING ) {
+        // add damage to both legs...
+          targ->client->ps.stats[STAT_LEG_DAMAGE] += take;
 
-#ifdef MISSIONPACK
-	if( g_gametype.integer == GT_BOMB && CheckObeliskAttack( targ, attacker ) ) {
-		return;
-	}
-#endif
+        // remove stamina
+          dummy = take*2;
+          if (targ->client->ps.stats[STAT_STAMINA] < dummy) {
+            dummy -= targ->client->ps.stats[STAT_STAMINA];
+            targ->client->ps.stats[STAT_STAMINA] = 0;
+            targ->client->ps.stats[STAT_LEG_DAMAGE] += dummy*0.5;
+            targ->client->ps.stats[STAT_CHEST_DAMAGE] += dummy*0.4;
+            targ->client->ps.stats[STAT_HEAD_DAMAGE] += dummy*0.1;
+            take += dummy;
+          } else {
+            targ->client->ps.stats[STAT_STAMINA] -= dummy;
+          }
+
+
+        } else if ( targ->client &&
+                    ( attacker && attacker->client ) &&
+                        point ) {
+
+        // if dead - ignore
+                      if ( targ->r.contents == CONTENTS_CORPSE )
+                        return;
+
+                      if ( attacker->client->ps.weapon == WP_SR8 )
+                        through_vest = 1;
+                      else if ( HasPowerup(targ, PW_VEST ) )
+                        through_vest = 0;
+                      else if ( !HasPowerup( targ, PW_VEST ) )
+                        through_vest = 0;
+
+        // get the hit location
+                      G_Printf("getting Hitlocation\n");
+                      HitLocation = CheckLocationDamage( targ,point, mod );
+                      G_Printf("got Hitlocation: %i\n", HitLocation);
+
+        // if nothing was hit, return
+                      if (HitLocation == LOC_NULL) return;
+
+        // extra handling for grenades
+                      if (dflags & DAMAGE_RADIUS) {
+                        if (HitLocation == LOC_FACE) {
+                     //     spray_blood = qtrue;
+                          take *= 2;
+                         // armorhit = 2;
+                          targ->client->ps.stats[STAT_HEAD_DAMAGE] += take*0.8;
+                          targ->client->ps.stats[STAT_ARM_DAMAGE] += take*0.2;
+                        } else if (HitLocation == LOC_HEAD) {
+                         // spray_blood = qtrue;
+                          if (HasPowerup( targ, PW_HELMET ) ) take *= 1;
+                          else take *= 2;
+                        //  armorhit = 2;
+                          targ->client->ps.stats[STAT_HEAD_DAMAGE] += take*0.8;
+                          targ->client->ps.stats[STAT_ARM_DAMAGE] += take*0.2;
+                        } else {
+                // we traced chest, back, stomach, arms or legs. We assume there is
+                // no partial cover. damage will be distributed to the damage areas.
+                          if (HasPowerup( targ, PW_VEST ) ) take *= 0.7;
+                          else take *= 1;
+//                          armorhit = 1;
+ //                         spray_blood = qtrue;
+                          if ( (random() < 0.4) || HasPowerup(targ, PW_VEST) ) bleeding = qfalse;
+                          else bleeding = qtrue;
+                          targ->client->ps.stats[STAT_CHEST_DAMAGE] += take*0.45;
+                          targ->client->ps.stats[STAT_STOMACH_DAMAGE] += take*0.15;
+                          targ->client->ps.stats[STAT_LEG_DAMAGE] += take*0.2;
+                          targ->client->ps.stats[STAT_ARM_DAMAGE] += take*0.1;
+                          targ->client->ps.stats[STAT_HEAD_DAMAGE] += take*0.1;
+                        }
+
+            // here goes the calculation for bullets / melee
+                      } else switch ( HitLocation ){
+
+                        case LOC_FACE:
+                          take *= 10;
+                          if ( (take > targ->health) )  {
+                            headblown = qtrue;
+                            take = 999;
+                            if(! (dflags & DAMAGE_RADIUS) )
+                              G_Printf(NULL, S_COLOR_RED"%ss face was blown away by %s!\n", targ->client->pers.netname, attacker->client->pers.netname);
+                          }
+                          targ->client->ps.stats[STAT_HEAD_DAMAGE] += take;
+                          break;
+                        case LOC_HEAD:
+                          if (HasPowerup(targ, PW_HELMET)) take *= 4;
+                          else take *= 8;
+                          if ( (take > targ->health)) {
+                            headblown = qtrue;
+                            take = 999;
+                            if(! (dflags & DAMAGE_RADIUS) )
+                              PrintMsg(NULL, S_COLOR_RED"%ss head was blown away by %s!\n", targ->client->pers.netname, attacker->client->pers.netname);
+                          }
+                          targ->client->ps.stats[STAT_HEAD_DAMAGE] += take;
+                          break;
+                        case LOC_CHEST:
+                          take *= 2.5;
+                          if ( (random() < 0.4) || HasPowerup(targ, PW_VEST) ) bleeding = qfalse;
+                          else bleeding = qtrue;
+                          targ->client->ps.stats[STAT_CHEST_DAMAGE] += take;
+                          break;
+                        case LOC_BACK:
+                          take *= 2.0;
+                          if ( (random() < 0.4) || HasPowerup(targ, PW_VEST) ) bleeding = qfalse;
+                          else bleeding = qtrue;
+                          targ->client->ps.stats[STAT_CHEST_DAMAGE] += take;
+                          break;
+                        case LOC_STOMACH:
+                          take *= 2.5;
+                          if ( HasPowerup(targ, PW_VEST) ) bleeding = qfalse;
+                          else bleeding = qtrue;
+                          targ->client->ps.stats[STAT_STOMACH_DAMAGE] += take;
+                          break;
+                        case LOC_RIGHTARM:
+                          take *= 1.63;
+                          if ( random() < 0.6 ) bleeding = qfalse;
+                          else bleeding = qtrue;
+                          targ->client->ps.stats[STAT_ARM_DAMAGE] += take;
+                          break;
+                        case LOC_LEFTARM:
+                          take *= 1.63;
+                          if ( random() < 0.6 ) bleeding = qfalse;
+                          else bleeding = qtrue;
+                          targ->client->ps.stats[STAT_ARM_DAMAGE] += take;
+                          break;
+                        case LOC_RIGHTLEG:
+                          take *= 1.75;
+                          if ( random() < 0.6 ) bleeding = qfalse;
+                          else bleeding = qtrue;
+                          targ->client->ps.stats[STAT_LEG_DAMAGE] += take;
+                          break;
+                        case LOC_LEFTLEG:
+                          take *= 1.75;
+                          if ( random() < 0.6 ) bleeding = qfalse;
+                          else bleeding = qtrue;
+                          targ->client->ps.stats[STAT_LEG_DAMAGE] += take;
+                          break;
+                      }
+
+
+        // if a grenade hit was encountered, remove stamina
+                           if(dflags & DAMAGE_RADIUS) {
+                             dummy = take*4;
+                             if ( targ->client->ps.stats[STAT_STAMINA] > dummy )
+                               targ->client->ps.stats[STAT_STAMINA] -= dummy;
+                             else {
+                               dummy -= targ->client->ps.stats[STAT_STAMINA];
+                               targ->client->ps.stats[STAT_STAMINA] = 0;
+                               targ->client->ps.stats[STAT_HEAD_DAMAGE] += dummy*0.2;
+                               targ->client->ps.stats[STAT_CHEST_DAMAGE] += dummy*0.3;
+                               targ->client->ps.stats[STAT_STOMACH_DAMAGE] += dummy*0.1;
+                               targ->client->ps.stats[STAT_ARM_DAMAGE] += dummy*0.2;
+                               targ->client->ps.stats[STAT_LEG_DAMAGE] += dummy*0.2;
+                               take += dummy;
+                             }
+                           }
+
 	// reduce damage by the attacker's handicap value
 	// unless they are rocket jumping
 	if ( attacker->client && attacker != targ ) {
-		max = attacker->client->ps.stats[STAT_MAX_HEALTH];
-#ifdef MISSIONPACK
-		if( bg_itemlist[attacker->client->ps.stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
-			max /= 2;
-		}
-#endif
+		max = STAT_MAX_HEALTH;
 		damage = damage * max / 100;
 	}
 
@@ -978,40 +1351,15 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 		// if TF_NO_FRIENDLY_FIRE is set, don't do damage to the target
 		// if the attacker was on the same team
-#ifdef MISSIONPACK
-		if ( mod != MOD_JUICED && targ != attacker && !(dflags & DAMAGE_NO_TEAM_PROTECTION) && OnSameTeam (targ, attacker)  ) {
-#else
 		if ( targ != attacker && OnSameTeam (targ, attacker)  ) {
-#endif
 			if ( !g_friendlyFire.integer ) {
-				return;
+                          return;
 			}
 		}
-#ifdef MISSIONPACK
-		if (mod == MOD_PROXIMITY_MINE) {
-			if (inflictor && inflictor->parent && OnSameTeam(targ, inflictor->parent)) {
-				return;
-			}
-			if (targ == attacker) {
-				return;
-			}
-		}
-#endif
-
 		// check for godmode
 		if ( targ->flags & FL_GODMODE ) {
-			return;
+                  return ;
 		}
-	}
-
-	// battlesuit protects from all radius damage (but takes knockback)
-	// and protects 50% against all damage
-	if ( client && client->ps.powerups[PW_BATTLESUIT] ) {
-		G_AddEvent( targ, EV_POWERUP_BATTLESUIT, 0 );
-		if ( ( dflags & DAMAGE_RADIUS ) || ( mod == MOD_FALLING ) ) {
-			return;
-		}
-		damage *= 0.5;
 	}
 
 	// add to the attacker's hit counter (if the target isn't a general entity like a prox mine)
@@ -1024,7 +1372,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		} else {
 			attacker->client->ps.persistant[PERS_HITS]++;
 		}
-		attacker->client->ps.persistant[PERS_ATTACKEE_ARMOR] = (targ->health<<8)|(client->ps.stats[STAT_ARMOR]);
+		attacker->client->ps.persistant[PERS_ATTACKEE_ARMOR] = (targ->health<<8)|(0);
 	}
 
 	// always give half damage if hurting self
@@ -1043,10 +1391,8 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	asave = CheckArmor (targ, take, dflags);
 	take -= asave;
 
-	if ( g_debugDamage.integer ) {
 		G_Printf( "%i: client:%i health:%i damage:%i armor:%i\n", level.time, targ->s.number,
 			targ->health, take, asave );
-	}
 
 	// add to the damage inflicted on a player this frame
 	// the total will be turned into screen blends and view angle kicks
@@ -1070,11 +1416,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	}
 
 	// See if it's the player hurting the emeny flag carrier
-#ifdef MISSIONPACK
-	if( g_gametype.integer == GT_CTF || g_gametype.integer == GT_BOMB ) {
-#else
 	if( g_gametype.integer == GT_CTF) {
-#endif
 		Team_CheckHurtCarrier(targ, attacker);
 	}
 
@@ -1101,13 +1443,17 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 			targ->enemy = attacker;
 			targ->die (targ, inflictor, attacker, take, mod);
-			return;
 		} else if ( targ->pain ) {
 			targ->pain (targ, attacker, take);
 		}
 	}
 
+   }
 }
+
+
+
+
 
 
 /*
@@ -1118,7 +1464,7 @@ Returns qtrue if the inflictor can directly damage the target.  Used for
 explosions and melee attacks.
 ============
 */
-qboolean CanDamage (gentity_t *targ, vec3_t origin) {
+qboolean CanDamage(gentity_t *targ, vec3_t origin) {
 	vec3_t	dest;
 	trace_t	tr;
 	vec3_t	midpoint;

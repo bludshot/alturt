@@ -490,7 +490,6 @@ gentity_t *throw_grenade (gentity_t *self, vec3_t start, vec3_t dir) {
 	bolt->clipmask = MASK_SHOT;
 	bolt->target_ent = NULL;
 
-        G_Printf("bg_nadeTimer.throwStrength[self->s.number]/10 = %i\n",bg_nadeTimer.throwStrength[self->s.number]/10);
         VectorScale( dir, (bg_nadeTimer.throwStrength[self->s.number]/100 ), bolt->s.pos.trDelta );
 
 	bolt->s.pos.trType = TR_GRAVITY;

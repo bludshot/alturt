@@ -249,177 +249,67 @@ CG_Item
 ==================
 */
 static void CG_Item( centity_t *cent ) {
-        refEntity_t             ent;
-        entityState_t   *es;
-        gitem_t                 *item;
-        int                             msec;
-        float                   frac;
-        float                   scale;
-        weaponInfo_t    *wi;
+  refEntity_t                 ent;
+  entityState_t               *es;
+  gitem_t                             *item;
 
-        es = &cent->currentState;
-        if ( es->modelindex >= bg_numItems ) {
-                CG_Error( "Bad item index %i on entity", es->modelindex );
-        }
+  es = &cent->currentState;
+  if ( es->modelindex >= bg_numItems ) {
+    CG_Error( "Bad item index %i on entity", es->modelindex );
+  }
 
-        // if set to invisible, skip
-        if ( !es->modelindex || ( es->eFlags & EF_NODRAW ) ) {
-                return;
-        }
+    // if set to invisible, skip
+  if ( !es->modelindex || ( es->eFlags & EF_NODRAW ) ) {
+    return;
+  }
 
-        item = &bg_itemlist[ es->modelindex ];
-        if ( cg_simpleItems.integer && item->giType != IT_TEAM ) {
-                memset( &ent, 0, sizeof( ent ) );
-                ent.reType = RT_SPRITE;
-                VectorCopy( cent->lerpOrigin, ent.origin );
-                ent.radius = 14;
-                ent.customShader = cg_items[es->modelindex].icon;
-                ent.shaderRGBA[0] = 255;
-                ent.shaderRGBA[1] = 255;
-                ent.shaderRGBA[2] = 255;
-                ent.shaderRGBA[3] = 255;
-                trap_R_AddRefEntityToScene(&ent);
-                return;
-        }
+  item = &bg_itemlist[ es->modelindex ];
 
-        // items bob up and down continuously
-        scale = 0.005 + cent->currentState.number * 0.00001;
-        cent->lerpOrigin[2] += 4 + cos( ( cg.time + 1000 ) *  scale ) * 4;
+  //
+    // if simpleitems are enable render as sprite and then return
+  //
+  if ( cg_simpleItems.integer ) //&& item->giType != IT_TEAM )
+  {
+    memset( &ent, 0, sizeof( ent ) );
 
-        memset (&ent, 0, sizeof(ent));
+    ent.reType = RT_SPRITE;
+    VectorCopy( cent->lerpOrigin, ent.origin );
+    ent.radius = 14;
+    ent.customShader = cg_items[es->modelindex].icon;
+    ent.shaderRGBA[0] = 255;
+    ent.shaderRGBA[1] = 255;
+    ent.shaderRGBA[2] = 255;
+    ent.shaderRGBA[3] = 240;
+    trap_R_AddRefEntityToScene(&ent);
+    return;
+  }
 
-        // autorotate at one of two speeds
-        if ( item->giType == IT_HEALTH ) {
-                VectorCopy( cg.autoAnglesFast, cent->lerpAngles );
-                AxisCopy( cg.autoAxisFast, ent.axis );
-        } else {
-                VectorCopy( cg.autoAngles, cent->lerpAngles );
-                AxisCopy( cg.autoAxis, ent.axis );
-        }
+  memset( &ent, 0, sizeof( ent ) );
 
-        wi = NULL;
-        // the weapons have their origin where they attatch to player
-        // models, so we need to offset them or they will rotate
-        // eccentricly
-        if ( item->giType == IT_WEAPON ) {
-                wi = &cg_weapons[item->giTag];
-                cent->lerpOrigin[0] -=
-                        wi->weaponMidpoint[0] * ent.axis[0][0] +
-                        wi->weaponMidpoint[1] * ent.axis[1][0] +
-                        wi->weaponMidpoint[2] * ent.axis[2][0];
-                cent->lerpOrigin[1] -=
-                        wi->weaponMidpoint[0] * ent.axis[0][1] +
-                        wi->weaponMidpoint[1] * ent.axis[1][1] +
-                        wi->weaponMidpoint[2] * ent.axis[2][1];
-                cent->lerpOrigin[2] -=
-                        wi->weaponMidpoint[0] * ent.axis[0][2] +
-                        wi->weaponMidpoint[1] * ent.axis[1][2] +
-                        wi->weaponMidpoint[2] * ent.axis[2][2];
+    // the weapons have their origin where they attatch to player
+    // models, so we need to offset them or they will rotate
+    // eccentricly
+  if (item->giType == IT_WEAPON ) {
+    ent.hModel = cg_weapons[item->giTag].weaponModel;
+    cent->lerpOrigin[2] -= 3; // bring to ground
+  }
 
-                cent->lerpOrigin[2] += 8;       // an extra height boost
-        }
+  else
+    ent.hModel = cg_items[es->modelindex].models[0];
 
-        ent.hModel = cg_items[es->modelindex].models[0];
+    // no model ?
+  if ( !ent.hModel )
+    return;
 
-        VectorCopy( cent->lerpOrigin, ent.origin);
-        VectorCopy( cent->lerpOrigin, ent.oldorigin);
+  AnglesToAxis( cent->lerpAngles, ent.axis );
 
-        ent.nonNormalizedAxes = qfalse;
+  VectorCopy( cent->lerpOrigin, ent.origin);
+  VectorCopy( cent->lerpOrigin, ent.oldorigin);
 
-        // if just respawned, slowly scale up
-        msec = cg.time - cent->miscTime;
-        if ( msec >= 0 && msec < ITEM_SCALEUP_TIME ) {
-                frac = (float)msec / ITEM_SCALEUP_TIME;
-                VectorScale( ent.axis[0], frac, ent.axis[0] );
-                VectorScale( ent.axis[1], frac, ent.axis[1] );
-                VectorScale( ent.axis[2], frac, ent.axis[2] );
-                ent.nonNormalizedAxes = qtrue;
-        } else {
-                frac = 1.0;
-        }
+  ent.nonNormalizedAxes = qfalse;
 
-        // items without glow textures need to keep a minimum light value
-        // so they are always visible
-        if ( ( item->giType == IT_WEAPON ) ||
-                 ( item->giType == IT_ARMOR ) ) {
-                ent.renderfx |= RF_MINLIGHT;
-        }
-
-        // increase the size of the weapons when they are presented as items
-        if ( item->giType == IT_WEAPON ) {
-                VectorScale( ent.axis[0], 1.5, ent.axis[0] );
-                VectorScale( ent.axis[1], 1.5, ent.axis[1] );
-                VectorScale( ent.axis[2], 1.5, ent.axis[2] );
-                ent.nonNormalizedAxes = qtrue;
-#ifdef MISSIONPACK
-                trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin, vec3_origin, cgs.media.weaponHoverSound );
-#endif
-        }
-
-#ifdef MISSIONPACK
-        if ( item->giType == IT_HOLDABLE && item->giTag == HI_KAMIKAZE ) {
-                VectorScale( ent.axis[0], 2, ent.axis[0] );
-                VectorScale( ent.axis[1], 2, ent.axis[1] );
-                VectorScale( ent.axis[2], 2, ent.axis[2] );
-                ent.nonNormalizedAxes = qtrue;
-        }
-#endif
-
-        // add to refresh list
-        trap_R_AddRefEntityToScene(&ent);
-
-#ifdef MISSIONPACK
-        if ( item->giType == IT_WEAPON && wi->barrelModel ) {
-                refEntity_t     barrel;
-
-                memset( &barrel, 0, sizeof( barrel ) );
-
-                barrel.hModel = wi->barrelModel;
-
-                VectorCopy( ent.lightingOrigin, barrel.lightingOrigin );
-                barrel.shadowPlane = ent.shadowPlane;
-                barrel.renderfx = ent.renderfx;
-
-//              CG_PositionRotatedEntityOnTag( &barrel, &ent, wi->weaponModel, "tag_barrel" ); //Xamis
-
-                AxisCopy( ent.axis, barrel.axis );
-                barrel.nonNormalizedAxes = ent.nonNormalizedAxes;
-
-                trap_R_AddRefEntityToScene( &barrel );
-        }
-#endif
-
-        // accompanying rings / spheres for powerups
-        if ( !cg_simpleItems.integer )
-        {
-                vec3_t spinAngles;
-
-                VectorClear( spinAngles );
-
-                if ( item->giType == IT_HEALTH || item->giType == IT_POWERUP )
-                {
-                        if ( ( ent.hModel = cg_items[es->modelindex].models[1] ) != 0 )
-                        {
-                                if ( item->giType == IT_POWERUP )
-                                {
-                                        ent.origin[2] += 12;
-                                        spinAngles[1] = ( cg.time & 1023 ) * 360 / -1024.0f;
-                                }
-                                AnglesToAxis( spinAngles, ent.axis );
-
-                                // scale up if respawning
-                                if ( frac != 1.0 ) {
-                                        VectorScale( ent.axis[0], frac, ent.axis[0] );
-                                        VectorScale( ent.axis[1], frac, ent.axis[1] );
-                                        VectorScale( ent.axis[2], frac, ent.axis[2] );
-                                        ent.nonNormalizedAxes = qtrue;
-                                }
-                                trap_R_AddRefEntityToScene( &ent );
-                        }
-                }
-        }
+    trap_R_AddRefEntityToScene(&ent);
 }
-
 //============================================================================
 
 /*
@@ -495,10 +385,10 @@ static void CG_Missile( centity_t *cent ) {
               else if ( (32 + ((cent->currentState.frame & ALTURT_SMOKEMASK_UP) >> ALTURT_SMOKEMASK_SUP) *
                          (int)(ALTURT_SMOKEBLEND_RANGE / ALTURT_SMOKEMASK_VALUE)) >
                          ( cg.refdef.vieworg[2] - cent->lerpOrigin[2])  )
-                cg.smokeBlendAlpha = 1.0f - distance/( ALTURT_SMOKEBLEND_RANGE * (1.0 + dummy/15.0));
+                          cg.smokeBlendAlpha = 1.0f - distance/( ALTURT_SMOKEBLEND_RANGE * (1.0 + dummy/15.0));
 
               if ( cg.smokeBlendAlpha > 0.8f )
-                cg.smokeBlendAlpha = 0.8f;
+                  cg.smokeBlendAlpha = 0.8f;
             }
 
             // main smokes
@@ -770,7 +660,7 @@ CG_Portal
 */
 static void CG_Portal( centity_t *cent ) {
         refEntity_t                     ent;
-        entityState_t           *s1;
+        entityState_t                   *s1;
 
         s1 = &cent->currentState;
 

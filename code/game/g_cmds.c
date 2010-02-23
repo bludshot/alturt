@@ -225,7 +225,7 @@ void Cmd_Give_f (gentity_t *ent)
 
         if (give_all || Q_stricmp( name, "health") == 0)
         {
-                ent->health = ent->client->ps.stats[STAT_MAX_HEALTH];
+                ent->health = STAT_MAX_HEALTH;
                 if (!give_all)
                         return;
         }
@@ -262,13 +262,13 @@ void Cmd_Give_f (gentity_t *ent)
                         return;
         }
 
-        if (give_all || Q_stricmp(name, "armor") == 0)
-        {
-                ent->client->ps.stats[STAT_ARMOR] = 200;
+   //     if (give_all || Q_stricmp(name, "armor") == 0)
+   //     {
+   //            ent->client->ps.stats[STAT_ARMOR] = 200;
 
-                if (!give_all)
-                        return;
-        }
+    //            if (!give_all)
+    //                    return;
+   //     }
 
         if (Q_stricmp(name, "excellent") == 0) {
                 ent->client->ps.persistant[PERS_EXCELLENT_COUNT]++;
@@ -1698,6 +1698,10 @@ void ClientCommand( int clientNum ) {
                 Cmd_SetViewpos_f( ent );
         else if (Q_stricmp (cmd, "stats") == 0)
                 Cmd_Stats_f( ent );
+        else if (Q_stricmp (cmd, "ut_weapdrop") == 0)
+                UT_DropWeapon ( ent);
+        else if (Q_stricmp (cmd, "next_item") == 0)
+          UT_SelectItem ( ent, 1 );
         else
                 trap_SendServerCommand( clientNum, va("print \"unknown cmd %s\n\"", cmd ) );
 }

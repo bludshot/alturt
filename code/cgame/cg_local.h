@@ -331,6 +331,7 @@ typedef struct {
 	int				raceblue;		//blud
 
 	int				score;			// updated by score servercmds
+        int                             deaths;
 	int				location;		// location index for team mode
 	int				health;			// you only get this info about your teammates
 	int				armor;
@@ -378,6 +379,12 @@ typedef struct {
 
 	qhandle_t		headModel;
 	qhandle_t		headSkin;
+
+        qhandle_t               helmetModel;
+        qhandle_t               helmetSkin;
+
+        qhandle_t               vestModel;
+        qhandle_t               vestSkin;
 
 	qhandle_t		modelIcon;
 
@@ -677,6 +684,8 @@ typedef struct {
 	int			weaponSelectTime;
 	int			weaponAnimation;
 	int			weaponAnimationTime;
+
+        int                     itemSelectTime;   //Xamis for item selection menu
 
 	// blend blobs
 	float		damageTime;
@@ -1419,6 +1428,7 @@ void CG_AddRefEntityWithPowerups( refEntity_t *ent, entityState_t *state, int te
 void CG_NewClientInfo( int clientNum );
 sfxHandle_t	CG_CustomSound( int clientNum, const char *soundName );
 void CG_WeaponAnimation( centity_t *cent, int *weaponOld, int *weapon, float *weaponBackLerp );//Xamis
+void CG_HasteTrail( centity_t *cent ) ;
 //
 // cg_predict.c
 //
@@ -1460,6 +1470,9 @@ void CG_PositionWeaponOnTag( refEntity_t *entity, const refEntity_t *parent, qha
 void CG_NextWeapon_f( void );
 void CG_PrevWeapon_f( void );
 void CG_Weapon_f( void );
+
+void CG_NextItem_f (void);
+void CG_DrawItemSelect( void );
 
 void CG_RegisterWeapon( int weaponNum );
 void CG_RegisterItemVisuals( int itemNum );

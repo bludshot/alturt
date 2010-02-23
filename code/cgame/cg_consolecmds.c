@@ -467,6 +467,7 @@ static consoleCommand_t	commands[] = {
 	{ "weapnext", CG_NextWeapon_f },
 	{ "weapprev", CG_PrevWeapon_f },
 	{ "weapon", CG_Weapon_f },
+        { "ut_itemnext", CG_NextItem_f },
 	{ "tell_target", CG_TellTarget_f },
 	{ "tell_attacker", CG_TellAttacker_f },
 	{ "vtell_target", CG_VoiceTellTarget_f },

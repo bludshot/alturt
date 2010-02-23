@@ -66,7 +66,7 @@ void SP_light( gentity_t *self ) {
 	G_FreeEntity( self );
 }
 
-/*QUAKED func_wall (0 .5 .8) ?  
+/*QUAKED func_wall (0 .5 .8) ?
 
 -------- KEYS --------
 gametype : gametypes to have the wall appear in, list types in this format: 01234 (default none)
@@ -91,18 +91,18 @@ Bomb 8
 
 void SP_func_wall( gentity_t *ent ) {
 
-  
+
   // Make it appear as the brush
 	trap_SetBrushModel( ent, ent->model );
 	ent->s.eType = ET_WALL;
 	trap_LinkEntity (ent);
-}	
-		
- 		
+}
+
+
 /*QUAKED func_breakable (1 0 0) (-16 -16 -16) (16 16 16) // xamis
  Explodes glass
  */
- 
+
 void SP_func_breakable( gentity_t *ent ) {
 	 int health;
 	 trap_SetBrushModel( ent, ent->model );
@@ -139,10 +139,10 @@ void SP_func_breakable( gentity_t *ent ) {
 	 }
  }
 
- 
- 
- 
- 
+
+
+
+
 /*
 =================================================================================
 
@@ -431,7 +431,7 @@ void DropPortalDestination( gentity_t *player ) {
 	ent->count = player->client->portalID;
 
 	// give the item back so they can drop the source now
-	player->client->ps.stats[STAT_HOLDABLE_ITEM] = BG_FindItem( "Portal" ) - bg_itemlist;
+//	player->client->ps.stats[STAT_HOLDABLE_ITEM] = BG_FindItem( "Portal" ) - bg_itemlist;
 }
 
 

@@ -380,11 +380,6 @@ int BotValidChatPosition(bot_state_t *bs) {
 	//if the bot is dead all positions are valid
 	if (BotIsDead(bs)) return qtrue;
 	//never start chatting with a powerup
-	if (bs->inventory[INVENTORY_QUAD] ||
-		bs->inventory[INVENTORY_HASTE] ||
-		bs->inventory[INVENTORY_INVISIBILITY] ||
-		bs->inventory[INVENTORY_REGEN] ||
-		bs->inventory[INVENTORY_FLIGHT]) return qfalse;
 	//must be on the ground
 	//if (bs->cur_ps.groundEntityNum != ENTITYNUM_NONE) return qfalse;
 	//do not chat if in lava or slime
@@ -518,7 +513,7 @@ int BotChat_EndLevel(bot_state_t *bs) {
 	if (BotIsObserver(bs)) return qfalse;
 	if (bs->lastchat_time > FloatTime() - TIME_BETWEENCHATTING) return qfalse;
 	// teamplay
-	if (TeamPlayIsOn()) 
+	if (TeamPlayIsOn())
 	{
 		if (BotIsFirstInRankings(bs)) {
 			trap_EA_Command(bs->client, "vtaunt");

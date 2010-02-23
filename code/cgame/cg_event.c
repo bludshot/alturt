@@ -375,9 +375,6 @@ static void CG_UseItem( centity_t *cent ) {
 		trap_S_StartSound (NULL, es->number, CHAN_BODY, cgs.media.useNothingSound );
 		break;
 
-	case HI_TELEPORTER:
-		break;
-
 	case HI_MEDKIT:
 		clientNum = cent->currentState.clientNum;
 		if ( clientNum >= 0 && clientNum < MAX_CLIENTS ) {
@@ -386,17 +383,6 @@ static void CG_UseItem( centity_t *cent ) {
 		}
 		trap_S_StartSound (NULL, es->number, CHAN_BODY, cgs.media.medkitSound );
 		break;
-
-#ifdef MISSIONPACK
-	case HI_KAMIKAZE:
-		break;
-
-	case HI_PORTAL:
-		break;
-	case HI_INVULNERABILITY:
-		trap_S_StartSound (NULL, es->number, CHAN_BODY, cgs.media.useInvulnerabilitySound );
-		break;
-#endif
 	}
 
 }
@@ -415,7 +401,7 @@ static void CG_ItemPickup( int itemNum ) {
 	// see if it should be the grabbed weapon
 	if ( bg_itemlist[itemNum].giType == IT_WEAPON ) {
 		// select it immediately
-		if ( cg_autoswitch.integer && bg_itemlist[itemNum].giTag != WP_KNIFE ) {
+		if ( 0/*cg_autoswitch.integer && bg_itemlist[itemNum].giTag != WP_KNIFE*/ ) {
 			cg.weaponSelectTime = cg.time;
 			cg.weaponSelect = bg_itemlist[itemNum].giTag;
 		}
@@ -717,24 +703,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			// will be played at prediction time
 			if ( item->giType == IT_POWERUP || item->giType == IT_TEAM) {
 				trap_S_StartSound (NULL, es->number, CHAN_AUTO,	cgs.media.n_healthSound );
-			} else if (item->giType == IT_PERSISTANT_POWERUP) {
-#ifdef MISSIONPACK
-				switch (item->giTag ) {
-					case PW_SCOUT:
-						trap_S_StartSound (NULL, es->number, CHAN_AUTO,	cgs.media.scoutSound );
-					break;
-					case PW_GUARD:
-						trap_S_StartSound (NULL, es->number, CHAN_AUTO,	cgs.media.guardSound );
-					break;
-					case PW_DOUBLER:
-						trap_S_StartSound (NULL, es->number, CHAN_AUTO,	cgs.media.doublerSound );
-					break;
-					case PW_AMMOREGEN:
-						trap_S_StartSound (NULL, es->number, CHAN_AUTO,	cgs.media.ammoregenSound );
-					break;
-				}
-#endif
-			} else {
+                        } else {
 				trap_S_StartSound (NULL, es->number, CHAN_AUTO,	trap_S_RegisterSound( item->pickup_sound, qfalse ) );
 			}
 
@@ -783,9 +752,14 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
           case EV_NONADES:
             DEBUGNAME("EV_NONADES");
             if ( es->number == cg.snap->ps.clientNum ) {
-              CG_OutOfNadesChange(cent);
+
+              //CG_OutOfNadesChange(cent);
             }
             break;
+        case EV_POWERSLIDE:
+          CG_HasteTrail( cent );
+
+          break;
 	case EV_CHANGE_WEAPON:
 		DEBUGNAME("EV_CHANGE_WEAPON");
 		//trap_S_StartSound (NULL, es->number, CHAN_AUTO, cgs.media.selectSound );
@@ -1146,31 +1120,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	//
 	// powerup events
 	//
-	case EV_POWERUP_QUAD:
-		DEBUGNAME("EV_POWERUP_QUAD");
-		if ( es->number == cg.snap->ps.clientNum ) {
-			cg.powerupActive = PW_QUAD;
-			cg.powerupTime = cg.time;
-		}
-		trap_S_StartSound (NULL, es->number, CHAN_ITEM, cgs.media.quadSound );
-		break;
-	case EV_POWERUP_BATTLESUIT:
-		DEBUGNAME("EV_POWERUP_BATTLESUIT");
-		if ( es->number == cg.snap->ps.clientNum ) {
-			cg.powerupActive = PW_BATTLESUIT;
-			cg.powerupTime = cg.time;
-		}
-		trap_S_StartSound (NULL, es->number, CHAN_ITEM, cgs.media.protectSound );
-		break;
-	case EV_POWERUP_REGEN:
-		DEBUGNAME("EV_POWERUP_REGEN");
-		if ( es->number == cg.snap->ps.clientNum ) {
-			cg.powerupActive = PW_REGEN;
-			cg.powerupTime = cg.time;
-		}
-		trap_S_StartSound (NULL, es->number, CHAN_ITEM, cgs.media.regenSound );
-		break;
-
 	case EV_GIB_PLAYER:
 		DEBUGNAME("EV_GIB_PLAYER");
 		// don't play gib sound when using the kamikaze because it interferes

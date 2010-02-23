@@ -187,7 +187,7 @@ static void CG_DrawPlayerArmorIcon( rectDef_t *rect, qboolean draw2D ) {
 }
 
 static void CG_DrawPlayerArmorValue(rectDef_t *rect, float scale, vec4_t color, qhandle_t shader, int textStyle) {
-	char	num[16];
+/*	char	num[16];
   int value;
 	centity_t	*cent;
 	playerState_t	*ps;
@@ -206,7 +206,7 @@ static void CG_DrawPlayerArmorValue(rectDef_t *rect, float scale, vec4_t color, 
 		Com_sprintf (num, sizeof(num), "%i", value);
 		value = CG_Text_Width(num, scale, 0);
 	  CG_Text_Paint(rect->x + (rect->w - value) / 2, rect->y + rect->h, scale, color, num, 0, 0, textStyle);
-	}
+	} */
 }
 
 #ifndef MISSIONPACK
@@ -484,7 +484,7 @@ static void CG_DrawPlayerScore( rectDef_t *rect, float scale, vec4_t color, qhan
 }
 
 static void CG_DrawPlayerItem( rectDef_t *rect, float scale, qboolean draw2D) {
-	int		value;
+/*	int		value;
   vec3_t origin, angles;
 
 	value = cg.snap->ps.stats[STAT_HOLDABLE_ITEM];
@@ -503,7 +503,7 @@ static void CG_DrawPlayerItem( rectDef_t *rect, float scale, qboolean draw2D) {
 			CG_Draw3DModel(rect->x, rect->y, rect->w, rect->h, cg_items[ value ].models[0], 0, origin, angles );
 		}
 	}
-
+*/
 }
 
 
@@ -828,16 +828,16 @@ static void CG_OneFlagStatus(rectDef_t *rect) {
 
 
 static void CG_DrawCTFPowerUp(rectDef_t *rect) {
-	int		value;
+//	int		value;
 
 	if (cgs.gametype < GT_CTF) {
 		return;
 	}
-	value = cg.snap->ps.stats[STAT_PERSISTANT_POWERUP];
-	if ( value ) {
-		CG_RegisterItemVisuals( value );
-		CG_DrawPic( rect->x, rect->y, rect->w, rect->h, cg_items[ value ].icon );
-	}
+//	value = cg.snap->ps.stats[STAT_PERSISTANT_POWERUP];
+//	if ( value ) {
+//		CG_RegisterItemVisuals( value );
+//		CG_DrawPic( rect->x, rect->y, rect->w, rect->h, cg_items[ value ].icon );
+//	}
 }
 
 
@@ -946,7 +946,7 @@ float CG_GetValue(int ownerDraw) {
     return ci->health;
     break;
   case CG_PLAYER_ARMOR_VALUE:
-		return ps->stats[STAT_ARMOR];
+		return 0;//ps->stats[STAT_ARMOR];
     break;
   case CG_PLAYER_AMMO_VALUE:
 		if ( cent->currentState.weapon ) {

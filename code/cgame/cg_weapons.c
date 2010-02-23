@@ -180,7 +180,7 @@ static void CG_ShotgunEjectBrass( centity_t *cent ) {
 
                 le = CG_AllocLocalEntity();
                 re = &le->refEntity;
-
+                i = 0;
                 velocity[0] = 60 + 60 * crandom();
                 if ( i == 0 ) {
                         velocity[1] = 40 + 10 * crandom();
@@ -482,9 +482,7 @@ void CG_RegisterWeapon( int weaponNum ) {
         char                    path[MAX_QPATH];
         vec3_t                  mins, maxs;
         int                             i;
-// QUARANTINE - Weapon Animations - Added Variable
-       // char filename[MAX_QPATH]; //Used to open animation.cfg files
-// END
+
         weaponInfo = &cg_weapons[weaponNum];
 
         if ( weaponNum == 0 ) {
@@ -1022,12 +1020,8 @@ static void CG_AddWeaponWithPowerups( refEntity_t *gun, int powerups ) {
         // add powerup effects
 
 
-        if ( powerups & ( 1 << PW_INVIS ) ) {
-                gun->customShader = cgs.media.invisShader;
                 trap_R_AddRefEntityToScene( gun );
-        } else {
-                trap_R_AddRefEntityToScene( gun );
-
+/*
                 if ( powerups & ( 1 << PW_BATTLESUIT ) ) {
                         gun->customShader = cgs.media.battleWeaponShader;
                         trap_R_AddRefEntityToScene( gun );
@@ -1035,8 +1029,8 @@ static void CG_AddWeaponWithPowerups( refEntity_t *gun, int powerups ) {
                 if ( powerups & ( 1 << PW_QUAD ) ) {
                         gun->customShader = cgs.media.quadWeaponShader;
                         trap_R_AddRefEntityToScene( gun );
-                }
-        }
+} */
+
 }
 
 
@@ -1052,6 +1046,7 @@ sound should only be done on the world model case.
 void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent, int team, const char *modelName, const char *skin) {
 
         char            *tagname;
+        refEntity_t     handsModel;
         refEntity_t     gun; //this is used for thirdperson weapon and firstperson hands model Xamis
         refEntity_t     viewmainModel; //firstperson weapon model
         refEntity_t     holds;
@@ -1081,18 +1076,44 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
         refEntity_t     vaim;
         refEntity_t     vshell;
         refEntity_t     vgrenade;
+        refEntity_t     weaponModel;
         vec3_t          angles;
         weapon_t        weaponNum;
         weaponInfo_t    *weapon;
         centity_t       *nonPredictedCent;
         orientation_t   lerped;
+        int             powerups;
+        clientInfo_t    *ci;
+        int i;
+        qboolean lasersight;
+        qboolean silenced;
+        qboolean vestOn;
+        vestOn = lasersight = silenced = qfalse;
 
+        powerups = cent->currentState.powerups;
 
         weaponNum = cent->currentState.weapon;
 
         CG_RegisterWeapon( weaponNum );
         weapon = &cg_weapons[weaponNum];
 
+        //Determine what items the user has --Xamis
+
+          if ( powerups & ( 1 << PW_SILENCER ) )
+                silenced = qtrue;
+
+          if ( powerups & ( 1 << PW_LASERSIGHT ) )
+                lasersight = qtrue;
+
+          if ( powerups & ( 1 << PW_VEST ) )
+                vestOn = qtrue;
+
+
+        memset( &handsModel, 0, sizeof( handsModel ) );
+        VectorCopy( parent->lightingOrigin, handsModel.lightingOrigin );
+        handsModel.shadowPlane = parent->shadowPlane;
+        handsModel.renderfx = parent->renderfx;
+        handsModel.hModel = weapon->handsModel;
 
 
         memset( &viewmainModel, 0, sizeof( viewmainModel ) );
@@ -1119,14 +1140,15 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
         gun.renderfx = parent->renderfx;
 
 
+        memset( &weaponModel, 0, sizeof( weaponModel ) );
+        VectorCopy( parent->lightingOrigin, weaponModel.lightingOrigin );
+        weaponModel.shadowPlane = parent->shadowPlane;
+        weaponModel.renderfx = parent->renderfx;
 
-	if(!ps)
-	{
-		gun.hModel = weapon->weaponModel;
-	}
 
-	if(ps)
-	{
+        if(!ps)
+            gun.hModel = weapon->handsModel;
+        if(ps){
 		gun.hModel = weapon->holdsModel;
 		
 		if (cgs.gametype >= GT_TEAM)
@@ -1204,31 +1226,55 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
                 1.0 - parent->backlerp, "tag_weapon");
         VectorCopy(parent->origin, gun.origin);
 
-        if(!ps)
-        VectorMA(gun.origin, lerped.origin[0], parent->axis[0], gun.origin);
+        if(!ps){
+
+          if(vestOn){
+            VectorMA(gun.origin, lerped.origin[0]+3.0f, parent->axis[0], gun.origin); // forward/backward
+            VectorMA(gun.origin, lerped.origin[1]+1, parent->axis[1], gun.origin); // side to side
+            VectorMA(gun.origin, lerped.origin[2]+0.5f, parent->axis[2], gun.origin); // up/down
+
+          }else{
+            VectorMA(gun.origin, lerped.origin[0]+0.8f, parent->axis[0], gun.origin);
+            VectorMA(gun.origin, lerped.origin[1], parent->axis[1], gun.origin);
+            VectorMA(gun.origin, lerped.origin[2], parent->axis[2], gun.origin);
 
 
-        if(ps){
-
-
-
-        VectorMA(gun.origin, lerped.origin[0], parent->axis[0], gun.origin);
-        VectorMA(gun.origin, lerped.origin[1]-2, parent->axis[1], gun.origin);
-        VectorMA(gun.origin, lerped.origin[2], parent->axis[2], gun.origin);
+          }
         }
 
-        // Make weapon appear left-handed for 2 and centered for 3
-        if(ps && cg_drawGun.integer == 2)
-                VectorMA(gun.origin, -lerped.origin[1], parent->axis[1], gun.origin);
-        else if(!ps || cg_drawGun.integer != 3)
-        VectorMA(gun.origin, lerped.origin[1], parent->axis[1], gun.origin);
-        if(!ps)
-        VectorMA(gun.origin, lerped.origin[2], parent->axis[2], gun.origin);
+        if(ps){
+          VectorMA(gun.origin, lerped.origin[0], parent->axis[0], gun.origin);
+          VectorMA(gun.origin, lerped.origin[1]-2, parent->axis[1], gun.origin);
+          VectorMA(gun.origin, lerped.origin[2], parent->axis[2], gun.origin);
+          AnglesToAxis( angles, gun.axis );
+        }
 
         MatrixMultiply(lerped.axis, ((refEntity_t *)parent)->axis, gun.axis);
+
+
+
         gun.backlerp = parent->backlerp;
         CG_WeaponAnimation( cent, &gun.oldframe, &gun.frame, &gun.backlerp );
+        //CG_PositionRotatedEntityOnTag( &gun, parent, parent->hModel, "tag_weapon" );
         CG_AddWeaponWithPowerups( &gun, cent->currentState.powerups );
+
+
+        if ( !ps ) {
+
+
+          memset( &weaponModel, 0, sizeof( weaponModel ) );
+          VectorCopy( parent->lightingOrigin, weaponModel.lightingOrigin );
+          weaponModel.shadowPlane = parent->shadowPlane;
+          weaponModel.renderfx = parent->renderfx;
+          weaponModel.hModel = weapon->weaponModel;
+          angles[YAW] = 0;
+          angles[PITCH] = 0;
+          angles[ROLL] = 0;
+          AnglesToAxis( angles, weaponModel.axis );
+          CG_PositionRotatedEntityOnTag( &weaponModel, &gun, weapon->handsModel, "tag_weapon" );
+          CG_AddWeaponWithPowerups( &weaponModel, cent->currentState.powerups );
+
+        }
 
 
         if ( ps ) {
@@ -1251,7 +1297,8 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
         if ( ps && weapon->silencerModel && weaponNum != WP_KNIFE
              && weaponNum != WP_HK69 && weaponNum != WP_SPAS
              && weaponNum != WP_HE && weaponNum != WP_SR8
-             && weaponNum != WP_SMOKE ) {
+             && weaponNum != WP_SMOKE
+             && silenced) {
 
                 memset( &silencer, 0, sizeof( silencer ) );
                 VectorCopy( parent->lightingOrigin, silencer.lightingOrigin );
@@ -1272,7 +1319,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 
         if ( ps && weapon->laserModel && weaponNum != WP_KNIFE && weaponNum != WP_HK69
              && weaponNum != WP_SPAS && weaponNum != WP_HE && weaponNum != WP_SR8
-             && weaponNum != WP_AK103 && weaponNum != WP_NEGEV && weaponNum != WP_SMOKE) {
+             && weaponNum != WP_AK103 && weaponNum != WP_NEGEV && weaponNum != WP_SMOKE && lasersight) {
 
                 memset( &laser, 0, sizeof( laser ) );
                 VectorCopy( parent->lightingOrigin, laser.lightingOrigin );
@@ -1373,6 +1420,10 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
             CG_AddWeaponWithPowerups( &vcock, cent->currentState.powerups );
           }
 
+
+       // if (cg.snap->ps.powerups[PW_SILENCER] )
+  //      CG_Printf("( cg.snap->ps.ammo[0] = %i\n",  cg.snap->ps.ammo[0]  );
+       // ( powerups & ( 1 << PW_SILENCER ) )1
           if ( weapon->vbarrelModel && weaponNum != WP_KNIFE ) {
             memset( &vbarrel, 0, sizeof( vbarrel ) );
             VectorCopy( parent->lightingOrigin, vbarrel.lightingOrigin );
@@ -1584,7 +1635,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
         angles[ROLL] = crandom() * 10;
         AnglesToAxis( angles, flash.axis );
 
-        if (weaponNum != WP_KNIFE &&!(BG_Grenade(weaponNum))){
+        if (!silenced && weaponNum != WP_KNIFE &&!(BG_Grenade(weaponNum))){
         if (ps )
           CG_PositionRotatedEntityOnTag( &flash, &gun, weapon->holdsModel, "tag_flash");
         else
@@ -1680,10 +1731,9 @@ void CG_AddViewWeapon( playerState_t *ps ) {
 
 			AnglesToAxis( angles, hand.axis );
 			//if smallgun
-			VectorScale(hand.axis[0], 0.40, hand.axis[0]);
-			VectorScale(hand.axis[1], 0.50, hand.axis[1]);
-			VectorScale(hand.axis[2], 0.40, hand.axis[2]);
-
+        VectorScale(hand.axis[0], 0.4f, hand.axis[0]);
+        VectorScale(hand.axis[1], 0.5f, hand.axis[1]);
+        VectorScale(hand.axis[2], 0.4f, hand.axis[2]);
 		}else{
 			VectorMA( hand.origin, cg_gun_x.value-1, cg.refdef.viewaxis[0], hand.origin );
 			VectorMA( hand.origin, cg_gun_y.value, cg.refdef.viewaxis[1], hand.origin );
@@ -1715,6 +1765,62 @@ void CG_AddViewWeapon( playerState_t *ps ) {
         CG_AddPlayerWeapon( &hand, ps, &cg.predictedPlayerEntity, ps->persistant[PERS_TEAM], ci->modelName, ci->skin );
 }
 
+
+
+
+
+void CG_DrawItemSelect( void ) {
+        //int           value;
+
+  gitem_t         *item;
+  int             i, x;
+  int             bits;
+  int             count;
+  float       hcolor[4];
+  float   *color;
+  playerState_t   *ps;
+  hcolor[0] = 0.2;
+  hcolor[1] = 0.3;
+  hcolor[2] = 0.8;
+  hcolor[3] = 0.3f;
+  ps = &cg.snap->ps;
+
+  color = CG_FadeColor( cg.itemSelectTime, WEAPON_SELECT_TIME );
+  if ( !color ) {
+    return;
+  }
+  trap_R_SetColor( color );
+
+  bits = (cg.predictedPlayerEntity.currentState.powerups  );
+  count = 0;
+  for ( i = 0 ; i < MAX_POWERUPS ; i++ ) {
+    if ( bits & ( 1 << i ) ) {
+      count++;
+    }
+  }
+  x = 640-ICON_SIZE - count * 24;
+  for ( i = 1 ; i < MAX_POWERUPS ; i++ ) {
+    if ( !ps->powerups[ i ] ) {
+      continue;
+    }
+  item = BG_FindItemForPowerup( i );
+        //value = cg.snap->ps.stats[STAT_SELECTED_ITEM];
+  if ( item ) {
+         // CG_RegisterItemVisuals( STAT_SELECTED_ITEM );
+
+    CG_FillRect( x, (SCREEN_HEIGHT-ICON_SIZE)/2, ICON_SIZE, ICON_SIZE, hcolor);
+    CG_DrawPic( x, (SCREEN_HEIGHT-ICON_SIZE)/2, ICON_SIZE, ICON_SIZE, trap_R_RegisterShader( item->icon ) );
+    if( i == ps->stats[STAT_SELECTED_ITEM])
+    CG_DrawPic( x, (SCREEN_HEIGHT-ICON_SIZE)/2,ICON_SIZE, ICON_SIZE, cgs.media.selectShader );
+
+  } x += 48;
+  }
+}
+
+void CG_NextItem_f (void){
+  cg.itemSelectTime = cg.time;
+  trap_SendConsoleCommand( "next_item" );
+}
 /*
 ==============================================================================
 
@@ -1765,7 +1871,6 @@ void CG_DrawWeaponSelect( void ) {
 
         // count the number of weapons owned
        bits = (cg.snap->ps.stats[ STAT_WEAPONS ] | cg.snap->ps.stats[ STAT_WEAPONS_EXT ] << 16 );
-      //  bits = cg.snap->ps.stats[ STAT_WEAPONS ] + cg.snap->ps.stats[ STAT_WEAPONS_EXT ];
         count = 0;
         for ( i = 1 ; i < WP_NUM_WEAPONS ; i++ ) {
           if ( bits & ( 1 << i ) ) {
@@ -1861,12 +1966,13 @@ void CG_OutOfNadesChange( centity_t *cent ) {
   //  return;
  // }
   for ( i = MAX_WEAPONS-1 ; i > 0 ; i-- ) {
-    if ( CG_WeaponSelectable( i ) ) {
+    if ( CG_WeaponSelectable( i )) {
       cg.weaponSelect = i;
       break;
     }
   }
 }
+
 
 /*
 ===============

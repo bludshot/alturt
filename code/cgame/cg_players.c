@@ -103,8 +103,8 @@ static qboolean	CG_ParseAnimationFile( const char *filename, clientInfo_t *ci, c
 
 
 	urtModelAnimOffset = 224; //blud: used for UrT style models (Orion & Athena).
-	//224 is how far my chosen gesture animation (taunt) is from 300 
-	//which is i guess where it's "supposed" to be (even tho it's not lol 
+	//224 is how faw my chosen gesture animation (taunt) is from 300
+	//which is i guess where it's "supposed" to be (even tho it's not lol
 	//but somehow 300 is the magic number)
 
 	animations = ci->animations;
@@ -466,6 +466,14 @@ static qboolean	CG_RegisterClientSkin( clientInfo_t *ci, const char *teamName, c
 		Com_Printf( "Head skin load failure: %s\n", filename );
 	}
 
+
+        if ( CG_FindClientModelFile( filename, sizeof(filename), ci, teamName, modelName, skinName, "vest_swat_w", "skin" ) ) {
+        ci->vestSkin = trap_R_RegisterSkin( filename );
+        }
+        if (!ci->vestSkin) {
+          Com_Printf( "Vest skin load failure: %s\n", filename );
+        }
+
 	// if any skins failed to load
 	if ( !ci->legsSkin || !ci->torsoSkin || !ci->headSkin ) {
 		return qfalse;
@@ -529,6 +537,37 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 		Com_Printf( "Failed to load model file %s\n", filename );
 		return qfalse;
 	}
+
+
+        Com_sprintf( filename, sizeof( filename ), "models/players/%s/helmet.md3", modelName );
+        CG_Printf("models/players/%s/helmet.md3\n", modelName);
+        ci->helmetModel = trap_R_RegisterModel( filename );
+        if ( !ci->helmetModel ) {
+          CG_Printf("!ci->helmetModel\n");
+          Com_sprintf( filename, sizeof( filename ), "models/players/characters/%s/helmet.md3", modelName );
+          ci->helmetModel = trap_R_RegisterModel( filename );
+          if ( !ci->helmetModel ) {
+            Com_Printf( "Failed to load model file %s\n", filename );
+            return qfalse;
+          }
+        }
+
+
+
+        Com_sprintf( filename, sizeof( filename ), "models/players/%s/vesttorso.md3", modelName );
+        CG_Printf("models/players/%s/vesttorso.md3\n", modelName);
+      //  ci->vestModel = trap_R_RegisterModel( "models/players/athena/vesttorso.md3" );
+        ci->vestModel = trap_R_RegisterModel( filename );
+        if ( !ci->vestModel ) {
+          CG_Printf("!ci->vestModel\n");
+          Com_sprintf( filename, sizeof( filename ), "models/players/characters/%s/vesttorso.md3", modelName );
+          ci->vestModel = trap_R_RegisterModel( filename );
+          if ( !ci->vestModel ) {
+            Com_Printf( "Failed to load model file %s\n", filename );
+            return qfalse;
+          }
+        }
+
 
 	// if any skins failed to load, return failure
 	if ( !CG_RegisterClientSkin( ci, teamName, modelName, skinName, modelName, skinName ) ) {
@@ -710,6 +749,9 @@ static void CG_CopyClientInfoModel( clientInfo_t *from, clientInfo_t *to ) {
 	to->headModel = from->headModel;
 	to->headSkin = from->headSkin;
 	to->modelIcon = from->modelIcon;
+        to->helmetModel = from->helmetModel;
+        to->helmetSkin = from->helmetSkin;
+
 
 	to->newAnims = from->newAnims;
 
@@ -759,7 +801,7 @@ static qboolean CG_ScanForExistingClientInfo( clientInfo_t *ci ) {
 
 					return qtrue;
 				}
-				
+
 		}
 	}
 
@@ -1301,11 +1343,7 @@ static void CG_PlayerAnimation( centity_t *cent, int *legsOld, int *legs, float 
 		return;
 	}
 
-	if ( cent->currentState.powerups & ( 1 << PW_HASTE ) ) {
-		speedScale = 1.5;
-	} else {
-		speedScale = 1;
-	}
+	speedScale = 1;
 
 	ci = &cgs.clientinfo[ clientNum ];
 
@@ -1550,7 +1588,7 @@ static void CG_PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t torso[3], v
 CG_HasteTrail
 ===============
 */
-static void CG_HasteTrail( centity_t *cent ) {
+void CG_HasteTrail( centity_t *cent ) {
 	localEntity_t	*smoke;
 	vec3_t			origin;
 	int				anim;
@@ -1558,10 +1596,10 @@ static void CG_HasteTrail( centity_t *cent ) {
 	if ( cent->trailTime > cg.time ) {
 		return;
 	}
-	anim = cent->pe.legs.animationNumber & ~ANIM_TOGGLEBIT;
-	if ( anim != LEGS_RUN && anim != LEGS_BACK ) {
-		return;
-	}
+	//anim = cent->pe.legs.animationNumber & ~ANIM_TOGGLEBIT;
+	//if ( anim != LEGS_RUN && anim != LEGS_BACK ) {
+	//	return;
+	//}
 
 	cent->trailTime += 100;
 	if ( cent->trailTime < cg.time ) {
@@ -1803,7 +1841,7 @@ static void CG_PlayerFlag( centity_t *cent, qhandle_t hSkin, refEntity_t *torso 
 	angles[YAW] = cent->pe.flag.yawAngle;
 	// lerp the flag animation frames
 	ci = &cgs.clientinfo[ cent->currentState.clientNum ];
-        CG_RunLerpFrame( ci, &cent->pe.flag, flagAnim, 1,qfalse  );//Xamis, added qfalse
+        CG_RunLerpFrame( ci, &cent->pe.flag, flagAnim, 1,qfalse  );//Xamis, added qfalse for weapon animations
 	flag.oldframe = cent->pe.flag.oldFrame;
 	flag.frame = cent->pe.flag.frame;
 	flag.backlerp = cent->pe.flag.backlerp;
@@ -1897,16 +1935,6 @@ static void CG_PlayerPowerups( centity_t *cent, refEntity_t *torso ) {
 		return;
 	}
 
-	// quad gives a dlight
-	if ( powerups & ( 1 << PW_QUAD ) ) {
-		trap_R_AddLightToScene( cent->lerpOrigin, 200 + (rand()&31), 0.2f, 0.2f, 1 );
-	}
-
-	// flight plays a looped sound
-	if ( powerups & ( 1 << PW_FLIGHT ) ) {
-		trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin, vec3_origin, cgs.media.flightSound );
-	}
-
 	ci = &cgs.clientinfo[ cent->currentState.clientNum ];
 	// redflag
 	if ( powerups & ( 1 << PW_REDFLAG ) ) {
@@ -1942,9 +1970,9 @@ static void CG_PlayerPowerups( centity_t *cent, refEntity_t *torso ) {
 	}
 
 	// haste leaves smoke trails
-	if ( powerups & ( 1 << PW_HASTE ) ) {
-		CG_HasteTrail( cent );
-	}
+	//if ( powerups & ( 1 << PW_HASTE ) ) {
+	//	CG_HasteTrail( cent );
+	//}
 }
 
 
@@ -2059,14 +2087,9 @@ static qboolean CG_PlayerShadow( centity_t *cent, float *shadowPlane ) {
 
 	*shadowPlane = 0;
 
-	if ( cg_shadows.integer == 0 ) {
-		return qfalse;
-	}
-
-	// no shadows when invisible
-	if ( cent->currentState.powerups & ( 1 << PW_INVIS ) ) {
-		return qfalse;
-	}
+	//if ( cg_shadows.integer == 0 ) {
+	//	return qfalse;
+	//}
 
 	// send a trace down from the player to the ground
 	VectorCopy( cent->lerpOrigin, end );
@@ -2081,9 +2104,9 @@ static qboolean CG_PlayerShadow( centity_t *cent, float *shadowPlane ) {
 
 	*shadowPlane = trace.endpos[2] + 1;
 
-	if ( cg_shadows.integer != 1 ) {	// no mark for stencil or projection shadows
+	//if ( cg_shadows.integer != 1 ) {	// no mark for stencil or projection shadows
 		return qtrue;
-	}
+	//}
 
 	// fade the shadow out with height
 	alpha = 1.0 - trace.fraction;
@@ -2199,41 +2222,8 @@ Also called by CG_Missile for quad rockets, but nobody can tell...
 */
 void CG_AddRefEntityWithPowerups( refEntity_t *ent, entityState_t *state, int team ) {
 
-	if ( state->powerups & ( 1 << PW_INVIS ) ) {
-		ent->customShader = cgs.media.invisShader;
-		trap_R_AddRefEntityToScene( ent );
-	} else {
-		/*
-		if ( state->eFlags & EF_KAMIKAZE ) {
-			if (team == TEAM_BLUE)
-				ent->customShader = cgs.media.blueKamikazeShader;
-			else
-				ent->customShader = cgs.media.redKamikazeShader;
 			trap_R_AddRefEntityToScene( ent );
-		}
-		else {*/
-			trap_R_AddRefEntityToScene( ent );
-		//}
 
-		if ( state->powerups & ( 1 << PW_QUAD ) )
-		{
-			if (team == TEAM_RED)
-				ent->customShader = cgs.media.redQuadShader;
-			else
-				ent->customShader = cgs.media.quadShader;
-			trap_R_AddRefEntityToScene( ent );
-		}
-		if ( state->powerups & ( 1 << PW_REGEN ) ) {
-			if ( ( ( cg.time / 100 ) % 10 ) == 1 ) {
-				ent->customShader = cgs.media.regenShader;
-				trap_R_AddRefEntityToScene( ent );
-			}
-		}
-		if ( state->powerups & ( 1 << PW_BATTLESUIT ) ) {
-			ent->customShader = cgs.media.battleSuitShader;
-			trap_R_AddRefEntityToScene( ent );
-		}
-	}
 }
 
 /*
@@ -2293,8 +2283,9 @@ void CG_Player( centity_t *cent ) {
 	refEntity_t		legs;
 	refEntity_t		torso;
 	refEntity_t		head;
-	int				clientNum;
-	int				renderfx;
+        refEntity_t             helmet;
+        int     		clientNum;
+	int			renderfx;
 	qboolean		shadow;
 	float			shadowPlane;
 #ifdef MISSIONPACK
@@ -2303,8 +2294,14 @@ void CG_Player( centity_t *cent ) {
 	int				t;
 	float			c;
 	float			angle;
-	vec3_t			dir, angles;
+
 #endif
+
+        vec3_t                  dir, angles;
+        qboolean                vestOn;
+        qboolean                helmetOn;
+        vestOn = helmetOn = qfalse;
+
 
 	// the client number is stored in clientNum.  It can't be derived
 	// from the entity number, because a single client may have
@@ -2319,7 +2316,18 @@ void CG_Player( centity_t *cent ) {
 	// not have valid clientinfo
 	if ( !ci->infoValid ) {
 		return;
-	}
+        }
+
+
+        if ( cg.snap->ps.persistant[PERS_KILLED] !=  ci->deaths ) {
+          ci->deaths = cg.snap->ps.persistant[PERS_KILLED];
+        }
+        if ( cg.snap->ps.persistant[PERS_SCORE] !=  ci->score ) {
+          ci->score = cg.snap->ps.persistant[PERS_SCORE];
+        }
+
+
+
 
 	// get the player model information
 	renderfx = 0;
@@ -2337,6 +2345,7 @@ void CG_Player( centity_t *cent ) {
 	memset( &legs, 0, sizeof(legs) );
 	memset( &torso, 0, sizeof(torso) );
 	memset( &head, 0, sizeof(head) );
+        memset( &helmet, 0, sizeof(helmet) );
 
 	// get the rotation information
 	CG_PlayerAngles( cent, legs.axis, torso.axis, head.axis );
@@ -2348,13 +2357,16 @@ void CG_Player( centity_t *cent ) {
 	// add the talk baloon or disconnect icon
 	CG_PlayerSprites( cent );
 
+
+
+
 	// add the shadow
 	shadow = CG_PlayerShadow( cent, &shadowPlane );
 
 	// add a water splash if partially in and out of water
 	CG_PlayerSplash( cent );
 
-	if ( cg_shadows.integer == 3 && shadow ) {
+        if ( 0 ) {  //xamis --was:  cg_shadows.integer == 3 && shadow
 		renderfx |= RF_SHADOW_PLANE;
 	}
 	renderfx |= RF_LIGHTING_ORIGIN;			// use the same origin for all
@@ -2370,7 +2382,6 @@ void CG_Player( centity_t *cent ) {
 	legs.customSkin = ci->legsSkin;
 
 	VectorCopy( cent->lerpOrigin, legs.origin );
-
 	VectorCopy( cent->lerpOrigin, legs.lightingOrigin );
 	legs.shadowPlane = shadowPlane;
 	legs.renderfx = renderfx;
@@ -2383,10 +2394,18 @@ void CG_Player( centity_t *cent ) {
 		return;
 	}
 
+        if ( cent->currentState.powerups & ( 1 << PW_VEST ) )
+          vestOn = qtrue;
 	//
 	// add the torso
 	//
+        if ( vestOn){
+        torso.hModel = ci->vestModel;
+        torso.customSkin = ci->vestSkin;
+        }else{
+        torso.customSkin = ci->torsoSkin;
 	torso.hModel = ci->torsoModel;
+        }
 	if (!torso.hModel) {
 		return;
 	}
@@ -2512,71 +2531,9 @@ void CG_Player( centity_t *cent ) {
 		}
 	}
 
-	if ( cent->currentState.powerups & ( 1 << PW_GUARD ) ) {
-		memcpy(&powerup, &torso, sizeof(torso));
-		powerup.hModel = cgs.media.guardPowerupModel;
-		powerup.frame = 0;
-		powerup.oldframe = 0;
-		powerup.customSkin = 0;
-		trap_R_AddRefEntityToScene( &powerup );
-	}
-	if ( cent->currentState.powerups & ( 1 << PW_SCOUT ) ) {
-		memcpy(&powerup, &torso, sizeof(torso));
-		powerup.hModel = cgs.media.scoutPowerupModel;
-		powerup.frame = 0;
-		powerup.oldframe = 0;
-		powerup.customSkin = 0;
-		trap_R_AddRefEntityToScene( &powerup );
-	}
-	if ( cent->currentState.powerups & ( 1 << PW_DOUBLER ) ) {
-		memcpy(&powerup, &torso, sizeof(torso));
-		powerup.hModel = cgs.media.doublerPowerupModel;
-		powerup.frame = 0;
-		powerup.oldframe = 0;
-		powerup.customSkin = 0;
-		trap_R_AddRefEntityToScene( &powerup );
-	}
-	if ( cent->currentState.powerups & ( 1 << PW_AMMOREGEN ) ) {
-		memcpy(&powerup, &torso, sizeof(torso));
-		powerup.hModel = cgs.media.ammoRegenPowerupModel;
-		powerup.frame = 0;
-		powerup.oldframe = 0;
-		powerup.customSkin = 0;
-		trap_R_AddRefEntityToScene( &powerup );
-	}
-	if ( cent->currentState.powerups & ( 1 << PW_INVULNERABILITY ) ) {
-		if ( !ci->invulnerabilityStartTime ) {
-			ci->invulnerabilityStartTime = cg.time;
-		}
-		ci->invulnerabilityStopTime = cg.time;
-	}
-	else {
+
+
 		ci->invulnerabilityStartTime = 0;
-	}
-	if ( (cent->currentState.powerups & ( 1 << PW_INVULNERABILITY ) ) ||
-		cg.time - ci->invulnerabilityStopTime < 250 ) {
-
-		memcpy(&powerup, &torso, sizeof(torso));
-		powerup.hModel = cgs.media.invulnerabilityPowerupModel;
-		powerup.customSkin = 0;
-		// always draw
-		powerup.renderfx &= ~RF_THIRD_PERSON;
-		VectorCopy(cent->lerpOrigin, powerup.origin);
-
-		if ( cg.time - ci->invulnerabilityStartTime < 250 ) {
-			c = (float) (cg.time - ci->invulnerabilityStartTime) / 250;
-		}
-		else if (cg.time - ci->invulnerabilityStopTime < 250 ) {
-			c = (float) (250 - (cg.time - ci->invulnerabilityStopTime)) / 250;
-		}
-		else {
-			c = 1;
-		}
-		VectorSet( powerup.axis[0], c, 0, 0 );
-		VectorSet( powerup.axis[1], 0, c, 0 );
-		VectorSet( powerup.axis[2], 0, 0, c );
-		trap_R_AddRefEntityToScene( &powerup );
-	}
 
 	t = cg.time - ci->medkitUsageTime;
 	if ( ci->medkitUsageTime && t < 500 ) {
@@ -2624,11 +2581,35 @@ void CG_Player( centity_t *cent ) {
 
 	CG_AddRefEntityWithPowerups( &head, &cent->currentState, ci->team );
 
+
+
+          if ( cent->currentState.powerups & ( 1 << PW_HELMET ) ){ //using ammo for powerup/item storage
+            helmetOn = qtrue;
+        }
+          if ( helmetOn ){
+
+        VectorCopy( cent->lerpOrigin, helmet.lightingOrigin );
+
+        CG_PositionEntityOnTag( &helmet, &head, ci->headModel, "tag_head");
+        helmet.hModel = ci->helmetModel;
+        helmet.shadowPlane = shadowPlane;
+        helmet.renderfx = renderfx;
+
+        CG_AddRefEntityWithPowerups( &helmet, &cent->currentState, ci->team );
+        }
+
+
+
+
 #ifdef MISSIONPACK
 	CG_BreathPuffs(cent, &head);
 
 	CG_DustTrail(cent);
 #endif
+
+
+
+
 
 	//
 	// add the gun / barrel / flash

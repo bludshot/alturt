@@ -149,7 +149,8 @@ typedef enum {
     WEAPON_RELOADING_END,
     WEAPON_RELOADING_COMPLETE,
     WEAPON_ARMING,
-    WEAPON_ARMED
+    WEAPON_ARMED,
+    WEAPON_DROPPED,
 } weaponstate_t;
 
 
@@ -169,15 +170,18 @@ typedef enum {
 #define PMF_TIME_KNOCKBACK      64              // pm_time is an air-accelerate only time
 #define PMF_TIME_WATERJUMP      256             // pm_time is waterjump
 #define PMF_RESPAWNED           512             // clear after attack and jump buttons come up
-//#define PMF_USE_ITEM_HELD       16384
-#define PMF_GRENADE_ARMED       16384
-#define PMF_SINGLE_MODE         2048    // pull towards grapple location
-#define PMF_FOLLOW                      4096    // spectate following another player
-#define PMF_RELOADING           8192    // spectate as a scoreboard
 #define PMF_ONGROUND           1024    //
+#define PMF_SINGLE_MODE         2048    // pull towards grapple location
+#define PMF_FOLLOW              4096    // spectate following another player
+#define PMF_RELOADING           8192    // spectate as a scoreboard
+#define PMF_GRENADE_ARMED       16384
 
 
 #define PMF_ALL_TIMES   (PMF_TIME_WATERJUMP|PMF_TIME_LAND|PMF_TIME_KNOCKBACK)
+
+
+#define BGF_POWERSLIDE                      1
+
 
 #define MAXTOUCH        32
 typedef struct {
@@ -218,6 +222,11 @@ typedef struct {
 void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd );
 void Pmove (pmove_t *pmove);
 
+typedef struct {
+ int bg_flags[MAX_CLIENTS];
+}bg_misc_t;
+
+
 //===================================================================================
 
 
@@ -229,20 +238,22 @@ typedef enum {
         STAT_MODE,//Xamis
         STAT_ROUNDS,//Xamis
         STAT_CLIPS,//Xamis
-        STAT_HOLDABLE_ITEM,
-#ifdef MISSIONPACK
-        STAT_PERSISTANT_POWERUP,
-#endif
-        STAT_WEAPONS,                                   // 16 bit fields
-        STAT_WEAPONS_EXT,
 
-        STAT_ARMOR,
+        STAT_WEAPONS,   //Xamis                                // 16 bit fields
+        STAT_WEAPONS_EXT,//Xamis
+
         STAT_DEAD_YAW,                                  // look this direction when dead (FIXME: get rid of?)
         STAT_CLIENTS_READY,                             // bit mask of clients wishing to exit the intermission (FIXME: configstring?)
-        STAT_MAX_HEALTH,                                // health / armor limit, changable by handicap
-        STAT_MAX_STAMINA,       //Xamis
-        STAT_SMOKE,
-        STAT_XYSPEED,
+        STAT_SELECTED_ITEM,//Xamis
+        STAT_XYSPEED,//Xamis
+
+
+        STAT_ARM_DAMAGE,   //Xamis                         // arm damage
+        STAT_LEG_DAMAGE,  //Xamis                          // player walks slower when he got some legdamage,
+        STAT_CHEST_DAMAGE,  //Xamis                        // chest damage
+        STAT_STOMACH_DAMAGE, //Xamis                       // stomach damage
+        STAT_HEAD_DAMAGE,//Xamis
+
 
 
 } statIndex_t;
@@ -315,22 +326,17 @@ typedef enum {
 typedef enum {
         PW_NONE,
 
-        PW_QUAD,
-        PW_BATTLESUIT,
-        PW_HASTE,
-        PW_INVIS,
-        PW_REGEN,
-        PW_FLIGHT,
-
         PW_REDFLAG,
         PW_BLUEFLAG,
         PW_NEUTRALFLAG,
 
-        PW_SCOUT,
-        PW_GUARD,
-        PW_DOUBLER,
-        PW_AMMOREGEN,
-        PW_INVULNERABILITY,
+        PW_VEST,
+        PW_HELMET,
+
+        PW_SILENCER,
+        PW_LASERSIGHT,
+        PW_AMMO,
+        PW_NVG,
 
         PW_NUM_POWERUPS
 
@@ -338,15 +344,7 @@ typedef enum {
 
 typedef enum {
         HI_NONE,
-        HI_LASER,
-        HI_SILENCER,
-        HI_HELMET,
-        HI_TELEPORTER,
         HI_MEDKIT,
-        HI_KAMIKAZE,
-        HI_PORTAL,
-        HI_INVULNERABILITY,
-
         HI_NUM_HOLDABLE
 } holdable_t;
 
@@ -437,6 +435,7 @@ typedef enum {
 
         EV_NOAMMO,
         EV_NONADES,
+        EV_POWERSLIDE,
         EV_CHANGE_WEAPON,
         EV_FIRE_WEAPON,
         EV_EJECT_CASING,
@@ -741,14 +740,20 @@ typedef struct gitem_s {
         char            *sounds;                // string of all sounds this item will use
 } gitem_t;
 
-
+//xamis
+#define MELEE                   0
+#define SIDEARM                 1
+#define PRIMARY                 2
+#define SECONDARY               3
+#define NADE                    4
+#define MISC                    5
+#define INVENTORYITEMS  6
 //Xamis ammo system to deal with max_weapons limit
 typedef struct wpinfo_s {
   char            *ammoIcon;
   int             weapMode[MAX_CLIENTS];
   int             numClips[MAX_CLIENTS];
   int             rounds[MAX_CLIENTS];
-  const   int        wp_sort;
 } wpinfo_t;
 
 
@@ -757,20 +762,19 @@ int roundCount[MAX_CLIENTS];
 } spasinfo_t;
 
 
-typedef enum {
-  WPS_NONE,
-  WPS_MELEE,
-  WPS_SIDEARM,
-  WPS_PRI_SEC,
-  WPS_GRENADE,
-  WPS_NUM_ITEMS
+typedef struct wp_sort_s{
+int sort[MAX_CLIENTS][INVENTORYITEMS];
+int item[MAX_CLIENTS][3];
+
 } wp_sort_t;
 
 // included in both the game dll and the client
 extern  wpinfo_t bg_weaponlist[];
+extern  bg_misc_t bg_ps;
+extern  wp_sort_t bg_inventory;
 extern  nadeInfo_t bg_nadeTimer;
 extern  gitem_t bg_itemlist[];
-extern  int             bg_numItems;
+extern  int     bg_numItems;
 
 gitem_t *BG_FindItem( const char *pickupName );
 gitem_t *BG_FindItemForWeapon( weapon_t weapon );
@@ -843,7 +847,8 @@ void      BG_GetClientNormal( const playerState_t *ps, vec3_t normal );
 int       BG_CalcSpread( playerState_t ps );
 int       RoundCount( int w );
 void      BG_PackWeapon( int weapon, int stats[ ] );
-void BG_RemoveWeapon( int weapon, int stats[ ] );
+void      BG_RemoveWeapon( int weapon, int stats[ ] );
+
 
 #define ARENAS_PER_TIER         4
 #define MAX_ARENAS                      1024
@@ -924,3 +929,8 @@ void BG_RemoveWeapon( int weapon, int stats[ ] );
 #define ALTURT_SMOKEMASK_SRIGHT    6
 #define ALTURT_SMOKEMASK_VALUE     0x3
 #define SMOKE_FLAGS     0x0000ffc0
+
+
+#define STAT_MAX_HEALTH 100
+
+#define STAT_MAX_STAMINA 900

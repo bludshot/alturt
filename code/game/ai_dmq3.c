@@ -236,12 +236,6 @@ EntityIsInvisible
 */
 qboolean EntityIsInvisible(aas_entityinfo_t *entinfo) {
 	// the flag is always visible
-	if (EntityCarriesFlag(entinfo)) {
-		return qfalse;
-	}
-	if (entinfo->powerups & (1 << PW_INVIS)) {
-		return qtrue;
-	}
 	return qfalse;
 }
 
@@ -275,9 +269,6 @@ EntityHasQuad
 ==================
 */
 qboolean EntityHasQuad(aas_entityinfo_t *entinfo) {
-	if (entinfo->powerups & (1 << PW_QUAD)) {
-		return qtrue;
-	}
 	return qfalse;
 }
 
@@ -1630,27 +1621,6 @@ void BotCheckItemPickup(bot_state_t *bs, int *oldinventory) {
 
 	offence = -1;
 	// go into offence if picked up the kamikaze or invulnerability
-	if (!oldinventory[INVENTORY_KAMIKAZE] && bs->inventory[INVENTORY_KAMIKAZE] >= 1) {
-		offence = qtrue;
-	}
-	if (!oldinventory[INVENTORY_INVULNERABILITY] && bs->inventory[INVENTORY_INVULNERABILITY] >= 1) {
-		offence = qtrue;
-	}
-	// if not already wearing the kamikaze or invulnerability
-	if (!bs->inventory[INVENTORY_KAMIKAZE] && !bs->inventory[INVENTORY_INVULNERABILITY]) {
-		if (!oldinventory[INVENTORY_SCOUT] && bs->inventory[INVENTORY_SCOUT] >= 1) {
-			offence = qtrue;
-		}
-		if (!oldinventory[INVENTORY_GUARD] && bs->inventory[INVENTORY_GUARD] >= 1) {
-			offence = qtrue;
-		}
-		if (!oldinventory[INVENTORY_DOUBLER] && bs->inventory[INVENTORY_DOUBLER] >= 1) {
-			offence = qfalse;
-		}
-		if (!oldinventory[INVENTORY_AMMOREGEN] && bs->inventory[INVENTORY_AMMOREGEN] >= 1) {
-			offence = qfalse;
-		}
-	}
 
 	if (offence >= 0) {
 		leader = ClientFromName(bs->teamleader);
@@ -1722,32 +1692,29 @@ void BotUpdateInventory(bot_state_t *bs) {
 
 	memcpy(oldinventory, bs->inventory, sizeof(oldinventory));
 	//armor
-	bs->inventory[INVENTORY_ARMOR] = bs->cur_ps.stats[STAT_ARMOR];
+//	bs->inventory[INVENTORY_ARMOR] = bs->cur_ps.stats[STAT_ARMOR];
 	//weapons
 	bs->inventory[INVENTORY_KNIFE] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_KNIFE)) != 0;
-	bs->inventory[INVENTORY_SHOTGUN] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_SPAS)) != 0;
-	bs->inventory[INVENTORY_MACHINEGUN] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_M4)) != 0;
-	bs->inventory[INVENTORY_GRENADELAUNCHER] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_HK69)) != 0;
-	bs->inventory[INVENTORY_ROCKETLAUNCHER] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_LR300)) != 0;
-	bs->inventory[INVENTORY_LIGHTNING] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_PSG1)) != 0;
-	bs->inventory[INVENTORY_RAILGUN] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_SR8)) != 0;
-	bs->inventory[INVENTORY_PLASMAGUN] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_DEAGLE)) != 0;
-	bs->inventory[INVENTORY_BFG10K] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_BERETTA)) != 0;
+	bs->inventory[INVENTORY_SPAS] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_SPAS)) != 0;
+	bs->inventory[INVENTORY_M4] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_M4)) != 0;
+        bs->inventory[INVENTORY_HK69] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_HK69)) != 0;
+        bs->inventory[INVENTORY_LR300] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_LR300)) != 0;
+        bs->inventory[INVENTORY_PSG1] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_PSG1)) != 0;
+        bs->inventory[INVENTORY_SR8] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_SR8)) != 0;
+        bs->inventory[INVENTORY_DEAGLE] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_DEAGLE)) != 0;
+        bs->inventory[INVENTORY_BERETTA] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_BERETTA)) != 0;
 //	bs->inventory[INVENTORY_GRAPPLINGHOOK] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_GRAPPLING_HOOK)) != 0;
 //#ifdef MISSIONPACK
-	bs->inventory[INVENTORY_NAILGUN] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_UMP45)) != 0;;
-	bs->inventory[INVENTORY_PROXLAUNCHER] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_MP5K)) != 0;;
-	bs->inventory[INVENTORY_CHAINGUN] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_G36)) != 0;;
+        bs->inventory[INVENTORY_UMP45] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_UMP45)) != 0;;
+        bs->inventory[INVENTORY_MP5K] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_MP5K)) != 0;;
+        bs->inventory[INVENTORY_G36] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_G36)) != 0;;
 //#endif
 	//ammo
 	bs->inventory[INVENTORY_SHELLS] = bs->cur_ps.ammo[WP_SPAS];
-	bs->inventory[INVENTORY_BULLETS] = bs->cur_ps.ammo[WP_M4];
-//	bs->inventory[INVENTORY_GRENADES] = bs->cur_ps.ammo[WP_HK69];
-//	bs->inventory[INVENTORY_CELLS] = bs->cur_ps.ammo[WP_PLASMAGUN];
-//	bs->inventory[INVENTORY_LIGHTNINGAMMO] = bs->cur_ps.ammo[WP_LIGHTNING];
-//	bs->inventory[INVENTORY_ROCKETS] = bs->cur_ps.ammo[WP_ROCKET_LAUNCHER];
-//	bs->inventory[INVENTORY_SLUGS] = bs->cur_ps.ammo[WP_RAILGUN];
-//	bs->inventory[INVENTORY_BFGAMMO] = bs->cur_ps.ammo[WP_BFG];
+      //  bs->inventory[INVENTORY_BULLETS] = bs->cur_ps.ammo[WP_M4]
+        bs->inventory[INVENTORY_BULLETS] = bg_weaponlist[WP_M4].rounds[ bs->cur_ps.clientNum ];
+	bs->inventory[INVENTORY_GRENADES] = bs->cur_ps.ammo[WP_HK69];
+
 #ifdef MISSIONPACK
 //	bs->inventory[INVENTORY_NAILS] = bs->cur_ps.ammo[WP_NAILGUN];
 //	bs->inventory[INVENTORY_MINES] = bs->cur_ps.ammo[WP_PROX_LAUNCHER];
@@ -1755,24 +1722,24 @@ void BotUpdateInventory(bot_state_t *bs) {
 #endif
 	//powerups
 	bs->inventory[INVENTORY_HEALTH] = bs->cur_ps.stats[STAT_HEALTH];
-	bs->inventory[INVENTORY_TELEPORTER] = bs->cur_ps.stats[STAT_HOLDABLE_ITEM] == MODELINDEX_TELEPORTER;
-	bs->inventory[INVENTORY_MEDKIT] = bs->cur_ps.stats[STAT_HOLDABLE_ITEM] == MODELINDEX_MEDKIT;
+//	bs->inventory[INVENTORY_TELEPORTER] = bs->cur_ps.stats[STAT_HOLDABLE_ITEM] == MODELINDEX_TELEPORTER;
+//	bs->inventory[INVENTORY_MEDKIT] = bs->cur_ps.stats[STAT_HOLDABLE_ITEM] == MODELINDEX_MEDKIT;
 #ifdef MISSIONPACK
-	bs->inventory[INVENTORY_KAMIKAZE] = bs->cur_ps.stats[STAT_HOLDABLE_ITEM] == MODELINDEX_KAMIKAZE;
-	bs->inventory[INVENTORY_PORTAL] = bs->cur_ps.stats[STAT_HOLDABLE_ITEM] == MODELINDEX_PORTAL;
-	bs->inventory[INVENTORY_INVULNERABILITY] = bs->cur_ps.stats[STAT_HOLDABLE_ITEM] == MODELINDEX_INVULNERABILITY;
+//	bs->inventory[INVENTORY_KAMIKAZE] = bs->cur_ps.stats[STAT_HOLDABLE_ITEM] == MODELINDEX_KAMIKAZE;
+//	bs->inventory[INVENTORY_PORTAL] = bs->cur_ps.stats[STAT_HOLDABLE_ITEM] == MODELINDEX_PORTAL;
+//	bs->inventory[INVENTORY_INVULNERABILITY] = bs->cur_ps.stats[STAT_HOLDABLE_ITEM] == MODELINDEX_INVULNERABILITY;
 #endif
-	bs->inventory[INVENTORY_QUAD] = bs->cur_ps.powerups[PW_QUAD] != 0;
-	bs->inventory[INVENTORY_ENVIRONMENTSUIT] = bs->cur_ps.powerups[PW_BATTLESUIT] != 0;
-	bs->inventory[INVENTORY_HASTE] = bs->cur_ps.powerups[PW_HASTE] != 0;
-	bs->inventory[INVENTORY_INVISIBILITY] = bs->cur_ps.powerups[PW_INVIS] != 0;
-	bs->inventory[INVENTORY_REGEN] = bs->cur_ps.powerups[PW_REGEN] != 0;
-	bs->inventory[INVENTORY_FLIGHT] = bs->cur_ps.powerups[PW_FLIGHT] != 0;
+//	bs->inventory[INVENTORY_QUAD] = bs->cur_ps.powerups[PW_QUAD] != 0;
+//	bs->inventory[INVENTORY_ENVIRONMENTSUIT] = bs->cur_ps.powerups[PW_BATTLESUIT] != 0;
+//	bs->inventory[INVENTORY_HASTE] = bs->cur_ps.powerups[PW_HASTE] != 0;
+//	bs->inventory[INVENTORY_INVISIBILITY] = bs->cur_ps.powerups[PW_INVIS] != 0;
+//	bs->inventory[INVENTORY_REGEN] = bs->cur_ps.powerups[PW_REGEN] != 0;
+//	bs->inventory[INVENTORY_FLIGHT] = bs->cur_ps.powerups[PW_FLIGHT] != 0;
 #ifdef MISSIONPACK
-	bs->inventory[INVENTORY_SCOUT] = bs->cur_ps.stats[STAT_PERSISTANT_POWERUP] == MODELINDEX_SCOUT;
-	bs->inventory[INVENTORY_GUARD] = bs->cur_ps.stats[STAT_PERSISTANT_POWERUP] == MODELINDEX_GUARD;
-	bs->inventory[INVENTORY_DOUBLER] = bs->cur_ps.stats[STAT_PERSISTANT_POWERUP] == MODELINDEX_DOUBLER;
-	bs->inventory[INVENTORY_AMMOREGEN] = bs->cur_ps.stats[STAT_PERSISTANT_POWERUP] == MODELINDEX_AMMOREGEN;
+//	bs->inventory[INVENTORY_SCOUT] = bs->cur_ps.stats[STAT_PERSISTANT_POWERUP] == MODELINDEX_SCOUT;
+//	bs->inventory[INVENTORY_GUARD] = bs->cur_ps.stats[STAT_PERSISTANT_POWERUP] == MODELINDEX_GUARD;
+//	bs->inventory[INVENTORY_DOUBLER] = bs->cur_ps.stats[STAT_PERSISTANT_POWERUP] == MODELINDEX_DOUBLER;
+//	bs->inventory[INVENTORY_AMMOREGEN] = bs->cur_ps.stats[STAT_PERSISTANT_POWERUP] == MODELINDEX_AMMOREGEN;
 #endif
 	bs->inventory[INVENTORY_REDFLAG] = bs->cur_ps.powerups[PW_REDFLAG] != 0;
 	bs->inventory[INVENTORY_BLUEFLAG] = bs->cur_ps.powerups[PW_BLUEFLAG] != 0;
@@ -1816,6 +1783,7 @@ BotUseKamikaze
 #define KAMIKAZE_DIST		1024
 
 void BotUseKamikaze(bot_state_t *bs) {
+  /*
 	int c, teammates, enemies;
 	aas_entityinfo_t entinfo;
 	vec3_t dir, target;
@@ -1916,6 +1884,7 @@ void BotUseKamikaze(bot_state_t *bs) {
 		trap_EA_Use(bs->client);
 		return;
 	}
+  */
 }
 
 /*
@@ -1924,7 +1893,7 @@ BotUseInvulnerability
 ==================
 */
 void BotUseInvulnerability(bot_state_t *bs) {
-	int c;
+/*	int c;
 	vec3_t dir, target;
 	bot_goal_t *goal;
 	bsp_trace_t trace;
@@ -2024,6 +1993,7 @@ void BotUseInvulnerability(bot_state_t *bs) {
 			}
 		}
 	}
+  */
 }
 #endif
 
@@ -2033,6 +2003,7 @@ BotBattleUseItems
 ==================
 */
 void BotBattleUseItems(bot_state_t *bs) {
+  /*
 	if (bs->inventory[INVENTORY_HEALTH] < 40) {
 		if (bs->inventory[INVENTORY_TELEPORTER] > 0) {
 			if (!BotCTFCarryingFlag(bs)
@@ -2054,6 +2025,7 @@ void BotBattleUseItems(bot_state_t *bs) {
 	BotUseKamikaze(bs);
 	BotUseInvulnerability(bs);
 #endif
+  */
 }
 
 /*
@@ -2200,42 +2172,19 @@ BotAggression
 */
 float BotAggression(bot_state_t *bs) {
 	//if the bot has quad
-	if (bs->inventory[INVENTORY_QUAD]) {
-		//if the bot is not holding the gauntlet or the enemy is really nearby
-		if (bs->weaponnum != WP_KNIFE ||
-			bs->inventory[ENEMY_HORIZONTAL_DIST] < 80) {
-			return 70;
-		}
-	}
 	//if the enemy is located way higher than the bot
 	if (bs->inventory[ENEMY_HEIGHT] > 200) return 0;
 	//if the bot is very low on health
 	if (bs->inventory[INVENTORY_HEALTH] < 60) return 0;
 	//if the bot is low on health
-	if (bs->inventory[INVENTORY_HEALTH] < 80) {
-		//if the bot has insufficient armor
-		if (bs->inventory[INVENTORY_ARMOR] < 40) return 0;
-	}
-	//if the bot can use the bfg
-	if (bs->inventory[INVENTORY_BFG10K] > 0 &&
-			bs->inventory[INVENTORY_BFGAMMO] > 7) return 100;
-	//if the bot can use the railgun
-	if (bs->inventory[INVENTORY_RAILGUN] > 0 &&
-			bs->inventory[INVENTORY_SLUGS] > 5) return 95;
-	//if the bot can use the lightning gun
-	if (bs->inventory[INVENTORY_LIGHTNING] > 0 &&
-			bs->inventory[INVENTORY_LIGHTNINGAMMO] > 50) return 90;
-	//if the bot can use the rocketlauncher
-	if (bs->inventory[INVENTORY_ROCKETLAUNCHER] > 0 &&
-			bs->inventory[INVENTORY_ROCKETS] > 5) return 90;
-	//if the bot can use the plasmagun
-	if (bs->inventory[INVENTORY_PLASMAGUN] > 0 &&
-			bs->inventory[INVENTORY_CELLS] > 40) return 85;
+                //if the bot can use the grenade launcher
+        if ( bs->inventory[INVENTORY_BULLETS] > 10) return 20;
+        //if the bot can use the shotgun
 	//if the bot can use the grenade launcher
-	if (bs->inventory[INVENTORY_GRENADELAUNCHER] > 0 &&
+	if (bs->inventory[INVENTORY_HK69] > 0 &&
 			bs->inventory[INVENTORY_GRENADES] > 10) return 80;
 	//if the bot can use the shotgun
-	if (bs->inventory[INVENTORY_SHOTGUN] > 0 &&
+	if (bs->inventory[INVENTORY_SPAS] > 0 &&
 			bs->inventory[INVENTORY_SHELLS] > 10) return 50;
 	//otherwise the bot is not feeling too good
 	return 0;
@@ -2253,7 +2202,7 @@ float BotFeelingBad(bot_state_t *bs) {
 	if (bs->inventory[INVENTORY_HEALTH] < 40) {
 		return 100;
 	}
-	if (bs->weaponnum == WP_M4) {
+	if (bs->weaponnum == WP_SPAS) {
 		return 90;
 	}
 	if (bs->inventory[INVENTORY_HEALTH] < 60) {
@@ -2381,7 +2330,7 @@ BotCanAndWantsToRocketJump
 ==================
 */
 int BotCanAndWantsToRocketJump(bot_state_t *bs) {
-	float rocketjumper;
+/*	float rocketjumper;
 
 	//if rocket jumping is disabled
 	if (!bot_rocketjump.integer) return qfalse;
@@ -2401,6 +2350,8 @@ int BotCanAndWantsToRocketJump(bot_state_t *bs) {
 	rocketjumper = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_WEAPONJUMPING, 0, 1);
 	if (rocketjumper < 0.5) return qfalse;
 	return qtrue;
+        */
+        return qfalse;
 }
 
 /*
@@ -2409,15 +2360,6 @@ BotHasPersistantPowerupAndWeapon
 ==================
 */
 int BotHasPersistantPowerupAndWeapon(bot_state_t *bs) {
-#ifdef MISSIONPACK
-	// if the bot does not have a persistant powerup
-	if (!bs->inventory[INVENTORY_SCOUT] &&
-		!bs->inventory[INVENTORY_GUARD] &&
-		!bs->inventory[INVENTORY_DOUBLER] &&
-		!bs->inventory[INVENTORY_AMMOREGEN] ) {
-		return qfalse;
-	}
-#endif
 	//if the bot is very low on health
 	if (bs->inventory[INVENTORY_HEALTH] < 60) return qfalse;
 	//if the bot is low on health
@@ -2425,30 +2367,15 @@ int BotHasPersistantPowerupAndWeapon(bot_state_t *bs) {
 		//if the bot has insufficient armor
 		if (bs->inventory[INVENTORY_ARMOR] < 40) return qfalse;
 	}
-	//if the bot can use the bfg
-	if (bs->inventory[INVENTORY_BFG10K] > 0 &&
-			bs->inventory[INVENTORY_BFGAMMO] > 7) return qtrue;
-	//if the bot can use the railgun
-	if (bs->inventory[INVENTORY_RAILGUN] > 0 &&
-			bs->inventory[INVENTORY_SLUGS] > 5) return qtrue;
-	//if the bot can use the lightning gun
-	if (bs->inventory[INVENTORY_LIGHTNING] > 0 &&
-			bs->inventory[INVENTORY_LIGHTNINGAMMO] > 50) return qtrue;
-	//if the bot can use the rocketlauncher
-	if (bs->inventory[INVENTORY_ROCKETLAUNCHER] > 0 &&
-			bs->inventory[INVENTORY_ROCKETS] > 5) return qtrue;
 	//
-	if (bs->inventory[INVENTORY_NAILGUN] > 0 &&
-			bs->inventory[INVENTORY_NAILS] > 5) return qtrue;
+	if (bs->inventory[INVENTORY_M4] > 0 &&
+			bs->inventory[INVENTORY_BULLETS] >0) return qtrue;
 	//
-	if (bs->inventory[INVENTORY_PROXLAUNCHER] > 0 &&
-			bs->inventory[INVENTORY_MINES] > 5) return qtrue;
-	//
-	if (bs->inventory[INVENTORY_CHAINGUN] > 0 &&
-			bs->inventory[INVENTORY_BELT] > 40) return qtrue;
+	if (bs->inventory[INVENTORY_SPAS] > 0 &&
+			bs->inventory[INVENTORY_SHELLS] > 0) return qtrue;
 	//if the bot can use the plasmagun
-	if (bs->inventory[INVENTORY_PLASMAGUN] > 0 &&
-			bs->inventory[INVENTORY_CELLS] > 20) return qtrue;
+	if (bs->inventory[INVENTORY_HK69] > 0 &&
+			bs->inventory[INVENTORY_GRENADES] > 20) return qtrue;
 	return qfalse;
 }
 
@@ -2512,9 +2439,9 @@ int BotWantsToCamp(bot_state_t *bs) {
 	//if the bot isn't healthy anough
 	if (BotAggression(bs) < 50) return qfalse;
 	//the bot should have at least have the rocket launcher, the railgun or the bfg10k with some ammo
-	if ((bs->inventory[INVENTORY_ROCKETLAUNCHER] <= 0 || bs->inventory[INVENTORY_ROCKETS < 10]) &&
-		(bs->inventory[INVENTORY_RAILGUN] <= 0 || bs->inventory[INVENTORY_SLUGS] < 10) &&
-		(bs->inventory[INVENTORY_BFG10K] <= 0 || bs->inventory[INVENTORY_BFGAMMO] < 10)) {
+	if ((bs->inventory[INVENTORY_SPAS] <= 0 || bs->inventory[INVENTORY_SHELLS < 10]) &&
+		(bs->inventory[INVENTORY_M4] <= 0 || bs->inventory[INVENTORY_BULLETS] < 10) &&
+		(bs->inventory[INVENTORY_HK69] <= 0 || bs->inventory[INVENTORY_GRENADES] < 10)) {
 		return qfalse;
 	}
 	//find the closest camp spot
@@ -2558,12 +2485,14 @@ BotGoForPowerups
 void BotGoForPowerups(bot_state_t *bs) {
 
 	//don't avoid any of the powerups anymore
+  /*
 	BotDontAvoid(bs, "Quad Damage");
 	BotDontAvoid(bs, "Regeneration");
 	BotDontAvoid(bs, "Battle Suit");
 	BotDontAvoid(bs, "Speed");
 	BotDontAvoid(bs, "Invisibility");
 	//BotDontAvoid(bs, "Flight");
+  */
 	//reset the long term goal time so the bot will go for the powerup
 	//NOTE: the long term goal type doesn't change
 	bs->ltg_time = 0;
@@ -4913,10 +4842,6 @@ void BotCheckEvents(bot_state_t *bs, entityState_t *state) {
 				//if falling into a death pit
 				if (!strcmp(buf, "*falling1.wav")) {
 					//if the bot has a personal teleporter
-					if (bs->inventory[INVENTORY_TELEPORTER] > 0) {
-						//use the holdable item
-						trap_EA_Use(bs->client);
-					}
 				}
 			}
 			break;
@@ -4944,6 +4869,7 @@ void BotCheckEvents(bot_state_t *bs, entityState_t *state) {
 		case EV_GLOBAL_ITEM_PICKUP:
 		case EV_NOAMMO:
                 case EV_NONADES:
+                case EV_POWERSLIDE:
 		case EV_CHANGE_WEAPON:
 		case EV_FIRE_WEAPON:
 			//FIXME: either add to sound queue or mark player as someone making noise
@@ -5012,11 +4938,11 @@ BotCheckAir
 ==================
 */
 void BotCheckAir(bot_state_t *bs) {
-	if (bs->inventory[INVENTORY_ENVIRONMENTSUIT] <= 0) {
-		if (trap_AAS_PointContents(bs->eye) & (CONTENTS_WATER|CONTENTS_SLIME|CONTENTS_LAVA)) {
-			return;
-		}
-	}
+//	if (bs->inventory[INVENTORY_ENVIRONMENTSUIT] <= 0) {
+//		if (trap_AAS_PointContents(bs->eye) & (CONTENTS_WATER|CONTENTS_SLIME|CONTENTS_LAVA)) {
+//			return;
+//		}
+//	}
 	bs->lastair_time = FloatTime();
 }
 

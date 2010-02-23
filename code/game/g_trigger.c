@@ -233,9 +233,6 @@ void Use_target_push( gentity_t *self, gentity_t *other, gentity_t *activator ) 
 	if ( activator->client->ps.pm_type != PM_NORMAL ) {
 		return;
 	}
-	if ( activator->client->ps.powerups[PW_FLIGHT] ) {
-		return;
-	}
 
 	VectorCopy (self->s.origin2, activator->client->ps.velocity);
 

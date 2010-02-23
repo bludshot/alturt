@@ -145,10 +145,14 @@ void SnapVectorTowards( vec3_t v, vec3_t to ) {
 #define MACHINEGUN_SPREAD       20
 #define DEAGLE_SPREAD           10
 #define MACHINEGUN_DAMAGE       7
-#define M4_DAMAGE       40 //12
-#define AK103_DAMAGE    40 //16
+#define M4_DAMAGE       25 //12
+#define AK103_DAMAGE    30 //16
+#define LR300_DAMAGE   25 //25
+#define BERETTA_DAMAGE   20 //25
+#define G36_DAMAGE   22 //25
 #define DEAGLE_DAMAGE   40 //25
-
+#define UMP45_DAMAGE   40 //25
+#define MP5K_DAMAGE   22 //25
 
 
 void Bullet_Fire (gentity_t *ent, float spread, int damage ) {
@@ -911,14 +915,13 @@ void FireWeapon( gentity_t *ent ) {
 
   if ( (BG_Grenade(ent->client->ps.weapon))
         && bg_weaponlist[ent->client->ps.weapon].numClips[ent->client->ps.clientNum] <= 0){
-    BG_RemoveWeapon( ent->client->ps.weapon, ent->client->ps.stats);
-        }
 
-        if (ent->client->ps.powerups[PW_QUAD] ) {
-                s_quadFactor = g_quadfactor.value;
-        } else {
-                s_quadFactor = 1;
+
+    //bg_inventory.sort[ent->client->ps.clientNum][NADE] = WP_NONE;
+
         }
+        s_quadFactor = 1;
+
         // track shots taken for accuracy tracking.  Grapple is not a weapon and gauntet is just not tracked
         if(  ent->s.weapon != WP_KNIFE ) {
 
@@ -940,10 +943,10 @@ void FireWeapon( gentity_t *ent ) {
                         Bullet_Fire( ent, MACHINEGUN_SPREAD, M4_DAMAGE );
                 break;
                 case WP_MP5K:
-                        Bullet_Fire( ent, MACHINEGUN_SPREAD, MACHINEGUN_DAMAGE );
+                        Bullet_Fire( ent, MACHINEGUN_SPREAD, MP5K_DAMAGE );
                         break;
                 case WP_UMP45:
-                        Bullet_Fire( ent, MACHINEGUN_SPREAD, MACHINEGUN_DAMAGE );
+                  Bullet_Fire( ent, MACHINEGUN_SPREAD, UMP45_DAMAGE );
                         break;
                 case WP_PSG1:
                         Bullet_Fire( ent, MACHINEGUN_SPREAD, MACHINEGUN_DAMAGE );
@@ -952,10 +955,10 @@ void FireWeapon( gentity_t *ent ) {
                         Bullet_Fire( ent, MACHINEGUN_SPREAD, MACHINEGUN_DAMAGE );
                         break;
                 case WP_G36:
-                        Bullet_Fire( ent, MACHINEGUN_SPREAD, MACHINEGUN_DAMAGE );
+                        Bullet_Fire( ent, MACHINEGUN_SPREAD, G36_DAMAGE );
                         break;
                 case WP_LR300:
-                        Bullet_Fire( ent, MACHINEGUN_SPREAD, MACHINEGUN_DAMAGE );
+                  Bullet_Fire( ent, MACHINEGUN_SPREAD, LR300_DAMAGE );
                         break;
                 case WP_AK103:
                         Bullet_Fire( ent, MACHINEGUN_SPREAD, AK103_DAMAGE );
@@ -967,7 +970,7 @@ void FireWeapon( gentity_t *ent ) {
                         Bullet_Fire( ent, DEAGLE_SPREAD, DEAGLE_DAMAGE );
                         break;
                 case WP_BERETTA:
-                        Bullet_Fire( ent, MACHINEGUN_SPREAD, MACHINEGUN_DAMAGE );
+                        Bullet_Fire( ent, MACHINEGUN_SPREAD, BERETTA_DAMAGE );
                         break;
         case WP_HK69:
                         weapon_grenadelauncher_fire( ent );
