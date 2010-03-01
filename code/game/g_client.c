@@ -1269,6 +1269,10 @@ void ClientSpawn(gentity_t *ent) {
 
         }
         switch ( gear.string[1] ) {
+                case 'A':
+                        bg_inventory.sort[ent->client->ps.clientNum][PRIMARY]= WP_NONE;
+                        client->pers.inventory[PRIMARY]= WP_NONE;
+                        break;
                 case 'H':
                         BG_PackWeapon(  WP_SPAS , ent->client->ps.stats );
                         //client->clipammo[WP_SPAS] = 8;
@@ -1377,6 +1381,10 @@ void ClientSpawn(gentity_t *ent) {
 
 
         switch ( gear.string[2] ) {
+                case 'A':
+                  bg_inventory.sort[ent->client->ps.clientNum][SECONDARY]= WP_NONE;
+                  client->pers.inventory[SECONDARY]= WP_NONE;
+                  break;
                 case 'H':
                   BG_PackWeapon(  WP_SPAS , ent->client->ps.stats );
                  // client->clipammo[WP_SPAS] = 8;

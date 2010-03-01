@@ -1178,7 +1178,9 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 				else if (strcmp(skin, "darkred") == 0){
 					gun.customSkin = cgs.media.handsDarkredSkin; }
 				else if (strcmp(skin, "default") == 0){
-					gun.customSkin = cgs.media.handsDefaultSkin; }
+					//gun.customSkin = cgs.media.handsDefaultSkin;
+                                        gun.customSkin = cgs.media.handsBlueSkin;
+                                }
 				else if (strcmp(skin, "green") == 0){
 					gun.customSkin = cgs.media.handsGreenSkin; }
 				else if (strcmp(skin, "orange") == 0){
@@ -1429,10 +1431,6 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
             CG_AddWeaponWithPowerups( &vcock, cent->currentState.powerups );
           }
 
-
-       // if (cg.snap->ps.powerups[PW_SILENCER] )
-  //      CG_Printf("( cg.snap->ps.ammo[0] = %i\n",  cg.snap->ps.ammo[0]  );
-       // ( powerups & ( 1 << PW_SILENCER ) )1
           if ( weapon->vbarrelModel && weaponNum != WP_KNIFE ) {
             memset( &vbarrel, 0, sizeof( vbarrel ) );
             VectorCopy( parent->lightingOrigin, vbarrel.lightingOrigin );
@@ -1538,11 +1536,9 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 
           CG_PositionEntityOnTag( &vbullet, &gun, weapon->holdsModel ,  tagname );
           CG_AddWeaponWithPowerups( &vbullet, cent->currentState.powerups );
-       //   trap_R_AddRefEntityToScene( &part );
   }
 
   }
-
 
           }
 
@@ -1769,14 +1765,10 @@ void CG_AddViewWeapon( playerState_t *ps ) {
 
         hand.hModel = weapon->handsModel;
         hand.renderfx = RF_DEPTHHACK | RF_FIRST_PERSON | RF_MINLIGHT;
-
+//        CG_Printf( "modelname is %s\n", CG_GetClientModelName(ci) );
         // add everything onto the hand
-        CG_AddPlayerWeapon( &hand, ps, &cg.predictedPlayerEntity, ps->persistant[PERS_TEAM], ci->modelName, ci->skin );
+        CG_AddPlayerWeapon( &hand, ps, &cg.predictedPlayerEntity, ps->persistant[PERS_TEAM], CG_GetClientModelName(ci), ci->skin );
 }
-
-
-
-
 
 void CG_DrawItemSelect( void ) {
         //int           value;
@@ -1972,7 +1964,7 @@ void CG_OutOfNadesChange( centity_t *cent ) {
   ent = &cent->currentState;
   cg.weaponSelectTime = cg.time;
  // if (!( BG_Grenade(ent->weapon)) ) {
-  //  return;
+ //  return;
  // }
   for ( i = MAX_WEAPONS-1 ; i > 0 ; i-- ) {
     if ( CG_WeaponSelectable( i )) {
