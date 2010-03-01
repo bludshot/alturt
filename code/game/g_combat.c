@@ -348,6 +348,7 @@ void TossClientItems( gentity_t *self ) {
         }
      //   G_Printf("%i rounds of ammo dropped\n", ammo);
 	// drop all the powerups if not in teamplay
+        /*
 	if ( g_gametype.integer != GT_TEAM ) {
 		angle = 45;
 		for ( i = 1 ; i < PW_NUM_POWERUPS ; i++ ) {
@@ -366,6 +367,7 @@ void TossClientItems( gentity_t *self ) {
 			}
 		}
         }
+        */
         for ( i = 0; i < PW_NUM_POWERUPS; i++){
         self->client->ps.powerups[ i ] = 0;
 

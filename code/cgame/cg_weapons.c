@@ -1097,6 +1097,8 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
         CG_RegisterWeapon( weaponNum );
         weapon = &cg_weapons[weaponNum];
 
+        ci = &cgs.clientinfo[cent->currentState.clientNum];
+
         //Determine what items the user has --Xamis
 
           if ( powerups & ( 1 << PW_SILENCER ) )
@@ -1150,10 +1152,10 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
             gun.hModel = weapon->handsModel;
         if(ps){
 		gun.hModel = weapon->holdsModel;
-		
+
 		if (cgs.gametype >= GT_TEAM)
 		{
-			if ( team == 1 )
+			if ( team == TEAM_RED )
 			{
 				gun.customSkin = cgs.media.handsRedSkin;
 			}
@@ -1164,9 +1166,12 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		}
 		else //this is a non-team GT
 		{
+                  //modelName = ci->modelName;
+                 // CG_Printf("modelName == %s\n",  modelName );
 			//if the player is using an UrT model, give them hand skins that match their skin
 			if (strcmp(modelName, "orion") == 0 || strcmp(modelName, "athena") == 0)
 			{
+
 				//need to set their hands skin based on their skin
 				if (strcmp(skin, "cyan") == 0){
 					gun.customSkin = cgs.media.handsCyanSkin; }
@@ -1191,13 +1196,15 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 				else if (strcmp(skin, "yellow") == 0){
 					gun.customSkin = cgs.media.handsYellowSkin; }
 				else {
-					gun.customSkin = cgs.media.handsDefaultSkin;
+					//gun.customSkin = cgs.media.handsDefaultSkin;
+                                        gun.customSkin = cgs.media.handsBlueSkin;
 				}
 			}
 			else //they are using a q3 model
 			{
 				//this is a default black hands for if player is using a q3 model
-				gun.customSkin = cgs.media.handsQ3modelSkin;
+				//gun.customSkin = cgs.media.handsQ3modelSkin;
+                                gun.customSkin = cgs.media.handsBlueSkin;
 			}
 		}
 	}//CG_Printf( "Team Number is %i\n", team );
@@ -1228,7 +1235,9 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 
         if(!ps){
 
-          if(vestOn){
+         // CG_Printf(" team is %i\n", team );
+
+          if(vestOn && ( (team == TEAM_RED && ci->racered > 1) || (team == TEAM_BLUE && ci->raceblue > 1) || (!team && ci->raceblue > 1) )){
             VectorMA(gun.origin, lerped.origin[0]+3.0f, parent->axis[0], gun.origin); // forward/backward
             VectorMA(gun.origin, lerped.origin[1]+1, parent->axis[1], gun.origin); // side to side
             VectorMA(gun.origin, lerped.origin[2]+0.5f, parent->axis[2], gun.origin); // up/down
@@ -1742,7 +1751,7 @@ void CG_AddViewWeapon( playerState_t *ps ) {
 			AnglesToAxis( angles, hand.axis );
 		}
 
-		ci = &cgs.clientinfo[ cent->currentState.clientNum ]; //blud moved this up out of the ifelse below, because I need it all the time for my CG_AddPlayerWeapon call 
+		ci = &cgs.clientinfo[ cent->currentState.clientNum ]; //blud moved this up out of the ifelse below, because I need it all the time for my CG_AddPlayerWeapon call
 		//blud: I hope this doesn't reduce perfomance or something??? This isn't being done 30 times a second or anything is it? (oh well even if it is that might be fine I have no idea)
 
 		// map torso animations to weapon animations

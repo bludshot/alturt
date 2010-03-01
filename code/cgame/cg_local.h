@@ -355,6 +355,7 @@ typedef struct {
 	// can be deferred until you are dead, to prevent hitches in
 	// gameplay
 	char			modelName[MAX_QPATH];
+
 	char			skinName[MAX_QPATH];
 	char			headModelName[MAX_QPATH];
 	char			headSkinName[MAX_QPATH];

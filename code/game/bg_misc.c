@@ -899,12 +899,12 @@ gitem_t bg_itemlist[] =
         /*QUAKED item_quad (.3 .3 1) (-16 -16 -16) (16 16 16) suspended   32
         */
         {
-          "item_quad",
-          "sound/items/quaddamage.wav",
-          { "models/powerups/instant/quad.md3",
-          "models/powerups/instant/quad_ring.md3",
+          "ut_item_vest",
+          "sound/misc/w_pkup.wav",
+          { "models/players/athena/vest.md3",
+          "models/players/orion/vest.md3",
           NULL, NULL },
-/* icon */              "icons/quad",
+/* icon */              "icons/items/vest",
 /* pickup */    "Kevlar Vest",
                 30,
                 IT_POWERUP,
@@ -918,7 +918,7 @@ gitem_t bg_itemlist[] =
         {
           "ut_item_helmet",
           "sound/misc/w_pkup.wav",
-          { CGender,
+          { "models/players/orion/helmet.md3",
           NULL, NULL, NULL},
 /* icon */              "icons/items/helmet",
 /* pickup */    "Helmet",
@@ -1172,25 +1172,24 @@ int i;
             if ( BG_Sidearm( item->giTag )  ){
             if (bg_inventory.sort[ps->clientNum][SIDEARM] == item->giTag
                 || !(bg_inventory.sort[ps->clientNum][SIDEARM]))
-
               return qtrue; //can only have 1 sidearm
-            }
-            if ( BG_Primary ( item->giTag )  ){
+            }else if ( BG_Primary ( item->giTag )  ){
               if (bg_inventory.sort[ps->clientNum][PRIMARY] == item->giTag
-                  || !(bg_inventory.sort[ps->clientNum][PRIMARY]))
+                  )
                 return qtrue; //can only have 1 sidearm
-            }
-            if ( BG_Secondary( item->giTag )  ){
+              if (bg_inventory.sort[ps->clientNum][PRIMARY])
+                return qfalse;
+            }else if ( BG_Secondary( item->giTag )  ){
               if (bg_inventory.sort[ps->clientNum][SECONDARY] == item->giTag
                   || !(bg_inventory.sort[ps->clientNum][SECONDARY]))
                 return qtrue; //can only have 1 sidearm
-            }
-            if ( BG_Grenade(item->giTag) ) {
+            }else if ( BG_Grenade(item->giTag) ) {
               if (  bg_weaponlist[item->giTag].numClips[ ps->clientNum] < 2 )
                    // return qtrue;
               //  else
                     return qfalse;
-         }
+           }else
+           return qfalse;
 
 // end
 

@@ -79,6 +79,19 @@ CLIENT INFO
 =============================================================================
 */
 
+char *CG_GetClientModelName( clientInfo_t *ci ){
+
+  if ( (ci->racered < 2 && ci->team == TEAM_RED) || (ci->raceblue < 2 && ci->team == TEAM_BLUE) )
+    return "athena";
+  else if( (ci->racered > 1 && ci->team == TEAM_RED) || (ci->raceblue > 1 && ci->team == TEAM_BLUE) )
+    return "orion";
+  else if(!ci->team && ci->raceblue < 2 )
+    return "athena";
+  else
+    return "orion";
+}
+
+
 /*
 ======================
 CG_ParseAnimationFile
@@ -262,7 +275,7 @@ static qboolean	CG_ParseAnimationFile( const char *filename, clientInfo_t *ci, c
 	}
 
 	if ( i != MAX_ANIMATIONS ) {
-		CG_Printf( "Error parsing animation file: %s", filename );
+		CG_Printf( "Error parsing animation file: %s\n", filename );
 		return qfalse;
 	}
 
@@ -337,7 +350,7 @@ static qboolean	CG_FindClientModelFile( char *filename, int length, clientInfo_t
 	// note: in q3a there's a lot more code here. But in my code I fixed it so that this function
 	//       is always passed the correct info, and with alturt there's only 1 path possibility
 	Com_sprintf( filename, length, "models/players/%s/%s_%s.%s", modelName, base, skinName, ext );
-
+        CG_Printf("models/players/%s/%s_%s.%s\n", modelName, base, skinName, ext ); //xamis debugging
 	if ( CG_FileExists( filename ) )
 	{
 		return qtrue;
@@ -349,7 +362,7 @@ static qboolean	CG_FindClientModelFile( char *filename, int length, clientInfo_t
 			//the non-team GT skin that they asked for doesn't exist so set it to a valid one (default, which must exist)
 			Com_sprintf( filename, length, "models/players/%s/%s.%s", modelName, base, ext );
 			Com_sprintf( ci->skinName, 8, "default" );
-
+                        CG_Printf("models/players/%s/%s.%s", modelName, base, ext  ); //xamis debugging
 			//we'll check if it exists just in case even though it pretty much must exist.
 			if ( CG_FileExists( filename ) )
 			{
@@ -467,15 +480,16 @@ static qboolean	CG_RegisterClientSkin( clientInfo_t *ci, const char *teamName, c
 	}
 
 
-        if ( CG_FindClientModelFile( filename, sizeof(filename), ci, teamName, modelName, skinName, "vest_swat_w", "skin" ) ) {
+        if ( CG_FindClientModelFile( filename, sizeof(filename), ci, teamName, modelName, skinName, "vest", "skin" ) ) {
         ci->vestSkin = trap_R_RegisterSkin( filename );
+        CG_Printf( "filename for vestSkin = %s\n", filename  );
         }
         if (!ci->vestSkin) {
           Com_Printf( "Vest skin load failure: %s\n", filename );
         }
 
 	// if any skins failed to load
-	if ( !ci->legsSkin || !ci->torsoSkin || !ci->headSkin ) {
+        if ( !ci->legsSkin ||  !ci->headSkin || !ci->torsoSkin ||!ci->vestSkin ) {
 		return qfalse;
 	}
 	return qtrue;
@@ -521,6 +535,19 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 		}
 	}
 
+        Com_sprintf( filename, sizeof( filename ), "models/players/%s/vesttorso.md3", modelName );
+        ci->vestModel = trap_R_RegisterModel( filename );
+        if ( !ci->vestModel ) {
+          Com_sprintf( filename, sizeof( filename ), "models/players/characters/%s/vesttorso.md3", modelName );
+          ci->vestModel = trap_R_RegisterModel( filename );
+          if ( !ci->vestModel ) {
+            Com_Printf( "Failed to load model file %s\n", filename );
+            return qfalse;
+          }
+        }
+
+
+
 	if( headName[0] == '*' ) {
 		Com_sprintf( filename, sizeof( filename ), "models/players/heads/%s/%s.md3", &headModelName[1], &headModelName[1] );
 	}
@@ -551,23 +578,6 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
             return qfalse;
           }
         }
-
-
-
-        Com_sprintf( filename, sizeof( filename ), "models/players/%s/vesttorso.md3", modelName );
-        CG_Printf("models/players/%s/vesttorso.md3\n", modelName);
-      //  ci->vestModel = trap_R_RegisterModel( "models/players/athena/vesttorso.md3" );
-        ci->vestModel = trap_R_RegisterModel( filename );
-        if ( !ci->vestModel ) {
-          CG_Printf("!ci->vestModel\n");
-          Com_sprintf( filename, sizeof( filename ), "models/players/characters/%s/vesttorso.md3", modelName );
-          ci->vestModel = trap_R_RegisterModel( filename );
-          if ( !ci->vestModel ) {
-            Com_Printf( "Failed to load model file %s\n", filename );
-            return qfalse;
-          }
-        }
-
 
 	// if any skins failed to load, return failure
 	if ( !CG_RegisterClientSkin( ci, teamName, modelName, skinName, modelName, skinName ) ) {
@@ -657,12 +667,11 @@ static void CG_LoadClientInfo( int clientNum, clientInfo_t *ci ) {
 	const char	*s;
 	char		teamname[MAX_QPATH];
 
-
 	teamname[0] = 0;
 	modelloaded = qtrue;
-	if ( !CG_RegisterClientModelname( ci, ci->modelName, ci->skinName, ci->modelName, ci->headSkinName, teamname ) ) {
+        if ( !CG_RegisterClientModelname( ci, CG_GetClientModelName( ci), ci->skinName, CG_GetClientModelName( ci), ci->headSkinName, teamname ) ) {
 		if ( cg_buildScript.integer ) {
-			CG_Error( "CG_RegisterClientModelname( %s, %s, %s, %s %s ) failed", ci->modelName, ci->skinName, ci->headModelName, ci->headSkinName, teamname );
+                  CG_Error( "CG_RegisterClientModelname( %s, %s, %s, %s %s ) failed", CG_GetClientModelName( ci), ci->skinName, ci->headModelName, ci->headSkinName, teamname );
 		}
 
 		// fall back to default team name

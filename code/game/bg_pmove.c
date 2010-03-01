@@ -1993,10 +1993,10 @@ static int PM_WeaponTime( int weapon )
                         addTime = 150;
                         break;
                 case WP_DEAGLE:
-                        addTime = 500;
+                        addTime = 0;
                         break;
                 case WP_BERETTA:
-                        addTime = 300;
+                        addTime = 0;
                         break;
                 case WP_NEGEV:
                 case WP_AK103:
