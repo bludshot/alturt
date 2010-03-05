@@ -1780,9 +1780,9 @@ void CG_DrawItemSelect( void ) {
   float       hcolor[4];
   float   *color;
   playerState_t   *ps;
-  hcolor[0] = 0.2;
-  hcolor[1] = 0.3;
-  hcolor[2] = 0.8;
+  hcolor[0] = 0.2f;
+  hcolor[1] = 0.3f;
+  hcolor[2] = 0.8f;
   hcolor[3] = 0.3f;
   ps = &cg.snap->ps;
 
@@ -1845,14 +1845,14 @@ void CG_DrawWeaponSelect( void ) {
         float       hcolor[4];
         float       hcolor2[4];
 
-        hcolor[0] = 0.0;
-        hcolor[1] = 0.0;
-        hcolor[2] = 0.0;
+        hcolor[0] = 0.0f;
+        hcolor[1] = 0.0f;
+        hcolor[2] = 0.0f;
         hcolor[3] = 0.6f;
 
-        hcolor2[0] = 0.2;
-        hcolor2[1] = 0.3;
-        hcolor2[2] = 0.8;
+        hcolor2[0] = 0.2f;
+        hcolor2[1] = 0.3f;
+        hcolor2[2] = 0.8f;
         hcolor2[3] = 0.3f;
 
 

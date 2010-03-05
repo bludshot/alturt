@@ -924,13 +924,13 @@ void CG_DrawStatusHud( void )
                                            float temp;
                                            vec4_t hColor= { 0.75f,0.75f,0.35f, 1.0f };
                                            if( cg.snap->ps.persistant[PERS_TEAM] == TEAM_RED){
-                                             hColor[0] = 1.0;
-                                             hColor[1] = 0.2;
-                                             hColor[2] = 0.2;
+                                             hColor[0] = 1.0f;
+                                             hColor[1] = 0.2f;
+                                             hColor[2] = 0.2f;
                                            }else if( cg.snap->ps.persistant[PERS_TEAM] == TEAM_BLUE){
-                                             hColor[0] = 0.2;
-                                             hColor[1] = 0.2;
-                                             hColor[2] = 1.0;
+                                             hColor[0] = 0.2f;
+                                             hColor[1] = 0.2f;
+                                             hColor[2] = 1.0f;
                                            }
 
 
