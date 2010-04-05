@@ -472,7 +472,6 @@ gentity_t *throw_grenade (gentity_t *self, vec3_t start, vec3_t dir) {
 	bolt = G_Spawn();
 	bolt->classname = "ut_weapon_grenade_he";
         bolt->nextthink = level.time + bg_nadeTimer.fuseTime[self->s.number];// level.time + 3000;
-        G_Printf("bg_nadeTimer.fuseTime[self->s.number] = %i\n",bg_nadeTimer.fuseTime[self->s.number]);
         G_Printf("self->s.number = %i\n",self->s.number);
 	bolt->think = G_ExplodeMissile;
 	bolt->s.eType = ET_MISSILE;
