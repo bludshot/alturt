@@ -29,8 +29,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ==============
 
 LOCATIONAL DAMAGE
-( needs to be improved [damn new PPMs] )
-+done
 
 ==============
 */
@@ -1379,9 +1377,14 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 	// always give half damage if hurting self
 	// calculated after knockback, so rocket jumping works
+
+
+        //Remove this --Xamis
+/*
 	if ( targ == attacker) {
 		damage *= 0.5;
 	}
+*/
 
 	if ( damage < 1 ) {
 		damage = 1;
