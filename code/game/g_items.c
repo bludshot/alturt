@@ -222,13 +222,19 @@ void Add_Ammo (gentity_t *ent, int weapon, int count)
      clips--;
      rounds = RoundCount(weapon);
     }
-G_Printf("count = %i, clips = %i, rounds = %i\n", count, clips, rounds );
+//G_Printf("count = %i, clips = %i, rounds = %i\n", count, clips, rounds );
 
-G_Printf("clips before add = %i\n", bg_weaponlist[weapon].numClips[ent->client->ps.clientNum] );
-G_Printf("rounds before add = %i\n", bg_weaponlist[weapon].rounds[ent->client->ps.clientNum] );
+//G_Printf("clips before add = %i\n", bg_weaponlist[weapon].numClips[ent->client->ps.clientNum] );
+//G_Printf("rounds before add = %i\n", bg_weaponlist[weapon].rounds[ent->client->ps.clientNum] );
   bg_weaponlist[weapon].rounds[ent->client->ps.clientNum] += rounds;
   bg_weaponlist[weapon].numClips[ent->client->ps.clientNum] += clips;
   }
+
+  //set max number of clips --Xamis
+    if ( bg_weaponlist[weapon].numClips[ent->client->ps.clientNum] > 3 ) {
+    bg_weaponlist[weapon].numClips[ent->client->ps.clientNum] = 4;
+  }
+
   //ent->client->ps.ammo[weapon] += count;
   if ( BG_Grenade(weapon) && bg_weaponlist[weapon].numClips[ent->client->ps.clientNum] > 2 ) {
     bg_weaponlist[weapon].numClips[ent->client->ps.clientNum] = 2;
