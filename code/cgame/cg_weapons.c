@@ -1044,113 +1044,116 @@ sound should only be done on the world model case.
 =============
 */
 void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent, int team, const char *modelName, const char *skin) {
+	char            *tagname;
+	refEntity_t     handsModel;
+	refEntity_t     gun; //this is used for thirdperson weapon and firstperson hands model Xamis
+	refEntity_t     viewmainModel; //firstperson weapon model
+	refEntity_t     holds;
+	refEntity_t     flash;
+	refEntity_t     silencer;
+	refEntity_t     laser;
+	refEntity_t     vtrigger;
+	refEntity_t     vbolt;
+	refEntity_t     vclip;
+	refEntity_t     vcliprel;
+	refEntity_t     vejector;
+	refEntity_t     vflap;
+	refEntity_t     vflap1;
+	refEntity_t     vflap2;
+	refEntity_t     vbutt;
+	refEntity_t     veject;
+	refEntity_t     vmode;
+	refEntity_t     vcock;
+	refEntity_t     vbarrel;
+	refEntity_t     vpin;
+	refEntity_t     vring;
+	refEntity_t     vslide;
+	refEntity_t     vsliderel;
+	refEntity_t     vbox;
+	refEntity_t     vhandle;
+	refEntity_t     vbullet;
+	refEntity_t     vaim;
+	refEntity_t     vshell;
+	refEntity_t     vgrenade;
+	refEntity_t     weaponModel;
+	vec3_t          angles;
+	weapon_t        weaponNum;
+	weaponInfo_t    *weapon;
+	centity_t       *nonPredictedCent;
+	orientation_t   lerped;
+	int             powerups;
+	clientInfo_t    *ci;
+	int i;
+	qboolean lasersight;
+	qboolean silenced;
+	qboolean vestOn;
+	vestOn = lasersight = silenced = qfalse;
 
-        char            *tagname;
-        refEntity_t     handsModel;
-        refEntity_t     gun; //this is used for thirdperson weapon and firstperson hands model Xamis
-        refEntity_t     viewmainModel; //firstperson weapon model
-        refEntity_t     holds;
-        refEntity_t     flash;
-        refEntity_t     silencer;
-        refEntity_t     laser;
-        refEntity_t     vtrigger;
-        refEntity_t     vbolt;
-        refEntity_t     vclip;
-        refEntity_t     vcliprel;
-        refEntity_t     vejector;
-        refEntity_t     vflap;
-        refEntity_t     vflap1;
-        refEntity_t     vflap2;
-        refEntity_t     vbutt;
-        refEntity_t     veject;
-        refEntity_t     vmode;
-        refEntity_t     vcock;
-        refEntity_t     vbarrel;
-        refEntity_t     vpin;
-        refEntity_t     vring;
-        refEntity_t     vslide;
-        refEntity_t     vsliderel;
-        refEntity_t     vbox;
-        refEntity_t     vhandle;
-        refEntity_t     vbullet;
-        refEntity_t     vaim;
-        refEntity_t     vshell;
-        refEntity_t     vgrenade;
-        refEntity_t     weaponModel;
-        vec3_t          angles;
-        weapon_t        weaponNum;
-        weaponInfo_t    *weapon;
-        centity_t       *nonPredictedCent;
-        orientation_t   lerped;
-        int             powerups;
-        clientInfo_t    *ci;
-        int i;
-        qboolean lasersight;
-        qboolean silenced;
-        qboolean vestOn;
-        vestOn = lasersight = silenced = qfalse;
+	powerups = cent->currentState.powerups;
 
-        powerups = cent->currentState.powerups;
+	weaponNum = cent->currentState.weapon;
 
-        weaponNum = cent->currentState.weapon;
+	CG_RegisterWeapon( weaponNum );
+	weapon = &cg_weapons[weaponNum];
 
-        CG_RegisterWeapon( weaponNum );
-        weapon = &cg_weapons[weaponNum];
+	ci = &cgs.clientinfo[cent->currentState.clientNum];
 
-        ci = &cgs.clientinfo[cent->currentState.clientNum];
+	//Determine what items the user has --Xamis
 
-        //Determine what items the user has --Xamis
+	if ( powerups & ( 1 << PW_SILENCER ) )
+		silenced = qtrue;
 
-          if ( powerups & ( 1 << PW_SILENCER ) )
-                silenced = qtrue;
+	if ( powerups & ( 1 << PW_LASERSIGHT ) )
+		lasersight = qtrue;
 
-          if ( powerups & ( 1 << PW_LASERSIGHT ) )
-                lasersight = qtrue;
-
-          if ( powerups & ( 1 << PW_VEST ) )
-                vestOn = qtrue;
-
-
-        memset( &handsModel, 0, sizeof( handsModel ) );
-        VectorCopy( parent->lightingOrigin, handsModel.lightingOrigin );
-        handsModel.shadowPlane = parent->shadowPlane;
-        handsModel.renderfx = parent->renderfx;
-        handsModel.hModel = weapon->handsModel;
+	if ( powerups & ( 1 << PW_VEST ) )
+		vestOn = qtrue;
 
 
-        memset( &viewmainModel, 0, sizeof( viewmainModel ) );
-        VectorCopy( parent->lightingOrigin, viewmainModel.lightingOrigin );
-        viewmainModel.shadowPlane = parent->shadowPlane;
-        viewmainModel.renderfx = parent->renderfx;
-        viewmainModel.hModel = weapon->vmainModel;
+	memset( &handsModel, 0, sizeof( handsModel ) );
+	VectorCopy( parent->lightingOrigin, handsModel.lightingOrigin );
+	handsModel.shadowPlane = parent->shadowPlane;
+	handsModel.renderfx = parent->renderfx;
+	handsModel.hModel = weapon->handsModel;
+
+
+	memset( &viewmainModel, 0, sizeof( viewmainModel ) );
+	VectorCopy( parent->lightingOrigin, viewmainModel.lightingOrigin );
+	viewmainModel.shadowPlane = parent->shadowPlane;
+	viewmainModel.renderfx = parent->renderfx;
+	viewmainModel.hModel = weapon->vmainModel;
 
 
 
-        // add the hands
+	// add the hands
 
-        memset( &holds, 0, sizeof( holds ) );
-        VectorCopy( parent->lightingOrigin, holds.lightingOrigin );
-        holds.customShader = cgs.media.handsBlueSkin;
-        holds.shadowPlane = parent->shadowPlane;
-        holds.renderfx = parent->renderfx;
-        holds.hModel = weapon->holdsModel;
+	memset( &holds, 0, sizeof( holds ) );
+	VectorCopy( parent->lightingOrigin, holds.lightingOrigin );
+	holds.customShader = cgs.media.handsBlueSkin;
+	holds.shadowPlane = parent->shadowPlane;
+	holds.renderfx = parent->renderfx;
+	holds.hModel = weapon->holdsModel;
 
-        // add the weapon
-        memset( &gun, 0, sizeof( gun ) );
-        VectorCopy( parent->lightingOrigin, gun.lightingOrigin );
-        gun.shadowPlane = parent->shadowPlane;
-        gun.renderfx = parent->renderfx;
-
-
-        memset( &weaponModel, 0, sizeof( weaponModel ) );
-        VectorCopy( parent->lightingOrigin, weaponModel.lightingOrigin );
-        weaponModel.shadowPlane = parent->shadowPlane;
-        weaponModel.renderfx = parent->renderfx;
+	// add the weapon
+	memset( &gun, 0, sizeof( gun ) );
+	VectorCopy( parent->lightingOrigin, gun.lightingOrigin );
+	gun.shadowPlane = parent->shadowPlane;
+	gun.renderfx = parent->renderfx;
 
 
-        if(!ps)
-            gun.hModel = weapon->handsModel;
-        if(ps){
+	memset( &weaponModel, 0, sizeof( weaponModel ) );
+	VectorCopy( parent->lightingOrigin, weaponModel.lightingOrigin );
+	weaponModel.shadowPlane = parent->shadowPlane;
+	weaponModel.renderfx = parent->renderfx;
+
+
+	if(!ps)
+	{
+		gun.hModel = weapon->handsModel;
+	}
+
+	if(ps)
+	{
 		gun.hModel = weapon->holdsModel;
 
 		if (cgs.gametype >= GT_TEAM)
@@ -1166,50 +1169,38 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		}
 		else //this is a non-team GT
 		{
-                  //modelName = ci->modelName;
-                 // CG_Printf("modelName == %s\n",  modelName );
-			//if the player is using an UrT model, give them hand skins that match their skin
-			if (strcmp(modelName, "orion") == 0 || strcmp(modelName, "athena") == 0)
-			{
-
-				//need to set their hands skin based on their skin
-				if (strcmp(skin, "cyan") == 0){
-					gun.customSkin = cgs.media.handsCyanSkin; }
-				else if (strcmp(skin, "darkred") == 0){
-					gun.customSkin = cgs.media.handsDarkredSkin; }
-				else if (strcmp(skin, "default") == 0){
-					//gun.customSkin = cgs.media.handsDefaultSkin;
-                                        gun.customSkin = cgs.media.handsBlueSkin;
-                                }
-				else if (strcmp(skin, "green") == 0){
-					gun.customSkin = cgs.media.handsGreenSkin; }
-				else if (strcmp(skin, "orange") == 0){
-					gun.customSkin = cgs.media.handsOrangeSkin; }
-				else if (strcmp(skin, "purple") == 0){
-					gun.customSkin = cgs.media.handsPurpleSkin; }
-				else if (strcmp(skin, "red") == 0){
-					gun.customSkin = cgs.media.handsRedSkin; }
-				else if (strcmp(skin, "red2") == 0){
-					gun.customSkin = cgs.media.handsRed2Skin; }
-				else if (strcmp(skin, "blue") == 0){
-					gun.customSkin = cgs.media.handsBlueSkin; }
-				else if (strcmp(skin, "blue2") == 0){
-					gun.customSkin = cgs.media.handsBlue2Skin; }
-				else if (strcmp(skin, "yellow") == 0){
-					gun.customSkin = cgs.media.handsYellowSkin; }
-				else {
-					//gun.customSkin = cgs.media.handsDefaultSkin;
-                                        gun.customSkin = cgs.media.handsBlueSkin;
+			//need to set their hands skin based on their skin
+			if (strcmp(skin, "cyan") == 0){
+				gun.customSkin = cgs.media.handsCyanSkin; }
+			else if (strcmp(skin, "darkred") == 0){
+				gun.customSkin = cgs.media.handsDarkredSkin; }
+			else if (strcmp(skin, "default") == 0){
+				gun.customSkin = cgs.media.handsDefaultSkin;
+				//gun.customSkin = cgs.media.handsBlueSkin; dunno why xamis had this?
 				}
-			}
-			else //they are using a q3 model
-			{
-				//this is a default black hands for if player is using a q3 model
-				//gun.customSkin = cgs.media.handsQ3modelSkin;
-                                gun.customSkin = cgs.media.handsBlueSkin;
-			}
+			else if (strcmp(skin, "green") == 0){
+				gun.customSkin = cgs.media.handsGreenSkin; }
+			else if (strcmp(skin, "orange") == 0){
+				gun.customSkin = cgs.media.handsOrangeSkin; }
+			else if (strcmp(skin, "purple") == 0){
+				gun.customSkin = cgs.media.handsPurpleSkin; }
+			else if (strcmp(skin, "red") == 0){
+				gun.customSkin = cgs.media.handsRedSkin; }
+			else if (strcmp(skin, "red2") == 0){
+				gun.customSkin = cgs.media.handsRed2Skin; }
+			else if (strcmp(skin, "blue") == 0){
+				gun.customSkin = cgs.media.handsBlueSkin; }
+			else if (strcmp(skin, "blue2") == 0){
+				gun.customSkin = cgs.media.handsBlue2Skin; }
+			else if (strcmp(skin, "yellow") == 0){
+				gun.customSkin = cgs.media.handsYellowSkin; }
+			else {
+				gun.customSkin = cgs.media.handsDefaultSkin;
+				//gun.customSkin = cgs.media.handsBlueSkin; dunno why xamis had this?
+				}
 		}
-	}//CG_Printf( "Team Number is %i\n", team );
+	}
+	//CG_Printf( "Team Number is %i\n", team );
 
 	if (!gun.hModel)
 	{
@@ -1747,7 +1738,7 @@ void CG_AddViewWeapon( playerState_t *ps ) {
 			AnglesToAxis( angles, hand.axis );
 		}
 
-		ci = &cgs.clientinfo[ cent->currentState.clientNum ]; //blud moved this up out of the ifelse below, because I need it all the time for my CG_AddPlayerWeapon call
+		ci = &cgs.clientinfo[ cent->currentState.clientNum ]; //blud moved this up out of the ifelse below, because I need it all the time for my CG_AddPlayerWeapon call (to do with hand skins)
 		//blud: I hope this doesn't reduce perfomance or something??? This isn't being done 30 times a second or anything is it? (oh well even if it is that might be fine I have no idea)
 
 		// map torso animations to weapon animations

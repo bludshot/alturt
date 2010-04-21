@@ -829,7 +829,7 @@ client's info to use until we have some spare time.
 static void CG_SetDeferredClientInfo( int clientNum, clientInfo_t *ci ) {
 	int		i;
 	clientInfo_t	*match;
-
+	
 
 	// if someone else is already the same models and skins we
 	// can just load the client info
@@ -838,18 +838,42 @@ static void CG_SetDeferredClientInfo( int clientNum, clientInfo_t *ci ) {
 		if ( !match->infoValid || match->deferred ) {
 			continue;
 		}
-		if ( Q_stricmp( ci->skinName, match->skinName ) ||
-			 Q_stricmp( ci->modelName, match->modelName ) ||
-//			 Q_stricmp( ci->headModelName, match->headModelName ) ||
-//			 Q_stricmp( ci->headSkinName, match->headSkinName ) ||
-			 (cgs.gametype >= GT_TEAM && ci->team != match->team) ) {
-			continue;
+		//if this is a non-team GT //blud: I tweaked this code a bit to consider team vs non-team gts
+		if ( cgs.gametype < GT_TEAM )
+		{
+			if ( Q_stricmp( ci->skinName, match->skinName ) ||
+				Q_stricmp( ci->modelName, match->modelName ))
+			{
+				//blud: This means if BOTH skin and model match, then we found a match so exit the for loop
+				continue;
+			}
 		}
+		else //this is a team GT
+		{	
+			if (ci->team == TEAM_BLUE) //if it's blue team we compare raceblue (and team because we always compare team)
+			{
+				if ( ci->raceblue == match->raceblue && ci->team == match->team)
+				{
+					continue;
+				}
+			}
+			else if (ci->team == TEAM_RED)
+			{
+				if ( ci->racered == match->racered && ci->team == match->team)
+				{
+					continue;
+				}
+			}
+		}
+
 		// just load the real info cause it uses the same models and skins
 		CG_LoadClientInfo( clientNum, ci );
 		return;
 	}
 
+	
+	//blud: I don't understand this code below, like it seems like a repeat of what was above, 
+	//and it seems like it should never get executed. So I'm going to leave it alone for now
 	// if we are in teamplay, only grab a model if the skin is correct
 	if ( cgs.gametype >= GT_TEAM ) {
 		for ( i = 0 ; i < cgs.maxclients ; i++ ) {

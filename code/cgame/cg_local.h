@@ -331,7 +331,7 @@ typedef struct {
 	int				raceblue;		//blud
 
 	int				score;			// updated by score servercmds
-        int                             deaths;
+	int				deaths;
 	int				location;		// location index for team mode
 	int				health;			// you only get this info about your teammates
 	int				armor;
@@ -848,7 +848,6 @@ typedef struct {
 		qhandle_t       handsGreenSkin; //blud
 		qhandle_t       handsOrangeSkin; //blud
 		qhandle_t       handsPurpleSkin; //blud
-		qhandle_t       handsQ3modelSkin; //blud
 		qhandle_t       handsYellowSkin; //blud
 	qhandle_t	plasmaBallShader;
 	qhandle_t	waterBubbleShader;
