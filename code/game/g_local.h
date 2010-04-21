@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //blud note: original code was:
 //#define	GAMEVERSION	BASEGAME
 //but again this doesn't suit alt urt, so:
-#define	GAMEVERSION	"AltUrT alpha build"	//change this for real releases to show proper version number
+#define	GAMEVERSION	"AltUrt alpha build"	//change this for real releases to show proper version number
 
 #define BODY_QUEUE_SIZE		8
 

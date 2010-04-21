@@ -740,8 +740,8 @@ if desired.
 */
 void ClientUserinfoChanged( int clientNum ) {
         gentity_t *ent;
-        int           teamTask, teamLeader, team, health;
-        int             racered, raceblue; //blud
+        int		teamTask, teamLeader, team, health;
+        int		racered, raceblue; //blud
         char    *s;
         char    skin[MAX_QPATH]; //blud
         char    model[MAX_QPATH];
@@ -815,6 +815,7 @@ void ClientUserinfoChanged( int clientNum ) {
         //      Q_strncpyz( model, Info_ValueForKey (userinfo, "team_model"), sizeof( model ) );
         //      Q_strncpyz( headModel, Info_ValueForKey (userinfo, "team_headmodel"), sizeof( headModel ) );
         //} else {
+				//blud: I will always do this, but if it's a team GT I will just ignore model elsewhere where it actually gets set/changed
                 Q_strncpyz( model, Info_ValueForKey (userinfo, "model"), sizeof( model ) );
 
                 //Q_strncpyz( headModel, Info_ValueForKey (userinfo, "headmodel"), sizeof( headModel ) );
