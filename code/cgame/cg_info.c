@@ -164,6 +164,8 @@ void CG_LoadingClient( int clientNum ) {
 	const char		*v; //blud
 	char			skinToUseForIcon[MAX_QPATH]; //blud
 
+	CG_Printf( "CG_LoadingClient CHANGED RACE?" ); //blud debug
+
 	info = CG_ConfigString( CS_PLAYERS + clientNum );
 
 	if ( loadingPlayerIconCount < MAX_LOADING_PLAYER_ICONS ) {
@@ -222,6 +224,7 @@ void CG_LoadingClient( int clientNum ) {
 							break;
 			}
 
+			//blud: New bits added in here to try to fix invisible torso: BAH it didn't work (it's the skin = lines. So I might want to get rid of them since they didn't fix the problem...
 			// determine the skin (just for getting the right icon)
 			if ( team == TEAM_BLUE )
 			{
@@ -229,16 +232,19 @@ void CG_LoadingClient( int clientNum ) {
 				{
 					Q_strncpyz( skinToUseForIcon, "blue", sizeof( skinToUseForIcon ) );
 					Q_strncpyz( skinToUseForIcon, "blue", sizeof( skinToUseForIcon ) );
+					skin = "blue";
 				}
 				else if ( race == 1 || race == 3 )
 				{
 					Q_strncpyz( skinToUseForIcon, "blue2", sizeof( skinToUseForIcon ) );
 					Q_strncpyz( skinToUseForIcon, "blue2", sizeof( skinToUseForIcon ) );
+					skin = "blue2";
 				}
 				else //default
 				{
 					Q_strncpyz( skinToUseForIcon, "blue", sizeof( skinToUseForIcon ) );
 					Q_strncpyz( skinToUseForIcon, "blue", sizeof( skinToUseForIcon ) );
+					skin = "blue";
 				}
 			}
 			else //team is red
@@ -247,16 +253,19 @@ void CG_LoadingClient( int clientNum ) {
 				{
 					Q_strncpyz( skinToUseForIcon, "red", sizeof( skinToUseForIcon ) );
 					Q_strncpyz( skinToUseForIcon, "red", sizeof( skinToUseForIcon ) );
+					skin = "red";
 				}
 				else if ( race == 1 || race == 3 )
 				{
 					Q_strncpyz( skinToUseForIcon, "red2", sizeof( skinToUseForIcon ) );
 					Q_strncpyz( skinToUseForIcon, "red2", sizeof( skinToUseForIcon ) );
+					skin = "red2";
 				}
 				else //default
 				{
 					Q_strncpyz( skinToUseForIcon, "red", sizeof( skinToUseForIcon ) );
 					Q_strncpyz( skinToUseForIcon, "red", sizeof( skinToUseForIcon ) );
+					skin = "red";
 				}
 			}
 		}

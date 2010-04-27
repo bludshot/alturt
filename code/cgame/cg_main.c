@@ -106,6 +106,7 @@ vmCvar_t	cg_drawStamina; //xamis
 vmCvar_t	racered; //blud
 vmCvar_t	raceblue; //blud
 vmCvar_t	skin; //blud
+vmCvar_t	cg_speedo; //blud
 vmCvar_t	cg_drawSnapshot;
 vmCvar_t	cg_draw3dIcons;
 vmCvar_t	cg_drawIcons;
@@ -227,6 +228,7 @@ static cvarTable_t cvarTable[] = {
 	{ &racered, "racered", "0", CVAR_USERINFO | CVAR_ARCHIVE }, //blud
 	{ &raceblue, "raceblue", "0", CVAR_USERINFO | CVAR_ARCHIVE }, //blud
 	{ &skin, "skin", "default", CVAR_USERINFO | CVAR_ARCHIVE }, //blud
+	{ &cg_speedo, "cg_speedo", "0", CVAR_ARCHIVE }, //blud
 	{ &cg_draw3dIcons, "cg_draw3dIcons", "1", CVAR_ARCHIVE  },
 	{ &cg_drawIcons, "cg_drawIcons", "1", CVAR_ARCHIVE  },
 	{ &cg_drawAmmoWarning, "cg_drawAmmoWarning", "1", CVAR_ARCHIVE  },

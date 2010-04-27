@@ -928,6 +928,7 @@ void CG_NewClientInfo( int clientNum ) {
 	const char	*v;
 	int			race;
 
+	CG_Printf( "CG_NewClientInfo CHANGED RACE?" ); //blud debug
 
 	ci = &cgs.clientinfo[clientNum];
 

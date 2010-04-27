@@ -38,6 +38,9 @@ int drawTeamOverlayModificationCount = -1;
 int sortedTeamPlayers[TEAM_MAXOVERLAY];
 int	numSortedTeamPlayers;
 
+int topSpeedXY = 0; //blud
+int topSpeedXYZ = 0; //blud
+
 char systemChat[256];
 char teamChat1[256];
 char teamChat2[256];
@@ -562,6 +565,11 @@ static void CG_DrawStatusBar( void ) {
 	vec3_t		angles;
         char *w;
         gitem_t                 *item;
+	float speedo_speed; //blud
+	int currentSpeedXY; //blud
+	int currentSpeedXYZ; //blud
+	vec3_t speedo_vel; //blud
+	char speedo_s[16]; //blud
 
 	static float colors[4][4] = {
 //		{ 0.2, 1.0, 0.2, 1.0 } , { 1.0, 0.2, 0.2, 1.0 }, {0.5, 0.5, 0.5, 1} };
@@ -708,7 +716,48 @@ static void CG_DrawStatusBar( void ) {
 
 	}
 
+
 */
+
+
+		//speedometer by blud. (Currently it doesn't round, which I guess means it always rounds down)
+
+		//if draw speedometer
+        if ( cg_speedo.integer )
+		{
+			VectorCopy( cg.snap->ps.velocity, speedo_vel );
+			//speedo_speed = VectorLength( speedo_vel ); (old, not doing this anymore)
+
+			currentSpeedXY = (int) sqrt( speedo_vel[0] * speedo_vel[0]
+										+ speedo_vel[1] * speedo_vel[1]);
+
+			currentSpeedXYZ = (int) sqrt( speedo_vel[0] * speedo_vel[0] 
+										+ speedo_vel[1] * speedo_vel[1]
+										+ speedo_vel[2] * speedo_vel[2]);
+
+			if (currentSpeedXY > topSpeedXY) {
+				topSpeedXY = currentSpeedXY;}
+
+			if (currentSpeedXYZ > topSpeedXYZ) {
+				topSpeedXYZ = currentSpeedXYZ;}
+
+			Com_sprintf(speedo_s, sizeof(speedo_s), "XY: %i (%i)", currentSpeedXY, topSpeedXY);
+			CG_DrawStringExt( 420, 440, speedo_s, colorWhite, qfalse, qtrue, 4, 6, 0 );
+
+			Com_sprintf(speedo_s, sizeof(speedo_s), "XYZ: %i (%i)", currentSpeedXYZ, topSpeedXYZ );
+			CG_DrawStringExt( 420, 460, speedo_s, colorWhite, qfalse, qtrue, 4, 6, 0 );
+		}
+
+
+		/* good basic one
+		VectorCopy( cg.snap->ps.velocity, speedo_vel );
+		speedo_speed = VectorLength( speedo_vel );
+
+		Com_sprintf(speedo_s, sizeof(speedo_s), "%f", speedo_speed);
+		CG_DrawStringExt( 400, 400, speedo_s, colorWhite, qfalse, qtrue, 4, 6, 0 );
+		*/
+
+
         //weapon mode
         value = ps->stats[STAT_MODE];
         if (!( cg.predictedPlayerState.weapon == WP_HE

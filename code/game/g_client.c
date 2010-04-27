@@ -821,6 +821,7 @@ void ClientUserinfoChanged( int clientNum ) {
                 //Q_strncpyz( headModel, Info_ValueForKey (userinfo, "headmodel"), sizeof( headModel ) );
         //}
 
+
         //blud adding skin cvar for non-team gametypes
         //and racered raceblue cvars for team gametypes
         // racered and raceblue (0, 1, 2, 3)
@@ -828,7 +829,9 @@ void ClientUserinfoChanged( int clientNum ) {
         raceblue = atoi(Info_ValueForKey(userinfo, "raceblue"));
         Q_strncpyz( skin, Info_ValueForKey (userinfo, "skin"), sizeof( skin ) );
 
-        // bots set their team a few frames later
+
+
+		// bots set their team a few frames later
         if (g_gametype.integer >= GT_TEAM && g_entities[clientNum].r.svFlags & SVF_BOT) {
                 s = Info_ValueForKey( userinfo, "team" );
                 if ( !Q_stricmp( s, "red" ) || !Q_stricmp( s, "r" ) ) {
@@ -843,6 +846,68 @@ void ClientUserinfoChanged( int clientNum ) {
         else {
                 team = client->sess.sessionTeam;
         }
+
+		/*
+		//blud: Uh, I was trying to fix the invisible upper body problem, but actually I'm 99.9% sure
+		//that we don't need code like this in here - PLUS I'm pretty sure I used to have this code 
+		//here before too, but then I realized it was pointless and deleted it heh. I'm just
+		//leaving it here for now (commented out) until I do resolve the invisible upper body problem
+		//blud: trying to fix invisible torso,head&arms when switching teams
+		if( g_gametype.integer >= GT_TEAM )
+		{
+			if ( team == TEAM_BLUE )
+			{
+				switch (raceblue) {
+				case 0:
+					//set model to athena, skin to blue
+					Q_strncpyz( model, "athena", sizeof( model ) );
+					Q_strncpyz( skin, "blue", sizeof( skin ) );
+				case 1:
+					//set model to athena, skin to blue2
+					Q_strncpyz( model, "athena", sizeof( model ) );
+					Q_strncpyz( skin, "blue2", sizeof( skin ) );
+				case 2:
+					//set model to orion, skin to blue
+					Q_strncpyz( model, "orion", sizeof( model ) );
+					Q_strncpyz( skin, "blue", sizeof( skin ) );
+				case 3:
+					//set model to orion, skin to blue2
+					Q_strncpyz( model, "orion", sizeof( model ) );
+					Q_strncpyz( skin, "blue2", sizeof( skin ) );
+				default:
+					//set model to orion, skin to blue
+					Q_strncpyz( model, "orion", sizeof( model ) );
+					Q_strncpyz( skin, "blue", sizeof( skin ) );
+				}
+			}
+			else // team is red (or possibly spectator in which case it doesn't matter anyway)
+			{
+				switch (racered) {
+				case 0:
+					//set model to athena, skin to red
+					Q_strncpyz( model, "athena", sizeof( model ) );
+					Q_strncpyz( skin, "red", sizeof( skin ) );
+				case 1:
+					//set model to athena, skin to red2
+					Q_strncpyz( model, "athena", sizeof( model ) );
+					Q_strncpyz( skin, "red2", sizeof( skin ) );
+				case 2:
+					//set model to orion, skin to red
+					Q_strncpyz( model, "orion", sizeof( model ) );
+					Q_strncpyz( skin, "red", sizeof( skin ) );
+				case 3:
+					//set model to orion, skin to red2
+					Q_strncpyz( model, "orion", sizeof( model ) );
+					Q_strncpyz( skin, "red2", sizeof( skin ) );
+				default:
+					//set model to orion, skin to red
+					Q_strncpyz( model, "orion", sizeof( model ) );
+					Q_strncpyz( skin, "red", sizeof( skin ) );
+				}
+			}
+		}
+		*/
+
 
 /*      NOTE: all client side now
 

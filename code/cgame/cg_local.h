@@ -1212,6 +1212,7 @@ extern	vmCvar_t		cg_drawStamina;  //Xamis
 extern	vmCvar_t		racered; //blud
 extern	vmCvar_t		raceblue; //blud
 extern	vmCvar_t		skin; //blud
+extern	vmCvar_t		cg_speedo; //blud
 extern	vmCvar_t		cg_drawSnapshot;
 extern	vmCvar_t		cg_draw3dIcons;
 extern	vmCvar_t		cg_drawIcons;
