@@ -1547,7 +1547,7 @@ static void PM_CheckDuck (void)
                 if (pm->ps->pm_flags & PMF_DUCKED)
                 {
                         // try to stand up
-                        pm->maxs[2] = 32;
+                        pm->maxs[2] = PLAYER_STANDHEIGHT; //was 32. blud: need this or your head gets stuck in ceilings when you duck and stand up at low ceilings
                         pm->trace (&trace, pm->ps->origin, pm->mins, pm->maxs, pm->ps->origin, pm->ps->clientNum, pm->tracemask );
                         if (!trace.allsolid)
                                 pm->ps->pm_flags &= ~PMF_DUCKED;
@@ -1556,12 +1556,16 @@ static void PM_CheckDuck (void)
 
         if (pm->ps->pm_flags & PMF_DUCKED)
         {
-                pm->maxs[2] = 16;
+				//blud fixing player height
+                pm->maxs[2] = PLAYER_CROUCHHEIGHT; //was 16
                 pm->ps->viewheight = CROUCH_VIEWHEIGHT;
         }
         else
         {
-                pm->maxs[2] = 32;
+
+
+				//blud fixing player height
+                pm->maxs[2] = PLAYER_STANDHEIGHT; //was 32
                 pm->ps->viewheight = DEFAULT_VIEWHEIGHT;
         }
 }
