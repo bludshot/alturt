@@ -525,8 +525,8 @@ static qboolean PM_CheckJump( void )
   if( pm->ps->velocity[ 2 ] < 0 )
     pm->ps->velocity[ 2 ] = 0;
 
-  VectorMA( pm->ps->velocity, 300.0f,
-            normal, pm->ps->velocity );
+  VectorMA( pm->ps->velocity, JUMP_VELOCITY,
+            normal, pm->ps->velocity ); //JUMP_VELOCITY was hardcoded here at 300. blud increasing jump height to match urt
 
   PM_AddEvent( EV_JUMP );
 
