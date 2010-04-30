@@ -33,7 +33,7 @@ pml_t           pml;
 
 // movement parameters
 float   pm_stopspeed = 100.0f;
-float   pm_duckScale = 0.55f; // Xamis
+float   pm_duckScale = 0.45f; // blud
 float   pm_swimScale = 0.50f;
 float   pm_wadeScale = 0.70f;
 float   pm_ladderscale = 0.50f; //Xamis
@@ -918,7 +918,6 @@ static void PM_AirMove( void ) {
                 PM_SlideMove ( qtrue );
 #endif
         PM_SlideMove ( qtrue );
-        //PM_StepSlideMove( qtrue, qfalse );
 }
 
 /*
