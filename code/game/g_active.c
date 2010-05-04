@@ -789,8 +789,11 @@ void ClientThink_real( gentity_t *ent ) {
          // G_Printf( "ucmd->buttons & BUTTON_WALKING || client->ps.pm_flags & PMF_DUCKED\n");
 
         }else if  ( client->ps.stats[STAT_STAMINA] > 0 && ucmd->buttons & BUTTON_SPRINTING && (int)xyspeed > 5  ) {
-                        client->ps.speed *= 1.5; //blud: was 1.3, fixed to match urt. I think we should move this value to a constant somewhere
-                        ent->stamina--;
+                        if (ucmd->rightmove == 0 && ucmd->forwardmove > 0) //blud disabling sprint for all other than forward movement only
+						{
+							client->ps.speed *= 1.5; //blud: was 1.3, fixed to match urt. I think we should move this value to a constant somewhere
+							ent->stamina--;
+						}
                       //  G_Printf( "sprint activated");
                 //if (ent->stamina <= STAT_MAX_STAMINA *.2 ) {(G_AddEvent( ent, EV_PANTING, 0 );} //todo
         }

@@ -569,7 +569,7 @@ static void CG_DrawStatusBar( void ) {
 	int currentSpeedXY; //blud
 	int currentSpeedXYZ; //blud
 	vec3_t speedo_vel; //blud
-	char speedo_s[16]; //blud
+	char speedo_s[32]; //blud
 
 	static float colors[4][4] = {
 //		{ 0.2, 1.0, 0.2, 1.0 } , { 1.0, 0.2, 0.2, 1.0 }, {0.5, 0.5, 0.5, 1} };
