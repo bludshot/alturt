@@ -2132,17 +2132,6 @@ int CG_GetSidearm (void)
 }
 
 
-void CG_ListGuns_f( void ) {
-	if (BG_HasWeapon( WP_DEAGLE, cg.snap->ps.stats ))
-	{
-		CG_Printf("You have a DE\n");
-	}
-	else
-	{
-		CG_Printf("You don't have a DE\n");
-	}
-}
-
 /*
 ===============
 CG_WeapToggle_f
@@ -2155,13 +2144,13 @@ void CG_WeapToggle_f( void ) {
 	char    arg2[MAX_STRING_TOKENS];
 	char    otherweap[MAX_STRING_TOKENS];
 	centity_t	*cent;
+	
 	cent = &cg_entities[cg.snap->ps.clientNum];
 	numArgs = 0;
 	numGoodArgs = 0;
 	arg1bad = 0;
 
-	//this is what they do in CG_Weapon_f, I guess to 
-	//avoid error if there is no snap
+	//this is what they do in CG_Weapon_f, I guess to avoid error if there is no snap
 	//and to do nothing if the user is a spectator
 	if ( !cg.snap ) {
 		return;
@@ -2181,179 +2170,7 @@ void CG_WeapToggle_f( void ) {
 	
 	//blud debug: CG_Printf("ARG1: %s ARG2: %s\n", arg1, arg2);
 
-	/*
-	PSUEDO CODE:
-	numArgs = 0
-	numGoodArgs = 0
-	arg1bad = false
 
-	if arg1 is empty
-		we have no args
-		print you must give args
-	else arg1 is not empty
-		we have the first arg
-		numArgs++
-
-		if arg2 is empty
-			we only have arg1
-		else
-			we have the second arg plus some crap maybe
-			truncate any possible crap after the 2nd arg
-			we have arg2
-			numArgs++
-
-	if numArgs > 0
-		if arg1 matches one of the acceptable arg values
-			arg1 is good
-			numGoodArgs++
-		else
-			arg1 is bad and we do nothing
-			print arg1 is bad
-			arg1bad = true
-	
-	if numArgs > 1 && !arg1bad
-		if arg2 matches one of the acceptable arg values
-			arg2 is good
-			numGoodArgs++
-		else
-			arg2 is bad and we throw it out
-			print arg2 is bad
-
-	//Now I need to throw out duplicate args because they would mess me up
-	if arg1 == arg2
-		numGoodArgs = 1 // this discards arg2 basically
-
-	if numGoodArgs == 1
-		• Primary *You can only have one primary in post 2.0 (or whenever it was)
-			if user HAS primary slot gun
-				give them primary slot gun
-			else if user has no primary slot gun but DOES have a secondary slot gun
-				give them secondary slot gun (Urt does this)
-			else // user has no primary slot gun and no secondary slot gun
-				do nothing
-
-
-		• Secondary - special case: user could have a "secondary" in their primary slot
-			if user has spas/mp5k/ump in Primary slot, AND user has nothing in secondary slot
-				give "primary" slot gun
-			if user does not have spas/mp5k/ump in primary slot (so has primary or nothing there) 
-			 AND user has secondary slot gun
-				give secondary
-			if user has spas/mp5k/ump in Primary slot, AND user has a secondary slot gun
-				if user is HOLDING neither "SecPrimary" or Secondary
-					give them Secondary
-				if user is HOLDING Secondary
-					give them "SecPrimary"
-				if user is HOLDING "SecPrimary"
-					give them Secondary
-			if user has no secondary and does not have a 'secondary' gun in primary
-				do nothing
-		• Sidearm
-			(I think you HAVE to have a sidearm right?)
-			if user has DE give DE
-			if user has Beretta give Beretta
-		• Grenade - special case: There are Smokes and HEs
-			if user has neither
-				do nothing
-			if user has only smoke
-				give smoke
-			if user has only HE
-				give HE
-			if user has both HE and Smoke
-				if user is HOLDING neither
-					give them HE
-				if user is HOLDING HE
-					give them Smoke
-				if user is HOLDING Smoke
-					give them HE
-		• Bomb - give them bomb (if has)
-		• Knife - give them knife (even if doesn't "have", goes to hands right)
-	if numGoodArgs == 2
-		if they are holding one of the weapons
-			give them the other weapon
-			In the case that the 2nd arg is Primary, Secondary or Sidearm, give them the gun
-			 they have in that corresponding slot
-			In the case that the 2nd arg is Bomb or Knife, load that
-			In the case that the 2nd arg is grenade, give them HE grenade
-		else
-			give them the "first" arg weapon
-			In the case that the first arg is Primary, Secondary or Sidearm, give them the gun
-			 they have in that corresponding slot
-			In the case that the first arg is Bomb or Knife, load that
-			In the case that the first arg is grenade, give them HE grenade
-
-		
-	else
-		exit the function having done nothing
-
-		
-
-	*/
-	
-	//see if arg2 is empty, 
-
-	/*
-	]\ut_weaptoggle a b
-	ARG1: a ARG2: b
-	]\ut_weaptoggle a
-	ARG1: a ARG2:
-	]\ut_weaptoggle
-	ARG1:  ARG2:
-	]\ut_weaptoggle primary secondary sidearm
-	ARG1: primary ARG2: secondary sidearm
-	*/
-
-
-	/*
-	The client has 6 weapon slots basically:
-	• Primary
-	• Secondary
-	• Sidearm
-	• Grenade
-	• Bomb
-	• Knife
-
-	ut_weaptoggle requires at least one argument and ignores arguments beyond 2 arguments
-
-	Behaviour is as follows:
-
-	when ut_weaptoggle command is issued, if there are no args, nothing happens
-
-	if there is 1 arg, we'll deal with that 1 arg
-		if the arg is invalid, treat it like no args (nothing happens)
-
-	if there are 2 args we'll deal with both
-		(if there are >2 args we will deal with only the first 2 and ignore the rest.)
-		if the first arg is invalid treat the cmd like it gave no args.
-		if only the 2nd arg is invalid, then treat it like it gave 1 arg
-
-	Now either nothing was done due to bad or missing args and we are done, or:
-
-	We now have 1 or 2 good args to use.
-
-	[note, we will need to keep an array of the Primary, Secondary and Sidearm weapon slots.
-	Bomb and Knife are single weapons, so that's no problem. Grenades are two grenades, so 
-	we don't really need to store an array, we just need to give them what they have available]
-
-	In the case of 1 arg, 
-	• Primary - go to the weapon in the primary slot
-	• Secondary - go to the weapon in the secondary slot
-	• Sidearm - go to the weapon in the sidearm slot
-	• Grenade - Check if they have smoke or HE
-		if they have neither, then do nothing
-		if they have only one, then go to that one
-		if they have both, then see what they are holding
-			if they are holding HE, give them Smoke
-			if they are holding Smoke, give them HE
-			if they are holding something that isn't a nade, always give them HE.
-	• Bomb - go to bomb
-	• Knife - go to knife
-		
-	*/
-
-
-	//Converting this pseudo code into real code
-	
 	//clean up the args and check if they are valid
 
 	if (strlen(arg1) < 1)

@@ -1475,7 +1475,6 @@ int CG_GetSidearm (void);
 
 void CG_NextWeapon_f( void );
 void CG_PrevWeapon_f( void );
-void CG_ListGuns_f(void);
 void CG_WeapToggle_f( void );
 void CG_Weapon_f( void );
 

@@ -467,7 +467,6 @@ static consoleCommand_t	commands[] = {
 	{ "weapnext", CG_NextWeapon_f },
 	{ "weapprev", CG_PrevWeapon_f },
 	{ "weapon", CG_Weapon_f },
-	{ "listguns", CG_ListGuns_f }, //blud debug
 	{ "ut_weaptoggle", CG_WeapToggle_f }, //blud
         { "ut_itemnext", CG_NextItem_f },
 	{ "tell_target", CG_TellTarget_f },
