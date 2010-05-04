@@ -1468,8 +1468,15 @@ void CG_PositionWeaponOnTag( refEntity_t *entity, const refEntity_t *parent, qha
 //
 // cg_weapons.c
 //
+int CG_GetPrimary (void);
+int CG_GetBestSecondary (void);
+int CG_GetWorstSecondary (void);
+int CG_GetSidearm (void);
+
 void CG_NextWeapon_f( void );
 void CG_PrevWeapon_f( void );
+void CG_ListGuns_f(void);
+void CG_WeapToggle_f( void );
 void CG_Weapon_f( void );
 
 void CG_NextItem_f (void);

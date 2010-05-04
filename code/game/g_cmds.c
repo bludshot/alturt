@@ -1591,7 +1591,6 @@ void Cmd_Stats_f( gentity_t *ent ) {
 */
 }
 
-
 /*
 =================
 ClientCommand

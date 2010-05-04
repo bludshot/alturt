@@ -1813,6 +1813,8 @@ void CG_NextItem_f (void){
   cg.itemSelectTime = cg.time;
   trap_SendConsoleCommand( "next_item" );
 }
+
+
 /*
 ==============================================================================
 
@@ -2036,6 +2038,762 @@ void CG_PrevWeapon_f( void ) {
         if ( i == WP_NUM_WEAPONS ) {
                 cg.weaponSelect = original;
         }
+}
+
+
+/*
+===============
+CG_GetPrimary
+===============
+*/
+int CG_GetPrimary (void)
+{
+	//just go through each primary and if they have any of them (and they will only
+	//have one at most), return it. If they don't, then return them the 'best' secondary
+	//that they have (if any)
+	if (BG_HasWeapon( WP_M4, cg.snap->ps.stats ))
+		return WP_M4;
+	else if (BG_HasWeapon( WP_LR300, cg.snap->ps.stats ))
+		return WP_LR300;
+	else if (BG_HasWeapon( WP_G36, cg.snap->ps.stats ))
+		return WP_G36;
+	else if (BG_HasWeapon( WP_AK103, cg.snap->ps.stats ))
+		return WP_AK103;
+	else if (BG_HasWeapon( WP_HK69, cg.snap->ps.stats ))
+		return WP_HK69;
+	else if (BG_HasWeapon( WP_NEGEV, cg.snap->ps.stats ))
+		return WP_NEGEV;
+	else if (BG_HasWeapon( WP_PSG1, cg.snap->ps.stats ))
+		return WP_PSG1;
+	else if (BG_HasWeapon( WP_SR8, cg.snap->ps.stats ))
+		return WP_SR8;
+	else if (BG_HasWeapon( WP_UMP45, cg.snap->ps.stats ))
+		return WP_UMP45;
+	else if (BG_HasWeapon( WP_MP5K, cg.snap->ps.stats ))
+		return WP_MP5K;
+	else if (BG_HasWeapon( WP_SPAS, cg.snap->ps.stats ))
+		return WP_SPAS;
+	else
+		return WP_NONE;
+}
+
+
+/*
+====================
+CG_GetWorstSecondary
+====================
+*/
+int CG_GetWorstSecondary (void)
+{
+	//return the 'worst' of the secondaries (they might be holding 2)
+	if (BG_HasWeapon( WP_SPAS, cg.snap->ps.stats ))
+		return WP_SPAS;
+	else if (BG_HasWeapon( WP_MP5K, cg.snap->ps.stats ))
+		return WP_MP5K;
+	else if (BG_HasWeapon( WP_UMP45, cg.snap->ps.stats ))
+		return WP_UMP45;
+	else
+		return WP_NONE;
+}
+
+
+/*
+===================
+CG_GetBestSecondary
+===================
+*/
+int CG_GetBestSecondary (void)
+{
+	//return the 'best' of the secondaries (they might be holding 2)
+	if (BG_HasWeapon( WP_UMP45, cg.snap->ps.stats ))
+		return WP_UMP45;
+	else if (BG_HasWeapon( WP_MP5K, cg.snap->ps.stats ))
+		return WP_MP5K;
+	else if (BG_HasWeapon( WP_SPAS, cg.snap->ps.stats ))
+		return WP_SPAS;
+	else
+		return WP_NONE;
+}
+
+
+/*
+===============
+CG_GetSidearm
+===============
+*/
+int CG_GetSidearm (void)
+{
+	if (BG_HasWeapon( WP_DEAGLE, cg.snap->ps.stats ))
+		return WP_DEAGLE;
+	else if (BG_HasWeapon( WP_BERETTA, cg.snap->ps.stats ))
+		return WP_BERETTA;
+	else
+		return WP_NONE;
+}
+
+
+void CG_ListGuns_f( void ) {
+	if (BG_HasWeapon( WP_DEAGLE, cg.snap->ps.stats ))
+	{
+		CG_Printf("You have a DE\n");
+	}
+	else
+	{
+		CG_Printf("You don't have a DE\n");
+	}
+}
+
+/*
+===============
+CG_WeapToggle_f
+new function by blud
+===============
+*/
+void CG_WeapToggle_f( void ) {
+	int		i, numArgs, numGoodArgs, arg1bad, WP, WP_B, WP_W, WP_CURR;
+	char    arg1[MAX_STRING_TOKENS];
+	char    arg2[MAX_STRING_TOKENS];
+	char    otherweap[MAX_STRING_TOKENS];
+	centity_t	*cent;
+	cent = &cg_entities[cg.snap->ps.clientNum];
+	numArgs = 0;
+	numGoodArgs = 0;
+	arg1bad = 0;
+
+	//this is what they do in CG_Weapon_f, I guess to 
+	//avoid error if there is no snap
+	//and to do nothing if the user is a spectator
+	if ( !cg.snap ) {
+		return;
+	}
+	if ( cg.snap->ps.pm_flags & PMF_FOLLOW ) {
+		return;
+	}
+
+	//grab the args
+	trap_Argv( 1, arg1, sizeof( arg1 ) );
+	arg2[0] = '\0';
+	for ( i = 2; i < trap_Argc(); i++ ) {
+		if (i > 2)
+			strcat(arg2, " ");
+		trap_Argv( i, &arg2[strlen(arg2)], sizeof( arg2 ) - strlen(arg2) );
+	}
+	
+	//blud debug: CG_Printf("ARG1: %s ARG2: %s\n", arg1, arg2);
+
+	/*
+	PSUEDO CODE:
+	numArgs = 0
+	numGoodArgs = 0
+	arg1bad = false
+
+	if arg1 is empty
+		we have no args
+		print you must give args
+	else arg1 is not empty
+		we have the first arg
+		numArgs++
+
+		if arg2 is empty
+			we only have arg1
+		else
+			we have the second arg plus some crap maybe
+			truncate any possible crap after the 2nd arg
+			we have arg2
+			numArgs++
+
+	if numArgs > 0
+		if arg1 matches one of the acceptable arg values
+			arg1 is good
+			numGoodArgs++
+		else
+			arg1 is bad and we do nothing
+			print arg1 is bad
+			arg1bad = true
+	
+	if numArgs > 1 && !arg1bad
+		if arg2 matches one of the acceptable arg values
+			arg2 is good
+			numGoodArgs++
+		else
+			arg2 is bad and we throw it out
+			print arg2 is bad
+
+	//Now I need to throw out duplicate args because they would mess me up
+	if arg1 == arg2
+		numGoodArgs = 1 // this discards arg2 basically
+
+	if numGoodArgs == 1
+		• Primary *You can only have one primary in post 2.0 (or whenever it was)
+			if user HAS primary slot gun
+				give them primary slot gun
+			else if user has no primary slot gun but DOES have a secondary slot gun
+				give them secondary slot gun (Urt does this)
+			else // user has no primary slot gun and no secondary slot gun
+				do nothing
+
+
+		• Secondary - special case: user could have a "secondary" in their primary slot
+			if user has spas/mp5k/ump in Primary slot, AND user has nothing in secondary slot
+				give "primary" slot gun
+			if user does not have spas/mp5k/ump in primary slot (so has primary or nothing there) 
+			 AND user has secondary slot gun
+				give secondary
+			if user has spas/mp5k/ump in Primary slot, AND user has a secondary slot gun
+				if user is HOLDING neither "SecPrimary" or Secondary
+					give them Secondary
+				if user is HOLDING Secondary
+					give them "SecPrimary"
+				if user is HOLDING "SecPrimary"
+					give them Secondary
+			if user has no secondary and does not have a 'secondary' gun in primary
+				do nothing
+		• Sidearm
+			(I think you HAVE to have a sidearm right?)
+			if user has DE give DE
+			if user has Beretta give Beretta
+		• Grenade - special case: There are Smokes and HEs
+			if user has neither
+				do nothing
+			if user has only smoke
+				give smoke
+			if user has only HE
+				give HE
+			if user has both HE and Smoke
+				if user is HOLDING neither
+					give them HE
+				if user is HOLDING HE
+					give them Smoke
+				if user is HOLDING Smoke
+					give them HE
+		• Bomb - give them bomb (if has)
+		• Knife - give them knife (even if doesn't "have", goes to hands right)
+	if numGoodArgs == 2
+		if they are holding one of the weapons
+			give them the other weapon
+			In the case that the 2nd arg is Primary, Secondary or Sidearm, give them the gun
+			 they have in that corresponding slot
+			In the case that the 2nd arg is Bomb or Knife, load that
+			In the case that the 2nd arg is grenade, give them HE grenade
+		else
+			give them the "first" arg weapon
+			In the case that the first arg is Primary, Secondary or Sidearm, give them the gun
+			 they have in that corresponding slot
+			In the case that the first arg is Bomb or Knife, load that
+			In the case that the first arg is grenade, give them HE grenade
+
+		
+	else
+		exit the function having done nothing
+
+		
+
+	*/
+	
+	//see if arg2 is empty, 
+
+	/*
+	]\ut_weaptoggle a b
+	ARG1: a ARG2: b
+	]\ut_weaptoggle a
+	ARG1: a ARG2:
+	]\ut_weaptoggle
+	ARG1:  ARG2:
+	]\ut_weaptoggle primary secondary sidearm
+	ARG1: primary ARG2: secondary sidearm
+	*/
+
+
+	/*
+	The client has 6 weapon slots basically:
+	• Primary
+	• Secondary
+	• Sidearm
+	• Grenade
+	• Bomb
+	• Knife
+
+	ut_weaptoggle requires at least one argument and ignores arguments beyond 2 arguments
+
+	Behaviour is as follows:
+
+	when ut_weaptoggle command is issued, if there are no args, nothing happens
+
+	if there is 1 arg, we'll deal with that 1 arg
+		if the arg is invalid, treat it like no args (nothing happens)
+
+	if there are 2 args we'll deal with both
+		(if there are >2 args we will deal with only the first 2 and ignore the rest.)
+		if the first arg is invalid treat the cmd like it gave no args.
+		if only the 2nd arg is invalid, then treat it like it gave 1 arg
+
+	Now either nothing was done due to bad or missing args and we are done, or:
+
+	We now have 1 or 2 good args to use.
+
+	[note, we will need to keep an array of the Primary, Secondary and Sidearm weapon slots.
+	Bomb and Knife are single weapons, so that's no problem. Grenades are two grenades, so 
+	we don't really need to store an array, we just need to give them what they have available]
+
+	In the case of 1 arg, 
+	• Primary - go to the weapon in the primary slot
+	• Secondary - go to the weapon in the secondary slot
+	• Sidearm - go to the weapon in the sidearm slot
+	• Grenade - Check if they have smoke or HE
+		if they have neither, then do nothing
+		if they have only one, then go to that one
+		if they have both, then see what they are holding
+			if they are holding HE, give them Smoke
+			if they are holding Smoke, give them HE
+			if they are holding something that isn't a nade, always give them HE.
+	• Bomb - go to bomb
+	• Knife - go to knife
+		
+	*/
+
+
+	//Converting this pseudo code into real code
+	
+	//clean up the args and check if they are valid
+
+	if (strlen(arg1) < 1)
+	{
+		CG_Printf("ut_weaptoggle requires parameters such as primary or secondary\n");
+	}
+	else
+	{
+		//arg1 is not empty, we have the first arg
+		numArgs++;
+
+		if (strlen(arg2) > 0)
+		{
+			//we have arg2
+			numArgs++;
+
+			//note this arg could have something like "secondary sidearm" in it, 
+			//if the user tried to pass 3 args such as "primary secondary sidearm"
+			//I was going to trim it here but instead I will just find the 2nd arg
+			//to be invalid below and echo that to the user.
+		}
+	}
+
+
+	if (numArgs > 0)
+	{
+		if	(!(strcmp(arg1, "primary")) ||
+			!(strcmp(arg1, "secondary")) ||
+			!(strcmp(arg1, "sidearm")) ||
+			!(strcmp(arg1, "grenade")) ||
+			!(strcmp(arg1, "bomb")) ||
+			!(strcmp(arg1, "knife")))
+		{
+			//arg1 is good
+			numGoodArgs++;
+		}
+		else
+		{
+			//arg1 is bad so we won't be doing anything
+			CG_Printf("%s is an invalid parameter to give to ut_weaptoggle\n", arg1);
+			arg1bad = 1;
+		}
+	}
+	
+
+	if (numArgs > 1 && !arg1bad)
+	{
+		if	(!(strcmp(arg2, "primary")) ||
+			!(strcmp(arg2, "secondary")) ||
+			!(strcmp(arg2, "sidearm")) ||
+			!(strcmp(arg2, "grenade")) ||
+			!(strcmp(arg2, "bomb")) ||
+			!(strcmp(arg2, "knife")))
+		{
+			//arg2 is good
+			numGoodArgs++;
+		}
+		else
+		{
+			//arg2 is bad and we essentially throw it out by not incrementing numGoodArgs
+			//(So, you can send a bad 2nd arg and ut_weaptoggle will still act on the good first one,
+			// but if your first arg is bad and the 2nd one is good, it won't act on the second one!)
+			CG_Printf("%s is an invalid parameter to give to ut_weaptoggle\n", arg2);
+		}
+
+		//Now I need to throw out duplicate args because they would mess me up
+		if (!(strcmp(arg1, arg2)))
+		{
+			numGoodArgs = 1; // this discards arg2 basically
+		}
+	}
+
+	cg.weaponSelectTime = cg.time;
+
+	if (numGoodArgs == 1)
+	{
+		if (!(strcmp(arg1, "primary")))
+		{
+			WP = CG_GetPrimary();
+			if (WP != WP_NONE)
+			{
+				//give them primary
+				cg.weaponSelect = WP;
+			}
+		}
+		if (!(strcmp(arg1, "secondary")))
+		{
+			WP_B = CG_GetBestSecondary();
+			WP_W = CG_GetWorstSecondary();
+			
+			if (WP_B != WP_W) //if they have 2 secondaries
+			{
+				if (cent->currentState.weapon != WP_B && cent->currentState.weapon != WP_W)
+				{
+					//give them worse of the 2 secondaries
+					cg.weaponSelect = WP_W;
+				}
+				else if (cent->currentState.weapon == WP_W)
+				{
+					//give them better of the 2 secondaries
+					cg.weaponSelect = WP_B;
+				}
+				else if (cent->currentState.weapon == WP_B)
+				{
+					//give them worse of the 2 secondaries
+					cg.weaponSelect = WP_W;
+				}
+			}
+			else if (WP_B == WP_W && WP_B != WP_NONE) //if they have 1 secondary
+			{
+				//give them the secondary
+				cg.weaponSelect = WP_W;
+			}
+		}
+		if (!(strcmp(arg1, "sidearm")))
+		{
+			WP = CG_GetSidearm();
+			if (WP != WP_NONE)
+			{
+				//give them sidearm slot gun
+				cg.weaponSelect = WP;
+			}
+		}
+		if (!(strcmp(arg1, "grenade"))) //special case: There are Smokes and HEs
+		{
+			if (BG_HasWeapon(WP_SMOKE, (int*)cg.snap->ps.stats) && BG_HasWeapon(WP_HE, (int*)cg.snap->ps.stats))
+			{
+				if (cent->currentState.weapon != WP_HE && cent->currentState.weapon != WP_SMOKE)
+				{
+					//give them HE
+					cg.weaponSelect = WP_HE;
+				}
+				else if (cent->currentState.weapon == WP_HE)
+				{
+					//give them Smoke
+					cg.weaponSelect = WP_SMOKE;
+				}
+				else if (cent->currentState.weapon == WP_SMOKE)
+				{
+					//give them HE
+					cg.weaponSelect = WP_HE;
+				}
+			}
+			else if (BG_HasWeapon(WP_SMOKE, (int*)cg.snap->ps.stats))
+			{
+				//give smoke
+				cg.weaponSelect = WP_SMOKE;
+			}
+			else if (BG_HasWeapon(WP_HE, (int*)cg.snap->ps.stats))
+			{
+				//give HE
+				cg.weaponSelect = WP_HE;
+			}
+		}
+		if (!(strcmp(arg1, "bomb")))
+		{
+			//note, weapon system is not done yet, doesn't have more than 16 weapons yet, and weapons
+			//are not in the right places (there's no bomb yet)
+
+			//if (BG_HasWeapon(WP_BOMB, (int*)cg.snap->ps.stats))
+			//{
+				CG_Printf("Sorry, the bomb is not yet implemented\n");
+				//give BOMB
+				//cg.weaponSelect = WP_BOMB;
+			//}
+		}
+		if (!(strcmp(arg1, "knife")))
+		{
+			if (BG_HasWeapon(WP_KNIFE, (int*)cg.snap->ps.stats))
+				cg.weaponSelect = WP_KNIFE;
+			else
+				CG_Printf("Where is your knife?\n");
+		}
+	}
+	else if (numGoodArgs == 2)
+	{
+		int holding = -1;
+		WP_CURR = cent->currentState.weapon;
+
+		//see if they are holding one of the weapons in the 2 args
+		if (!(strcmp(arg1, "primary")) || !(strcmp(arg2, "primary")))
+		{
+			WP = CG_GetPrimary();
+			if (WP != WP_NONE)
+			{
+				if (WP_CURR == WP)
+					holding = PRIMARY;
+			}
+		}
+		if (!(strcmp(arg1, "secondary")) || !(strcmp(arg2, "secondary")))
+		{
+			//if I have two secondaries, the worst one will be the secondary here
+										//since primary will get them the best one in that case
+			WP = CG_GetWorstSecondary();
+			if (WP != WP_NONE)
+			{
+				if (WP_CURR == WP)
+					holding = SECONDARY;
+			}
+		}
+		if (!(strcmp(arg1, "sidearm")) || !(strcmp(arg2, "sidearm")))
+		{
+			WP = CG_GetSidearm();
+			if (WP != WP_NONE)
+			{
+				if (WP_CURR == WP)
+					holding = SIDEARM;
+			}
+		}
+		if (!(strcmp(arg1, "grenade")) || !(strcmp(arg2, "grenade")))
+		{
+			//if they have HE, HE is the grenade regardless if they have smoke or not.
+			if (BG_HasWeapon(WP_HE, (int*)cg.snap->ps.stats))
+			{
+				if (WP_CURR == WP_HE)
+					holding = NADE;
+			}
+			//else if they have Smoke, Smoke is the grenade
+			else if (BG_HasWeapon(WP_SMOKE, (int*)cg.snap->ps.stats))
+			{
+				if (WP_CURR == WP_SMOKE)
+					holding = NADE;
+			}
+		}
+		if (!(strcmp(arg1, "bomb")) || !(strcmp(arg2, "bomb")))
+		{
+			//if (WP_CURR == WP_BOMB)
+			//	holding = MISC;
+			CG_Printf("Sorry, the bomb is not yet implemented\n");
+		}
+		if (!(strcmp(arg1, "knife")) || !(strcmp(arg2, "knife")))
+		{
+			if (WP_CURR == WP_KNIFE)
+				holding = MELEE;
+		}
+
+		if (holding > -1)
+		{
+			switch( holding )
+			{
+				case PRIMARY:	//get the arg out of the 2 args that is not primary
+								if (!(strcmp(arg1, "primary")))
+								{
+									//then arg1 is primary, so we want arg2
+									Q_strncpyz( otherweap, arg2, sizeof( otherweap ) );
+								}
+								else
+								{
+									//arg2 must be primary, so we want arg1
+									Q_strncpyz( otherweap, arg1, sizeof( otherweap ) );
+								}
+								break;
+				
+				case SECONDARY:	if (!(strcmp(arg1, "secondary")))
+									Q_strncpyz( otherweap, arg2, sizeof( otherweap ) );
+								else
+									Q_strncpyz( otherweap, arg1, sizeof( otherweap ) );
+								break;
+				
+				case SIDEARM:	if (!(strcmp(arg1, "sidearm")))
+									Q_strncpyz( otherweap, arg2, sizeof( otherweap ) );
+								else
+									Q_strncpyz( otherweap, arg1, sizeof( otherweap ) );
+								break;
+				
+				case NADE:		if (!(strcmp(arg1, "grenade")))
+									Q_strncpyz( otherweap, arg2, sizeof( otherweap ) );
+								else
+									Q_strncpyz( otherweap, arg1, sizeof( otherweap ) );
+								break;
+				
+				case MELEE:		if (!(strcmp(arg1, "knife")))
+									Q_strncpyz( otherweap, arg2, sizeof( otherweap ) );
+								else
+									Q_strncpyz( otherweap, arg1, sizeof( otherweap ) );
+								break;
+				
+				case MISC:		//case isn't happening right now, bomb isn't implemented yet
+								break;
+				
+				default:		//default shouldn't happen
+								break;
+			}
+
+			//**NOTE: I could probably combine the stuff below with the single arg stuff way above
+			//		  into one function
+
+			//get the weapon (or WP_NONE if they don't have it)
+			WP = WP_NONE; //just putting this here in case none of these conditions are met, but that should be impossible
+			if (!(strcmp(otherweap, "primary")))
+			{
+				WP = CG_GetPrimary();
+			}
+			if (!(strcmp(otherweap, "secondary")))
+			{
+				WP = CG_GetWorstSecondary();
+			}
+			if (!(strcmp(otherweap, "sidearm")))
+			{
+				WP = CG_GetSidearm();
+			}
+			if (!(strcmp(otherweap, "grenade")))
+			{
+				WP = WP_NONE;
+				//but if we have Smoke, overwrite None with Smoke
+				if (BG_HasWeapon(WP_SMOKE, (int*)cg.snap->ps.stats))
+				{
+					WP = WP_SMOKE;
+				}
+				//but if we have HE, overwrite Smoke with HE
+				if (BG_HasWeapon(WP_HE, (int*)cg.snap->ps.stats))
+				{
+					WP = WP_HE;
+				}
+			}
+			if (!(strcmp(otherweap, "knife")))
+			{
+				if (BG_HasWeapon(WP_KNIFE, (int*)cg.snap->ps.stats))
+				{
+					WP = WP_KNIFE;
+				}
+				else
+				{
+					WP = WP_NONE;
+					CG_Printf("Where is your knife?\n");
+				}
+			}
+			//if (!(strcmp(otherweap, "bomb"))) //no bomb implemented yet
+			
+			//give them the other weapon if it's not WP_NONE
+			if (WP != WP_NONE)
+			{
+				cg.weaponSelect = WP;
+			}
+		}
+		else //they are not holding one of the arg guns, so give them the first one if they have it, or the 2nd one if they don't, or do nothing if they don't have either
+		{
+			WP = WP_NONE; //just putting this here in case none of these conditions are met, but that should be impossible
+			if (!(strcmp(arg1, "primary")))
+			{
+				WP = CG_GetPrimary();
+			}
+			if (!(strcmp(arg1, "secondary")))
+			{
+				WP = CG_GetWorstSecondary();
+			}
+			if (!(strcmp(arg1, "sidearm")))
+			{
+				WP = CG_GetSidearm();
+			}
+			if (!(strcmp(arg1, "grenade")))
+			{
+				WP = WP_NONE;
+				//but if we have Smoke, overwrite None with Smoke
+				if (BG_HasWeapon(WP_SMOKE, (int*)cg.snap->ps.stats))
+				{
+					WP = WP_SMOKE;
+				}
+				//but if we have HE, overwrite Smoke with HE
+				if (BG_HasWeapon(WP_HE, (int*)cg.snap->ps.stats))
+				{
+					WP = WP_HE;
+				}
+			}
+			if (!(strcmp(arg1, "knife")))
+			{
+				if (BG_HasWeapon(WP_KNIFE, (int*)cg.snap->ps.stats))
+				{
+					WP = WP_KNIFE;
+				}
+				else
+				{
+					WP = WP_NONE;
+					CG_Printf("Where is your knife?\n");
+				}
+			}
+			if (!(strcmp(arg1, "bomb")))
+			{
+				//bomb isn't implemented yet so do nothing
+				CG_Printf("Sorry, the bomb is not yet implemented\n");
+			}
+
+			if (WP != WP_NONE)
+			{
+				cg.weaponSelect = WP;
+			}
+			else
+			{
+				WP = WP_NONE; //just putting this here in case none of these conditions are met, but that should be impossible
+				if (!(strcmp(arg2, "primary")))
+				{
+					WP = CG_GetPrimary();
+				}
+				if (!(strcmp(arg2, "secondary")))
+				{
+					WP = CG_GetWorstSecondary();
+				}
+				if (!(strcmp(arg2, "sidearm")))
+				{
+					WP = CG_GetSidearm();
+				}
+				if (!(strcmp(arg2, "grenade")))
+				{
+					WP = WP_NONE;
+					//but if we have Smoke, overwrite None with Smoke
+					if (BG_HasWeapon(WP_SMOKE, (int*)cg.snap->ps.stats))
+					{
+						WP = WP_SMOKE;
+					}
+					//but if we have HE, overwrite Smoke with HE
+					if (BG_HasWeapon(WP_HE, (int*)cg.snap->ps.stats))
+					{
+						WP = WP_HE;
+					}
+				}
+				if (!(strcmp(arg2, "knife")))
+				{
+					if (BG_HasWeapon(WP_KNIFE, (int*)cg.snap->ps.stats))
+					{
+						WP = WP_KNIFE;
+					}
+					else
+					{
+						WP = WP_NONE;
+						CG_Printf("Where is your knife?\n");
+					}
+				}
+				if (!(strcmp(arg2, "bomb")))
+				{
+					//bomb isn't implemented yet so do nothing
+					CG_Printf("Sorry, the bomb is not yet implemented\n");
+				}
+
+				if (WP != WP_NONE)
+				{
+					cg.weaponSelect = WP;
+				}
+			}
+		}
+	}	
 }
 
 /*
