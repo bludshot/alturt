@@ -1758,7 +1758,7 @@ void CG_AddViewWeapon( playerState_t *ps ) {
         hand.renderfx = RF_DEPTHHACK | RF_FIRST_PERSON | RF_MINLIGHT;
 //        CG_Printf( "modelname is %s\n", CG_GetClientModelName(ci) );
         // add everything onto the hand
-        CG_AddPlayerWeapon( &hand, ps, &cg.predictedPlayerEntity, ps->persistant[PERS_TEAM], CG_GetClientModelName(ci), ci->skin );
+        CG_AddPlayerWeapon( &hand, ps, &cg.predictedPlayerEntity, ps->persistant[PERS_TEAM], CG_GetPlayerModelName(ci), ci->skin );
 }
 
 void CG_DrawItemSelect( void ) {

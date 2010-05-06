@@ -79,18 +79,6 @@ CLIENT INFO
 =============================================================================
 */
 
-char *CG_GetClientModelName( clientInfo_t *ci ){
-
-  if ( (ci->racered < 2 && ci->team == TEAM_RED) || (ci->raceblue < 2 && ci->team == TEAM_BLUE) )
-    return "athena";
-  else if( (ci->racered > 1 && ci->team == TEAM_RED) || (ci->raceblue > 1 && ci->team == TEAM_BLUE) )
-    return "orion";
-  else if(!ci->team && ci->raceblue < 2 )
-    return "athena";
-  else
-    return "orion";
-}
-
 
 /*
 ======================
@@ -669,9 +657,9 @@ static void CG_LoadClientInfo( int clientNum, clientInfo_t *ci ) {
 
 	teamname[0] = 0;
 	modelloaded = qtrue;
-        if ( !CG_RegisterClientModelname( ci, CG_GetClientModelName( ci), ci->skinName, CG_GetClientModelName( ci), ci->headSkinName, teamname ) ) {
+        if ( !CG_RegisterClientModelname( ci, CG_GetPlayerModelName(ci), ci->skinName, CG_GetPlayerModelName(ci), ci->headSkinName, teamname ) ) {
 		if ( cg_buildScript.integer ) {
-                  CG_Error( "CG_RegisterClientModelname( %s, %s, %s, %s %s ) failed", CG_GetClientModelName( ci), ci->skinName, ci->headModelName, ci->headSkinName, teamname );
+                  CG_Error( "CG_RegisterClientModelname( %s, %s, %s, %s %s ) failed", CG_GetPlayerModelName(ci), ci->skinName, ci->headModelName, ci->headSkinName, teamname );
 		}
 
 		// fall back to default team name
@@ -701,6 +689,15 @@ static void CG_LoadClientInfo( int clientNum, clientInfo_t *ci ) {
 			ci->newAnims = qtrue;
 		}
 	}
+	//blud trying to fix invisible vest torso (whole if block is new, copied from torso above)
+	if ( ci->vestModel ) {
+		orientation_t tag;
+		// if the vest torso model has the "tag_flag"
+		if ( trap_R_LerpTag( &tag, ci->vestModel, 0, 0, 1, "tag_flag" ) ) {
+			ci->newAnims = qtrue;
+		}
+	}
+
 
 	// sounds
 	dir = ci->modelName;
@@ -755,6 +752,8 @@ static void CG_CopyClientInfoModel( clientInfo_t *from, clientInfo_t *to ) {
 	to->legsSkin = from->legsSkin;
 	to->torsoModel = from->torsoModel;
 	to->torsoSkin = from->torsoSkin;
+	to->vestModel = from->vestModel; //blud fix torso
+	to->vestSkin = from->vestSkin; //blud fix torso
 	to->headModel = from->headModel;
 	to->headSkin = from->headSkin;
 	to->modelIcon = from->modelIcon;
@@ -791,26 +790,16 @@ static qboolean CG_ScanForExistingClientInfo( clientInfo_t *ci ) {
 			&& !Q_stricmp( ci->headSkinName, match->headSkinName )
 			&& !Q_stricmp( ci->blueTeam, match->blueTeam )
 			&& !Q_stricmp( ci->redTeam, match->redTeam )
-			&& (cgs.gametype < GT_TEAM || ci->team == match->team)) {
-			//&& (cgs.gametype < GT_TEAM || (ci->team == match->team && ((ci->team == TEAM_BLUE && (ci->raceblue == match->raceblue)) || (ci->racered == match->racered)))) ) {
-				if (ci->team == TEAM_BLUE && (ci->raceblue == match->raceblue)){
-					// this clientinfo is identical, so use it's handles
-					ci->deferred = qfalse;
+			&& (cgs.gametype < GT_TEAM || (ci->team == match->team && ((ci->team == TEAM_BLUE && (ci->raceblue == match->raceblue)) || (ci->team == TEAM_RED && (ci->racered == match->racered)))) ) ) {
+				//note: the above means if it's not a team gt then (if all the stuff above matches
+				//		we have a match. But if it's a team game then the team must match and
+				//		the appropriate race must match
+				// this clientinfo is identical, so use it's handles
+				ci->deferred = qfalse;
 
-					CG_CopyClientInfoModel( match, ci );
+				CG_CopyClientInfoModel( match, ci );
 
-					return qtrue;
-				}
-
-				if (ci->team != TEAM_BLUE && (ci->racered == match->racered)) {
-					// this clientinfo is identical, so use it's handles
-					ci->deferred = qfalse;
-
-					CG_CopyClientInfoModel( match, ci );
-
-					return qtrue;
-				}
-
+				return qtrue;
 		}
 	}
 
@@ -844,7 +833,8 @@ static void CG_SetDeferredClientInfo( int clientNum, clientInfo_t *ci ) {
 			if ( Q_stricmp( ci->skinName, match->skinName ) ||
 				Q_stricmp( ci->modelName, match->modelName ))
 			{
-				//blud: This means if BOTH skin and model match, then we found a match so exit the for loop
+				//blud: This means if either the skin or model don't match then this isn't a good match so 
+				//continue and try the next client in the for loop.
 				continue;
 			}
 		}
@@ -852,14 +842,16 @@ static void CG_SetDeferredClientInfo( int clientNum, clientInfo_t *ci ) {
 		{	
 			if (ci->team == TEAM_BLUE) //if it's blue team we compare raceblue (and team because we always compare team)
 			{
-				if ( ci->raceblue == match->raceblue && ci->team == match->team)
+				if ( ci->raceblue != match->raceblue && ci->team != match->team)
 				{
-					continue;
+					continue; //if they aren't the same race AND team (if either isn't the same)
+								//then this isn't a match either so continue up to the start of the 
+								//for loop to look at the next client
 				}
 			}
 			else if (ci->team == TEAM_RED)
 			{
-				if ( ci->racered == match->racered && ci->team == match->team)
+				if ( ci->racered != match->racered && ci->team != match->team)
 				{
 					continue;
 				}
@@ -871,9 +863,13 @@ static void CG_SetDeferredClientInfo( int clientNum, clientInfo_t *ci ) {
 		return;
 	}
 
-	
-	//blud: I don't understand this code below, like it seems like a repeat of what was above, 
-	//and it seems like it should never get executed. So I'm going to leave it alone for now
+	//now if we did not find a match in the for loop above then we never called CG_LoadClientInfo above
+
+	//below we seem to be trying again to find a match (weird), but then the useful thing is that this time
+	//if we don't find a match, then we do CG_LoadClientInfo( clientNum, ci ) to make sure to fix the team
+	//skin right away and NOT defer it (since You can't afford to have a red team guy look blue for any
+	//amount of time.
+
 	// if we are in teamplay, only grab a model if the skin is correct
 	if ( cgs.gametype >= GT_TEAM ) {
 		for ( i = 0 ; i < cgs.maxclients ; i++ ) {
@@ -881,9 +877,21 @@ static void CG_SetDeferredClientInfo( int clientNum, clientInfo_t *ci ) {
 			if ( !match->infoValid || match->deferred ) {
 				continue;
 			}
-			if ( Q_stricmp( ci->skinName, match->skinName ) ||
-				(cgs.gametype >= GT_TEAM && ci->team != match->team) ) {
-				continue;
+			if (ci->team == TEAM_BLUE) //if it's blue team we compare raceblue (and team because we always compare team)
+			{
+				if ( ci->raceblue != match->raceblue && ci->team != match->team)
+				{
+					continue; //if they aren't the same race AND team (if either isn't the same)
+								//then this isn't a match either so continue up to the start of the 
+								//for loop to look at the next client
+				}
+			}
+			else if (ci->team == TEAM_RED)
+			{
+				if ( ci->racered != match->racered && ci->team != match->team)
+				{
+					continue;
+				}
 			}
 			ci->deferred = qtrue;
 			CG_CopyClientInfoModel( match, ci );
@@ -911,6 +919,8 @@ static void CG_SetDeferredClientInfo( int clientNum, clientInfo_t *ci ) {
 
 	// we should never get here...
 	CG_Printf( "CG_SetDeferredClientInfo: no valid clients!\n" );
+
+	//blud: wow I really don't get this last for above here.
 
 	CG_LoadClientInfo( clientNum, ci );
 }
@@ -2608,7 +2618,10 @@ void CG_Player( centity_t *cent ) {
 
 	VectorCopy( cent->lerpOrigin, head.lightingOrigin );
 
-	CG_PositionRotatedEntityOnTag( &head, &torso, ci->torsoModel, "tag_head");
+	if (vestOn) //blud fixing torso
+		CG_PositionRotatedEntityOnTag( &head, &torso, ci->torsoModel, "tag_head");
+	else
+		CG_PositionRotatedEntityOnTag( &head, &torso, ci->vestModel, "tag_head");
 
 	head.shadowPlane = shadowPlane;
 	head.renderfx = renderfx;
@@ -2656,6 +2669,121 @@ void CG_Player( centity_t *cent ) {
 
 
 //=====================================================================
+
+
+/* BLUD NOTE:	I wrote these Get and Set functions below for cleaning up
+				the code, since in various places things are done kind of 
+				sloppily or repeatedly (half my fault, half q3's fault)
+				But I only use CG_GetPlayerModelName so far. Just with 
+				only that one I was able to fix the player skin/model
+				buggyness that was going on before. But the other 3 will
+				useful in future for cleaning up and making the code nicer.
+*/
+
+/*
+====================
+CG_SetPlayerSkinName
+by blud
+====================
+*/
+qboolean CG_SetPlayerSkinName( int team, int racered, int raceblue, char *skin ) {
+	//well what do you need to know to set the skinName?
+	//you need to know 
+		//- if it's a team game, we have cgs.gametype for that
+			//- what team the user is on, pass in TEAM I guess?
+			//- what race* they are on that team, pass in racered and raceblue
+		//else its a nonteam game
+			//- what is their skin cvar, pass in skin cvar
+	//if success
+		return qtrue;
+	//else
+	//	return qfalse;
+}
+
+
+/*
+=====================
+CG_SetPlayerModelName
+by blud
+=====================
+*/
+qboolean CG_SetPlayerModelName( int team, int racered, int raceblue, char *model ) {
+	//well what do you need to know to set the modelName?
+	//you need to know 
+		//- if it's a team game, we have cgs.gametype for that
+			//- what team the user is on, pass in TEAM I guess?
+			//- what race* they are on that team, pass in racered and raceblue
+		//else its a nonteam game
+			//- what is their model cvar, pass in model cvar
+	//if success
+		return qtrue;
+	//else
+	//	return qfalse;
+}
+
+
+/*
+====================
+CG_GetPlayerSkinName
+by blud
+====================
+*/
+char *CG_GetPlayerSkinName( clientInfo_t *ci ) {
+	if (cgs.gametype >= GT_TEAM)
+	{
+		if (ci->team == TEAM_BLUE)
+		{
+			if (ci->raceblue == 0 || ci->raceblue == 2 )
+				return "blue";
+			else
+				return "blue2";
+		}
+		else //they are on the red team
+		{
+			if (ci->racered == 0 || ci->racered == 2 )
+				return "red";
+			else
+				return "red2";
+		}
+	}
+	else //this is a non-team gt
+	{
+		return ci->skinName;
+	}
+}
+
+
+/*
+=====================
+CG_GetPlayerModelName
+by blud
+=====================
+*/
+char *CG_GetPlayerModelName( clientInfo_t *ci ) {
+	if (cgs.gametype >= GT_TEAM)
+	{
+		if (ci->team == TEAM_BLUE)
+		{
+			if (ci->raceblue < 2)
+				return "athena";
+			else
+				return "orion";
+		}
+		else //they are on the red team
+		{
+			if (ci->racered < 2)
+				return "athena";
+			else
+				return "orion";
+		}
+		//I suppose they might be on Spectator team, but then I doubt it matters what model they get
+	}
+	else //this is a non-team gt
+	{
+		return ci->modelName;
+	}
+}
+
 
 /*
 ===============

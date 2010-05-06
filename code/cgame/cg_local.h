@@ -1804,5 +1804,7 @@ void	CG_ParticleExplosion (char *animStr, vec3_t origin, vec3_t vel, int duratio
 
 extern qboolean		initparticles;
 int CG_NewParticleArea ( int num );
-char *CG_GetClientModelName( clientInfo_t *ci );
-
+qboolean CG_SetPlayerSkinName( int team, int racered, int raceblue, char *skin );
+qboolean CG_SetPlayerModelName( int team, int racered, int raceblue, char *model );
+char *CG_GetPlayerSkinName( clientInfo_t *ci );
+char *CG_GetPlayerModelName( clientInfo_t *ci );

@@ -149,6 +149,20 @@ void CG_LoadingItem( int itemNum ) {
 /*
 ===================
 CG_LoadingClient
+
+blud note: We don't call this function anymore. But I'm leaving it here because I don't
+fully understand it and we may need it.  I'm pretty sure all it does is get the player
+icons (which vanilla Q3 shows when the map is loading) and maybe it gets the player name
+so that when the game loads it will say Loading... bob, joe, xamis, etc.  (Not sure though)
+
+If we do use it again, we'll most likely want to strip out the icon stuff (ie most of the function)
+and only leave in the name thing (if that's what it does do?). Also note there is a ton of new
+junky code in here where I was trying to determine the correct icon for the player. All that code
+is going to be obsolete and would instead call the new get and set for skinname and modelname
+
+Also, by me commenting out the only calls to this function (2 of them, which were in CG_RegisterClients),
+I seem to have fixed the game crashing when you die bug. Uh, or well at least in team mode, maybe it's just
+a coincidence.
 ===================
 */
 void CG_LoadingClient( int clientNum ) {
