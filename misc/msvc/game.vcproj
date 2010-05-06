@@ -169,7 +169,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="winmm.lib"
-				OutputFile="$(OutDir)\qagamex86.dll"
+				OutputFile="D:\games\urbanterror4.1\alturt\qagamex86.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				ModuleDefinitionFile=".\game.def"

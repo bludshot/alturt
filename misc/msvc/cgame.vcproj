@@ -170,7 +170,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="odbc32.lib odbccp32.lib"
-				OutputFile="$(OutDir)\cgamex86.dll"
+				OutputFile="D:\games\urbanterror4.1\alturt\cgamex86.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				ModuleDefinitionFile=".\cgame.def"
