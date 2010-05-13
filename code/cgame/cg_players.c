@@ -338,7 +338,7 @@ static qboolean	CG_FindClientModelFile( char *filename, int length, clientInfo_t
 	// note: in q3a there's a lot more code here. But in my code I fixed it so that this function
 	//       is always passed the correct info, and with alturt there's only 1 path possibility
 	Com_sprintf( filename, length, "models/players/%s/%s_%s.%s", modelName, base, skinName, ext );
-        CG_Printf("models/players/%s/%s_%s.%s\n", modelName, base, skinName, ext ); //xamis debugging
+        //CG_Printf("models/players/%s/%s_%s.%s\n", modelName, base, skinName, ext ); //xamis debugging
 	if ( CG_FileExists( filename ) )
 	{
 		return qtrue;
@@ -350,7 +350,7 @@ static qboolean	CG_FindClientModelFile( char *filename, int length, clientInfo_t
 			//the non-team GT skin that they asked for doesn't exist so set it to a valid one (default, which must exist)
 			Com_sprintf( filename, length, "models/players/%s/%s.%s", modelName, base, ext );
 			Com_sprintf( ci->skinName, 8, "default" );
-                        CG_Printf("models/players/%s/%s.%s", modelName, base, ext  ); //xamis debugging
+                        //CG_Printf("models/players/%s/%s.%s", modelName, base, ext  ); //xamis debugging
 			//we'll check if it exists just in case even though it pretty much must exist.
 			if ( CG_FileExists( filename ) )
 			{
@@ -470,7 +470,7 @@ static qboolean	CG_RegisterClientSkin( clientInfo_t *ci, const char *teamName, c
 
         if ( CG_FindClientModelFile( filename, sizeof(filename), ci, teamName, modelName, skinName, "vest", "skin" ) ) {
         ci->vestSkin = trap_R_RegisterSkin( filename );
-        CG_Printf( "filename for vestSkin = %s\n", filename  );
+        //CG_Printf( "filename for vestSkin = %s\n", filename  ); //xamis debug
         }
         if (!ci->vestSkin) {
           Com_Printf( "Vest skin load failure: %s\n", filename );
@@ -555,7 +555,7 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 
 
         Com_sprintf( filename, sizeof( filename ), "models/players/%s/helmet.md3", modelName );
-        CG_Printf("models/players/%s/helmet.md3\n", modelName);
+        //CG_Printf("models/players/%s/helmet.md3\n", modelName); //xamis debug
         ci->helmetModel = trap_R_RegisterModel( filename );
         if ( !ci->helmetModel ) {
           CG_Printf("!ci->helmetModel\n");
@@ -937,8 +937,6 @@ void CG_NewClientInfo( int clientNum ) {
 	const char	*configstring;
 	const char	*v;
 	int			race;
-
-	CG_Printf( "CG_NewClientInfo CHANGED RACE?" ); //blud debug
 
 	ci = &cgs.clientinfo[clientNum];
 
@@ -1635,7 +1633,7 @@ CG_HasteTrail
 void CG_HasteTrail( centity_t *cent ) {
 	localEntity_t	*smoke;
 	vec3_t			origin;
-	int				anim;
+	//int				anim;
 
 	if ( cent->trailTime > cg.time ) {
 		return;
@@ -2338,10 +2336,10 @@ void CG_Player( centity_t *cent ) {
 	int				t;
 	float			c;
 	float			angle;
-
+	vec3_t			dir, angles; //blud moved this back up here to fix error/warning
 #endif
 
-        vec3_t                  dir, angles;
+        
         qboolean                vestOn;
         qboolean                helmetOn;
         vestOn = helmetOn = qfalse;

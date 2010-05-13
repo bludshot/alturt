@@ -405,7 +405,7 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
         gclient_t       *client;
         float           xyspeed;
 #ifdef MISSIONPACK
-        int                     maxHealth;
+        //int                     maxHealth; //blud commented to stop unused var warning
 #endif
 
         client = ent->client;

@@ -565,7 +565,7 @@ static void CG_DrawStatusBar( void ) {
 	vec3_t		angles;
         char *w;
         gitem_t                 *item;
-	float speedo_speed; //blud
+	//float speedo_speed; //blud
 	int currentSpeedXY; //blud
 	int currentSpeedXYZ; //blud
 	vec3_t speedo_vel; //blud
@@ -578,6 +578,10 @@ static void CG_DrawStatusBar( void ) {
 		{ 1.0f, 0.2f, 0.2f, 1.0f },     // low health
 		{ 0.5f, 0.5f, 0.5f, 1.0f },     // weapon firing
 		{ 1.0f, 1.0f, 1.0f, 1.0f } };   // health > 100
+
+	//blud setting these default values to fix warning because otherwise these vars are only set inside if's below
+	color = 2;
+	w = "Pickup"; //I barely know what w is used for, I'm assuming it says like "You just picked up w" (ie: Laser?)
 
 	if ( cg_drawStatus.integer == 0 ) {
 		return;
@@ -764,6 +768,7 @@ static void CG_DrawStatusBar( void ) {
                ||cg.predictedPlayerState.weapon == WP_SMOKE
                || BG_Sidearm(cg.predictedPlayerState.weapon))){
           char *s;
+		  s = "Default"; //added by blud to stop possibly uninitialized warning.
 
           if ( value == 0 ){
             s = "Burst";
@@ -1557,13 +1562,19 @@ static float CG_DrawScores( float y ) {
 	float		y1;
 	gitem_t		*item;
 
-        int i, j, len;
-        const char *p;
-        vec4_t          hcolor;
-        int pwidth, lwidth;
-        int ret_y, count;
+        int i, len;
+		//int j;			//blud I commented out a lot of these to get rid of warnings since they are currently unused.
+        //const char *p;
+        //vec4_t          hcolor;
+        int pwidth;
+        //int lwidth;
+        //int ret_y;
+        int count;
         int plyrs;
         clientInfo_t *ci;
+
+		plyrs = 0; //blud added this to stop a warning... I have no idea how xamis's plyrs++ (below) behaved before without it being initialized hehe...
+		pwidth = 0; //this also wasn't initialized before...
 
         s1 = cgs.scores1;
 	s2 = cgs.scores2;

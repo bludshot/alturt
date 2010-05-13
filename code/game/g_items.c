@@ -967,7 +967,7 @@ Spawns an item and tosses it forward
 gentity_t *Drop_Item( gentity_t *ent, gitem_t *item, float angle ) {
         vec3_t  velocity;
         vec3_t  angles;
-        int i;
+        //int i;
 
         VectorCopy( ent->s.apos.trBase, angles );
         angles[YAW] += angle;

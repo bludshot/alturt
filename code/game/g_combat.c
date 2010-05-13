@@ -284,9 +284,9 @@ void TossClientItems( gentity_t *self ) {
         int                     weapon1;
         int                     weapon2;
         int                     weapon3;
-	float		angle;
+	//float		angle;
 	int			i;
-	gentity_t	*drop;
+	//gentity_t	*drop;
         int ammo = 0;
 
 	//drop the weapon if not a gauntlet or machinegun
@@ -345,6 +345,7 @@ void TossClientItems( gentity_t *self ) {
           Drop_Weapon(self, item3, random()*360, ammo, 25, -25 );
         }
      //   G_Printf("%i rounds of ammo dropped\n", ammo);
+		//blud note: I commented out unused vars for this block at top of function.
 	// drop all the powerups if not in teamplay
         /*
 	if ( g_gametype.integer != GT_TEAM ) {
@@ -1104,7 +1105,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
         float               through_vest = 1;
 
 #ifdef MISSIONPACK
-	vec3_t		bouncedir, impactpoint;
+	//vec3_t		bouncedir, impactpoint; //blud commented out to stop unused variable warning
 #endif
 
 	if (!targ->takedamage) {

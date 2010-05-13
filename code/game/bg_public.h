@@ -31,7 +31,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //but why would we want to do that? That seems like something you'd want to do for
 //when making a full game and have your mod be like the same folder as your base game
 //so it's not what we want to do in alturt. Instead we do:
-#define GAME_VERSION            "alturt-alpha" //make this "alturt-01" for first actual release.
+#define GAME_VERSION            "alturt-alpha0001"
+//version plan is: alturt-alpha0001, alturt-alpha0002, etc, alturt-beta001, alturt-beta002, etc,
+//alturt-01, (alturt-011), alturt-02, etc, alturt-09, alturt-10, alturt-11, etc.
+//ie: you need the leading 0 so that version 1 and version 10 can be differentiated.
 
 #define DEFAULT_GRAVITY         800
 #define GIB_HEALTH                      -40

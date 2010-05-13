@@ -178,8 +178,6 @@ void CG_LoadingClient( int clientNum ) {
 	const char		*v; //blud
 	char			skinToUseForIcon[MAX_QPATH]; //blud
 
-	CG_Printf( "CG_LoadingClient CHANGED RACE?" ); //blud debug
-
 	info = CG_ConfigString( CS_PLAYERS + clientNum );
 
 	if ( loadingPlayerIconCount < MAX_LOADING_PLAYER_ICONS ) {

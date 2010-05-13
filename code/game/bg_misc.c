@@ -1155,7 +1155,7 @@ This needs to be the same for client side prediction and server use.
 */
 qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const playerState_t *ps ) {
         gitem_t *item;
-int i;
+//int i;
 
         if ( ent->modelindex < 1 || ent->modelindex >= bg_numItems ) {
           Com_Error( ERR_DROP, "BG_CanItemBeGrabbed: index %i out of range", ent->modelindex );
