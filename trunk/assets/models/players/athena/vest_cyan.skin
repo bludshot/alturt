@@ -1,0 +1,6 @@
+tag_head,
+tag_weapon,
+g_arml,models/players/athena/arms_cyan.tga
+g_armr,models/players/athena/arms_cyan.tga
+g_vesttorso,models/players/athena/vest_cyan.tga
+tag_torso,

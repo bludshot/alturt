@@ -1,0 +1,6 @@
+tag_head,
+tag_weapon,
+g_arml,models/players/orion/arms_purple.tga
+g_armr,models/players/orion/arms_purple.tga
+g_vesttorso,models/players/orion/vest_purple.tga
+tag_torso,
