@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 // q_shared.h -- included first by ALL program modules.
 // A user mod should never modify this file
-#define XAMISDB
+
 #ifdef STANDALONE
   #define PRODUCT_NAME			"iofoo3"
   #define BASEGAME			"foobar"
@@ -34,9 +34,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   #define GAMENAME_FOR_MASTER		"iofoo3"	// must NOT contain whitespaces
 #else
   #define PRODUCT_NAME			"ioq3"
-  #define BASEGAME			"q3ut4"
-  #define CLIENT_WINDOW_TITLE     	"AQ3"
-#define CLIENT_WINDOW_MIN_TITLE 	"AQ3"
+  #define BASEGAME			"baseq3"
+  #define CLIENT_WINDOW_TITLE     	"ioquake3"
+  #define CLIENT_WINDOW_MIN_TITLE 	"ioq3"
   #define GAMENAME_FOR_MASTER		"Quake3Arena"
 #endif
 
@@ -896,7 +896,6 @@ typedef struct {
 	int			surfaceFlags;	// surface hit
 	int			contents;	// contents on other side of surface hit
 	int			entityNum;	// entity the contacted sirface is a part of
-	int		surfFlags;
 } trace_t;
 
 // trace->entityNum can also be 0 to (MAX_GENTITIES-1)
@@ -1096,18 +1095,17 @@ typedef struct playerState_s {
 #define	BUTTON_ATTACK		1
 #define	BUTTON_TALK			2			// displays talk balloon and disables actions
 #define	BUTTON_USE_HOLDABLE	4
-#define	BUTTON_WP_MODE		8
+#define	BUTTON_GESTURE		8
 #define	BUTTON_WALKING		16			// walking can't just be infered from MOVE_RUN
 										// because a key pressed late in the frame will
 										// only generate a small move value for that frame
 										// walking will use different animations and
 										// won't generate footsteps
-#define BUTTON_AFFIRMATIVE	64
-#define	BUTTON_RELOAD		32
+#define BUTTON_AFFIRMATIVE	32
+#define	BUTTON_NEGATIVE		64
 
-#define BUTTON_GETFLAG		16384
-#define	BUTTON_USE		128
-#define BUTTON_SPRINTING	256 // Xamis, moved to match urt configuration
+#define BUTTON_GETFLAG		128
+#define BUTTON_GUARDBASE	256
 #define BUTTON_PATROL		512
 #define BUTTON_FOLLOWME		1024
 
@@ -1115,9 +1113,6 @@ typedef struct playerState_s {
 
 #define	MOVE_RUN			120			// if forwardmove or rightmove are >= MOVE_RUN,
 										// then BUTTON_WALKING should be set
-
-#define	BUTTON_GUARDBASE		4096			// Xamis
-#define BUTTON_GESTURE			8192
 
 // usercmd_t is sent to the server each client frame
 typedef struct usercmd_s {
