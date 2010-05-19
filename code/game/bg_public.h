@@ -40,16 +40,19 @@ along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
 
 #define XAMISDB //blud: I moved this from q_shared.h
 
-//blud copying standard q3 button values into new names for Alturt
-//and then changing some to new values
-//the standard q3 button values are defined in q_shared.h
-#define BUTTON_WP_MODE		BUTTON_GESTURE
-#define BUTTON_RELOAD		BUTTON_AFFIRMATIVE
-#define BUTTON_USE			BUTTON_GETFLAG
-#define BUTTON_SPRINTING	BUTTON_GUARDBASE
+//blud: defining new Alturt buttons and re-defining old q3 buttons to new values
+//for Alturt. (note: the old q3 buttons are defined in qcommon/q_shared.h, but 
+//everywhere in cgame and game that q_shared.h is included, bg_public.h is included 
+//after it so these defines will override the old ones) [and we're supposed to do this
+//here, not in qcommon/q_shared.h since that's not part of the mod code, it's part of 
+//the engine code basically.
+#define BUTTON_WP_MODE		8
+#define BUTTON_RELOAD		32
+#define BUTTON_USE			128
+#define BUTTON_SPRINTING	256
 
 #undef	BUTTON_AFFIRMATIVE
-#define BUTTON_AFFIRMATIVE	BUTTON_NEGATIVE
+#define BUTTON_AFFIRMATIVE	64
 
 #undef	BUTTON_GUARDBASE
 #define BUTTON_GUARDBASE	4096
