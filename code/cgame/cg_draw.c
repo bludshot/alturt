@@ -127,7 +127,7 @@ int CG_Text_Height(const char *text, float scale, int limit) {
 
 void CG_Text_PaintChar(float x, float y, float width, float height, float scale, float s, float t, float s2, float t2, qhandle_t hShader) {
   float w, h;
-  w = width * scale;
+   w = width * scale;
   h = height * scale;
   CG_AdjustFrom640( &x, &y, &w, &h );
   trap_R_DrawStretchPic( x, y, w, h, s, t, s2, t2, hShader );
@@ -2641,8 +2641,9 @@ static void CG_DrawCrosshairNames( void ) {
 	float		*color;
 	char		*name;
 	float		w;
+                  char                             *teamstat;    //Xamis
 
-	if ( !cg_drawCrosshair.integer ) {
+ 	if ( !cg_drawCrosshair.integer ) {
 		return;
 	}
 	if ( !cg_drawCrosshairNames.integer ) {
@@ -2656,7 +2657,7 @@ static void CG_DrawCrosshairNames( void ) {
 	CG_ScanForCrosshairEntity();
 
 	// draw the name of the player being looked at
-	color = CG_FadeColor( cg.crosshairClientTime, 1000 );
+	color = CG_FadeColor( cg.crosshairClientTime, 100 );
 	if ( !color ) {
 		trap_R_SetColor( NULL );
 		return;
@@ -2670,6 +2671,15 @@ static void CG_DrawCrosshairNames( void ) {
 #else
 	w = CG_DrawStrlen( name ) * BIGCHAR_WIDTH;
 	CG_DrawBigString( 320 - w / 2, 170, name, color[3] * 0.5f );
+        
+        //team info Xamis
+                if (cgs.clientinfo[cg.crosshairClientNum].health){
+                 teamstat = va("Health: %i Armor: %i",
+ 	cgs.clientinfo[ cg.crosshairClientNum ].health,
+ 	cgs.clientinfo[ cg.crosshairClientNum ].armor);
+                w = CG_DrawStrlen( teamstat ) * SMALLCHAR_WIDTH;
+                CG_DrawSmallString( 320 - w / 2, 190, teamstat, color[3] * 0.5 );
+ }
 #endif
 	trap_R_SetColor( NULL );
 }
