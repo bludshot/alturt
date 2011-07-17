@@ -2669,16 +2669,16 @@ static void CG_DrawCrosshairNames( void ) {
 	w = CG_Text_Width(name, 0.3f, 0);
 	CG_Text_Paint( 320 - w / 2, 190, 0.3f, color, name, 0, 0, ITEM_TEXTSTYLE_SHADOWED);
 #else
-	w = CG_DrawStrlen( name ) * BIGCHAR_WIDTH;
-	CG_DrawBigString( 320 - w / 2, 170, name, color[3] * 0.5f );
+
         
         //team info Xamis
                 if (cgs.clientinfo[cg.crosshairClientNum].health){
-                 teamstat = va("Health: %i Armor: %i",
- 	cgs.clientinfo[ cg.crosshairClientNum ].health,
- 	cgs.clientinfo[ cg.crosshairClientNum ].armor);
+                 teamstat = va("Health: %i ",
+ 	cgs.clientinfo[ cg.crosshairClientNum ].health);
                 w = CG_DrawStrlen( teamstat ) * SMALLCHAR_WIDTH;
                 CG_DrawSmallString( 320 - w / 2, 190, teamstat, color[3] * 0.5 );
+                	w = CG_DrawStrlen( name ) * BIGCHAR_WIDTH;
+	CG_DrawBigString( 320 - w / 2, 170, name, color[3] * 0.5f );
  }
 #endif
 	trap_R_SetColor( NULL );
