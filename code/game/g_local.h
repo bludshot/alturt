@@ -359,7 +359,7 @@ struct gclient_s {
 
 	qboolean	fireHeld;			// used for hook
 	gentity_t	*hook;				// grapple hook if out
-                  gentity_t       *lasersight;                                    //Xamis   lasersight
+
 
 	int			switchTeamTime;		// time the player switched teams
 
@@ -627,8 +627,7 @@ void SnapVectorTowards( vec3_t v, vec3_t to );
 qboolean CheckGauntletAttack( gentity_t *ent );
 void Weapon_HookFree (gentity_t *ent);
 void Weapon_HookThink (gentity_t *ent);
-void Laser_Gen (gentity_t *ent, int type);  //Xamis for laser sight
-void Laser_Think( gentity_t *self );  //Xamis for laser sight
+
 
 //
 // g_client.c

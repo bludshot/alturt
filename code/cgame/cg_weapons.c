@@ -1034,6 +1034,112 @@ static void CG_AddWeaponWithPowerups( refEntity_t *gun, int powerups ) {
 } */
 
 }
+/*
+===============
+CG_Tracer
+===============
+*/
+void CG_Tracer( vec3_t source, vec3_t dest, float width, qhandle_t shader, vec4_t rgba ) {
+    vec3_t		forward, right;
+    polyVert_t	verts[4];
+    vec3_t		line;
+    float		len, begin, end;
+    vec3_t		start, finish;
+    //	vec3_t		midpoint;
+
+    // tracer
+    VectorSubtract( dest, source, forward );
+    len = VectorNormalize( forward );
+
+    // start at least a little ways from the muzzle
+    // begin = width * -0.5;
+    begin = width * -0.5; // put 1 meter in front of the attacker
+    end = len + width * 0.5;
+
+    VectorMA( source, begin, forward, start );
+    VectorMA( source, end, forward, finish );
+    line[0] = DotProduct( forward, cg.refdef.viewaxis[1] );
+    line[1] = DotProduct( forward, cg.refdef.viewaxis[2] );
+
+    VectorScale( cg.refdef.viewaxis[1], line[1], right );
+    VectorMA( right, -line[0], cg.refdef.viewaxis[2], right );
+    VectorNormalize( right );
+
+    VectorMA( finish, width, right, verts[0].xyz );
+    verts[0].st[0] = 0;
+    verts[0].st[1] = 1;
+    verts[0].modulate[0] = 255 * rgba[0];
+    verts[0].modulate[1] = 255 * rgba[1];
+    verts[0].modulate[2] = 255 * rgba[2];
+    verts[0].modulate[3] = 255 * rgba[3];
+
+    VectorMA( finish, -width, right, verts[1].xyz );
+    verts[1].st[0] = 1;
+    verts[1].st[1] = 1;
+    verts[1].modulate[0] = 255 * rgba[0];
+    verts[1].modulate[1] = 255 * rgba[1];
+    verts[1].modulate[2] = 255 * rgba[2];
+    verts[1].modulate[3] = 255 * rgba[3];
+
+    VectorMA( start, -width, right, verts[2].xyz );
+    verts[2].st[0] = 1;
+    verts[2].st[1] = 0;
+    verts[2].modulate[0] = 255 * rgba[0];
+    verts[2].modulate[1] = 255 * rgba[1];
+    verts[2].modulate[2] = 255 * rgba[2];
+    verts[2].modulate[3] = 255 * rgba[3];
+
+    VectorMA( start, width, right, verts[3].xyz );
+    verts[3].st[0] = 0;
+    verts[3].st[1] = 0;
+    verts[3].modulate[0] = 255 * rgba[0];
+    verts[3].modulate[1] = 255 * rgba[1];
+    verts[3].modulate[2] = 255 * rgba[2];
+    verts[3].modulate[3] = 255 * rgba[3];
+
+    trap_R_AddPolyToScene( shader, 4, verts );
+
+}
+
+
+/*
+======================
+CG_CalcMuzzlePoint
+======================
+*/
+static qboolean CG_CalcMuzzlePoint( int entityNum, vec3_t muzzle ) {
+        vec3_t          forward;
+        centity_t       *cent;
+        int                     anim;
+
+        if ( entityNum == cg.snap->ps.clientNum ) {
+                VectorCopy( cg.snap->ps.origin, muzzle );
+                muzzle[2] += cg.snap->ps.viewheight;
+                AngleVectors( cg.snap->ps.viewangles, forward, NULL, NULL );
+                VectorMA( muzzle, 14, forward, muzzle );
+                return qtrue;
+        }
+
+        cent = &cg_entities[entityNum];
+        if ( !cent->currentValid ) {
+                return qfalse;
+        }
+
+        VectorCopy( cent->currentState.pos.trBase, muzzle );
+
+        AngleVectors( cent->currentState.apos.trBase, forward, NULL, NULL );
+        anim = cent->currentState.legsAnim & ~ANIM_TOGGLEBIT;
+        if ( anim == LEGS_WALKCR || anim == LEGS_IDLECR ) {
+                muzzle[2] += CROUCH_VIEWHEIGHT;
+        } else {
+                muzzle[2] += DEFAULT_VIEWHEIGHT;
+        }
+
+        VectorMA( muzzle, 14, forward, muzzle );
+
+        return qtrue;
+
+}
 
 
 /*
@@ -1107,6 +1213,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 
 	if ( powerups & ( 1 << PW_LASERSIGHT ) )
 		lasersight = qtrue;
+  
 
 	if ( powerups & ( 1 << PW_VEST ) )
 		vestOn = qtrue;
@@ -1324,6 +1431,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
         if ( ps && weapon->laserModel && weaponNum != WP_KNIFE && weaponNum != WP_HK69
              && weaponNum != WP_SPAS && weaponNum != WP_HE && weaponNum != WP_SR8
              && weaponNum != WP_AK103 && weaponNum != WP_NEGEV && weaponNum != WP_SMOKE && lasersight) {
+            
 
                 memset( &laser, 0, sizeof( laser ) );
                 VectorCopy( parent->lightingOrigin, laser.lightingOrigin );
@@ -1336,7 +1444,85 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 
                 AnglesToAxis( angles, laser.axis );
                 CG_PositionRotatedEntityOnTag( &laser, &gun, weapon->holdsModel , "tag_laser" );
+    {
 
+        vec3_t forward;
+        trace_t		trace;
+        vec3_t			muzzlePoint, endPoint;
+        refEntity_t		beam;
+        qhandle_t laser;
+        int	rf;
+
+        memset( &beam, 0, sizeof( beam ) );
+        memset( &flash, 0, sizeof( flash ) );
+
+
+        CG_PositionRotatedEntityOnTag( &flash, &gun, weapon->holdsModel , "tag_laser");
+        // find muzzle point for this frame
+        VectorCopy ( flash.origin,muzzlePoint );
+
+        AngleVectors( cent->currentState.apos.trBase , forward, NULL, NULL );
+
+        // project forward by the lightning range
+        VectorMA( cent->currentState.pos.trBase , LIGHTNING_RANGE, forward, endPoint );
+
+        { 
+            int anim;
+
+            anim = cent->currentState.legsAnim & ~ANIM_TOGGLEBIT;
+
+            if ( anim == LEGS_WALKCR  || anim == LEGS_BACKCR || anim == LEGS_IDLECR )
+                endPoint[2] += CROUCH_VIEWHEIGHT;
+            else
+                endPoint[2] += DEFAULT_VIEWHEIGHT;
+        }
+
+        laser = trap_R_RegisterShader( "laserShader" );
+        // see if it hit a wall
+        CG_Trace( &trace, muzzlePoint, vec3_origin, vec3_origin, endPoint,
+                  cent->currentState.number, MASK_SHOT );
+
+        VectorCopy( trace.endpos , endPoint );
+
+   //     if ( cent->currentState.number == cg.snap->ps.clientNum && !cg.renderingThirdPerson ) {
+ //           rf = RF_THIRD_PERSON;		// only show in mirrors
+  //      } else {
+            rf = 0;
+    //    }
+
+        if (! (CG_PointContents( muzzlePoint, cent->currentState.number ) & CONTENTS_SOLID) &&
+                !trace.startsolid )
+        {
+      //      if ( !rf) {
+                vec4_t rgba;
+
+                rgba[0] = rgba[1] = rgba[2] = 1;
+                rgba[3] = 0.6f;
+
+                CG_Tracer( muzzlePoint, endPoint, 0.1f, laser , rgba );
+    //        }
+
+            // add the impact flare if it hit something
+            if ( trace.fraction < 1.0 ) {
+                vec3_t	angles;
+
+
+                beam.customShader = cgs.media.laserShader;
+                beam.reType = RT_SPRITE;
+                beam.radius = 0.5;
+
+                beam.renderfx = rf;
+                VectorMA( trace.endpos, -0.4, forward, beam.origin );
+
+                // make a random orientation
+                angles[0] = rand() % 360;
+                angles[1] = rand() % 360;
+                angles[2] = rand() % 360;
+                AnglesToAxis( angles, beam.axis );
+                trap_R_AddRefEntityToScene( &beam );
+            }
+        }
+    }
 
                 CG_AddWeaponWithPowerups( &laser, cent->currentState.powerups );
         }
@@ -2956,124 +3142,6 @@ BULLETS
 */
 
 
-/*
-===============
-CG_Tracer
-===============
-*/
-void CG_Tracer( vec3_t source, vec3_t dest ) {
-        vec3_t          forward, right;
-        polyVert_t      verts[4];
-        vec3_t          line;
-        float           len, begin, end;
-        vec3_t          start, finish;
-        vec3_t          midpoint;
-
-        // tracer
-        VectorSubtract( dest, source, forward );
-        len = VectorNormalize( forward );
-
-        // start at least a little ways from the muzzle
-        if ( len < 100 ) {
-                return;
-        }
-        begin = 50 + random() * (len - 60);
-        end = begin + cg_tracerLength.value;
-        if ( end > len ) {
-                end = len;
-        }
-        VectorMA( source, begin, forward, start );
-        VectorMA( source, end, forward, finish );
-
-        line[0] = DotProduct( forward, cg.refdef.viewaxis[1] );
-        line[1] = DotProduct( forward, cg.refdef.viewaxis[2] );
-
-        VectorScale( cg.refdef.viewaxis[1], line[1], right );
-        VectorMA( right, -line[0], cg.refdef.viewaxis[2], right );
-        VectorNormalize( right );
-
-        VectorMA( finish, cg_tracerWidth.value, right, verts[0].xyz );
-        verts[0].st[0] = 0;
-        verts[0].st[1] = 1;
-        verts[0].modulate[0] = 255;
-        verts[0].modulate[1] = 255;
-        verts[0].modulate[2] = 255;
-        verts[0].modulate[3] = 255;
-
-        VectorMA( finish, -cg_tracerWidth.value, right, verts[1].xyz );
-        verts[1].st[0] = 1;
-        verts[1].st[1] = 0;
-        verts[1].modulate[0] = 255;
-        verts[1].modulate[1] = 255;
-        verts[1].modulate[2] = 255;
-        verts[1].modulate[3] = 255;
-
-        VectorMA( start, -cg_tracerWidth.value, right, verts[2].xyz );
-        verts[2].st[0] = 1;
-        verts[2].st[1] = 1;
-        verts[2].modulate[0] = 255;
-        verts[2].modulate[1] = 255;
-        verts[2].modulate[2] = 255;
-        verts[2].modulate[3] = 255;
-
-        VectorMA( start, cg_tracerWidth.value, right, verts[3].xyz );
-        verts[3].st[0] = 0;
-        verts[3].st[1] = 0;
-        verts[3].modulate[0] = 255;
-        verts[3].modulate[1] = 255;
-        verts[3].modulate[2] = 255;
-        verts[3].modulate[3] = 255;
-
-        trap_R_AddPolyToScene( cgs.media.tracerShader, 4, verts );
-
-        midpoint[0] = ( start[0] + finish[0] ) * 0.5;
-        midpoint[1] = ( start[1] + finish[1] ) * 0.5;
-        midpoint[2] = ( start[2] + finish[2] ) * 0.5;
-
-        // add the tracer sound
-        trap_S_StartSound( midpoint, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.tracerSound );
-
-}
-
-
-/*
-======================
-CG_CalcMuzzlePoint
-======================
-*/
-static qboolean CG_CalcMuzzlePoint( int entityNum, vec3_t muzzle ) {
-        vec3_t          forward;
-        centity_t       *cent;
-        int                     anim;
-
-        if ( entityNum == cg.snap->ps.clientNum ) {
-                VectorCopy( cg.snap->ps.origin, muzzle );
-                muzzle[2] += cg.snap->ps.viewheight;
-                AngleVectors( cg.snap->ps.viewangles, forward, NULL, NULL );
-                VectorMA( muzzle, 14, forward, muzzle );
-                return qtrue;
-        }
-
-        cent = &cg_entities[entityNum];
-        if ( !cent->currentValid ) {
-                return qfalse;
-        }
-
-        VectorCopy( cent->currentState.pos.trBase, muzzle );
-
-        AngleVectors( cent->currentState.apos.trBase, forward, NULL, NULL );
-        anim = cent->currentState.legsAnim & ~ANIM_TOGGLEBIT;
-        if ( anim == LEGS_WALKCR || anim == LEGS_IDLECR ) {
-                muzzle[2] += CROUCH_VIEWHEIGHT;
-        } else {
-                muzzle[2] += DEFAULT_VIEWHEIGHT;
-        }
-
-        VectorMA( muzzle, 14, forward, muzzle );
-
-        return qtrue;
-
-}
 
 /*
 ======================
@@ -3111,7 +3179,7 @@ void CG_Bullet( vec3_t end, int sourceEntityNum, vec3_t normal, qboolean flesh, 
 
                         // draw a tracer
                         if ( random() < cg_tracerChance.value ) {
-                                CG_Tracer( start, end );
+//                                CG_Tracer( start, end );
                         }
                 }
         }
