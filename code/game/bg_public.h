@@ -854,7 +854,7 @@ typedef enum {
         ET_BREAKABLE,                   //XAMIS
         ET_WALL,                                //XAMIS
         ET_DOOR,                                //XAMIS
-
+        ET_LASER,                               //XAMIS lasersight 
         ET_EVENTS                               // any of the EV_* events can be added freestanding
                                                         // by setting eType to ET_EVENTS + eventNum
                                                         // this avoids having to set eFlags and eventNum

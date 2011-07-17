@@ -26,6 +26,9 @@ along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "cg_local.h"
 
+
+static void CG_LaserSight( centity_t *cent );
+
 /* [QUARANTINE] - CG_PositionWeaponOnTag
 ======================
 CG_PositionWeaponOnTag
@@ -1012,6 +1015,9 @@ static void CG_AddCEntity( centity_t *cent ) {
         case ET_SPEAKER:
                 CG_Speaker( cent );
                 break;
+        case ET_LASER:   //Xamis lasersight
+                CG_LaserSight( cent );
+                break;
         case ET_GRAPPLE:
                 CG_Grapple( cent );
                 break;
@@ -1074,3 +1080,26 @@ void CG_AddPacketEntities( void ) {
         }
 }
 
+/*
+==================
+CG_LaserSight
+ * Xamis
+==================
+*/
+
+static void CG_LaserSight( centity_t *cent )  {
+        refEntity_t                     ent;
+
+
+        // render the entity
+        memset (&ent, 0, sizeof(ent));
+        VectorCopy( cent->lerpOrigin, ent.origin);
+        VectorCopy( cent->lerpOrigin, ent.oldorigin);
+
+                ent.reType = RT_SPRITE;
+                ent.radius = 2;
+                ent.rotation = 0;
+                ent.customShader = cgs.media.laserShader;
+                trap_R_AddRefEntityToScene( &ent );
+       
+}

@@ -895,6 +895,7 @@ static void CG_RegisterGraphics( void ) {
 	for ( i = 0 ; i < NUM_CROSSHAIRS ; i++ ) {
 		cgs.media.crosshairShader[i] = trap_R_RegisterShader( va("gfx/2d/crosshair%c", 'a'+i) );
 	}
+                  cgs.media.laserShader = trap_R_RegisterShader( "gfx/laser/red" );  //Xamis lasersight
         CG_LoadingBarUpdate(10);
 	cgs.media.backTileShader = trap_R_RegisterShader( "gfx/2d/backtile" );
 	cgs.media.noammoShader = trap_R_RegisterShader( "icons/noammo" );

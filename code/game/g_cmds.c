@@ -1697,6 +1697,8 @@ void ClientCommand( int clientNum ) {
                 Cmd_GameCommand_f( ent );
         else if (Q_stricmp (cmd, "setviewpos") == 0)
                 Cmd_SetViewpos_f( ent );
+        else if (Q_stricmp (cmd, "laser") == 0)
+                Laser_Gen( ent, 1 );//Xamis laser testing REMOVE!!!
 		//bludshot AGPL compliance (later lets grab the url from a constant we can also use elsewhere) and also grab 'this mod' from game_version
 		else if (Q_stricmp (cmd, "sourceurl") == 0)
 			trap_SendServerCommand( clientNum, va("print \"You can download the source code for this mod at http://sourceforge.net/projects/alturt/ \n\"") );
