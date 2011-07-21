@@ -1164,6 +1164,11 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
         }
 
         item = &bg_itemlist[ent->modelindex];
+        
+Com_Printf("!(BG_HasSidearm ( ps ) = %i \n", !(BG_HasSidearm ( ps ) ));
+Com_Printf("bg_inventory.sort[ps->clientNum][SIDEARM] = %i & \t", bg_inventory.sort[ps->clientNum][SIDEARM]);
+Com_Printf("item->giTag = %d\n", item->giTag );
+Com_Printf("BG_Sidearm( item->giTag )  = %i\n", BG_Sidearm( item->giTag ) );
 
         switch( item->giType ) {
         case IT_WEAPON:
@@ -1172,19 +1177,20 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
           if( ps->weaponTime > 0)
             return qfalse;
             if ( BG_Sidearm( item->giTag )  ){
-            if (bg_inventory.sort[ps->clientNum][SIDEARM] == item->giTag
-                || !(bg_inventory.sort[ps->clientNum][SIDEARM]))
-              return qtrue; //can only have 1 sidearm
+                if (bg_inventory.sort[ps->clientNum][SIDEARM] == item->giTag)                                                    
+             return qtrue; //can only have 1 sidearm
+                 if (bg_inventory.sort[ps->clientNum][SIDEARM])
+                  return qfalse;   
             }else if ( BG_Primary ( item->giTag )  ){
               if (bg_inventory.sort[ps->clientNum][PRIMARY] == item->giTag
                   )
-                return qtrue; //can only have 1 sidearm
+                return qtrue; //can only have 1 primary
               if (bg_inventory.sort[ps->clientNum][PRIMARY])
                 return qfalse;
             }else if ( BG_Secondary( item->giTag )  ){
               if (bg_inventory.sort[ps->clientNum][SECONDARY] == item->giTag
                   || !(bg_inventory.sort[ps->clientNum][SECONDARY]))
-                return qtrue; //can only have 1 sidearm
+                return qtrue; //can only have 1 secondary
             }else if ( BG_Grenade(item->giTag) ) {
               if (  bg_weaponlist[item->giTag].numClips[ ps->clientNum] < 2 )
                    // return qtrue;
@@ -1771,6 +1777,7 @@ void BG_SelectItem( int item, int stats[ ] )
 void BG_PackWeapon( int weapon, int stats[ ] )
 {
   unsigned int  weaponList;
+  
     // create one big list with from our 2
   weaponList = (unsigned int)stats[ STAT_WEAPONS ] | ((unsigned int)stats[ STAT_WEAPONS_EXT ] << 16 );
     // add that bit to our "bigger list"
@@ -1834,10 +1841,9 @@ BG_HasPistol
 */
 
 qboolean BG_HasSidearm (const  playerState_t *ps ) {
-    if (BG_HasWeapon(WP_DEAGLE , (int*)ps->stats ) )
-        return qtrue;
-    if (BG_HasWeapon(WP_BERETTA , (int*)ps->stats ) )
-        return qtrue;
+    if (BG_HasWeapon(WP_DEAGLE , (int*)ps->stats ) ||     
+    BG_HasWeapon(WP_BERETTA , (int*)ps->stats ) )
+     return qtrue;
 
     return qfalse;
 }
