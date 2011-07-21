@@ -1798,7 +1798,7 @@ static void PM_FinishWeaponChange( void ) {
           return;
         }
 
-
+        pm->ps->pm_flags &= ~PMF_GRENADE_ARMED;
         pm->ps->weapon = weapon;
         pm->ps->weaponstate = WEAPON_RAISING;
         pm->ps->weaponTime += 250;
@@ -1998,10 +1998,10 @@ static int PM_WeaponTime( int weapon )
                         addTime = 150;
                         break;
                 case WP_DEAGLE:
-                        addTime = 0;
+                        addTime = 200;
                         break;
                 case WP_BERETTA:
-                        addTime = 0;
+                        addTime = 120;
                         break;
                 case WP_NEGEV:
                 case WP_AK103:
@@ -2280,6 +2280,8 @@ static void PM_Weapon( void ) {
                                 || pm->ps->weapon == WP_BERETTA
                                 || pm->ps->weapon == WP_PSG1
                                 || pm->ps->weapon == WP_SR8
+                                || pm->ps->weapon == WP_KNIFE
+                                || pm->ps->weapon == WP_HK69
                                 || BG_Grenade(pm->ps->weapon))
                                   {
                                           pm->ps->pm_flags |= PMF_SINGLE_SHOT;
