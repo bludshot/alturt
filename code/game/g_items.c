@@ -277,39 +277,26 @@ int Pickup_Weapon (gentity_t *ent, gentity_t *other) {
                 } else {
                         quantity = ent->item->quantity;
                 }
-
-                // dropped items and teamplay weapons always have full ammo
-                if ( ! (ent->flags & FL_DROPPED_ITEM) && g_gametype.integer != GT_TEAM ) {
-                        // respawning rules
-                        // drop the quantity if the already have over the minimum
-                        /*if ( other->client->ps.ammo[ ent->item->giTag ] < quantity ) {
-                                quantity = quantity - other->client->ps.ammo[ ent->item->giTag ];
-                        } else {
-                                quantity = 1;           // only add a single shot
-                        }*/
-                }
         }
 
         // add the weapon
         //other->client->ps.stats[STAT_WEAPONS] |= ( 1 << ent->item->giTag );
         BG_PackWeapon( ent->item->giTag, other->client->ps.stats );
-        /*Add_Ammo( other, ent->item->giTag, quantity );*/
+	
+	if (BG_Sidearm(ent->item->giTag)){
+		other->client->pers.inventory[SIDEARM]= ent->item->giTag;
+                                   bg_inventory.sort[other->client->ps.clientNum][SIDEARM] = ent->item->giTag;
+        }
+	if ( BG_Secondary(ent->item->giTag)){
+		other->client->pers.inventory[SECONDARY]= ent->item->giTag;
+                                    bg_inventory.sort[other->client->ps.clientNum][SECONDARY] = ent->item->giTag;
+}
+	if ( BG_Primary(ent->item->giTag)){
+                                  other->client->pers.inventory[PRIMARY]= ent->item->giTag;
+                                  bg_inventory.sort[other->client->ps.clientNum][PRIMARY] = ent->item->giTag;
+        }
 
-        //rounds =   quantity % RoundCount(ent->item->giTag);
-      //  clips =    quantity / RoundCount(ent->item->giTag);
-      //  if (rounds == 0 && clips > 0 ){
-      //    rounds =   RoundCount(ent->item->giTag);
-       //   clips--;
-      //  }
-        //Must add clipcount!!! Xamis
-    //    quantity = RoundCount(ent->item->giTag);
-    //    if (bg_weaponlist[ent->item->giTag].rounds[ other->client->ps.clientNum] > 0 )
           Add_Ammo( other, ent->item->giTag, ( quantity ));
-          G_Printf("quantity = %i\n", quantity );
-     //   else
-     //     bg_weaponlist[ent->item->giTag].rounds[ other->client->ps.clientNum] = quantity;
-
-
 
 //      if (ent->item->giTag == WP_GRAPPLING_HOOK)
 //              other->client->ps.ammo[ent->item->giTag] = -1; // unlimited ammo
@@ -474,7 +461,7 @@ void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
         // call the item-specific pickup function
         switch( ent->item->giType ) {
         case IT_WEAPON:
-                respawn = Pickup_Weapon(ent, other);
+              respawn = Pickup_Weapon(ent, other);
               predict = qfalse;
                 break;
         case IT_AMMO:
