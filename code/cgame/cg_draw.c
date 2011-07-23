@@ -768,11 +768,17 @@ static void CG_DrawStatusBar( void ) {
         value = ps->stats[STAT_MODE];
         if (!( cg.predictedPlayerState.weapon == WP_HE
                ||cg.predictedPlayerState.weapon == WP_SMOKE
+	       ||cg.predictedPlayerState.weapon == WP_NEGEV
+	       ||cg.predictedPlayerState.weapon == WP_SR8
+	       ||cg.predictedPlayerState.weapon == WP_PSG1 
                || BG_Sidearm(cg.predictedPlayerState.weapon))){
           char *s;
 		  s = "Default"; //added by blud to stop possibly uninitialized warning.
 
           if ( value == 0 ){
+	    if (cg.predictedPlayerState.weapon == WP_UMP45)
+	    s = "Spam";
+	    else
             s = "Burst";
           }
           if ( value == 1 ){
