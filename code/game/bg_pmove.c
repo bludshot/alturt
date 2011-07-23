@@ -2268,6 +2268,9 @@ static void PM_Weapon( void ) {
           if( bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] == 0 )
           bg_weaponlist[0].rounds[pm->ps->clientNum]++;
                           pm->ps->weaponstate = WEAPON_FIRING;
+			  if ( pm->ps->weapon == WP_UMP45 && bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] == 0  )
+   			   pm->ps->weaponTime = 65;
+			  else
                           pm->ps->weaponTime = PM_WeaponTime(pm->ps->weapon );
                           PM_AddEvent( EV_FIRE_WEAPON );
                           if (pm->ps->weapon == WP_SR8 || pm->ps->weapon == WP_SPAS ){
