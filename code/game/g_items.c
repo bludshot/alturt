@@ -281,19 +281,32 @@ int Pickup_Weapon (gentity_t *ent, gentity_t *other) {
 
         // add the weapon
         //other->client->ps.stats[STAT_WEAPONS] |= ( 1 << ent->item->giTag );
-        BG_PackWeapon( ent->item->giTag, other->client->ps.stats );
+        
 	
 	if (BG_Sidearm(ent->item->giTag)){
 		other->client->pers.inventory[SIDEARM]= ent->item->giTag;
                                    bg_inventory.sort[other->client->ps.clientNum][SIDEARM] = ent->item->giTag;
+                                   BG_PackWeapon( ent->item->giTag, other->client->ps.stats );
         }
-	if ( BG_Secondary(ent->item->giTag)){
+	if ( BG_Secondary(ent->item->giTag) && (!bg_inventory.sort[other->client->ps.clientNum][SECONDARY])){
 		other->client->pers.inventory[SECONDARY]= ent->item->giTag;
                                     bg_inventory.sort[other->client->ps.clientNum][SECONDARY] = ent->item->giTag;
-}
-	if ( BG_Primary(ent->item->giTag)){
+                                    BG_PackWeapon( ent->item->giTag, other->client->ps.stats );
+                                   //G_Printf("Adding weapon as SECONDARY\n");
+                                   
+                                   
+                }else if ( BG_Secondary(ent->item->giTag) && (!bg_inventory.sort[other->client->ps.clientNum][PRIMARY])){
+		other->client->pers.inventory[PRIMARY]= ent->item->giTag;
+                                    bg_inventory.sort[other->client->ps.clientNum][PRIMARY] = ent->item->giTag;
+                                    BG_PackWeapon( ent->item->giTag, other->client->ps.stats );
+                                   //G_Printf("Adding weapon as PRIMARY\n");
+                                   
+                                   
+                }else  if ( BG_Primary(ent->item->giTag)){
                                   other->client->pers.inventory[PRIMARY]= ent->item->giTag;
                                   bg_inventory.sort[other->client->ps.clientNum][PRIMARY] = ent->item->giTag;
+                                  BG_PackWeapon( ent->item->giTag, other->client->ps.stats );
+                                  //G_Printf("Adding weapon as PRIMARY\n");
         }
 
           Add_Ammo( other, ent->item->giTag, ( quantity ));
