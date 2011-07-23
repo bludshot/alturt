@@ -1165,10 +1165,10 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
 
         item = &bg_itemlist[ent->modelindex];
         
-Com_Printf("!(BG_HasSidearm ( ps ) = %i \n", !(BG_HasSidearm ( ps ) ));
-Com_Printf("bg_inventory.sort[ps->clientNum][SIDEARM] = %i & \t", bg_inventory.sort[ps->clientNum][SIDEARM]);
-Com_Printf("item->giTag = %d\n", item->giTag );
-Com_Printf("BG_Sidearm( item->giTag )  = %i\n", BG_Sidearm( item->giTag ) );
+//Com_Printf("!(BG_HasSidearm ( ps ) = %i \n", !(BG_HasSidearm ( ps ) ));
+//Com_Printf("bg_inventory.sort[ps->clientNum][SIDEARM] = %i & \t", bg_inventory.sort[ps->clientNum][SIDEARM]);
+//Com_Printf("item->giTag = %d\n", item->giTag );
+//Com_Printf("BG_Sidearm( item->giTag )  = %i\n", BG_Sidearm( item->giTag ) );
 
         switch( item->giType ) {
         case IT_WEAPON:
@@ -1178,24 +1178,31 @@ Com_Printf("BG_Sidearm( item->giTag )  = %i\n", BG_Sidearm( item->giTag ) );
             return qfalse;
             if ( BG_Sidearm( item->giTag )  ){
                 if (bg_inventory.sort[ps->clientNum][SIDEARM] == item->giTag)                                                    
-             return qtrue; //can only have 1 sidearm
-                 if (bg_inventory.sort[ps->clientNum][SIDEARM])
-                  return qfalse;   
-            }else if ( BG_Primary ( item->giTag )  ){
-              if (bg_inventory.sort[ps->clientNum][PRIMARY] == item->giTag
-                  )
-                return qtrue; //can only have 1 primary
-              if (bg_inventory.sort[ps->clientNum][PRIMARY])
-                return qfalse;
+             return qtrue; //same as weapon in inventory, add as ammo --Xamis
+                 if (bg_inventory.sort[ps->clientNum][SIDEARM]){
+                  return qfalse;  
+                 }
             }else if ( BG_Secondary( item->giTag )  ){
-              if (bg_inventory.sort[ps->clientNum][SECONDARY] == item->giTag
-                  || !(bg_inventory.sort[ps->clientNum][SECONDARY]))
-                return qtrue; //can only have 1 secondary
+              if (bg_inventory.sort[ps->clientNum][SECONDARY] == item->giTag){
+                return qtrue; //same as weapon in inventory, add as ammo --Xamis
+              }
+              if (bg_inventory.sort[ps->clientNum][PRIMARY] ==WP_NEGEV ){
+                        return qfalse; 
+              } 
+	if (bg_inventory.sort[ps->clientNum][PRIMARY]){
+                        if ((bg_inventory.sort[ps->clientNum][SECONDARY]))
+                        return qfalse; 
+              } 
+            }else if (BG_Primary( item->giTag )){
+              if (bg_inventory.sort[ps->clientNum][PRIMARY] == item->giTag){
+                return qtrue; //same as weapon in inventory, add as ammo --Xamis
+              }
+              if (bg_inventory.sort[ps->clientNum][PRIMARY]){
+                return qfalse;//do not have a primary --Xamis
+              }
             }else if ( BG_Grenade(item->giTag) ) {
               if (  bg_weaponlist[item->giTag].numClips[ ps->clientNum] < 2 )
-                   // return qtrue;
-              //  else
-                    return qfalse;
+                    return qtrue;
            }else
            return qfalse;
 
