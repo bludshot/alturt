@@ -661,6 +661,11 @@ typedef struct animation_s {
         int             flipflop;                       // true if animation should flipflop back to base
 } animation_t;
 
+typedef struct soundList_s {  //Added to deal with reload sounds --Xamis
+        int          type;
+        int          startFrame;
+        sfxHandle_t  soundPath;  
+} soundList_t;
 
 
 typedef struct nadeInfo_s{
@@ -788,6 +793,7 @@ typedef struct wpinfo_s {
   int             weapMode[MAX_CLIENTS];
   int             numClips[MAX_CLIENTS];
   int             rounds[MAX_CLIENTS];
+  char          *modelPath;
 } wpinfo_t;
 
 

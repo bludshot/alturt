@@ -39,117 +39,129 @@ wpinfo_t bg_weaponlist[] ={
     "",
     {0}, //weapMode
     {0},                // numClips ammo that fits in the weapon
-    {0}             // rounds
-
+    {0},             // rounds
+    ""
   },
   { //WP_KNIFE, //1
     "icons/ammo/kbar",
     {0}, //weapMode
     {-1},
-    {-1}
+    {-1},
+            "models/weapons2/knife/"
   },
   {// WP_BERETTA, //2
     "icons/ammo/beretta",
     {0}, //weapMode
     {0},                // numClips ammo that fits in the weapon
-    {0}             // rounds
+    {0},             // rounds
+    "models/weapons2/beretta/"
   },
   { //WP_DEAGLE, //3
     "icons/ammo/deserteagle",
     {0}, //weapMode
     {0},               // numClips ammo that fits in the weapon
-    {0}             // rounds
-
+    {0},             // rounds
+    "models/weapons2/deserteagle/"
   },
   { //WP_MP5K, //4
     "icons/ammo/mp5k",
     {0}, //weapMode
     {0},                // numClips ammo that fits in the weapon
-    {0}             // rounds
+    {0},             // rounds
+            "models/weapons2/mp5k/"
 
   },
   { //WP_SPAS, //5
     "icons/ammo/spas12",
     {0}, //weapMode
     {0},               // numClips ammo that fits in the weapon
-    {0}             // rounds
-
+    {0},             // rounds
+        "models/weapons2/spas12/"
   },
   { //WP_UMP45, //6
     "icons/ammo/ump45",
     {0}, //weapMode
     {0},                // numClips ammo that fits in the weapon
-    {0}             // rounds
+    {0},             // rounds
+    "models/weapons2/ump45/"
 
   },
   { //WP_M4, //7
     "icons/ammo/m4",
     {0}, //weapMode
     {0},                // numClips ammo that fits in the weapon
-    {0}             // rounds
+    {0},             // rounds
+    "models/weapons2/m4/"
 
   },
   { //WP_LR300, //8
     "icons/ammo/lr",
     {0}, //weapMode
     {0},                // numClips ammo that fits in the weapon
-    {0}             // rounds
+    {0},             // rounds
+    "models/weapons2/zm300/"
 
   },
   { //WP_G36, //9
     "icons/ammo/g36",
     {0}, //weapMode
     {0},                // numClips ammo that fits in the weapon
-    {0}             // rounds
-
+    {0},             // rounds
+        "models/weapons2/g36/"
   },
   { //WP_AK103, //10
     "icons/ammo/ak103",
     {0}, //weapMode
     {0},              // numClips ammo that fits in the weapon
-    {0}             // rounds
+    {0},             // rounds
+            "models/weapons2/ak103/"
 
   },
   { //WP_HK69, //11
     "icons/ammo/hk69",
     {0}, //weapMode
     {0},               // numClips ammo that fits in the weapon
-    {0}             // rounds
+    {0},             // rounds
+    "models/weapons2/hk69/"
 
   },
   { //WP_NEGEV, //12
     "icons/ammo/negev",
     {0}, //weapMode
     {0},                // numClips ammo that fits in the weapon
-    {0}             // rounds
+    {0},             // rounds
+    "models/weapons2/negev/"
 
   },
   { //WP_PSG1, //13
     "icons/ammo/psg1",
     {0}, //weapMode
     {0},                // numClips ammo that fits in the weapon
-    {0}             // rounds
+    {0},             // rounds
+    "models/weapons2/psg1/"
 
   },
   { //WP_SR8, //14
     "icons/ammo/sr8",
     {0}, //weapMode
     {0},               // numClips ammo that fits in the weapon
-    {0}             // rounds
+    {0},             // rounds
+    "models/weapons2/sr8/"
 
   },
   { //WP_HE,
     "icons/ammo/grenade_he",
     {0}, //weapMode
     {0},                // numClips ammo that fits in the weapon
-    {0}             // rounds
-
+    {0},             // rounds
+        "models/weapons2/grenade/"
   },
   { //WP_SMOKE,
     "icons/ammo/grenade_smoke",
     {0}, //weapMode
     {0},                // numClips ammo that fits in the weapon
-    {0}             // rounds
+    {0},             // rounds
+    "models/weapons2/grenade/"
 
   },
   { //WP_NUM_WEAPONS,

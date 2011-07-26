@@ -445,6 +445,7 @@ typedef struct weaponInfo_s {
         qhandle_t               animModel;       // Xamis
         qhandle_t               animHandModel;    // Xamis
         animation_t             animations[MAX_WEAPON_ANIMATIONS];  // Xamis
+        soundList_t              sounds[14];  // Xamis
 
 
 

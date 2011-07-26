@@ -88,6 +88,94 @@ static qboolean CG_ParseWeaponAnimFile( const char *filename, weaponInfo_t *weap
 // END
 
 
+/* Weapon Animation  Sounds --Xamis
+==========================
+CG_ParseWeaponSounds
+==========================
+*/
+
+static qboolean CG_ParseWeaponSounds( const char *filename, weaponInfo_t *weapon ) {
+  char *text_p;
+  int len;
+  int i;
+  char *token;
+  char text[20000];
+  fileHandle_t f;
+  soundList_t   *soundList;
+  int j;
+  sfxHandle_t tempSound;
+ 
+
+  j=0; //prevent uninitialized compiler warnings -- Xamis
+  tempSound = 0;
+  soundList= weapon->sounds;
+// load the file
+  len = trap_FS_FOpenFile( filename, &f, FS_READ );
+  if ( len <= 0 ) {
+    return qfalse;
+  }
+  if ( len >= sizeof( text ) - 1 ) {
+    CG_Printf( "File %s too long\n", filename );
+    return qfalse;
+  }
+  trap_FS_Read( text, len, f );
+  text[len] = 0;
+  trap_FS_FCloseFile( f );
+
+// parse the text
+  text_p = text;
+
+
+// read information for each frame
+  for ( i = 0 ; i < 14 ; i++ ) {
+     token = COM_Parse( &text_p );
+          if ( !token ) break;
+	if ( !Q_stricmp( token, "anim" ) ) {
+		soundList[i].type =1; 
+}
+        if ( !Q_stricmp( token, "fire" ) ) {
+                soundList[i].type =2;
+}
+     token =  COM_Parse( &text_p );
+               if ( !token ) break;
+     if ( soundList[i].type == 1)
+     j = atoi(token);
+     if ( soundList[i].type == 2){
+	if ( !Q_stricmp( token, "inside" ) ) 
+		j=1;
+	if ( !Q_stricmp( token, "outside" ) )
+		j=2;
+	if ( !Q_stricmp( token, "water" ) )
+		j=3;
+                  if ( !Q_stricmp( token, "silenced" ) )
+		j=4;
+}
+     token =  COM_Parse( &text_p );
+               if ( !token ) break;
+     if (Q_stricmp(token,""))
+        tempSound = trap_S_RegisterSound( token, qfalse );
+        soundList[i].soundPath = tempSound;
+        soundList[i].startFrame = j;
+
+#ifdef DEBUG
+   CG_Printf( "Type = %i \t",soundList[i].type );
+   CG_Printf( "Startframe = %s \t",soundList[i].startFrame  );
+   CG_Printf( "Path = %s \n",soundList[i].soundPath );
+#endif
+      
+}
+  if ( i != 14 ) {
+    CG_Printf( "Error parsing weapon sound file: %s", filename );
+    return qfalse;
+  }
+
+  return qtrue;
+}
+// END
+
+
+
+
 /*
 ==========================
 CG_MachineGunEjectBrass
@@ -538,6 +626,13 @@ void CG_RegisterWeapon( int weaponNum ) {
               Com_Printf("Failed to load weapon animation file %s\n", path);
 
             }
+// Load all weapons sound config files --Xamis
+            strcpy( path, bg_weaponlist[ weaponNum ].modelPath );
+            strcat( path, "sound.cfg" );
+            if ( !CG_ParseWeaponSounds(path, weaponInfo) ) {
+              Com_Printf("Failed to load weapon sound file %s/n", path);
+              }
+
 
 //  All weapons parts for animations in first person view --Xamis
 
@@ -1198,6 +1293,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	qboolean silenced;
 	qboolean vestOn;
                   float	len, distance;
+
 	vestOn = lasersight = silenced = qfalse;
 
 	powerups = cent->currentState.powerups;
@@ -1206,7 +1302,6 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 
 	CG_RegisterWeapon( weaponNum );
 	weapon = &cg_weapons[weaponNum];
-
 	ci = &cgs.clientinfo[cent->currentState.clientNum];
 
 	//Determine what items the user has --Xamis

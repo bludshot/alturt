@@ -1342,8 +1342,13 @@ This is called from cg_weapons.c
 void CG_WeaponAnimation( centity_t *cent, int *weaponOld, int *weapon, float *weaponBackLerp ) {
   clientInfo_t *ci;
   int clientNum;
-
+  entityState_t *ent;
+  weaponInfo_t    *weap;
+  int i;
   clientNum = cent->currentState.clientNum;
+
+  ent = &cent->currentState;
+  weap = &cg_weapons[ ent->weapon ];
 
   if ( cg_noPlayerAnims.integer ) {
     *weaponOld = *weapon = 0;
@@ -1351,7 +1356,15 @@ void CG_WeaponAnimation( centity_t *cent, int *weaponOld, int *weapon, float *we
   }
 
   ci = &cgs.clientinfo[ clientNum ];
+  
+  // Check for sounds that should start on each frame --Xamis
+  for ( i = 0 ; i < 14 ; i++ ) {
 
+  if (weap->sounds[i].type == 1 && cent->pe.weapon.frame == weap->sounds[i].startFrame  ){
+      
+      trap_S_StartSound( NULL, clientNum, CHAN_WEAPON,weap->sounds[i].soundPath );
+ }
+  }
   CG_RunLerpFrame( ci, &cent->pe.weapon, cent->currentState.generic1, 1, qtrue );
 
 // QUARANTINE - Debug - Animations
@@ -1361,8 +1374,10 @@ void CG_WeaponAnimation( centity_t *cent, int *weaponOld, int *weapon, float *we
                 cent->pe.weapon.oldFrame, cent->pe.weapon.frame, cent->pe.weapon.backlerp);
 }
 #endif
-
-                *weaponOld = cent->pe.weapon.oldFrame;
+ 
+  
+  
+            *weaponOld = cent->pe.weapon.oldFrame;
             *weapon = cent->pe.weapon.frame;
             *weaponBackLerp = cent->pe.weapon.backlerp;
 
@@ -2160,8 +2175,7 @@ static qboolean CG_PlayerShadow( centity_t *cent, float *shadowPlane ) {
 
 	// add the mark as a temporary, so it goes directly to the renderer
 	// without taking a spot in the cg_marks array
-	CG_ImpactMark( cgs.media.shadowMarkShader, trace.endpos, trace.plane.normal,
-		cent->pe.legs.yawAngle, alpha,alpha,alpha,1, qfalse, 24, qtrue );
+	CG_ImpactMark( cgs.media.shadowMarkShader, trace.endpos, trace.plane.normal, cent->pe.legs.yawAngle, alpha,alpha,alpha,1, qfalse, 24, qtrue );
 
 	return qtrue;
 }
