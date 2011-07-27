@@ -1534,7 +1534,8 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 
         if ( ps && weapon->laserModel && weaponNum != WP_KNIFE && weaponNum != WP_HK69
              && weaponNum != WP_SPAS && weaponNum != WP_HE && weaponNum != WP_SR8
-             && weaponNum != WP_AK103 && weaponNum != WP_NEGEV && weaponNum != WP_SMOKE && lasersight) {
+             && weaponNum != WP_G36 && weaponNum != WP_PSG1 && weaponNum != WP_NEGEV 
+		&& weaponNum != WP_SMOKE && lasersight) {
             
 
                 memset( &laser, 0, sizeof( laser ) );
