@@ -1183,7 +1183,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
                           targ->client->ps.stats[STAT_ARM_DAMAGE] += take*0.2;
                         } else if (HitLocation == LOC_HEAD) {
                          // spray_blood = qtrue;
-                          if (HasPowerup( targ, PW_HELMET ) ) take *= 1;
+                          if (HasPowerup( targ, PW_HELMET )&& attacker->client->ps.weapon != WP_SR8 ) take *= 1;
                           else take *= 2;
                         //  armorhit = 2;
                           targ->client->ps.stats[STAT_HEAD_DAMAGE] += take*0.8;
@@ -1218,7 +1218,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
                           targ->client->ps.stats[STAT_HEAD_DAMAGE] += take;
                           break;
                         case LOC_HEAD:
-                          if (HasPowerup(targ, PW_HELMET)) take *= 4;
+                          if (HasPowerup(targ, PW_HELMET && attacker->client->ps.weapon != WP_SR8)) take *= 4;
                           else take *= 8;
                           if ( (take > targ->health)) {
                             headblown = qtrue;
