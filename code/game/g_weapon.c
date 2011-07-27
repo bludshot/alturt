@@ -144,7 +144,18 @@ void SnapVectorTowards( vec3_t v, vec3_t to ) {
 #ifdef MISSIONPACK
 #define CHAINGUN_SPREAD         600
 #endif
+#define M4_SPREAD       15
+#define LR300_SPREAD       15
+#define BERETTA_SPREAD       10
+#define AK103_SPREAD       20
+#define G36_SPREAD       20
+#define PSG1_SPREAD       0
+#define SR8_SPREAD       0
+#define NEGEV_SPREAD       20
+#define UMP45_SPREAD       20
+#define MP5K_SPREAD       20
 #define MACHINEGUN_SPREAD       20
+
 #define DEAGLE_SPREAD           10
 #define MACHINEGUN_DAMAGE       7
 #define M4_DAMAGE       25 //12
@@ -187,6 +198,7 @@ void Bullet_Fire (gentity_t *ent, float spread, int damage ) {
                 }
 
                 traceEnt = &g_entities[ tr.entityNum ];
+
 
                 // snap the endpos to integers, but nudged towards the line
                 SnapVectorTowards( tr.endpos, muzzle );
@@ -943,37 +955,37 @@ void FireWeapon( gentity_t *ent ) {
                 case WP_SPAS:
                         weapon_supershotgun_fire( ent );
         case WP_M4:
-                        Bullet_Fire( ent, MACHINEGUN_SPREAD, M4_DAMAGE );
+                        Bullet_Fire( ent, M4_SPREAD, M4_DAMAGE );
                 break;
                 case WP_MP5K:
-                        Bullet_Fire( ent, MACHINEGUN_SPREAD, MP5K_DAMAGE );
+                        Bullet_Fire( ent, MP5K_SPREAD, MP5K_DAMAGE );
                         break;
                 case WP_UMP45:
-                  Bullet_Fire( ent, MACHINEGUN_SPREAD, UMP45_DAMAGE );
+                  Bullet_Fire( ent, UMP45_SPREAD, UMP45_DAMAGE );
                         break;
                 case WP_PSG1:
-                        Bullet_Fire( ent, MACHINEGUN_SPREAD, MACHINEGUN_DAMAGE );
+                        Bullet_Fire( ent, PSG1_SPREAD, MACHINEGUN_DAMAGE );
                         break;
                 case WP_SR8:
-                        Bullet_Fire( ent, MACHINEGUN_SPREAD, MACHINEGUN_DAMAGE );
+                        Bullet_Fire( ent, SR8_SPREAD, MACHINEGUN_DAMAGE );
                         break;
                 case WP_G36:
-                        Bullet_Fire( ent, MACHINEGUN_SPREAD, G36_DAMAGE );
+                        Bullet_Fire( ent, G36_SPREAD, G36_DAMAGE );
                         break;
                 case WP_LR300:
-                  Bullet_Fire( ent, MACHINEGUN_SPREAD, LR300_DAMAGE );
+                  Bullet_Fire( ent, LR300_SPREAD, LR300_DAMAGE );
                         break;
                 case WP_AK103:
-                        Bullet_Fire( ent, MACHINEGUN_SPREAD, AK103_DAMAGE );
+                        Bullet_Fire( ent, AK103_SPREAD, AK103_DAMAGE );
                         break;
                 case WP_NEGEV:
-                        Bullet_Fire( ent, MACHINEGUN_SPREAD, MACHINEGUN_DAMAGE );
+                        Bullet_Fire( ent, NEGEV_SPREAD, MACHINEGUN_DAMAGE );
                         break;
                 case WP_DEAGLE:
                         Bullet_Fire( ent, DEAGLE_SPREAD, DEAGLE_DAMAGE );
                         break;
                 case WP_BERETTA:
-                        Bullet_Fire( ent, MACHINEGUN_SPREAD, BERETTA_DAMAGE );
+                        Bullet_Fire( ent, BERETTA_SPREAD, BERETTA_DAMAGE );
                         break;
         case WP_HK69:
                         weapon_grenadelauncher_fire( ent );
