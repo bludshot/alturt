@@ -1859,7 +1859,7 @@ int RoundCount( int w )        {
       return 1;
       break;
     case WP_NEGEV:
-      return 90;
+      return 80;
       break;
     case WP_SR8:
       return 5;
@@ -2268,7 +2268,7 @@ static void PM_Weapon( void ) {
         }
           PM_StartWeaponAnim( WPN_FIRE );
 
-          if( bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] == 0 )
+          if( bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] == 0  &&  pm->ps->weapon != WP_SPAS  &&  pm->ps->weapon != WP_NEGEV )
           bg_weaponlist[0].rounds[pm->ps->clientNum]++;
                           pm->ps->weaponstate = WEAPON_FIRING;
 			  if ( pm->ps->weapon == WP_UMP45 && bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] == 0  )
@@ -2282,6 +2282,7 @@ static void PM_Weapon( void ) {
                           }
 
                           if ( pm->ps->pm_flags & PMF_SINGLE_MODE
+                                || pm->ps->weapon == WP_SPAS
                                 || pm->ps->weapon == WP_DEAGLE
                                 || pm->ps->weapon == WP_BERETTA
                                 || pm->ps->weapon == WP_PSG1
