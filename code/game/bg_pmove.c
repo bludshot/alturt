@@ -1754,6 +1754,8 @@ static void PM_WaterEvents( void ) {            // FIXME?
 }
 
 
+
+
 /*
 ===============
 PM_BeginWeaponChange
@@ -2111,7 +2113,7 @@ static void PM_Weapon( void ) {
           if ( pm->ps->weapon == WP_NEGEV || pm->ps->weapon == WP_SPAS){
             PM_ContinueWeaponAnim( WPN_RELOAD_END );
           }if ( pm->ps->weapon == WP_SR8 ){
-            PM_ContinueWeaponAnim( WPN_BOLT );
+           PM_ContinueWeaponAnim( WPN_BOLT );
           }
         }if( pm->ps->weaponstate == WEAPON_RELOADING_COMPLETE && pm->ps->weaponTime <= 0 ) {
           if (BG_Grenade( pm->ps->weapon)){
@@ -2148,6 +2150,7 @@ static void PM_Weapon( void ) {
         }
 
         if ( pm->ps->pm_flags & PMF_RELOADING ){
+            PM_AddEvent( EV_ZOOM_RESET );
           PM_StartWeaponAnim( WPN_BOLT);
           if ( pm->ps->weapon == WP_SR8)
             pm->ps->weaponTime = 1500;
@@ -2275,7 +2278,7 @@ static void PM_Weapon( void ) {
                           PM_AddEvent( EV_FIRE_WEAPON );
                           if (pm->ps->weapon == WP_SR8 || pm->ps->weapon == WP_SPAS ){
                             pm->ps->pm_flags |= PMF_RELOADING;
-
+     
                           }
 
                           if ( pm->ps->pm_flags & PMF_SINGLE_MODE

@@ -763,6 +763,7 @@ void CalcMuzzlePointOrigin ( gentity_t *ent, vec3_t origin, vec3_t forward, vec3
         SnapVector( muzzlePoint );
 }
 
+
 void Set_Mode(gentity_t *ent){
 //  G_Printf ("Set_Mode called\n");
   switch (weapmodes_save.string[ent->client->ps.weapon] ){
@@ -868,7 +869,7 @@ void Cmd_Reload( gentity_t *ent )       {
 
   if (BG_Grenade(ent->client->ps.weapon))
     return;
-
+   trap_SendConsoleCommand( ent->client->ps.clientNum, "ut_zoomreset" );
   //if (ent->client->ps.ammo[ent->client->ps.weapon] == 0 || ent->client->ps.weapon == WP_KNIFE ) return;
   if ( bg_weaponlist[ent->client->ps.weapon].numClips[ent->client->ps.clientNum] == 0 || ent->client->ps.weapon == WP_KNIFE ) return;
   if (ent->client->ps.weapon == WP_SPAS && bg_weaponlist[ent->client->ps.weapon].rounds[ent->client->ps.clientNum] > 7 ){

@@ -163,6 +163,9 @@ typedef struct {
 	float			barrelAngle;
 	int				barrelTime;
 	qboolean		barrelSpinning;
+
+	//sniper zoom level  --Xamis
+	int			zoomLevel;
 } playerEntity_t;
 
 
@@ -736,7 +739,7 @@ typedef struct {
 
        float                       smokeBlendAlpha;
        qboolean       inSmoke;
-
+       int		setZoomFov;
 
        int                  loadingbarState;
        int                 loadingbarMax;
@@ -832,6 +835,7 @@ typedef struct {
 	qhandle_t	tracerShader;
 	qhandle_t	crosshairShader[NUM_CROSSHAIRS];
                   qhandle_t       laserShader;   //Xamis lasersight
+                  qhandle_t       scopeShader;   //Xamis lasersight                  
 	qhandle_t	lagometerShader;
 	qhandle_t	backTileShader;
 	qhandle_t	noammoShader;
@@ -1482,6 +1486,7 @@ void CG_PrevWeapon_f( void );
 void CG_WeapToggle_f( void );
 void CG_Weapon_f( void );
 
+void CG_ZoomIn_f (void);
 void CG_NextItem_f (void);
 void CG_DrawItemSelect( void );
 
@@ -1812,3 +1817,5 @@ qboolean CG_SetPlayerSkinName( int team, int racered, int raceblue, char *skin )
 qboolean CG_SetPlayerModelName( int team, int racered, int raceblue, char *model );
 char *CG_GetPlayerSkinName( clientInfo_t *ci );
 char *CG_GetPlayerModelName( clientInfo_t *ci );
+void CG_ZoomReset_f (void);
+

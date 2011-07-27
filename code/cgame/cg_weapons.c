@@ -866,7 +866,12 @@ void CG_RegisterWeapon( int weaponNum ) {
                         weaponInfo->normalSound[0] = trap_S_RegisterSound( "sound/weapons/spas/spas.wav", qfalse );
                         weaponInfo->ejectBrassFunc = CG_ShotgunEjectBrass;
                         break;
-
+                case WP_NEGEV:
+                        weaponInfo->flashSound[0] = trap_S_RegisterSound( "sound/weapons/negev/negev.wav", qfalse );
+                        weaponInfo->silenceSound[0] = trap_S_RegisterSound( "sound/weapons/negev/negev_sil.wav", qfalse );
+                        weaponInfo->normalSound[0] = trap_S_RegisterSound( "sound/weapons/negev/negev.wav", qfalse );
+                        weaponInfo->ejectBrassFunc = CG_MachineGunEjectBrass;
+                        break;
         case WP_HK69:
                 weaponInfo->missileModel = trap_R_RegisterModel( "models/ammo/grenade1.md3" );
                 weaponInfo->missileTrailFunc = CG_GrenadeTrail;
@@ -888,6 +893,7 @@ void CG_RegisterWeapon( int weaponNum ) {
                 weaponInfo->trailRadius = 232;
                 MAKERGB( weaponInfo->flashDlightColor, 1, 0.70f, 0 );
                 break;
+               
 
          default:
                 MAKERGB( weaponInfo->flashDlightColor, 1, 1, 1 );
@@ -1710,7 +1716,8 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
             
             
     }
-
+   
+        
 
                 CG_AddWeaponWithPowerups( &laser, cent->currentState.powerups );
         }
@@ -2014,6 +2021,8 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
           CG_PositionRotatedEntityOnTag( &flash, &gun, weapon->weaponModel, "tag_flash");
         trap_R_AddRefEntityToScene( &flash );
 
+
+
         if ( ps || cg.renderingThirdPerson ||
                 cent->currentState.number != cg.predictedPlayerState.clientNum ) {
                 // add lightning bolt
@@ -2028,6 +2037,8 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
                 }
         }
         }
+
+        
 }
 
 /*
@@ -2072,6 +2083,19 @@ void CG_AddViewWeapon( playerState_t *ps ) {
                 }
                 return;
         }
+
+        if ( cg.zoomed ) {
+                vec3_t          origin;
+
+                if ( cg.predictedPlayerState.eFlags & EF_FIRING ) {
+                        // special hack for lightning gun...
+                        VectorCopy( cg.refdef.vieworg, origin );
+                        VectorMA( origin, -8, cg.refdef.viewaxis[2], origin );
+                        CG_LightningBolt( &cg_entities[ps->clientNum], origin );
+                }
+                return;
+        }
+
 
         // don't draw if testing a gun model
         if ( cg.testGun ) {
@@ -2191,6 +2215,64 @@ void CG_NextItem_f (void){
 }
 
 
+void CG_ZoomReset_f (void){
+ float zoomFov;
+centity_t       *cent;
+cent = &cg_entities[cg.snap->ps.clientNum];
+zoomFov = cg_zoomFov.value;   
+if(cg.zoomed  ){
+        cent->pe.zoomLevel=0;
+        cg.setZoomFov= 1;
+        cg.zoomed = qfalse;
+  }
+}
+
+void CG_ZoomIn_f (void){
+float zoomFov;
+centity_t       *cent;
+cent = &cg_entities[cg.snap->ps.clientNum];
+zoomFov = cg_zoomFov.value;
+
+if (cent->currentState.weapon == WP_SR8 || cent->currentState.weapon == WP_PSG1  ){
+
+if( cent->pe.zoomLevel == 0 ){
+        cg.setZoomFov = 33;
+        cg.zoomed = qtrue;
+        cent->pe.zoomLevel++ ;
+}else if( cent->pe.zoomLevel == 1 ){
+        cg.setZoomFov = 17;
+        cg.zoomed = qtrue;
+        cent->pe.zoomLevel++;
+} else if( cent->pe.zoomLevel == 2 ){
+        cg.setZoomFov = 8;
+        cg.zoomed = qtrue;
+        cent->pe.zoomLevel++;
+} else if ( cent->pe.zoomLevel > 2){
+        cent->pe.zoomLevel=0;
+        cg.setZoomFov= 1;
+        cg.zoomed = qfalse;
+}
+
+    }
+
+if (cent->currentState.weapon ==WP_G36 ){
+
+if( cent->pe.zoomLevel == 0 ){
+        cg.setZoomFov = 40;
+        cg.zoomed = qtrue;
+        cent->pe.zoomLevel++ ;
+} else if ( cent->pe.zoomLevel > 0){
+        cent->pe.zoomLevel=0;
+        cg.setZoomFov= 1;
+        cg.zoomed = qfalse;
+}
+
+    }
+}
+
+
+
+
 /*
 ==============================================================================
 
@@ -2235,6 +2317,7 @@ void CG_DrawWeaponSelect( void ) {
                 return;
         }
         trap_R_SetColor( color );
+    //    CG_ZoomReset_f();
 
         // showing weapon select clears pickup item display, but not the blend blob
         cg.itemPickupTime = 0;
@@ -2304,6 +2387,8 @@ void CG_DrawWeaponSelect( void ) {
         }*/
 
         trap_R_SetColor( NULL );
+    
+
 }
 
 
@@ -2362,7 +2447,7 @@ void CG_NextWeapon_f( void ) {
 
         cg.weaponSelectTime = cg.time;
         original = cg.weaponSelect;
-
+        CG_ZoomReset_f();
         for ( i = 0 ; i < WP_NUM_WEAPONS ; i++ ) {
                 cg.weaponSelect++;
                 if ( cg.weaponSelect == WP_NUM_WEAPONS ) {
@@ -2398,6 +2483,7 @@ void CG_PrevWeapon_f( void ) {
 
         cg.weaponSelectTime = cg.time;
         original = cg.weaponSelect;
+        CG_ZoomReset_f();
 
         for ( i = 0 ; i < WP_NUM_WEAPONS ; i++ ) {
                 cg.weaponSelect--;
@@ -2520,6 +2606,8 @@ void CG_WeapToggle_f( void ) {
 	char    arg2[MAX_STRING_TOKENS];
 	char    otherweap[MAX_STRING_TOKENS];
 	centity_t	*cent;
+          
+                  CG_ZoomReset_f();
 	
 	cent = &cg_entities[cg.snap->ps.clientNum];
 	numArgs = 0;
@@ -3024,6 +3112,7 @@ void CG_Weapon_f( void ) {
                 return;         // don't have the weapon
         }
         cg.weaponSelect = num;
+        CG_ZoomReset_f();
 }
 
 
@@ -3078,6 +3167,7 @@ void CG_FireWeapon( centity_t *cent ) {
         }
 
         // do brass ejection
+        if ( ent->weapon == WP_SR8 )
         if ( ent->weapon != WP_SPAS )
         if ( weap->ejectBrassFunc && cg_brassTime.integer > 0 ) {
                 weap->ejectBrassFunc( cent );

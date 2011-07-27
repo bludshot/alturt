@@ -1483,6 +1483,7 @@ char *eventnames[] = {
         "EV_POWERSLIDE",
         "EV_CHANGE_WEAPON",
         "EV_FIRE_WEAPON",
+        "EV_ZOOM_RESET",
 
         "EV_USE_ITEM0",
         "EV_USE_ITEM1",

@@ -470,6 +470,8 @@ static consoleCommand_t	commands[] = {
 	{ "weapprev", CG_PrevWeapon_f },
 	{ "weapon", CG_Weapon_f },
 	{ "ut_weaptoggle", CG_WeapToggle_f }, //blud
+        { "ut_zoomin", CG_ZoomIn_f },
+        { "ut_zoomreset", CG_ZoomReset_f },
         { "ut_itemnext", CG_NextItem_f },
 	{ "tell_target", CG_TellTarget_f },
 	{ "tell_attacker", CG_TellAttacker_f },

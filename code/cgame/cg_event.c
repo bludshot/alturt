@@ -762,6 +762,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
           CG_HasteTrail( cent );
 
           break;
+          
 	case EV_CHANGE_WEAPON:
 		DEBUGNAME("EV_CHANGE_WEAPON");
 		//trap_S_StartSound (NULL, es->number, CHAN_AUTO, cgs.media.selectSound );
@@ -770,6 +771,9 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		DEBUGNAME("EV_FIRE_WEAPON");
 		CG_FireWeapon( cent );
 		break;
+               case EV_ZOOM_RESET:
+                        trap_SendConsoleCommand(  "ut_zoomreset" );
+                        break;
 
         case EV_EJECT_CASING:
         {

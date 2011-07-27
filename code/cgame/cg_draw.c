@@ -421,6 +421,62 @@ void CG_DrawFlagModel( float x, float y, float w, float h, int team, qboolean fo
 	}
 }
 
+
+/*
+=================
+CG_DrawSniperRifle
+=================
+*/
+void CG_DrawSniperScope(void) {
+
+    int weaponstate = cg.snap->ps.weaponstate;
+    int team = 0;
+
+    if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR) {
+        return;
+    }
+
+
+    if ( cg.renderingThirdPerson )
+        return;
+
+    if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_BLUE )
+        team = 1;
+
+    // check to see if we're in zoom mode
+ //   if (
+  //      ! (
+    //        (cg.snap->ps.stats[STAT_WEAPONMODE] & ( 1 << WM_ZOOM2X ) ) ||
+      //      (cg.snap->ps.stats[STAT_WEAPONMODE] & ( 1 << WM_ZOOM4X ) )
+      //  )
+  //  )
+   //     return;
+
+
+    // if not in ready
+   // if ( weaponstate != WEAPON_FIRING && weaponstate != WEAPON_READY )
+   //     return;
+
+    trap_R_SetColor( g_color_table[ColorIndex(COLOR_BLACK)] );
+
+    switch ( cg.snap->ps.weapon ) {
+     case WP_PSG1:
+        CG_DrawPic( 0, 0, 640, 480, cgs.media.scopeShader );
+        break;
+    case WP_G36:
+        CG_DrawPic( 0, 0, 640, 480, cgs.media.scopeShader );
+        break;
+    case WP_SR8:
+        CG_DrawPic( 0, 0, 640, 480, cgs.media.scopeShader );
+        break;
+    default:
+        CG_DrawPic( 0, 0, 640, 480, cgs.media.scopeShader );
+        break;
+    }
+    trap_R_SetColor( NULL );
+}
+
+
 /*
 =================
 CG_DrawSmokeScreen
@@ -3138,6 +3194,16 @@ CG_Draw2D
 */
 static void CG_Draw2D(stereoFrame_t stereoFrame)
 {
+    
+	if(stereoFrame == STEREO_CENTER){
+            if ((cg.snap->ps.weapon == WP_SR8 || cg.snap->ps.weapon == WP_PSG1 || cg.snap->ps.weapon == WP_G36 )&& cg.zoomed){
+                   CG_DrawSniperScope();
+                   CG_DrawCrosshair();   
+                  }
+             if (!(cg.snap->ps.weapon == WP_SR8 || cg.snap->ps.weapon == WP_PSG1 )){
+                CG_DrawCrosshair();     
+             }
+                                                                        }
 #ifdef MISSIONPACK
 	if (cgs.orderPending && cg.time > cgs.orderTime) {
 		CG_CheckOrderPending();
@@ -3147,6 +3213,8 @@ static void CG_Draw2D(stereoFrame_t stereoFrame)
 	if ( cg.levelShot ) {
 		return;
 	}
+
+        
         if (BG_PlayerInSmoke (cg.snap->ps.stats))
           CG_DrawSmokeScreen();
 
@@ -3189,11 +3257,10 @@ static void CG_Draw2D(stereoFrame_t stereoFrame)
 #ifdef MISSIONPACK
 			CG_DrawProxWarning();
 #endif
-			if(stereoFrame == STEREO_CENTER)
-				CG_DrawCrosshair();
+
 			CG_DrawCrosshairNames();
 			CG_DrawWeaponSelect();
-                        CG_DrawItemSelect();
+                                                      CG_DrawItemSelect();
 
 #ifndef MISSIONPACK
 			CG_DrawHoldableItem();
@@ -3215,6 +3282,7 @@ static void CG_Draw2D(stereoFrame_t stereoFrame)
         CG_DrawStatusHud();
 	CG_DrawLagometer();
         CG_DrawMap();
+
 #ifdef MISSIONPACK
 	if (!cg_paused.integer) {
 		CG_DrawUpperRight(stereoFrame);

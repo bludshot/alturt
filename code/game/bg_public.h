@@ -191,7 +191,9 @@ typedef enum {
 typedef enum {
     WM_NONE,
     WM_BURST,
-    WM_SINGLE
+    WM_SINGLE,
+            
+     WM_ZOOM
 } weaponmode_t;
 
 // pmove->pm_flags
@@ -472,6 +474,7 @@ typedef enum {
         EV_POWERSLIDE,
         EV_CHANGE_WEAPON,
         EV_FIRE_WEAPON,
+        EV_ZOOM_RESET,
         EV_EJECT_CASING,
 
         EV_USE_ITEM0,
@@ -805,7 +808,6 @@ int roundCount[MAX_CLIENTS];
 typedef struct wp_sort_s{
 int sort[MAX_CLIENTS][INVENTORYITEMS];
 int item[MAX_CLIENTS][3];
-
 } wp_sort_t;
 
 // included in both the game dll and the client
