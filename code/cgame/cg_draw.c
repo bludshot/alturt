@@ -443,19 +443,7 @@ void CG_DrawSniperScope(void) {
     if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_BLUE )
         team = 1;
 
-    // check to see if we're in zoom mode
- //   if (
-  //      ! (
-    //        (cg.snap->ps.stats[STAT_WEAPONMODE] & ( 1 << WM_ZOOM2X ) ) ||
-      //      (cg.snap->ps.stats[STAT_WEAPONMODE] & ( 1 << WM_ZOOM4X ) )
-      //  )
-  //  )
-   //     return;
 
-
-    // if not in ready
-   // if ( weaponstate != WEAPON_FIRING && weaponstate != WEAPON_READY )
-   //     return;
 
     trap_R_SetColor( g_color_table[ColorIndex(COLOR_BLACK)] );
 
@@ -832,6 +820,8 @@ static void CG_DrawStatusBar( void ) {
         value = ps->stats[STAT_MODE];
         if (!( cg.predictedPlayerState.weapon == WP_HE
                ||cg.predictedPlayerState.weapon == WP_SMOKE
+                ||cg.predictedPlayerState.weapon == WP_SPAS
+                ||cg.predictedPlayerState.weapon == WP_HK69
 	       ||cg.predictedPlayerState.weapon == WP_NEGEV
 	       ||cg.predictedPlayerState.weapon == WP_SR8
 	       ||cg.predictedPlayerState.weapon == WP_PSG1 

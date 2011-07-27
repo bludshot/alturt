@@ -2331,7 +2331,7 @@ void CG_DrawWeaponSelect( void ) {
                 }
         }
 
-        x = 320 - count * 20;
+        x = 290 - count * 20;
         y = 400;
 
         for ( i = 1 ; i < WP_NUM_WEAPONS ; i++ ) {
