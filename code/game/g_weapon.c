@@ -178,13 +178,20 @@ void Bullet_Fire (gentity_t *ent, float spread, int damage ) {
         float           u;
         gentity_t       *tent;
         gentity_t       *traceEnt;
-        int                     i, passent;
+        int                     i, passent, spreadAdjustment;
         spread += BG_CalcSpread(ent->client->ps);
         damage *= s_quadFactor;
        // G_Printf ("spread = %f\n xyspeed = %f", spread, BG_CalcSpread(ent->client->ps) );
+
+	if( ent->client->ps.powerups[ PW_LASERSIGHT ] ){
+	spreadAdjustment = 8;
+	}else if( ent->client->ps.powerups[ PW_SILENCER ] ){
+        spreadAdjustment = 12;
+        }else
+	spreadAdjustment = 16;
         r = random() * M_PI * 2.0f;
-        u = sin(r) * crandom() * spread * 16;
-        r = cos(r) * crandom() * spread * 16;
+        u = sin(r) * crandom() * spread * spreadAdjustment;
+        r = cos(r) * crandom() * spread * spreadAdjustment;
         VectorMA (muzzle, 8192*16, forward, end);
         VectorMA (end, r, right, end);
         VectorMA (end, u, up, end);
