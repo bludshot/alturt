@@ -897,6 +897,8 @@ static void CG_RegisterGraphics( void ) {
 	}
                   cgs.media.laserShader = trap_R_RegisterShader( "gfx/laser/red" );  //Xamis lasersight
                   cgs.media.scopeShader = trap_R_RegisterShader( "gfx/crosshairs/scopes/scope" );  //Xamis scope
+                  cgs.media.scopeRingShader = trap_R_RegisterShader( "gfx/crosshairs/scopes/scopering" );  //Xamis scope
+                  cgs.media.scopeRingGeneric = trap_R_RegisterShader( "gfx/crosshairs/scopes/generic" );  //Xamis scope
         CG_LoadingBarUpdate(10);
 	cgs.media.backTileShader = trap_R_RegisterShader( "gfx/2d/backtile" );
 	cgs.media.noammoShader = trap_R_RegisterShader( "icons/noammo" );

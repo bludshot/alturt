@@ -462,15 +462,23 @@ void CG_DrawSniperScope(void) {
     switch ( cg.snap->ps.weapon ) {
      case WP_PSG1:
         CG_DrawPic( 0, 0, 640, 480, cgs.media.scopeShader );
+        CG_DrawPic( 0, 0, 640, 480, cgs.media.scopeRingShader );
+                CG_DrawPic( 0, 0, 640, 480, cgs.media.scopeRingGeneric );
         break;
     case WP_G36:
         CG_DrawPic( 0, 0, 640, 480, cgs.media.scopeShader );
+        CG_DrawPic( 0, 0, 640, 480, cgs.media.scopeRingShader );
+                CG_DrawPic( 0, 0, 640, 480, cgs.media.scopeRingGeneric );
         break;
     case WP_SR8:
         CG_DrawPic( 0, 0, 640, 480, cgs.media.scopeShader );
+        CG_DrawPic( 0, 0, 640, 480, cgs.media.scopeRingShader );
+                CG_DrawPic( 0, 0, 640, 480, cgs.media.scopeRingGeneric );
         break;
     default:
         CG_DrawPic( 0, 0, 640, 480, cgs.media.scopeShader );
+        CG_DrawPic( 0, 0, 640, 480, cgs.media.scopeRingShader );
+        CG_DrawPic( 0, 0, 640, 480, cgs.media.scopeRingGeneric );
         break;
     }
     trap_R_SetColor( NULL );
