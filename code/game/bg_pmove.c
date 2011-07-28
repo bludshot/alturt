@@ -41,7 +41,7 @@ float   pm_wadeScale = 0.70f;
 float   pm_ladderscale = 0.50f; //Xamis
 
 
-float   pm_accelerate = 12.0f;
+float   pm_accelerate = 6.0f;
 float   pm_airaccelerate = 1.0f;
 float   pm_wateraccelerate = 4.0f;
 float   pm_flyaccelerate = 8.0f;
@@ -49,7 +49,7 @@ float   pm_ladderaccelerate = 4000; //Xamis
 float   pm_slideaccelerate = 4000;
 
 
-float   pm_friction = 6.0f;
+float   pm_friction = 5.0f;
 float   pm_waterfriction = 1.0f;
 float   pm_flightfriction = 3.0f;
 float   pm_spectatorfriction = 5.0f;
