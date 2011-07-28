@@ -843,7 +843,7 @@ static void CG_DrawStatusBar( void ) {
           }
         //Draw the Text
           trap_R_SetColor( colors[0] );
-          CG_DrawStringExt( 570, 450, s, colors[color], qfalse, qtrue, 4, 6, 0 );
+          CG_DrawStringExt( 570, 460, s, colors[color], qfalse, qtrue, 4, 6, 0 );
 
         }
 
@@ -869,7 +869,7 @@ static void CG_DrawStatusBar( void ) {
         if (value > -1  && !( cg.predictedPlayerState.weapon == WP_HE ||cg.predictedPlayerState.weapon == WP_SMOKE  )) {
         //Draw the Text
           trap_R_SetColor( colors[0] );
-          CG_DrawField (554, 460, 3, value);
+          CG_DrawField (554, 440, 3, value);
           trap_R_SetColor( NULL );
 
         // if we didn't draw a 3D icon, draw a 2D icon for weapon
@@ -2030,18 +2030,18 @@ static void CG_DrawTeamInfo( void ) {
 		w += TINYCHAR_WIDTH * 2;
 
 		if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_RED ) {
-			hcolor[0] = 1.0f;
+			hcolor[0] = 0.0f;
 			hcolor[1] = 0.0f;
 			hcolor[2] = 0.0f;
 			hcolor[3] = 0.33f;
 		} else if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_BLUE ) {
 			hcolor[0] = 0.0f;
 			hcolor[1] = 0.0f;
-			hcolor[2] = 1.0f;
+			hcolor[2] = 0.0f;
 			hcolor[3] = 0.33f;
 		} else {
 			hcolor[0] = 0.0f;
-			hcolor[1] = 1.0f;
+			hcolor[1] = 0.0f;
 			hcolor[2] = 0.0f;
 			hcolor[3] = 0.33f;
 		}
@@ -2427,6 +2427,8 @@ for a few moments
 void CG_CenterPrint( const char *str, int y, int charWidth ) {
 	char	*s;
 
+
+
 	Q_strncpyz( cg.centerPrint, str, sizeof(cg.centerPrint) );
 
 	cg.centerPrintTime = cg.time;
@@ -2441,6 +2443,7 @@ void CG_CenterPrint( const char *str, int y, int charWidth ) {
 			cg.centerPrintLines++;
 		s++;
 	}
+
 }
 
 
@@ -2512,6 +2515,76 @@ static void CG_DrawCenterString( void ) {
 	trap_R_SetColor( NULL );
 }
 
+
+void CG_ChatPrint( const char *str,  int charWidth ) {
+	char	*s;
+
+	Q_strncpyz( cg.chatPrint, str, sizeof(cg.chatPrint) );
+
+	cg.chatPrintTime = cg.time;
+	cg.chatPrintCharWidth = charWidth;
+
+	// count the number of lines for centering
+	cg.chatPrintLines = 1;
+	s = cg.chatPrint;
+	while( *s ) {
+		if (*s == '\n')
+			cg.chatPrintLines++;
+		s++;
+	}
+
+}
+
+
+
+static void CG_DrawChatString( void ) {
+	char	*start;
+	int		l;
+	int		w;
+	float	*color;
+
+	if ( !cg.chatPrintTime ) {
+		return;
+	}
+
+	color = CG_FadeColor( cg.chatPrintTime, 1000 * cg_centertime.value );
+	if ( !color ) {
+		return;
+	}
+
+	trap_R_SetColor( color );
+
+	start = cg.chatPrint;
+
+	while ( 1 ) {
+		char linebuffer[1024];
+
+		for ( l = 0; l < 50; l++ ) {
+			if ( !start[l] || start[l] == '\n' ) {
+				break;
+			}
+			linebuffer[l] = start[l];
+		}
+		linebuffer[l] = 0;
+
+		w = cg.chatPrintCharWidth * CG_DrawStrlen( linebuffer );
+
+		CG_DrawStringExt( 10, 360, linebuffer, color, qtrue, qtrue,
+			cg.chatPrintCharWidth, (int)(cg.chatPrintCharWidth * 1.5), 0 );
+
+
+
+		while ( *start && ( *start != '\n' ) ) {
+			start++;
+		}
+		if ( !*start ) {
+			break;
+		}
+		start++;
+	}
+
+	trap_R_SetColor( NULL );
+}
 
 
 /*
@@ -3302,6 +3375,7 @@ static void CG_Draw2D(stereoFrame_t stereoFrame)
 	cg.scoreBoardShowing = CG_DrawScoreboard();
 	if ( !cg.scoreBoardShowing) {
 		CG_DrawCenterString();
+                                        CG_DrawChatString();
 	}
 
 
