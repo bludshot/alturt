@@ -824,6 +824,9 @@ static void G_SayTo( gentity_t *ent, gentity_t *other, int mode, int color, cons
                 return;
         }
 
+        //G_Printf("Sending command %s",va("%s \"%s%c%c%s\"",
+//                mode == SAY_TEAM ? "tchat" : "chat",
+ //               name, Q_COLOR_ESCAPE, color, message));
         trap_SendServerCommand( other-g_entities, va("%s \"%s%c%c%s\"",
                 mode == SAY_TEAM ? "tchat" : "chat",
                 name, Q_COLOR_ESCAPE, color, message));
@@ -849,7 +852,7 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
         case SAY_ALL:
                 G_LogPrintf( "say: %s: %s\n", ent->client->pers.netname, chatText );
                 Com_sprintf (name, sizeof(name), "%s%c%c"EC": ", ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE );
-                color = COLOR_GREEN;
+                color = COLOR_WHITE;
                 break;
         case SAY_TEAM:
                 G_LogPrintf( "sayteam: %s: %s\n", ent->client->pers.netname, chatText );
@@ -859,7 +862,7 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
                 else
                         Com_sprintf (name, sizeof(name), EC"(%s%c%c"EC")"EC": ",
                                 ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE );
-                color = COLOR_CYAN;
+                color = COLOR_WHITE;
                 break;
         case SAY_TELL:
                 if (target && g_gametype.integer >= GT_TEAM &&
@@ -868,7 +871,7 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
                         Com_sprintf (name, sizeof(name), EC"[%s%c%c"EC"] (%s)"EC": ", ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE, location );
                 else
                         Com_sprintf (name, sizeof(name), EC"[%s%c%c"EC"]"EC": ", ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE );
-                color = COLOR_MAGENTA;
+                color = COLOR_WHITE;
                 break;
         }
 
