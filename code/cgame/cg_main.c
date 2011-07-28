@@ -895,6 +895,7 @@ static void CG_RegisterGraphics( void ) {
 	for ( i = 0 ; i < NUM_CROSSHAIRS ; i++ ) {
 		cgs.media.crosshairShader[i] = trap_R_RegisterShader( va("gfx/2d/crosshair%c", 'a'+i) );
 	}
+        cgs.media.zoomCrossShader = trap_R_RegisterShader( "gfx/2d/crosshairx");
                   cgs.media.laserShader = trap_R_RegisterShader( "gfx/laser/red" );  //Xamis lasersight
                   cgs.media.scopeShader = trap_R_RegisterShader( "gfx/crosshairs/scopes/scope" );  //Xamis scope
                   cgs.media.scopeRingShader = trap_R_RegisterShader( "gfx/crosshairs/scopes/scopering" );  //Xamis scope
