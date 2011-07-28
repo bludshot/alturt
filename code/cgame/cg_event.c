@@ -700,15 +700,15 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 				break;
 			}
 			item = &bg_itemlist[ index ];
-
+//Disable sounds for powerup -- Xamis
 			// powerups and team items will have a separate global sound, this one
 			// will be played at prediction time
-			if ( item->giType == IT_POWERUP || item->giType == IT_TEAM) {
+		/*	if ( item->giType == IT_POWERUP || item->giType == IT_TEAM) {
 				trap_S_StartSound (NULL, es->number, CHAN_AUTO,	cgs.media.n_healthSound );
                         } else {
 				trap_S_StartSound (NULL, es->number, CHAN_AUTO,	trap_S_RegisterSound( item->pickup_sound, qfalse ) );
 			}
-
+		*/
 			// show icon and name on status bar
 			if ( es->number == cg.snap->ps.clientNum ) {
 				CG_ItemPickup( index );
@@ -852,24 +852,24 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	//
 	case EV_PLAYER_TELEPORT_IN:
 		DEBUGNAME("EV_PLAYER_TELEPORT_IN");
-		trap_S_StartSound (NULL, es->number, CHAN_AUTO, cgs.media.teleInSound );
+		//trap_S_StartSound (NULL, es->number, CHAN_AUTO, cgs.media.teleInSound ); //disable sound --Xamis
 		CG_SpawnEffect( position);
 		break;
 
 	case EV_PLAYER_TELEPORT_OUT:
 		DEBUGNAME("EV_PLAYER_TELEPORT_OUT");
-		trap_S_StartSound (NULL, es->number, CHAN_AUTO, cgs.media.teleOutSound );
+		//trap_S_StartSound (NULL, es->number, CHAN_AUTO, cgs.media.teleOutSound );//disable sound --Xamis
 		CG_SpawnEffect(  position);
 		break;
 
 	case EV_ITEM_POP:
 		DEBUGNAME("EV_ITEM_POP");
-		trap_S_StartSound (NULL, es->number, CHAN_AUTO, cgs.media.respawnSound );
+		//trap_S_StartSound (NULL, es->number, CHAN_AUTO, cgs.media.respawnSound );
 		break;
 	case EV_ITEM_RESPAWN:
 		DEBUGNAME("EV_ITEM_RESPAWN");
 		cent->miscTime = cg.time;	// scale up from this
-		trap_S_StartSound (NULL, es->number, CHAN_AUTO, cgs.media.respawnSound );
+		//trap_S_StartSound (NULL, es->number, CHAN_AUTO, cgs.media.respawnSound );
 		break;
 
 	case EV_GRENADE_BOUNCE:
