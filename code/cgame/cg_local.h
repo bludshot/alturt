@@ -641,6 +641,14 @@ typedef struct {
 	int			centerPrintY;
 	char		centerPrint[1024];
 	int			centerPrintLines;
+        
+        
+                  //alturt chat text
+                  int			chatPrintTime;
+	int			chatPrintCharWidth;
+	int			chatPrintY;
+                  char                                               chatPrint[1024];
+                  int			chatPrintLines;
 
 	// low ammo warning state
 	int			lowAmmoWarning;		// 1 = low, 2 = empty
@@ -1820,4 +1828,4 @@ qboolean CG_SetPlayerModelName( int team, int racered, int raceblue, char *model
 char *CG_GetPlayerSkinName( clientInfo_t *ci );
 char *CG_GetPlayerModelName( clientInfo_t *ci );
 void CG_ZoomReset_f (void);
-
+void CG_ChatPrint( const char *str,  int charWidth );
