@@ -1801,6 +1801,7 @@ static void PM_FinishWeaponChange( void ) {
         }
 
         pm->ps->pm_flags &= ~PMF_GRENADE_ARMED;
+	bg_nadeTimer.fuseTime[pm->ps->clientNum] = 6000;
         pm->ps->weapon = weapon;
         pm->ps->weaponstate = WEAPON_RAISING;
         pm->ps->weaponTime += 250;
@@ -2048,7 +2049,7 @@ static void PM_Weapon( void ) {
         if ( pm->ps->weaponTime <= 0 )
           pm->ps->weaponTime = 0;
 //check grenade fuse time
-        if ( bg_nadeTimer.fuseTime[pm->ps->clientNum]  > 0 )
+        if ( bg_nadeTimer.fuseTime[pm->ps->clientNum]  > 0 && pm->ps->pm_flags & PMF_GRENADE_ARMED)
           bg_nadeTimer.fuseTime[pm->ps->clientNum] -= pml.msec;
         if ( bg_nadeTimer.fuseTime[pm->ps->clientNum]  <= 0 ){
           bg_nadeTimer.fuseTime[pm->ps->clientNum] = 0;
