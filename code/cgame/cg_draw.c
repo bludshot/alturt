@@ -819,6 +819,7 @@ static void CG_DrawStatusBar( void ) {
         //weapon mode
         value = ps->stats[STAT_MODE];
         if (!( cg.predictedPlayerState.weapon == WP_HE
+		||cg.predictedPlayerState.weapon == WP_KNIFE
                ||cg.predictedPlayerState.weapon == WP_SMOKE
                 ||cg.predictedPlayerState.weapon == WP_SPAS
                 ||cg.predictedPlayerState.weapon == WP_HK69
@@ -2650,6 +2651,11 @@ static void CG_DrawCrosshair(void)
 		ca = 0;
 	}
 	hShader = cgs.media.crosshairShader[ ca % NUM_CROSSHAIRS ];
+        
+        if ( cg.snap->ps.weapon == WP_SR8 || cg.snap->ps.weapon == WP_PSG1 || cg.snap->ps.weapon == WP_G36  ){
+            hShader = cgs.media.zoomCrossShader;
+	w = h = 470;	
+	}
 
 	trap_R_DrawStretchPic( x + cg.refdef.x + 0.5 * (cg.refdef.width - w),
 		y + cg.refdef.y + 0.5 * (cg.refdef.height - h),
