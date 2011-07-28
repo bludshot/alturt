@@ -425,7 +425,7 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
 
 //--Xamis   Sprinting/Stamina
 
-                if ( !( ucmd->buttons & BUTTON_SPRINTING  ) ) {
+                if ( !( ucmd->buttons & BUTTON_SPRINTING )|| xyspeed < 220 ) {
                         if ( ent->stamina < ent->health*9 ) {
                                 ent->stamina += 45;
                         }
