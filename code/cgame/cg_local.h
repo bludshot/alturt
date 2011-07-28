@@ -842,6 +842,7 @@ typedef struct {
 	qhandle_t	viewBloodShader;
 	qhandle_t	tracerShader;
 	qhandle_t	crosshairShader[NUM_CROSSHAIRS];
+	qhandle_t        zoomCrossShader;
                   qhandle_t       laserShader;   //Xamis lasersight
                   qhandle_t       scopeShader;   //Xamis lasersight  
                   qhandle_t       scopeRingShader;   //Xamis lasersight           
