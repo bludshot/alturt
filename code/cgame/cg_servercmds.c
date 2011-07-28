@@ -1022,22 +1022,28 @@ static void CG_ServerCommand( void ) {
 		return;
 	}
 
+
 	if ( !strcmp( cmd, "chat" ) ) {
 		if ( !cg_teamChatsOnly.integer ) {
-			trap_S_StartLocalSound( cgs.media.talkSound, CHAN_LOCAL_SOUND );
+			//trap_S_StartLocalSound( cgs.media.talkSound, CHAN_LOCAL_SOUND );
 			Q_strncpyz( text, CG_Argv(1), MAX_SAY_TEXT );
+
 			CG_RemoveChatEscapeChar( text );
-			CG_Printf( "%s\n", text );
+			//CG_Printf( "%s\n", text );
+                                                      CG_ChatPrint( text, 6 ) ;              
 		}
 		return;
 	}
 
 	if ( !strcmp( cmd, "tchat" ) ) {
-		trap_S_StartLocalSound( cgs.media.talkSound, CHAN_LOCAL_SOUND );
+		//trap_S_StartLocalSound( cgs.media.talkSound, CHAN_LOCAL_SOUND );
 		Q_strncpyz( text, CG_Argv(1), MAX_SAY_TEXT );
+                                     
 		CG_RemoveChatEscapeChar( text );
 		CG_AddToTeamChat( text );
-		CG_Printf( "%s\n", text );
+		//CG_Printf( "%s\n", text );
+                                    CG_ChatPrint( text, 6 ) ;    
+
 		return;
 	}
 	if ( !strcmp( cmd, "vchat" ) ) {
