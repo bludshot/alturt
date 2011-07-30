@@ -695,6 +695,8 @@ static void CG_RegisterSounds( void ) {
 	cgs.media.ladderSound = trap_S_RegisterSound ("sound/player/footsteps/clank1.wav", qfalse ); //Xamis
 	cgs.media.jumpPadSound = trap_S_RegisterSound ("sound/world/jumppad.wav", qfalse );
 	cgs.media.noammoSound = trap_S_RegisterSound ("sound/weapons/beretta/92G_noammo.wav", qfalse );
+	cgs.media.zoomSound = trap_S_RegisterSound ("sound/zoom.wav", qfalse );                  
+                
 
 	for (i=0 ; i<4 ; i++) {
 		Com_sprintf (name, sizeof(name), "sound/player/footsteps/boot%i.wav", i+1);

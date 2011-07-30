@@ -1011,6 +1011,7 @@ typedef struct {
 	sfxHandle_t jumpPadSound;
 	sfxHandle_t ladderSound;
 	sfxHandle_t noammoSound;
+                 sfxHandle_t zoomSound;
 
 	sfxHandle_t oneMinuteSound;
 	sfxHandle_t fiveMinuteSound;

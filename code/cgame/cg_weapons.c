@@ -2254,6 +2254,7 @@ if( cent->pe.zoomLevel == 0 ){
         cg.zoomed = qfalse;
 }
 
+
     }
 
 if (cent->currentState.weapon ==WP_G36 ){
@@ -2268,7 +2269,7 @@ if( cent->pe.zoomLevel == 0 ){
         cg.zoomed = qfalse;
 }
 
-    }
+    }trap_S_StartSound (NULL, cg.snap->ps.clientNum, CHAN_WEAPON, cgs.media.zoomSound );
 }
 
 
