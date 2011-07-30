@@ -2652,7 +2652,7 @@ static void CG_DrawCrosshair(void)
 	}
 	hShader = cgs.media.crosshairShader[ ca % NUM_CROSSHAIRS ];
         
-        if ( cg.snap->ps.weapon == WP_SR8 || cg.snap->ps.weapon == WP_PSG1 || cg.snap->ps.weapon == WP_G36  ){
+         if ((cg.snap->ps.weapon == WP_SR8 || cg.snap->ps.weapon == WP_PSG1 || cg.snap->ps.weapon == WP_G36 )&& cg.zoomed){
             hShader = cgs.media.zoomCrossShader;
 	w = h = 470;	
 	}
