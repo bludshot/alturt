@@ -842,7 +842,7 @@ void ClientUserinfoChanged( int clientNum ) {
      //   Q_strncpyz( client->weaponModeChar , weapmodes_save, sizeof( client->weaponModeChar));
       //  client->weaponModeChar=weapmodes_save;
        // gear = atoi(Info_ValueForKey(userinfo, "gear"));
-        G_Printf("client->weaponModeChar %s",client->weaponModeChar);
+   //     G_Printf("client->weaponModeChar %s",client->weaponModeChar);
 		// bots set their team a few frames later
         if (g_gametype.integer >= GT_TEAM && g_entities[clientNum].r.svFlags & SVF_BOT) {
                 s = Info_ValueForKey( userinfo, "team" );
