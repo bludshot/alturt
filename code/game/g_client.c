@@ -749,6 +749,8 @@ void ClientUserinfoChanged( int clientNum ) {
         gentity_t *ent;
         int		teamTask, teamLeader, team, health;
         int		racered, raceblue; //blud
+        char                    gear[MAX_QPATH];//xamis
+        char                    weapmodes_save[MAX_QPATH];//xamis
         char    *s;
         char    skin[MAX_QPATH]; //blud
         char    model[MAX_QPATH];
@@ -835,9 +837,12 @@ void ClientUserinfoChanged( int clientNum ) {
         racered = atoi(Info_ValueForKey(userinfo, "racered"));
         raceblue = atoi(Info_ValueForKey(userinfo, "raceblue"));
         Q_strncpyz( skin, Info_ValueForKey (userinfo, "skin"), sizeof( skin ) );
-
-
-
+        Q_strncpyz( gear, Info_ValueForKey (userinfo, "gear"), sizeof( gear ) );
+        Q_strncpyz( weapmodes_save, Info_ValueForKey (userinfo, "weapmodes_save"), sizeof( weapmodes_save ) );
+     //   Q_strncpyz( client->weaponModeChar , weapmodes_save, sizeof( client->weaponModeChar));
+      //  client->weaponModeChar=weapmodes_save;
+       // gear = atoi(Info_ValueForKey(userinfo, "gear"));
+        G_Printf("client->weaponModeChar %s",client->weaponModeChar);
 		// bots set their team a few frames later
         if (g_gametype.integer >= GT_TEAM && g_entities[clientNum].r.svFlags & SVF_BOT) {
                 s = Info_ValueForKey( userinfo, "team" );
@@ -985,16 +990,16 @@ void ClientUserinfoChanged( int clientNum ) {
         // print scoreboards, display models, and play custom sounds
         if (ent->r.svFlags & SVF_BOT)
         {
-                s = va("n\\%s\\t\\%i\\model\\%s\\hmodel\\%s\\rr\\%d\\rb\\%d\\skin\\%s\\c1\\%s\\c2\\%s\\hc\\%i\\w\\%i\\l\\%i\\skill\\%s\\tt\\%d\\tl\\%d",
+                s = va("n\\%s\\t\\%i\\model\\%s\\hmodel\\%s\\rr\\%d\\rb\\%d\\skin\\%s\\c1\\%s\\c2\\%s\\hc\\%i\\w\\%i\\l\\%i\\skill\\%s\\gear\\%s\\tt\\%d\\tl\\%d\\weapmodes\\%s",
                         client->pers.netname, team, model, headModel, racered, raceblue, skin, c1, c2,
                         client->pers.maxHealth, client->sess.wins, client->sess.losses,
-                        Info_ValueForKey( userinfo, "skill" ), teamTask, teamLeader );
+                        Info_ValueForKey( userinfo, "skill" ),gear, teamTask, teamLeader,weapmodes_save );
         }
         else
         {
-                s = va("n\\%s\\guid\\%s\\t\\%i\\model\\%s\\hmodel\\%s\\rr\\%d\\rb\\%d\\skin\\%s\\g_redteam\\%s\\g_blueteam\\%s\\c1\\%s\\c2\\%s\\hc\\%i\\w\\%i\\l\\%i\\tt\\%d\\tl\\%d",
+                s = va("n\\%s\\guid\\%s\\t\\%i\\model\\%s\\hmodel\\%s\\rr\\%d\\rb\\%d\\skin\\%s\\g_redteam\\%s\\g_blueteam\\%s\\c1\\%s\\c2\\%s\\hc\\%i\\w\\%i\\l\\%i\\gear\\%s\\tt\\%d\\tl\\%d\\weapmodes\\%s",
                         client->pers.netname, guid, client->sess.sessionTeam, model, headModel, racered, raceblue, skin, redTeam, blueTeam, c1, c2,
-                        client->pers.maxHealth, client->sess.wins, client->sess.losses, teamTask, teamLeader);
+                        client->pers.maxHealth, client->sess.wins, client->sess.losses,gear, teamTask, teamLeader,weapmodes_save);
         }
 
 
@@ -1189,6 +1194,7 @@ void ClientSpawn(gentity_t *ent) {
         int             accuracy_hits, accuracy_shots;
         int             eventSequence;
         char    userinfo[MAX_INFO_STRING];
+        char    gear[MAX_QPATH];
 
         index = ent - g_entities;
         client = ent->client;
@@ -1298,14 +1304,16 @@ void ClientSpawn(gentity_t *ent) {
 
         VectorCopy (playerMins, ent->r.mins);
         VectorCopy (playerMaxs, ent->r.maxs);
-
+          Q_strncpyz( gear, Info_ValueForKey (userinfo, "gear"), sizeof( gear ) );
         client->ps.clientNum = index;
-
+//BG_GetWeaponString(&client->ps, gearString);
 
                 /*
         --Xamis--
 
                 */
+
+
 
 //layout for gear selection from urt config file!
         //sidearm = gear.string[0];
@@ -1321,15 +1329,20 @@ void ClientSpawn(gentity_t *ent) {
         bg_weaponlist[WP_KNIFE].numClips[ ent->client->ps.clientNum] = -1;
         bg_inventory.sort[ent->client->ps.clientNum][MELEE] = WP_KNIFE;
         client->pers.inventory[MELEE] = WP_KNIFE;
-
-
-        if( gear.string[0] == 'F'  ){
+        
+/*
+for (i=0; i <7; i++){
+     G_Printf( "Weapon %i is %i\n",i, gear[i] );
+    
+}
+*/
+        if( gear[0] == 'F'  ){
                 BG_PackWeapon( WP_BERETTA , ent->client->ps.stats );
                 bg_weaponlist[WP_BERETTA].rounds[ ent->client->ps.clientNum] = RoundCount(WP_BERETTA);
                 bg_weaponlist[WP_BERETTA].numClips[ent->client->ps.clientNum] = 3;
                 client->pers.inventory[SIDEARM]= WP_BERETTA;
                 bg_inventory.sort[ent->client->ps.clientNum][SIDEARM] = WP_BERETTA;
-        }else if( gear.string[0] == 'G'  ){
+        }else if( gear[0] == 'G'  ){
                 BG_PackWeapon( WP_DEAGLE , ent->client->ps.stats );
                 bg_weaponlist[WP_DEAGLE].rounds[ ent->client->ps.clientNum]= RoundCount(WP_DEAGLE);
                 bg_weaponlist[WP_DEAGLE].numClips[ent->client->ps.clientNum] = 3;
@@ -1341,7 +1354,7 @@ void ClientSpawn(gentity_t *ent) {
           bg_inventory.sort[ent->client->ps.clientNum][SIDEARM]= WP_NONE;
 
         }
-        switch ( gear.string[1] ) {
+        switch ( gear[1] ) {
                 case 'A':
                         bg_inventory.sort[ent->client->ps.clientNum][PRIMARY]= WP_NONE;
                         client->pers.inventory[PRIMARY]= WP_NONE;
@@ -1453,7 +1466,7 @@ void ClientSpawn(gentity_t *ent) {
         }
 
 
-        switch ( gear.string[2] ) {
+        switch ( gear[2] ) {
                 case 'A':
                   bg_inventory.sort[ent->client->ps.clientNum][SECONDARY]= WP_NONE;
                   client->pers.inventory[SECONDARY]= WP_NONE;
@@ -1493,7 +1506,7 @@ void ClientSpawn(gentity_t *ent) {
         }
 
 
-        if( gear.string[3] == 'O'  ){
+        if( gear[3] == 'O'  ){
         BG_PackWeapon( WP_HE , ent->client->ps.stats );
        // client->ps.ammo[WP_HE] = 2;
        // client->clipammo[WP_HE] = 2;
@@ -1502,7 +1515,7 @@ void ClientSpawn(gentity_t *ent) {
         client->pers.inventory[NADE]= WP_HE;
         bg_inventory.sort[ent->client->ps.clientNum][NADE]= WP_HE;
 
-        }else if( gear.string[3] == 'Q'  ){
+        }else if( gear[3] == 'Q'  ){
           BG_PackWeapon( WP_SMOKE , ent->client->ps.stats );
          // client->ps.ammo[WP_SMOKE] = 2;
         //  client->[WP_SMOKE] = 2;
@@ -1518,13 +1531,13 @@ void ClientSpawn(gentity_t *ent) {
         }
      //   G_Printf("gear string 4:%c 5:%c 6:%c\n", gear.string[4],gear.string[5],gear.string[6]);
         for( i = 0; i < 3; i++ ){
-          if( gear.string[i+4] == 'V'  )
+          if( gear[i+4] == 'V'  )
             bg_inventory.item[ent->client->ps.clientNum][i] = PW_LASERSIGHT;
-          if( gear.string[i+4] == 'W'  )
+          if( gear[i+4] == 'W'  )
             bg_inventory.item[ent->client->ps.clientNum][i] = PW_HELMET;
-          if( gear.string[i+4] == 'R'  )
+          if( gear[i+4] == 'R'  )
             bg_inventory.item[ent->client->ps.clientNum][i] = PW_VEST;
-          if( gear.string[i+4] == 'U'  )
+          if( gear[i+4] == 'U'  )
             bg_inventory.item[ent->client->ps.clientNum][i] = PW_SILENCER;
 
         }
