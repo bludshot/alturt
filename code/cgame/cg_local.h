@@ -334,6 +334,8 @@ typedef struct {
 
 	int				racered;		//blud
 	int				raceblue;		//blud
+                  char                                                                 gear;
+                  char                                                                 weapmodes_save;
 
 	int				score;			// updated by score servercmds
 	int				deaths;
@@ -1311,6 +1313,10 @@ extern	vmCvar_t		cg_oldRail;
 extern	vmCvar_t		cg_oldRocket;
 extern	vmCvar_t		cg_oldPlasma;
 extern	vmCvar_t		cg_trueLightning;
+extern	vmCvar_t		gear;
+extern	vmCvar_t		weapmodes_save;
+//extern	vmCvar_t		cg_trueLightning;
+
 #ifdef MISSIONPACK
 extern	vmCvar_t		cg_redTeamName;
 extern	vmCvar_t		cg_blueTeamName;
