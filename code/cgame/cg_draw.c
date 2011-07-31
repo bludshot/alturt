@@ -684,7 +684,7 @@ static void CG_DrawStatusBar( void ) {
 	if ( cent->currentState.weapon ) {
 		//value = ps->ammo[cent->currentState.weapon];
                 value = ps->stats[STAT_CLIPS];
-               		if ( value > -1 ) {
+               		if ( value > -1 && cent->currentState.weapon != WP_KNIFE ) {
 			if ( cg.predictedPlayerState.weaponstate == WEAPON_FIRING
 				&& cg.predictedPlayerState.weaponTime > 100 ) {
 				// draw as dark grey when reloading
@@ -819,10 +819,8 @@ static void CG_DrawStatusBar( void ) {
         //weapon mode
         value = ps->stats[STAT_MODE];
         if (!( cg.predictedPlayerState.weapon == WP_HE
-		||cg.predictedPlayerState.weapon == WP_KNIFE
                ||cg.predictedPlayerState.weapon == WP_SMOKE
                 ||cg.predictedPlayerState.weapon == WP_SPAS
-                ||cg.predictedPlayerState.weapon == WP_HK69
 	       ||cg.predictedPlayerState.weapon == WP_NEGEV
 	       ||cg.predictedPlayerState.weapon == WP_SR8
 	       ||cg.predictedPlayerState.weapon == WP_PSG1 
@@ -833,13 +831,24 @@ static void CG_DrawStatusBar( void ) {
           if ( value == 0 ){
 	    if (cg.predictedPlayerState.weapon == WP_UMP45)
 	    s = "Spam";
-	    else
+	    else if (cg.predictedPlayerState.weapon == WP_KNIFE)
+                s="Slash";
+                        else  if (cg.predictedPlayerState.weapon == WP_HK69)
+                        s = "Short";
+                    else
             s = "Burst";
           }
           if ( value == 1 ){
-            s = "Semi Automatic";
+
+                    s = "Semi Automatic";
           }
           if ( value == 2 ){
+                if (cg.predictedPlayerState.weapon == WP_KNIFE)
+                    s = "Throw";
+                else  if (cg.predictedPlayerState.weapon == WP_HK69)
+                    s = "Long";
+                else
+
             s = "Automatic";
           }
         //Draw the Text
