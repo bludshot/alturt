@@ -3230,6 +3230,8 @@ void CG_MissileHitWall( int weapon, int clientNum, vec3_t origin, vec3_t dir, im
                 sfx = 0;
                 radius = 4;
                 break;
+        case WP_KNIFE:
+            break;
         case WP_LR300:
         case WP_M4:
                 mod = cgs.media.bulletFlashModel;
@@ -3271,6 +3273,7 @@ void CG_MissileHitWall( int weapon, int clientNum, vec3_t origin, vec3_t dir, im
         //
         alphaFade = (mark == cgs.media.energyMarkShader);       // plasma fades alpha, all others fade color
 
+        if (weapon != WP_KNIFE)
                 CG_ImpactMark( mark, origin, dir, random()*360, 1,1,1,1, alphaFade, radius, qfalse );
 
 }
