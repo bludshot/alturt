@@ -26,6 +26,31 @@ along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
 
 #define	MISSILE_PRESTEP_TIME	50
 
+
+
+void G_KnifeThink( gentity_t *self ) {
+	trace_t trace;
+	int mask;
+
+	if(self->clipmask)
+		mask = self->clipmask;
+	else
+		mask = MASK_PLAYERSOLID & ~CONTENTS_BODY;
+
+	trap_Trace(&trace, self->r.currentOrigin, self->r.mins,self->r.maxs, self->s.origin2,
+		self->r.ownerNum, mask);
+
+	if(trace.fraction == 1){
+		self->s.groundEntityNum = -1;
+	}
+
+	if(level.time > self->wait)
+		G_FreeEntity(self);
+
+	self->nextthink = level.time + 100;
+}
+
+
 /*
 ================
 G_BounceMissile
@@ -293,7 +318,12 @@ G_MissileImpact
 void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 	gentity_t		*other;
 	qboolean		hitClient = qfalse;
+                  qboolean		hitKnife  = qfalse;
 	other = &g_entities[trace->entityNum];
+        
+        
+        	if(other->takedamage)
+		hitKnife = qtrue;
 
 	// check for bounce
 	if ( !other->takedamage &&
@@ -362,13 +392,15 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 		ent->nextthink = level.time + FRAMETIME;
 
 		//ent->parent->client->ps.pm_flags |= PMF_GRAPPLE_PULL;
-		VectorCopy( ent->r.currentOrigin, ent->parent->client->ps.grapplePoint);
+		//VectorCopy( ent->r.currentOrigin, ent->parent->client->ps.grapplePoint);
 
 		trap_LinkEntity( ent );
 		trap_LinkEntity( nent );
 
 		return;
 	}
+        
+        	
 
 	// is it cheaper in bandwidth to just remove this ent and create a new
 	// one, rather than changing the missile into the explosion?
@@ -382,10 +414,37 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 		G_AddEvent( ent, EV_MISSILE_MISS, DirToByte( trace->plane.normal ) );
 	}
 
-	ent->freeAfterEvent = qtrue;
-
+	if(Q_stricmp(ent->classname, "knife")){
+		ent->freeAfterEvent = qtrue;
 	// change over to a normal entity right at the point of impact
-	ent->s.eType = ET_GENERAL;
+		ent->s.eType = ET_GENERAL;
+	} else {
+
+		vec3_t dir;
+		gitem_t			*item;
+
+		item = BG_FindItemForWeapon(WP_KNIFE);
+                                    ent->s.modelindex = item-bg_itemlist;
+		ent->s.modelindex2 = 1;
+
+		ent->item = item;
+
+		ent->s.eType = ET_ITEM;
+		ent->s.pos.trType = TR_GRAVITY;
+		ent->physicsBounce = 0.01f;
+		ent->r.contents = CONTENTS_TRIGGER;
+
+		ent->touch = Touch_Item;
+		ent->nextthink = level.time + 100;
+		ent->think = G_KnifeThink;
+		ent->wait = level.time + 30000;
+		ent->flags |= FL_THROWN_ITEM;
+
+		vectoangles(ent->s.pos.trDelta, dir);
+
+		VectorCopy(dir, ent->s.apos.trBase);
+		VectorCopy(dir, ent->r.currentAngles);
+	}
 
 	SnapVectorTowards( trace->endpos, ent->s.pos.trBase );	// save net bandwidth
 
@@ -731,5 +790,49 @@ fire_grapple
 //} //blud: xamis commented out the contents of the function, now I am commenting out the function itself to stop a warning it throws in the compiler for not returning anything.
 
 
+void G_Temp(gentity_t *self){
+	self->nextthink = level.time + 100;
+}
 
+/*
+=================
+fire_knife
+=================
+*/
+gentity_t *fire_knife (gentity_t *self, vec3_t start, vec3_t dir, int speed) {
+	gentity_t	*bolt;
 
+	VectorNormalize (dir);
+
+	bolt = G_Spawn();
+	bolt->classname = "knife";
+	bolt->nextthink = level.time + 100;
+	bolt->think = G_Temp;
+	bolt->s.eType = ET_MISSILE;
+	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
+	bolt->s.weapon = WP_KNIFE;
+	bolt->r.ownerNum = self->s.number;
+//unlagged - projectile nudge
+	// we'll need this for nudging projectiles later
+	bolt->s.otherEntityNum = self->s.number;
+//unlagged - projectile nudge
+	bolt->parent = self;
+	bolt->damage = 65 + rand()%30;
+	bolt->splashDamage = 0;
+	bolt->splashRadius = 0;
+	bolt->methodOfDeath = MOD_KNIFE;
+	bolt->splashMethodOfDeath = MOD_KNIFE;
+	bolt->clipmask = MASK_SHOT;
+
+	if(self->client)
+		VectorCopy(self->client->ps.viewangles, bolt->s.angles2);
+
+	bolt->s.pos.trType = TR_GRAVITY;//_LOW;
+	bolt->s.pos.trTime = level.time + MISSILE_PRESTEP_TIME; //- MISSILE_PRESTEP_TIME;		// move a bit on the very first frame
+	VectorCopy( start, bolt->s.pos.trBase );
+	VectorScale( dir, speed, bolt->s.pos.trDelta );
+	SnapVector( bolt->s.pos.trDelta );			// save net bandwidth
+	VectorCopy (start, bolt->r.currentOrigin);
+
+	return bolt;
+}

@@ -217,6 +217,8 @@ void Add_Ammo (gentity_t *ent, int weapon, int count)
   int rounds;
   if ( BG_Grenade(weapon) ){
     bg_weaponlist[weapon].numClips[ent->client->ps.clientNum] += count;
+  }else if ( weapon == WP_KNIFE ){
+    bg_weaponlist[weapon].rounds[ent->client->ps.clientNum] += count;
   }else{
     clips = count / RoundCount(weapon);
     rounds = count % RoundCount(weapon);
@@ -224,10 +226,10 @@ void Add_Ammo (gentity_t *ent, int weapon, int count)
      clips--;
      rounds = RoundCount(weapon);
     }
-//G_Printf("count = %i, clips = %i, rounds = %i\n", count, clips, rounds );
+G_Printf("count = %i, clips = %i, rounds = %i\n", count, clips, rounds );
 
-//G_Printf("clips before add = %i\n", bg_weaponlist[weapon].numClips[ent->client->ps.clientNum] );
-//G_Printf("rounds before add = %i\n", bg_weaponlist[weapon].rounds[ent->client->ps.clientNum] );
+G_Printf("clips before add = %i\n", bg_weaponlist[weapon].numClips[ent->client->ps.clientNum] );
+G_Printf("rounds before add = %i\n", bg_weaponlist[weapon].rounds[ent->client->ps.clientNum] );
   bg_weaponlist[weapon].rounds[ent->client->ps.clientNum] += rounds;
   bg_weaponlist[weapon].numClips[ent->client->ps.clientNum] += clips;
   }
@@ -278,6 +280,8 @@ int Pickup_Weapon (gentity_t *ent, gentity_t *other) {
                         quantity = ent->item->quantity;
                 }
         }
+        if (ent->item->giTag == WP_KNIFE)
+            quantity =1;
 
         // add the weapon
         //other->client->ps.stats[STAT_WEAPONS] |= ( 1 << ent->item->giTag );
@@ -951,6 +955,14 @@ gentity_t *LaunchItem( gitem_t *item, vec3_t origin, vec3_t velocity ) {
         }
 
         dropped->flags = FL_DROPPED_ITEM;
+        
+	if(  FL_THROWN_ITEM) {
+		dropped->clipmask = MASK_SHOT;
+		dropped->s.pos.trTime = level.time - 50;	// move a bit on the very first frame
+		VectorScale( velocity, 200, dropped->s.pos.trDelta ); // 700
+		SnapVector( dropped->s.pos.trDelta );		// save net bandwidth
+		dropped->physicsBounce= 0.2f;
+	}
 
         trap_LinkEntity (dropped);
 

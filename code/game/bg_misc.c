@@ -46,7 +46,7 @@ wpinfo_t bg_weaponlist[] ={
     "icons/ammo/kbar",
     {0}, //weapMode
     {-1},
-    {-1},
+    {5},
             "models/weapons2/knife/"
   },
   {// WP_BERETTA, //2
@@ -1188,6 +1188,12 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
 // Xamis
           if( ps->weaponTime > 0)
             return qfalse;
+          if (item->giTag == WP_KNIFE){
+              if (  bg_weaponlist[item->giTag].rounds[ ps->clientNum] < 5 ){
+                    return qtrue;
+           }else
+           return qfalse;
+}
             if ( BG_Sidearm( item->giTag )  ){
                 if (bg_inventory.sort[ps->clientNum][SIDEARM] == item->giTag)                                                    
              return qtrue; //same as weapon in inventory, add as ammo --Xamis
@@ -1222,7 +1228,10 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
 
 
         case IT_AMMO:
-          if ( bg_weaponlist[ item->giTag].numClips[ ps->clientNum] >= 200 ) {
+            if(item->giTag == WP_KNIFE){
+                return qfalse;
+            }
+          if ( bg_weaponlist[ item->giTag].numClips[ ps->clientNum] >= 6 ) {
                         return qfalse;          // can't hold any more
                 }
                 return qtrue;

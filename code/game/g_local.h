@@ -56,6 +56,7 @@ along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
 #define FL_NO_BOTS				0x00002000	// spawn point not for bot use
 #define FL_NO_HUMANS			0x00004000	// spawn point just for bots
 #define FL_FORCE_GESTURE		0x00008000	// force gesture on client
+#define FL_THROWN_ITEM			0x00010000	// thrown item Xamis
 #define FL_OPENDOOR				0x00016000  //Xamis
 #define	FL_ROTATE				0x00032000  //Xamis
 
@@ -587,7 +588,9 @@ gentity_t *fire_rocket (gentity_t *self, vec3_t start, vec3_t dir);
 gentity_t *fire_bfg (gentity_t *self, vec3_t start, vec3_t dir);
 gentity_t *fire_grapple (gentity_t *self, vec3_t start, vec3_t dir);
 gentity_t *throw_grenade (gentity_t *self, vec3_t start, vec3_t aimdir); //Xamis
-gentity_t *throw_smoke (gentity_t *self, vec3_t start, vec3_t aimdir);
+gentity_t *throw_smoke (gentity_t *self, vec3_t start, vec3_t aimdir);//Xamis
+gentity_t *fire_knife (gentity_t *self, vec3_t start, vec3_t dir, int speed); //xamis
+
 
 #ifdef MISSIONPACK
 gentity_t *fire_nail( gentity_t *self, vec3_t start, vec3_t forward, vec3_t right, vec3_t up );

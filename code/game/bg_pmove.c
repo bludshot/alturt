@@ -1779,6 +1779,7 @@ static void PM_BeginWeaponChange( int weapon ) {
         PM_AddEvent( EV_CHANGE_WEAPON );
         pm->ps->weaponstate = WEAPON_DROPPING;
         pm->ps->weaponTime += 200;
+       // PM_StartWeaponAnim(WPN_DRAW);
         PM_StartTorsoAnim( TORSO_DROP );
 }
 
@@ -1806,7 +1807,6 @@ static void PM_FinishWeaponChange( void ) {
         pm->ps->weaponstate = WEAPON_RAISING;
         pm->ps->weaponTime += 250;
         PM_StartTorsoAnim( TORSO_RAISE );
-
         PM_AddEvent( EV_CHANGE_WEAPON );
 }
 
@@ -1830,6 +1830,9 @@ static void PM_TorsoAnimation( void ) {
 // Should always draw the weapon when it is just ready
                 if (BG_Grenade( pm->ps->weapon && (pm->ps->pm_flags & PMF_GRENADE_ARMED))){
                   PM_ContinueWeaponAnim(WPN_READY_FIRE_IDLE);
+                }else
+                if ( (pm->ps->weapon == WP_KNIFE  || pm->ps->weapon == WP_HK69) && pm->ps->stats[STAT_MODE] ){
+                    PM_ContinueWeaponAnim( WPN_IDLE_ALT );
                 }else
                 PM_ContinueWeaponAnim( WPN_IDLE );
 
@@ -1857,7 +1860,8 @@ int RoundCount( int w )        {
       return 30;
       break;
     case WP_SPAS:
-      return 1;
+    case WP_KNIFE:
+      return 5;
       break;
     case WP_NEGEV:
       return 80;
@@ -2022,6 +2026,9 @@ static int PM_WeaponTime( int weapon )
 
 
 
+void BG_LastKnife(void){
+    pm->ps->weaponstate = WEAPON_TONORMAL;
+}
 
 
 static void PM_Weapon( void ) {
@@ -2059,9 +2066,8 @@ static void PM_Weapon( void ) {
             PM_AddEvent( EV_FIRE_WEAPON );
             pm->ps->pm_flags &= ~PMF_GRENADE_ARMED;
             return;
-
         }
-        }
+     }
 
 
         if ( bg_nadeTimer.throwStrength[pm->ps->clientNum] < 80000 )
@@ -2074,9 +2080,36 @@ static void PM_Weapon( void ) {
 
                 return;
         }
+        
+        
+        //if ( pm->ps->weaponstate == WEAPON_READY_FIRE_ALT && pm->ps->weaponTime > 0 ) {
+
+          //      return;
+        //}
+        
 //If were in the process of reloading we can't fire  --Xamis
         if ( qtrue ){
 
+       if (( pm->ps->weaponstate == WEAPON_TOALTERNATE ||pm->ps->weaponstate == WEAPON_TONORMAL)&& pm->ps->weaponTime > 0)
+           return;
+       
+       if (( pm->ps->weaponstate == WEAPON_TOALTERNATE ||pm->ps->weaponstate == WEAPON_TONORMAL)&& pm->ps->weaponTime <= 0)
+           pm->ps->weaponstate = WEAPON_READY;
+       
+      if ( pm->ps->weaponstate == WEAPON_TOALTERNATE ) {
+          pm->ps->weaponTime +=400;
+          PM_StartWeaponAnim( WPN_TOALTERNATE );
+          return;
+          
+        }
+      
+            if ( pm->ps->weaponstate == WEAPON_TONORMAL ) {
+          pm->ps->weaponTime += 400;
+          PM_StartWeaponAnim( WPN_TONORMAL );
+          return;
+        }
+            
+            
         if ( pm->ps->weaponstate == WEAPON_RELOADING_START ) {
           pm->ps->weaponTime = ReloadStartTime( pm->ps->weapon );
           pm->ps->weaponstate = WEAPON_RELOADING;
@@ -2084,6 +2117,12 @@ static void PM_Weapon( void ) {
             PM_StartWeaponAnim( WPN_RELOAD_START );
           }
         }
+        if ( pm->ps->weaponstate ==WEAPON_READY_FIRE_IDLE_ALT&& pm->ps->weaponTime <= 0 ) {
+             PM_ContinueWeaponAnim(WEAPON_IDLE_ALT);
+          }
+            
+        }
+        
         if ( pm->ps->weaponstate == WEAPON_RELOADING && pm->ps->weaponTime <= 0 ) {
 
           pm->ps->weaponTime = ReloadTime( pm->ps->weapon );
@@ -2122,7 +2161,7 @@ static void PM_Weapon( void ) {
           }
           pm->ps->weaponstate = WEAPON_READY; //If were in finished reloading, we're ready to fire, so set weaponstate
         }
-        }
+        
         if ( pm->ps->weaponTime > 0 ) {
                 return;
         }
@@ -2142,6 +2181,12 @@ static void PM_Weapon( void ) {
             }
 
         if ((pm->cmd.buttons & 1) ) {
+            
+           if(pm->ps->weapon==WP_KNIFE && pm->ps->stats[STAT_MODE]  && pm->ps->pm_flags & PMF_GRENADE_ARMED ){
+            pm->ps->weaponTime += 50;
+            PM_ContinueWeaponAnim(WPN_READY_FIRE_IDLE_ALT);
+            return;
+          }
           if(BG_Grenade(pm->ps->weapon) && pm->ps->pm_flags & PMF_GRENADE_ARMED && pm->ps->weaponstate == WEAPON_READY ){
             pm->ps->weaponTime += 50;
             PM_ContinueWeaponAnim(WPN_READY_FIRE_IDLE);
@@ -2175,11 +2220,13 @@ static void PM_Weapon( void ) {
 
     // change weapon if time
         if ( pm->ps->weaponstate == WEAPON_DROPPING ) {
+            
                 PM_FinishWeaponChange();
                 return;
         }
 
         if ( pm->ps->weaponstate == WEAPON_RAISING ) {
+            PM_StartWeaponAnim(WPN_DRAW);
                 pm->ps->weaponstate = WEAPON_READY;
                 if ( pm->ps->weapon == WP_KNIFE || BG_Grenade(pm->ps->weapon ) ) {
                   PM_StartTorsoAnim( TORSO_STAND2 );
@@ -2190,6 +2237,11 @@ static void PM_Weapon( void ) {
                 }
 // QUARANTINE - Weapon Animation
 // Should always draw the weapon when it is just ready
+
+                if ( (pm->ps->weapon == WP_KNIFE || pm->ps->weapon == WP_HK69)&& pm->ps->stats[STAT_MODE] ){
+
+                    PM_StartWeaponAnim( WPN_IDLE_ALT );
+                }else
                 PM_StartWeaponAnim( WPN_IDLE );
 
                 return;
@@ -2206,10 +2258,24 @@ static void PM_Weapon( void ) {
             PM_StartTorsoAnim( TORSO_ATTACK_GRENADE );
             pm->ps->pm_flags &= ~PMF_GRENADE_ARMED;
             return;
-          }else{
+          }else if ( pm->ps->weapon == WP_KNIFE && pm->ps->stats[STAT_MODE]&& pm->ps->pm_flags & PMF_GRENADE_ARMED ){
+            PM_StartWeaponAnim( WPN_FIRE_ALT );
+            pm->ps->weaponstate = WEAPON_FIRING;
+            pm->ps->weaponTime = PM_WeaponTime(pm->ps->weapon );
+            PM_AddEvent( EV_FIRE_WEAPON );
+            PM_StartTorsoAnim( TORSO_ATTACK_GRENADE );
+            pm->ps->pm_flags &= ~PMF_GRENADE_ARMED;
+            return;
+              
+          }else          
+          {
                 pm->ps->weaponTime = 0;
 
                 pm->ps->weaponstate = WEAPON_READY;
+
+                if (( pm->ps->weapon == WP_KNIFE || pm->ps->weapon == WP_HK69 )&& pm->ps->stats[STAT_MODE] ){
+                    PM_StartWeaponAnim( WPN_IDLE_ALT );
+                }else
                 PM_StartWeaponAnim( WPN_IDLE );
 
         // remove flag
@@ -2226,6 +2292,12 @@ static void PM_Weapon( void ) {
         if(BG_Grenade(pm->ps->weapon) && pm->ps->pm_flags & PMF_GRENADE_ARMED ){
           pm->ps->weaponTime = 50;
           PM_StartWeaponAnim(WPN_READY_FIRE_IDLE);
+          return;
+        }
+        
+        if(pm->ps->weapon == WP_KNIFE && pm->ps->stats[STAT_MODE] && pm->ps->pm_flags & PMF_GRENADE_ARMED ){
+          pm->ps->weaponTime = 50;
+          PM_StartWeaponAnim(WPN_READY_FIRE_IDLE_ALT);
           return;
         }
 
@@ -2245,6 +2317,10 @@ static void PM_Weapon( void ) {
           PM_AddEvent( EV_NOAMMO );
           pm->ps->weaponTime = 550;
           pm->ps->weaponstate = WEAPON_READY;
+           if ( pm->ps->weapon == WP_HK69 && pm->ps->stats[STAT_MODE] ){
+                PM_ContinueWeaponAnim( WPN_FIRE_ALT );
+                return;
+         }else  
           PM_ContinueWeaponAnim( WPN_IDLE );
           return;
             }
@@ -2253,6 +2329,11 @@ static void PM_Weapon( void ) {
               pm->ps->pm_flags |= PMF_GRENADE_ARMED;
               bg_nadeTimer.fuseTime[pm->ps->clientNum] = 6000;
               bg_nadeTimer.throwStrength[pm->ps->clientNum] = 62000;
+              return;
+            }
+        if (pm->ps->weapon == WP_KNIFE && pm->ps->stats[STAT_MODE] && !(pm->ps->pm_flags & PMF_GRENADE_ARMED)){
+              pm->ps->weaponstate =WEAPON_READY_FIRE_IDLE_ALT ;
+              pm->ps->pm_flags |= PMF_GRENADE_ARMED;
               return;
             }
 
@@ -2266,8 +2347,10 @@ static void PM_Weapon( void ) {
           PM_StartTorsoAnim( TORSO_ATTACK_PUMPGUN );
         }else{
           PM_StartTorsoAnim( TORSO_ATTACK_RIFLE );
-        }
-          PM_StartWeaponAnim( WPN_FIRE );
+        } 
+         if ( pm->ps->weapon == WP_HK69 && pm->ps->stats[STAT_MODE] ){
+          PM_StartWeaponAnim( WPN_FIRE_ALT );
+         }else  PM_StartWeaponAnim( WPN_FIRE );
 
           if( bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] == 0  &&  pm->ps->weapon != WP_SPAS  &&  pm->ps->weapon != WP_NEGEV )
           bg_weaponlist[0].rounds[pm->ps->clientNum]++;

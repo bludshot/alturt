@@ -185,6 +185,12 @@ typedef enum {
     WEAPON_ARMING,
     WEAPON_ARMED,
     WEAPON_DROPPED,
+    WEAPON_TOALTERNATE,
+    WEAPON_TONORMAL,
+    WEAPON_IDLE_ALT,
+    WEAPON_READY_FIRE_ALT,
+    WEAPON_READY_FIRE_IDLE_ALT
+                
 } weaponstate_t;
 
 
@@ -648,7 +654,15 @@ typedef enum {
   WPN_BOLT,
   WPN_RELOAD_START,
   WPN_RELOAD_END,
-
+  WPN_FIRE_ALT,
+  WPN_TOALTERNATE,
+  WPN_TONORMAL,
+  WPN_IDLE_ALT,
+  WPN_READY_FIRE_ALT,
+  WPN_READY_FIRE_IDLE_ALT,
+          
+          
+          
   MAX_WEAPON_ANIMATIONS
 } wpAnimNumber_t;
 
@@ -713,6 +727,7 @@ typedef enum {
 // means of death
 typedef enum {
         MOD_UNKNOWN,
+        MOD_KNIFE,
         MOD_SHOTGUN,
         MOD_GAUNTLET,
         MOD_MACHINEGUN,
@@ -889,7 +904,7 @@ int       BG_CalcSpread( playerState_t ps );
 int       RoundCount( int w );
 void      BG_PackWeapon( int weapon, int stats[ ] );
 void      BG_RemoveWeapon( int weapon, int stats[ ] );
-
+void       BG_LastKnife(void);
 
 #define ARENAS_PER_TIER         4
 #define MAX_ARENAS                      1024

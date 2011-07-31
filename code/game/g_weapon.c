@@ -63,6 +63,21 @@ void Weapon_Gauntlet( gentity_t *ent ) {
 
 }
 
+void weapon_knife_fire (gentity_t *ent) {
+	gentity_t	*m;
+
+	//forward[2] += 0.1f;
+
+	VectorNormalize( forward );
+
+	m = fire_knife (ent, muzzle, forward, 1200);//1600
+//	m->damage *= s_quadFactor;
+//	m->splashDamage *= s_quadFactor;
+
+	VectorAdd( m->s.pos.trDelta, ent->client->ps.velocity, m->s.pos.trDelta );	// "real" physics
+}
+
+
 /*
 ===============
 CheckGauntletAttack
@@ -819,11 +834,12 @@ void Change_Mode(gentity_t *ent){
 
  //G_Printf( "weaponModeChar: %s\n", ent->client->weaponModeChar);
 
-
+ if (ent->client->ps.weapon == WP_KNIFE && bg_weaponlist[ent->client->ps.weapon].rounds[ent->client->ps.clientNum] <2  )
+     return;
 
 
  ent->client->weaponMode[ ent->client->ps.weapon ]++;
- if ( ent->client->ps.weapon == WP_MP5K || ent->client->ps.weapon == WP_UMP45 ){
+ if ( ent->client->ps.weapon == WP_MP5K || ent->client->ps.weapon == WP_UMP45 || ent->client->ps.weapon ==WP_KNIFE  || ent->client->ps.weapon ==WP_HK69 ){
    if (ent->client->weaponMode[ ent->client->ps.weapon ] == 1 )
      ent->client->weaponMode[ ent->client->ps.weapon ]++;
  }
@@ -841,6 +857,11 @@ void Change_Mode(gentity_t *ent){
    case 0:
         weapmodes_save.string[ent->client->ps.weapon]= '0';
         ent->client->ps.pm_flags &= ~PMF_SINGLE_MODE;
+        if(ent->client->ps.weapon==WP_KNIFE ||ent->client->ps.weapon==WP_HK69 ){
+            ent->client->ps.pm_flags |= PMF_SINGLE_MODE;
+                      G_Printf("tonormal called\n");
+        ent->client->ps.weaponstate = WEAPON_TONORMAL;
+        }
         break;
    case 1:
      weapmodes_save.string[ent->client->ps.weapon]= '1';
@@ -849,6 +870,11 @@ void Change_Mode(gentity_t *ent){
     case 2:
       weapmodes_save.string[ent->client->ps.weapon]= '2';
       ent->client->ps.pm_flags &= ~PMF_SINGLE_MODE;
+      if(ent->client->ps.weapon==WP_KNIFE ||ent->client->ps.weapon==WP_HK69 ){
+          G_Printf("toalternate called\n");
+      ent->client->ps.pm_flags |= PMF_SINGLE_MODE;
+      ent->client->ps.weaponstate = WEAPON_TOALTERNATE;
+      }
       break;
     default:
       weapmodes_save.string[ent->client->ps.weapon]= '2';
@@ -856,16 +882,6 @@ void Change_Mode(gentity_t *ent){
       trap_Cvar_Set( "weapmodes_save", ent->client->weaponModeChar);
   //    return;
   }
- // G_Printf( "weapmodes_save.string: %s\n", weapmodes_save.string );
-  //for ( i=15; i>0; i--){
-   // G_Printf( "weapmodes_save.string[%i]: %c\n", i, weapmodes_save.string[i]);
-
-  //}
-
-//  G_Printf( "weaponmodes_save set to: %c\n", weapmodes_save.string[ent->client->ps.weapon]);
-  //if (  ent->client->weaponMode[ ent->client->ps.weapon ] != 1 )
-  //  ent->parent->client->ps.pm_flags &= ~PMF_SINGLE_SHOT;
-
 
   if ( ent->client->weaponMode[ ent->client->ps.weapon ] == 2)
     ent->client->weaponMode[ ent->client->ps.weapon ] =-1;
@@ -928,9 +944,10 @@ void FireWeapon( gentity_t *ent ) {
 
 
   if ( bg_weaponlist[ent->client->ps.weapon].rounds[ent->client->ps.clientNum] != -1
-       || ent->s.weapon != WP_KNIFE
        ||!(BG_Grenade(ent->client->ps.weapon)) ) {
+              if(  ent->s.weapon != WP_KNIFE ) {
     bg_weaponlist[ent->client->ps.weapon].rounds[ent->client->ps.clientNum]--;
+              }
   }
   if (BG_Grenade(ent->client->ps.weapon))
         bg_weaponlist[ent->client->ps.weapon].numClips[ent->client->ps.clientNum]--;
@@ -945,8 +962,8 @@ void FireWeapon( gentity_t *ent ) {
         s_quadFactor = 1;
 
         // track shots taken for accuracy tracking.  Grapple is not a weapon and gauntet is just not tracked
-        if(  ent->s.weapon != WP_KNIFE ) {
-
+        if(  ent->s.weapon == WP_KNIFE ) {
+          //  G_Printf("weapon is a knife");
         }
 
         // set aiming directions
@@ -957,7 +974,19 @@ void FireWeapon( gentity_t *ent ) {
         // fire the specific weapon
         switch( ent->s.weapon ) {
         case WP_KNIFE:
+                if(ent->client->ps.stats[STAT_MODE]&& bg_weaponlist[ent->client->ps.weapon].rounds[ent->client->ps.clientNum] >1){
+	       weapon_knife_fire( ent );
+                 bg_weaponlist[ent->client->ps.weapon].rounds[ent->client->ps.clientNum]--;
+                 if ( bg_weaponlist[ent->client->ps.weapon].rounds[ent->client->ps.clientNum] ==1){
+                  BG_LastKnife();
+                    bg_weaponlist[ ent->client->ps.weapon ].weapMode[ent->client->ps.clientNum]
+                        = ent->client->ps.stats[STAT_MODE]
+                        = ent->client->weaponMode[ ent->client->ps.weapon ]
+                        = 0;
+                        ent->client->ps.pm_flags &= ~PMF_SINGLE_MODE;
                 //Weapon_Gauntlet( ent );
+                 }
+                }
                 break;
                 case WP_SPAS:
                         weapon_supershotgun_fire( ent );

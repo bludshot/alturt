@@ -1325,8 +1325,8 @@ void ClientSpawn(gentity_t *ent) {
         //item3 = gear.string[6];
 
         BG_PackWeapon( WP_KNIFE , ent->client->ps.stats );
-        bg_weaponlist[WP_KNIFE].rounds[ ent->client->ps.clientNum]= -1;
-        bg_weaponlist[WP_KNIFE].numClips[ ent->client->ps.clientNum] = -1;
+        bg_weaponlist[WP_KNIFE].rounds[ ent->client->ps.clientNum]= 5;
+        bg_weaponlist[WP_KNIFE].numClips[ ent->client->ps.clientNum] = 0;
         bg_inventory.sort[ent->client->ps.clientNum][MELEE] = WP_KNIFE;
         client->pers.inventory[MELEE] = WP_KNIFE;
         
@@ -1391,7 +1391,7 @@ for (i=0; i <7; i++){
                       // client->clipammo[WP_HK69] = RoundCount(WP_HK69);
                         //client->ps.ammo[WP_HK69] = 5;
                   bg_weaponlist[WP_HK69].numClips[ent->client->ps.clientNum] = 5;
-                        bg_weaponlist[WP_HK69].rounds[ ent->client->ps.clientNum]=RoundCount(WP_MP5K);
+                        bg_weaponlist[WP_HK69].rounds[ ent->client->ps.clientNum]=RoundCount(WP_HK69);
                         client->pers.inventory[PRIMARY]= WP_HK69;
                         bg_inventory.sort[ent->client->ps.clientNum][PRIMARY]= WP_HK69;
                         break;
