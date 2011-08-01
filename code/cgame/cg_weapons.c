@@ -782,6 +782,7 @@ void CG_RegisterWeapon( int weaponNum ) {
                 MAKERGB( weaponInfo->flashDlightColor, 0.6f, 0.6f, 1.0f );
                 weaponInfo->firingSound = trap_S_RegisterSound( "sound/weapons/knife/slashmiss.wav", qfalse );
                 weaponInfo->flashSound[0] = trap_S_RegisterSound( "sound/weapons/knife/knifeslash.wav", qfalse );
+                weaponInfo->normalSound[0] = trap_S_RegisterSound( "sound/weapons/knife/knifeslash.wav", qfalse );
                 break;
                 case WP_M4:
                         MAKERGB( weaponInfo->flashDlightColor, 1, 1, 0 );
