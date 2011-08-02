@@ -170,9 +170,12 @@ void SnapVectorTowards( vec3_t v, vec3_t to ) {
 #define UMP45_SPREAD       20
 #define MP5K_SPREAD       20
 #define MACHINEGUN_SPREAD       20
-
 #define DEAGLE_SPREAD           10
+
+
 #define MACHINEGUN_DAMAGE       7
+#define SR8_DAMAGE       100
+#define NEGEV_DAMAGE      15
 #define M4_DAMAGE       25 //12
 #define AK103_DAMAGE    30 //16
 #define LR300_DAMAGE   25 //25
@@ -1003,7 +1006,7 @@ void FireWeapon( gentity_t *ent ) {
                         Bullet_Fire( ent, PSG1_SPREAD, MACHINEGUN_DAMAGE );
                         break;
                 case WP_SR8:
-                        Bullet_Fire( ent, SR8_SPREAD, MACHINEGUN_DAMAGE );
+                        Bullet_Fire( ent, SR8_SPREAD, SR8_DAMAGE );
                         break;
                 case WP_G36:
                         Bullet_Fire( ent, G36_SPREAD, G36_DAMAGE );
@@ -1015,7 +1018,7 @@ void FireWeapon( gentity_t *ent ) {
                         Bullet_Fire( ent, AK103_SPREAD, AK103_DAMAGE );
                         break;
                 case WP_NEGEV:
-                        Bullet_Fire( ent, NEGEV_SPREAD, MACHINEGUN_DAMAGE );
+                        Bullet_Fire( ent, NEGEV_SPREAD, NEGEV_DAMAGE );
                         break;
                 case WP_DEAGLE:
                         Bullet_Fire( ent, DEAGLE_SPREAD, DEAGLE_DAMAGE );
