@@ -418,7 +418,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 		ent->freeAfterEvent = qtrue;
 	// change over to a normal entity right at the point of impact
 		ent->s.eType = ET_GENERAL;
-	} else {
+	} else  if ( !(other->takedamage && other->client )){
 
 		vec3_t dir;
 		gitem_t			*item;
@@ -444,6 +444,10 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 
 		VectorCopy(dir, ent->s.apos.trBase);
 		VectorCopy(dir, ent->r.currentAngles);
+	}else{
+                ent->freeAfterEvent = qtrue;
+        // change over to a normal entity right at the point of impact
+                ent->s.eType = ET_GENERAL;
 	}
 
 	SnapVectorTowards( trace->endpos, ent->s.pos.trBase );	// save net bandwidth
