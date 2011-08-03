@@ -398,7 +398,11 @@ void G_MoverTeam( gentity_t *ent ) {
 	gentity_t	*part, *obstacle;
 	vec3_t		origin, angles;
 
+        
+
 	obstacle = NULL;
+
+
 
 	// make sure all team slaves can move before commiting
 	// any moves or calling any think functions
@@ -467,7 +471,6 @@ void G_RunMover( gentity_t *ent ) {
 	if ( ent->flags & FL_TEAMSLAVE ) {
 		return;
 	}
-
 	// if stationary at one of the positions, don't move anything
 	if ( ent->s.pos.trType != TR_STATIONARY || ent->s.apos.trType != TR_STATIONARY ) {
 		G_MoverTeam( ent );
@@ -580,12 +583,12 @@ in the same amount of time
 */
 void MatchTeam( gentity_t *teamLeader, int moverState, int time ) {
 	gentity_t		*slave;
-
+		
 	for ( slave = teamLeader ; slave ; slave = slave->teamchain ) {
 		SetMoverState( slave, moverState, time );
+                        
 	}
 }
-
 
 
 /*
@@ -734,6 +737,7 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
 	}
     // only the master should be used
 	if ( ent->flags & FL_TEAMSLAVE ) {
+          
 		Use_BinaryMover( ent->teammaster, other, activator );
 		return;
 	}
@@ -865,10 +869,26 @@ if(!(ent->trigger_only)){
 	}
 
 	// if all the way up, just delay before coming down
-	if ( ent->moverState == ROTATOR_POS2 ) {
-		ent->nextthink = level.time + ent->wait;
-		return;
-	}
+if( ent->moverState == ROTATOR_POS2 && ent->wait > 0 ) {
+					G_Printf( "Use_BinaryMover moverState == MOVER_POS2 && ent->wait > 0\n");
+        // start moving 50 msec later, becase if this was player
+        // triggered, level.time hasn't been advanced yet
+			    MatchTeam( ent, ROTATOR_2TO1, level.time + 50 );
+					G_Printf( "Use_BinaryMover MOVER_2TO1 MatchTeam called\n");
+        // starting sound
+			    if ( ent->sound2to1 ) {
+					    G_AddEvent( ent, EV_GENERAL_SOUND, ent->sound2to1 );
+			    }
+
+        // looping sound
+			    ent->s.loopSound = ent->soundLoop;
+
+        // open areaportal
+			    if ( ent->teammaster == ent || !ent->teammaster ) {
+				    trap_AdjustAreaPortalState( ent, qtrue );
+			    }
+			    return;
+		    } 
 
 	// only partway down before reversing
 	if ( ent->moverState == ROTATOR_2TO1 ) {
@@ -878,7 +898,7 @@ if(!(ent->trigger_only)){
 			partial = total;
 		}
 
-		MatchTeam( ent, ROTATOR_1TO2, level.time - ( total - partial ) );
+		MatchTeam( ent, ROTATOR_2TO1, level.time - ( total - partial ) );
 
 		if ( ent->sound1to2 ) {
 			G_AddEvent( ent, EV_GENERAL_SOUND, ent->sound1to2 );
@@ -1351,7 +1371,7 @@ void SP_func_rotating_door( gentity_t *ent ) {
 
 	// default of 2 seconds
 	if (!ent->wait)
-		ent->wait = 0;
+		ent->wait = 2000;
 	if (ent->wait >0)
 	ent->wait *= 1000;
 
@@ -1366,6 +1386,7 @@ void SP_func_rotating_door( gentity_t *ent ) {
 	} else {
 		ent->movedir[1] = 1.0;
 	}
+   
 
 	// reverse direction if necessary
 	if ( ent->spawnflags & 8 )
