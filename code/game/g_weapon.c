@@ -89,14 +89,14 @@ qboolean CheckGauntletAttack( gentity_t *ent ) {
         gentity_t       *tent;
         gentity_t       *traceEnt;
         int                     damage;
-
+        int		weaponstate = ent->client->ps.weaponstate;
         // set aiming directions
         AngleVectors (ent->client->ps.viewangles, forward, right, up);
-
+        if ( weaponstate == WEAPON_FIRING ){
         CalcMuzzlePoint ( ent, forward, right, up, muzzle );
 
         VectorMA (muzzle, 32, forward, end);
-
+        }
         trap_Trace (&tr, muzzle, NULL, NULL, end, ent->s.number, MASK_SHOT);
         if ( tr.surfaceFlags & SURF_NOIMPACT ) {
                 return qfalse;
@@ -987,9 +987,10 @@ void FireWeapon( gentity_t *ent ) {
                         = ent->client->weaponMode[ ent->client->ps.weapon ]
                         = 0;
                         ent->client->ps.pm_flags &= ~PMF_SINGLE_MODE;
-                //Weapon_Gauntlet( ent );
+                //
                  }
-                }
+                }else
+                    CheckGauntletAttack( ent);
                 break;
                 case WP_SPAS:
                         weapon_supershotgun_fire( ent );
@@ -1035,7 +1036,6 @@ void FireWeapon( gentity_t *ent ) {
                         break;
                 case WP_SMOKE:
                         weapon_smoke_throw( ent );
-                break;
         default:
 // FIXME                G_Error( "Bad ent->s.weapon" );
                 break;
