@@ -349,7 +349,7 @@ void Use_Shooter( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
 
 	switch ( ent->s.weapon ) {
 	case WP_HK69:
-		fire_grenade( ent, ent->s.origin, dir );
+		fire_grenade( ent, ent->s.origin, dir, 1 );
 		break;
 	}
 

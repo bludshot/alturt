@@ -720,7 +720,7 @@ gentity_t *throw_smoke (gentity_t *self, vec3_t start, vec3_t dir) {
 fire_grenade
 =================
 */
-gentity_t *fire_grenade (gentity_t *self, vec3_t start, vec3_t dir) {
+gentity_t *fire_grenade (gentity_t *self, vec3_t start, vec3_t dir, int mode) {
 	gentity_t	*bolt;
 
 	VectorNormalize (dir);
@@ -746,7 +746,11 @@ gentity_t *fire_grenade (gentity_t *self, vec3_t start, vec3_t dir) {
 	bolt->s.pos.trType = TR_GRAVITY;
 	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;		// move a bit on the very first frame
 	VectorCopy( start, bolt->s.pos.trBase );
-	VectorScale( dir, 1100, bolt->s.pos.trDelta ); //blud increase distance on GL (by increasing speed (was 700)
+       // G_Printf("mode is %i\n", mode);
+        if(mode)
+	VectorScale( dir, 1200, bolt->s.pos.trDelta ); //blud increase distance on GL (by increasing speed (was 700)
+        else
+                  VectorScale( dir, 700, bolt->s.pos.trDelta );
 	SnapVector( bolt->s.pos.trDelta );			// save net bandwidth
 
 	VectorCopy (start, bolt->r.currentOrigin);

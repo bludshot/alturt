@@ -392,14 +392,14 @@ GRENADES
 ======================================================================
 */
 
-void weapon_grenadelauncher_fire (gentity_t *ent) {
+void weapon_grenadelauncher_fire (gentity_t *ent, int mode ) {
         gentity_t       *m;
 
         // extra vertical velocity
         forward[2] += 0.2f;
         VectorNormalize( forward );
 
-        m = fire_grenade (ent, muzzle, forward);
+        m = fire_grenade (ent, muzzle, forward, mode);
         m->damage *= s_quadFactor;
         m->splashDamage *= s_quadFactor;
 
@@ -1028,7 +1028,7 @@ void FireWeapon( gentity_t *ent ) {
                         Bullet_Fire( ent, BERETTA_SPREAD, BERETTA_DAMAGE );
                         break;
         case WP_HK69:
-                        weapon_grenadelauncher_fire( ent );
+                        weapon_grenadelauncher_fire( ent, ent->client->ps.stats[STAT_MODE]  );
                         break;
                 case WP_HE:
                         //weapon_grenade_arm( ent );
