@@ -2133,11 +2133,16 @@ void CG_AddViewWeapon( playerState_t *ps ) {
         VectorScale(hand.axis[1], 0.65f, hand.axis[1]);
         VectorScale(hand.axis[2], 0.5f, hand.axis[2]);
 		}else{
-			VectorMA( hand.origin, cg_gun_x.value-1, cg.refdef.viewaxis[0], hand.origin );
-			VectorMA( hand.origin, cg_gun_y.value, cg.refdef.viewaxis[1], hand.origin );
-			VectorMA( hand.origin, (cg_gun_z.value+fovOffset), cg.refdef.viewaxis[2], hand.origin );
+            			VectorMA( hand.origin, cg_gun_x.value+4, cg.refdef.viewaxis[0], hand.origin );
+			VectorMA( hand.origin, cg_gun_y.value+1.7, cg.refdef.viewaxis[1], hand.origin );
+			VectorMA( hand.origin, (cg_gun_z.value+fovOffset)+1.5, cg.refdef.viewaxis[2], hand.origin );
+                        AnglesToAxis( angles, hand.axis );
+        VectorScale(hand.axis[0], 0.42f, hand.axis[0]);
+        VectorScale(hand.axis[1], .7f, hand.axis[1]);
+        VectorScale(hand.axis[2], .57f, hand.axis[2]);
 
-			AnglesToAxis( angles, hand.axis );
+
+			//AnglesToAxis( angles, hand.axis );
 		}
 
 		ci = &cgs.clientinfo[ cent->currentState.clientNum ]; //blud moved this up out of the ifelse below, because I need it all the time for my CG_AddPlayerWeapon call (to do with hand skins)
