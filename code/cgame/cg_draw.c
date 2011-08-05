@@ -628,7 +628,8 @@ static void CG_DrawStatusBar( void ) {
 	static float colors[4][4] = {
 //		{ 0.2, 1.0, 0.2, 1.0 } , { 1.0, 0.2, 0.2, 1.0 }, {0.5, 0.5, 0.5, 1} };
 		//{ 1.0f, 0.69f, 0.0f, 1.0f },    // normal (original)
-		{ 1.0f, 1.0f, 1.0f, 1.0f },    // normal blud new!
+                                      { 0.88f,0.88f,0.68f, 1.0f },
+		//{ 1.0f, 1.0f, 1.0f, 1.0f },    // normal blud new!
 		{ 1.0f, 0.2f, 0.2f, 1.0f },     // low health
 		{ 0.5f, 0.5f, 0.5f, 1.0f },     // weapon firing
 		{ 1.0f, 1.0f, 1.0f, 1.0f } };   // health > 100
@@ -699,13 +700,13 @@ static void CG_DrawStatusBar( void ) {
 			trap_R_SetColor( colors[color] );
                        // CG_DrawChar(100, 430, 20,20, "x");
                        // CG_DrawBigStringColor( 0, 430, "X", colors[color] );
-                        CG_DrawStringExt( 606, 436, "x", colors[color], qfalse, qtrue, 14, 20, 0 );
+                        CG_DrawStringExt( 616, 456, va("x%i", value), colors[color], qfalse, qtrue, 8, 14, 0 );
 
-                        if ( cg.predictedPlayerState.weapon == WP_SPAS ){
-                          CG_DrawField (606, 440, 3, value);
-                        }else{
-                        CG_DrawField (606, 440, 2, value);
-                        }
+                     //   if ( cg.predictedPlayerState.weapon == WP_SPAS ){
+                     //     CG_DrawField (606, 440, 3, value);
+                      //  }else{
+                      //  CG_DrawField (606, 440, 2, value);
+                     //   }
 			// if we didn't draw a 3D icon, draw a 2D icon for ammo
 			//if ( !cg_draw3dIcons.integer && cg_drawIcons.integer ) {
 			if (1) { //blud changing this so it always does it because I got rid of the 3D ammo.
@@ -713,7 +714,7 @@ static void CG_DrawStatusBar( void ) {
 
 				icon = cg_weapons[ cg.predictedPlayerState.weapon ].ammoIcon;
 				if ( icon ) {
-                                  CG_DrawPic( 548 + CHAR_WIDTH*3 + TEXT_ICON_SPACE, 434, 24, 34, icon );
+                                  CG_DrawPic( 548 + CHAR_WIDTH*3 + TEXT_ICON_SPACE, 450, 24, 34, icon );
 				}
 			}
 		}
@@ -799,11 +800,11 @@ static void CG_DrawStatusBar( void ) {
 			if (currentSpeedXYZ > topSpeedXYZ) {
 				topSpeedXYZ = currentSpeedXYZ;}
 
-			Com_sprintf(speedo_s, sizeof(speedo_s), "XY: %i (%i)", currentSpeedXY, topSpeedXY);
-			CG_DrawStringExt( 420, 440, speedo_s, colorWhite, qfalse, qtrue, 4, 6, 0 );
+			Com_sprintf(speedo_s, sizeof(speedo_s), " XY: %i (%i)", currentSpeedXY, topSpeedXY);
+			CG_DrawStringExt( 512, 446, speedo_s, colorWhite, qfalse, qtrue, 4, 7, 0 );
 
 			Com_sprintf(speedo_s, sizeof(speedo_s), "XYZ: %i (%i)", currentSpeedXYZ, topSpeedXYZ );
-			CG_DrawStringExt( 420, 460, speedo_s, colorWhite, qfalse, qtrue, 4, 6, 0 );
+			CG_DrawStringExt( 512, 454, speedo_s, colorWhite, qfalse, qtrue, 4, 7, 0 );
 		}
 
 
@@ -853,7 +854,7 @@ static void CG_DrawStatusBar( void ) {
           }
         //Draw the Text
           trap_R_SetColor( colors[0] );
-          CG_DrawStringExt( 570, 460, s, colors[color], qfalse, qtrue, 4, 6, 0 );
+          CG_DrawStringExt( 612, 448, s, colorWhite, qfalse, qtrue, 4, 6, 0 );
 
         }
 
@@ -870,7 +871,7 @@ static void CG_DrawStatusBar( void ) {
           }
         }
 
-        CG_DrawStringExt( 536, 470, w, colors[color], qfalse, qtrue, 4, 6, 0 );
+        CG_DrawStringExt( 552-( 5 * CG_DrawStrlen( w ) ), 464, w, colorWhite, qfalse, qtrue, 5, 11, 0 );
         trap_R_SetColor( NULL );
         //
 // ammo in gun
@@ -879,7 +880,9 @@ static void CG_DrawStatusBar( void ) {
         if (value > -1  && !( cg.predictedPlayerState.weapon == WP_HE ||cg.predictedPlayerState.weapon == WP_SMOKE  )) {
         //Draw the Text
           trap_R_SetColor( colors[0] );
-          CG_DrawField (554, 440, 3, value);
+          CG_DrawStringExt( 595-( 14 * CG_DrawStrlen(va("%i",value) ) ), 454, va("%i",value), colorBlack, qfalse, qtrue, 14, 23, 0 );
+           CG_DrawStringExt( 594-( 13 * CG_DrawStrlen( va("%i",value) ) ), 454, va("%i",value), colors[color], qfalse, qtrue, 13, 22, 0 );
+      //    CG_DrawField (557, 460, 3, value);
           trap_R_SetColor( NULL );
 
         // if we didn't draw a 3D icon, draw a 2D icon for weapon
