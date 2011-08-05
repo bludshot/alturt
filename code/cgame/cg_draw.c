@@ -4,7 +4,7 @@ Copyright (C) 1999-2005 Id Software, Inc.
 Copyright (C) 2009-2010 Brian Labbie and Dave Richardson.
 
 http://sourceforge.net/projects/alturt/
-
+ 
 This file is part of Alturt source code.
 
 Alturt source code is free software: you can redistribute it
@@ -425,11 +425,12 @@ void CG_DrawFlagModel( float x, float y, float w, float h, int team, qboolean fo
 /*
 =================
 CG_DrawSniperRifle
+ * Draws the sniper scope overlay and ring
+ * Xamis
 =================
 */
 void CG_DrawSniperScope(void) {
 
-    int weaponstate = cg.snap->ps.weaponstate;
     int team = 0;
 
     if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR) {
@@ -446,7 +447,7 @@ void CG_DrawSniperScope(void) {
 
 
     trap_R_SetColor( g_color_table[ColorIndex(COLOR_BLACK)] );
-
+//All the same right now
     switch ( cg.snap->ps.weapon ) {
      case WP_PSG1:
         CG_DrawPic( 0, 0, 640, 480, cgs.media.scopeShader );
@@ -628,7 +629,7 @@ static void CG_DrawStatusBar( void ) {
 	static float colors[4][4] = {
 //		{ 0.2, 1.0, 0.2, 1.0 } , { 1.0, 0.2, 0.2, 1.0 }, {0.5, 0.5, 0.5, 1} };
 		//{ 1.0f, 0.69f, 0.0f, 1.0f },    // normal (original)
-                                      { 0.88f,0.88f,0.68f, 1.0f },
+                                      { 0.88f,0.88f,0.68f, 1.0f },//This is the yellowish color --Xamis
 		//{ 1.0f, 1.0f, 1.0f, 1.0f },    // normal blud new!
 		{ 1.0f, 0.2f, 0.2f, 1.0f },     // low health
 		{ 0.5f, 0.5f, 0.5f, 1.0f },     // weapon firing
@@ -683,7 +684,6 @@ static void CG_DrawStatusBar( void ) {
 	// ammo
 	//
 	if ( cent->currentState.weapon ) {
-		//value = ps->ammo[cent->currentState.weapon];
                 value = ps->stats[STAT_CLIPS];
                		if ( value > -1 && cent->currentState.weapon != WP_KNIFE ) {
 			if ( cg.predictedPlayerState.weaponstate == WEAPON_FIRING
@@ -700,7 +700,7 @@ static void CG_DrawStatusBar( void ) {
 			trap_R_SetColor( colors[color] );
                        // CG_DrawChar(100, 430, 20,20, "x");
                        // CG_DrawBigStringColor( 0, 430, "X", colors[color] );
-                        CG_DrawStringExt( 616, 456, va("x%i", value), colors[color], qfalse, qtrue, 8, 14, 0 );
+                        CG_DrawStringExt( 616, 456, va("x%i", value), colors[color], qfalse, qtrue, 8, 14, 0 ); //Number of clips   --Xamis
 
                      //   if ( cg.predictedPlayerState.weapon == WP_SPAS ){
                      //     CG_DrawField (606, 440, 3, value);
@@ -714,69 +714,12 @@ static void CG_DrawStatusBar( void ) {
 
 				icon = cg_weapons[ cg.predictedPlayerState.weapon ].ammoIcon;
 				if ( icon ) {
-                                  CG_DrawPic( 548 + CHAR_WIDTH*3 + TEXT_ICON_SPACE, 450, 24, 34, icon );
+                                  CG_DrawPic( 548 + CHAR_WIDTH*3 + TEXT_ICON_SPACE, 450, 24, 34, icon ); //place the ammo icon on the screen
 				}
 			}
 		}
 	}
 
-
-
-
-	//stamina Xamis
-/*
-	value = ps->stats[STAT_STAMINA];
-	if ( value > 300 ) {
-		trap_R_SetColor( colors[3] );	// white
-	} else if (value > 100) {
-		trap_R_SetColor( colors[0] );	// green
-	} else if (value > 10) {
-		color = (cg.time >> 8) & 1;	// flash
-		trap_R_SetColor( colors[color] );
-	} else {
-		trap_R_SetColor( colors[1] );	// red
-	}CG_DrawField ( 0, 432, 3, value);
-*/
-	//
-	// health
-	//
-        /*
-	value = ps->stats[STAT_HEALTH];
-	if ( value > 100 ) {
-		trap_R_SetColor( colors[3] );		// white
-	} else if (value > 25) {
-		trap_R_SetColor( colors[0] );	// green
-	} else if (value > 0) {
-		color = (cg.time >> 8) & 1;	// flash
-		trap_R_SetColor( colors[color] );
-	} else {
-		trap_R_SetColor( colors[1] );	// red
-	}
-
-	// stretch the health up when taking damage
-	CG_DrawField ( 0, 400, 3, value);
-	CG_ColorForHealth( hcolor );
-	trap_R_SetColor( hcolor );
-
-*/
-	//
-	// armor
-	//
-        /*
-	value = ps->stats[STAT_ARMOR];
-	if (value > 0 ) {
-		trap_R_SetColor( colors[0] );
-		CG_DrawField (370, 432, 3, value);
-		trap_R_SetColor( NULL );
-		// if we didn't draw a 3D icon, draw a 2D icon for armor
-		if ( !cg_draw3dIcons.integer && cg_drawIcons.integer ) {
-			CG_DrawPic( 370 + CHAR_WIDTH*3 + TEXT_ICON_SPACE, 432, ICON_SIZE, ICON_SIZE, cgs.media.armorIcon );
-		}
-
-	}
-
-
-*/
 
 
 		//speedometer by blud. (Currently it doesn't round, which I guess means it always rounds down)
@@ -819,6 +762,7 @@ static void CG_DrawStatusBar( void ) {
 
         //weapon mode
         value = ps->stats[STAT_MODE];
+        //These weapons do not have modes, don't draw a mode
         if (!( cg.predictedPlayerState.weapon == WP_HE
                ||cg.predictedPlayerState.weapon == WP_SMOKE
                 ||cg.predictedPlayerState.weapon == WP_SPAS
@@ -858,19 +802,13 @@ static void CG_DrawStatusBar( void ) {
 
         }
 
-      //  for ( i = 0; i < WP_NUM_WEAPONS; i++){
-       //   if ( bg_itemlist[i].giTag == cg.predictedPlayerState.weapon ){
-        //    w = bg_itemlist[i].pickup_name;
-        //    break;
-   //       }
-     //   }
         for ( item = bg_itemlist + 1 ; item->classname ; item++ ) {
           if ( item->giType == IT_WEAPON && item->giTag == cg.predictedPlayerState.weapon ) {
             w = item->pickup_name;
             break;
           }
         }
-
+//Draw name of current weapon on the screen
         CG_DrawStringExt( 552-( 5 * CG_DrawStrlen( w ) ), 464, w, colorWhite, qfalse, qtrue, 5, 11, 0 );
         trap_R_SetColor( NULL );
         //
@@ -882,10 +820,9 @@ static void CG_DrawStatusBar( void ) {
           trap_R_SetColor( colors[0] );
           CG_DrawStringExt( 595-( 14 * CG_DrawStrlen(va("%i",value) ) ), 454, va("%i",value), colorBlack, qfalse, qtrue, 14, 23, 0 );
            CG_DrawStringExt( 594-( 13 * CG_DrawStrlen( va("%i",value) ) ), 454, va("%i",value), colors[color], qfalse, qtrue, 13, 22, 0 );
-      //    CG_DrawField (557, 460, 3, value);
+
           trap_R_SetColor( NULL );
 
-        // if we didn't draw a 3D icon, draw a 2D icon for weapon
         }
 }
 #endif
@@ -900,8 +837,7 @@ void CG_DrawStatusHud( void )
   int base_y = 386;
 
   qhandle_t   background = trap_R_RegisterShaderNoMip( "gfx/hud/outline.tga" ),
-  //    frame = trap_R_RegisterShader( "gfx/hud/outline.tga" ),
- // outline = trap_R_RegisterShader( "gfx/hud/outline.tga" ),
+
                                          stamina[9];
 
                                          stamina[0]  =       trap_R_RegisterShaderNoMip( "gfx/hud/stamina1.tga" );
@@ -1230,11 +1166,6 @@ void CG_DrawStatusHud( void )
                                          }
 
 
-
-
-                                         //
-    // rounds counter
-                                         //
 
 }
 
