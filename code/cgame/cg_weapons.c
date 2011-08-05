@@ -2125,22 +2125,22 @@ void CG_AddViewWeapon( playerState_t *ps ) {
         //if smallgun
         if ( cg_gunsize.integer ){
 			VectorMA( hand.origin, cg_gun_x.value+6, cg.refdef.viewaxis[0], hand.origin );
-			VectorMA( hand.origin, cg_gun_y.value+2, cg.refdef.viewaxis[1], hand.origin );
-			VectorMA( hand.origin, (cg_gun_z.value+fovOffset)-.2, cg.refdef.viewaxis[2], hand.origin );
+			VectorMA( hand.origin, cg_gun_y.value+1.6, cg.refdef.viewaxis[1], hand.origin );//left right
+			VectorMA( hand.origin, (cg_gun_z.value+fovOffset)-.25, cg.refdef.viewaxis[2], hand.origin );
 
 			AnglesToAxis( angles, hand.axis );
 			//if smallgun
-        VectorScale(hand.axis[0], 0.35f, hand.axis[0]);
+        VectorScale(hand.axis[0], 0.4f, hand.axis[0]);
         VectorScale(hand.axis[1], 0.65f, hand.axis[1]);
-        VectorScale(hand.axis[2], 0.5f, hand.axis[2]);
+        VectorScale(hand.axis[2], 0.67f, hand.axis[2]);
 		}else{
-            			VectorMA( hand.origin, cg_gun_x.value+4, cg.refdef.viewaxis[0], hand.origin );
-			VectorMA( hand.origin, cg_gun_y.value+1.7, cg.refdef.viewaxis[1], hand.origin );
-			VectorMA( hand.origin, (cg_gun_z.value+fovOffset)+1.5, cg.refdef.viewaxis[2], hand.origin );
+            			VectorMA( hand.origin, cg_gun_x.value+4.8, cg.refdef.viewaxis[0], hand.origin );
+			VectorMA( hand.origin, cg_gun_y.value+1.2, cg.refdef.viewaxis[1], hand.origin );
+			VectorMA( hand.origin, (cg_gun_z.value+fovOffset)+2,cg.refdef.viewaxis[2], hand.origin );
                         AnglesToAxis( angles, hand.axis );
         VectorScale(hand.axis[0], 0.42f, hand.axis[0]);
         VectorScale(hand.axis[1], .7f, hand.axis[1]);
-        VectorScale(hand.axis[2], .57f, hand.axis[2]);
+        VectorScale(hand.axis[2], .71f, hand.axis[2]);
 
 
 			//AnglesToAxis( angles, hand.axis );
