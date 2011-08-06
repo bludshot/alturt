@@ -2107,6 +2107,7 @@ void CG_AddViewWeapon( playerState_t *ps ) {
 
         // drop gun lower at higher fov
         if ( cg_fov.integer > 90 ) {
+            cg_fov.integer=110;
                 fovOffset = -0.2 * ( cg_fov.integer - 90 );
         } else {
                 fovOffset = 0;

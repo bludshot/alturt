@@ -493,8 +493,8 @@ static int CG_CalcFov( void ) {
 			fov_x = cg_fov.value;
 			if ( fov_x < 1 ) {
 				fov_x = 1;
-			} else if ( fov_x > 160 ) {
-				fov_x = 160;
+			} else if ( fov_x > 110 ) {
+				fov_x = 110;
 			}
 		}
 
@@ -502,28 +502,12 @@ static int CG_CalcFov( void ) {
 		zoomFov = cg_zoomFov.value;
 		if ( zoomFov < 1 ) {
 			zoomFov = 1;
-		} else if ( zoomFov > 280 ) {
-			zoomFov = 280;
+		} else if ( zoomFov > 110 ) {
+			zoomFov = 110;
 		}
 
 		if ( cg.zoomed ) {
-			//f = ( cg.time - cg.zoomTime ) / (float)ZOOM_TIME;
-			//if ( f > 1.0 ) {
-			//	fov_x = zoomFov;
-		//	} else {
-		//		fov_x = cg.setZoomFov;
-
-				//fov_x = fov_x + f * ( zoomFov - fov_x );
-		//	}
-	//	} else {
-	//		f = ( cg.time - cg.zoomTime ) / (float)ZOOM_TIME;
-	//		if ( f > 1.0 ) {
-	//			fov_x = fov_x;
-	//		} else {
-				fov_x = cg.setZoomFov + f * ( fov_x - cg.setZoomFov );
-
-			//	fov_x = zoomFov + f * ( fov_x - zoomFov );
-	//		}
+			fov_x = cg.setZoomFov + f * ( fov_x - cg.setZoomFov );
 		}
 	}
 
