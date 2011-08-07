@@ -807,7 +807,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 
 	// Add team bonuses
 	Team_FragBonuses(self, inflictor, attacker);
-
+/*  Don't want any of this   --Xamis
 	// if I committed suicide, the flag does not fall, it returns.
 	if (meansOfDeath == MOD_SUICIDE) {
 		if ( self->client->ps.powerups[PW_NEUTRALFLAG] ) {		// only happens in One Flag CTF
@@ -823,6 +823,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 			self->client->ps.powerups[PW_BLUEFLAG] = 0;
 		}
 	}
+ */
 
 	// if client is in a nodrop area, don't drop anything (but return CTF flags!)
 	contents = trap_PointContents( self->r.currentOrigin, -1 );
@@ -889,7 +890,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	memset( self->client->ps.powerups, 0, sizeof(self->client->ps.powerups) );
 
 	// never gib in a nodrop
-	if ( (self->health <= GIB_HEALTH && !(contents & CONTENTS_NODROP) && g_blood.integer) || meansOfDeath == MOD_SUICIDE) {
+	if ( 0/*(self->health <= GIB_HEALTH && !(contents & CONTENTS_NODROP) && g_blood.integer) || meansOfDeath == MOD_SUICIDE*/) {
 		// gib death
 		GibEntity( self, killer );
 	} else {
