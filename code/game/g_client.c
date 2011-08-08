@@ -1200,6 +1200,7 @@ void ClientSpawn(gentity_t *ent) {
         client = ent->client;
 
         VectorClear(spawn_origin);
+        
 
         // find a spawn point
         // do it before setting health back up, so farthest
@@ -1209,10 +1210,8 @@ void ClientSpawn(gentity_t *ent) {
                                                 spawn_origin, spawn_angles);
         } else if (g_gametype.integer >= GT_TEAM ) {
                 // all base oriented team games use the CTF spawn points
-#ifdef  XAMISDB
-                G_Printf( S_COLOR_BLUE "Using spawnPoint = SelectCTFSpawnPoint" );
-#endif
-                spawnPoint = SelectCTFSpawnPoint (
+
+            spawnPoint = SelectCTFSpawnPoint (
                                                 client->sess.sessionTeam,
                                                 client->pers.teamState.state,
                                                 spawn_origin, spawn_angles,
@@ -1304,9 +1303,9 @@ void ClientSpawn(gentity_t *ent) {
 
         VectorCopy (playerMins, ent->r.mins);
         VectorCopy (playerMaxs, ent->r.maxs);
-          Q_strncpyz( gear, Info_ValueForKey (userinfo, "gear"), sizeof( gear ) );
+        Q_strncpyz( gear, Info_ValueForKey (userinfo, "gear"), sizeof( gear ) );
         client->ps.clientNum = index;
-//BG_GetWeaponString(&client->ps, gearString);
+
 
                 /*
         --Xamis--
@@ -1323,6 +1322,8 @@ void ClientSpawn(gentity_t *ent) {
         //item1 = gear.string[4];
         //item2 = gear.string[5];
         //item3 = gear.string[6];
+        
+
 
         BG_PackWeapon( WP_KNIFE , ent->client->ps.stats );
         bg_weaponlist[WP_KNIFE].rounds[ ent->client->ps.clientNum]= 5;
@@ -1330,12 +1331,6 @@ void ClientSpawn(gentity_t *ent) {
         bg_inventory.sort[ent->client->ps.clientNum][MELEE] = WP_KNIFE;
         client->pers.inventory[MELEE] = WP_KNIFE;
         
-/*
-for (i=0; i <7; i++){
-     G_Printf( "Weapon %i is %i\n",i, gear[i] );
-    
-}
-*/
         if( gear[0] == 'F'  ){
                 BG_PackWeapon( WP_BERETTA , ent->client->ps.stats );
                 bg_weaponlist[WP_BERETTA].rounds[ ent->client->ps.clientNum] = RoundCount(WP_BERETTA);
@@ -1361,8 +1356,6 @@ for (i=0; i <7; i++){
                         break;
                 case 'H':
                         BG_PackWeapon(  WP_SPAS , ent->client->ps.stats );
-                        //client->clipammo[WP_SPAS] = 8;
-                        //client->ps.ammo[WP_SPAS] = 16;
                         bg_weaponlist[WP_SPAS].numClips[ent->client->ps.clientNum] = 16;
                         bg_weaponlist[WP_SPAS].rounds[ ent->client->ps.clientNum]= 8;
                         client->pers.inventory[PRIMARY]= WP_SPAS;
@@ -1370,8 +1363,6 @@ for (i=0; i <7; i++){
                         break;
                 case 'I':
                         BG_PackWeapon(  WP_MP5K , ent->client->ps.stats );
-                        //client->clipammo[WP_MP5K] = RoundCount(WP_MP5K);
-                        //client->ps.ammo[WP_MP5K] = 3;
                         bg_weaponlist[WP_MP5K].numClips[ent->client->ps.clientNum] = 3;
                         bg_weaponlist[WP_MP5K].rounds[ ent->client->ps.clientNum]=RoundCount(WP_MP5K);
                         client->pers.inventory[PRIMARY]= WP_MP5K;
@@ -1379,8 +1370,6 @@ for (i=0; i <7; i++){
                         break;
                 case 'J':
                         BG_PackWeapon(  WP_UMP45 , ent->client->ps.stats );
-                        //client->clipammo[WP_UMP45] = RoundCount(WP_UMP45);
-                        //client->ps.ammo[WP_UMP45] = 3;
                         bg_weaponlist[WP_UMP45].numClips[ent->client->ps.clientNum] = 3;
                         bg_weaponlist[WP_UMP45].rounds[ ent->client->ps.clientNum]=RoundCount(WP_UMP45);
                         client->pers.inventory[PRIMARY]= WP_UMP45;
@@ -1388,8 +1377,6 @@ for (i=0; i <7; i++){
                         break;
                 case 'K':
                   BG_PackWeapon(  WP_HK69 , ent->client->ps.stats );
-                      // client->clipammo[WP_HK69] = RoundCount(WP_HK69);
-                        //client->ps.ammo[WP_HK69] = 5;
                   bg_weaponlist[WP_HK69].numClips[ent->client->ps.clientNum] = 5;
                         bg_weaponlist[WP_HK69].rounds[ ent->client->ps.clientNum]=RoundCount(WP_HK69);
                         client->pers.inventory[PRIMARY]= WP_HK69;
@@ -1397,8 +1384,6 @@ for (i=0; i <7; i++){
                         break;
                 case 'L':
                   BG_PackWeapon(  WP_LR300 , ent->client->ps.stats );
-                  //client->clipammo[WP_LR300] = RoundCount(WP_LR300);
-                       // client->ps.ammo[WP_LR300] = 3;
                         bg_weaponlist[WP_LR300].numClips[ent->client->ps.clientNum] = 3;
                         bg_weaponlist[WP_LR300].rounds[ ent->client->ps.clientNum]=RoundCount(WP_LR300);
                         client->pers.inventory[PRIMARY]= WP_LR300;
@@ -1406,8 +1391,6 @@ for (i=0; i <7; i++){
                         break;
                 case 'M':
                   BG_PackWeapon(  WP_G36 , ent->client->ps.stats );
-                     // client->clipammo[WP_G36] = RoundCount(WP_G36);
-                       // client->ps.ammo[WP_G36] = 3;
                   bg_weaponlist[WP_G36].numClips[ent->client->ps.clientNum] = 3;
                         bg_weaponlist[WP_G36].rounds[ ent->client->ps.clientNum]=RoundCount(WP_G36);
                         client->pers.inventory[PRIMARY]= WP_G36;
@@ -1415,8 +1398,6 @@ for (i=0; i <7; i++){
                         break;
                 case 'N':
                   BG_PackWeapon(  WP_PSG1 , ent->client->ps.stats );
-                 // client->clipammo[WP_PSG1] = RoundCount(WP_PSG1);
-                       // client->ps.ammo[WP_PSG1] = 3;
                   bg_weaponlist[WP_PSG1].numClips[ent->client->ps.clientNum] = 3;
                         bg_weaponlist[WP_PSG1].rounds[ ent->client->ps.clientNum]=RoundCount(WP_PSG1);
                         client->pers.inventory[PRIMARY]= WP_PSG1;
@@ -1424,8 +1405,6 @@ for (i=0; i <7; i++){
                         break;
                 case 'Z':
                   BG_PackWeapon(  WP_SR8 , ent->client->ps.stats );
-                  //client->clipammo[WP_SR8] = RoundCount(WP_SR8);
-                      //  client->ps.ammo[WP_SR8] = 3;
                   bg_weaponlist[WP_SR8].numClips[ent->client->ps.clientNum] = 3;
                         bg_weaponlist[WP_SR8].rounds[ ent->client->ps.clientNum]=RoundCount(WP_SR8);
                         client->pers.inventory[PRIMARY]= WP_SR8;
@@ -1433,8 +1412,6 @@ for (i=0; i <7; i++){
                         break;
                 case 'a':
                   BG_PackWeapon(  WP_AK103 , ent->client->ps.stats );
-                //  client->clipammo[WP_AK103] = RoundCount(WP_AK103);
-                        //client->ps.ammo[WP_AK103] = 3;
                   bg_weaponlist[WP_AK103].numClips[ent->client->ps.clientNum] = 3;
                         bg_weaponlist[WP_AK103].rounds[ ent->client->ps.clientNum]=RoundCount(WP_AK103);
                         client->pers.inventory[PRIMARY]= WP_AK103;
@@ -1442,8 +1419,6 @@ for (i=0; i <7; i++){
                         break;
                 case 'c':
                   BG_PackWeapon(  WP_NEGEV , ent->client->ps.stats );
-                  //client->clipammo[WP_NEGEV] = RoundCount(WP_NEGEV);
-                        //client->ps.ammo[WP_NEGEV] = 1;
                         bg_weaponlist[WP_NEGEV].rounds[client->ps.clientNum] = RoundCount(WP_NEGEV);
                         bg_weaponlist[WP_NEGEV].numClips[ent->client->ps.clientNum] = 1;
                         bg_weaponlist[WP_NEGEV].rounds[ ent->client->ps.clientNum]=RoundCount(WP_NEGEV);
@@ -1452,7 +1427,6 @@ for (i=0; i <7; i++){
                         break;
           case 'e':
             BG_PackWeapon(  WP_M4 , ent->client->ps.stats );
-            //client->clipammo[WP_M4] = RoundCount(WP_M4);
             client->ps.ammo[WP_M4] = 90; //for bots
             bg_weaponlist[WP_M4].numClips[ent->client->ps.clientNum] = 3;
             bg_weaponlist[WP_M4].rounds[ ent->client->ps.clientNum]=RoundCount(WP_M4);
@@ -1473,8 +1447,6 @@ for (i=0; i <7; i++){
                   break;
                 case 'H':
                   BG_PackWeapon(  WP_SPAS , ent->client->ps.stats );
-                 // client->clipammo[WP_SPAS] = 8;
-                      //  client->ps.ammo[WP_SPAS] = 16;
                   bg_weaponlist[WP_SPAS].numClips[ent->client->ps.clientNum] = 16;
                         bg_weaponlist[WP_SPAS].rounds[ ent->client->ps.clientNum]=8;
                         client->pers.inventory[SECONDARY]=WP_SPAS;
@@ -1482,8 +1454,6 @@ for (i=0; i <7; i++){
                         break;
                 case 'I':
                         BG_PackWeapon(  WP_MP5K , ent->client->ps.stats );
-                        //client->clipammo[WP_MP5K] = RoundCount(WP_MP5K);
-                       // client->ps.ammo[WP_MP5K] = 3;
                         bg_weaponlist[WP_MP5K].numClips[ent->client->ps.clientNum] = 3;
                         bg_weaponlist[WP_MP5K].rounds[ ent->client->ps.clientNum]=RoundCount(WP_MP5K);
                         client->pers.inventory[SECONDARY]=WP_MP5K;
@@ -1491,8 +1461,6 @@ for (i=0; i <7; i++){
                         break;
                 case 'J':
                         BG_PackWeapon(  WP_UMP45 , ent->client->ps.stats );
-                        //client->clipammo[WP_UMP45] = RoundCount(WP_UMP45);
-                        //client->ps.ammo[WP_UMP45] = 3;
                         bg_weaponlist[WP_UMP45].numClips[ent->client->ps.clientNum] = 3;
                         bg_weaponlist[WP_UMP45].rounds[ ent->client->ps.clientNum]=RoundCount(WP_UMP45);
                         client->pers.inventory[SECONDARY]=WP_UMP45;
@@ -1508,8 +1476,6 @@ for (i=0; i <7; i++){
 
         if( gear[3] == 'O'  ){
         BG_PackWeapon( WP_HE , ent->client->ps.stats );
-       // client->ps.ammo[WP_HE] = 2;
-       // client->clipammo[WP_HE] = 2;
         bg_weaponlist[WP_HE].rounds[ent->client->ps.clientNum] = 0;
         bg_weaponlist[WP_HE].numClips[ ent->client->ps.clientNum]=RoundCount(WP_HE);
         client->pers.inventory[NADE]= WP_HE;
@@ -1517,8 +1483,6 @@ for (i=0; i <7; i++){
 
         }else if( gear[3] == 'Q'  ){
           BG_PackWeapon( WP_SMOKE , ent->client->ps.stats );
-         // client->ps.ammo[WP_SMOKE] = 2;
-        //  client->[WP_SMOKE] = 2;
           bg_weaponlist[WP_SMOKE].numClips[ ent->client->ps.clientNum]=RoundCount(WP_HE);
           bg_weaponlist[WP_SMOKE].rounds[ent->client->ps.clientNum] = 0;
           client->pers.inventory[NADE]= WP_SMOKE;
@@ -1542,8 +1506,6 @@ for (i=0; i <7; i++){
 
         }
 
-
-       // G_Printf( "client->ps.ammo[0] = %i\n",client->ps.ammo[0]);
 
         VectorSet( ent->client->ps.grapplePoint, 0.0f, 0.0f, 1.0f );
         // health will count down towards max_health
@@ -1601,13 +1563,7 @@ for (i=0; i <7; i++){
                   client->ps.weapon = bg_inventory.sort[ent->client->ps.clientNum][SIDEARM];
                 else
                   client->ps.weapon = bg_inventory.sort[ent->client->ps.clientNum][MELEE];
-/*
-                for ( i = WP_NUM_WEAPONS - 1 ; i > 0 ; i-- ) {
-                  if ( BG_HasWeapon( i, client->ps.stats  )&& i != client->pers.inventory[NADE]) {
-                                client->ps.weapon = i;
-                                break;
-                        }
-                }*/
+
         }
 
         // run a client frame to drop exactly to the floor,
