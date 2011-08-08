@@ -160,7 +160,7 @@ void CG_FragmentBounceMark( localEntity_t *le, trace_t *trace ) {
     qhandle_t shader;
     int max = 14;
 
-    if ( le->leMarkType == LEMT_BLOOD  )
+    if ( le->leMarkType == LEMT_BLOOD  ){
         radius = 0.75 + random()*2.5 + random()*2.5  + random();
 
 
@@ -193,7 +193,12 @@ void CG_FragmentBounceMark( localEntity_t *le, trace_t *trace ) {
         CG_ImpactMark( shader, trace->endpos, trace->plane.normal, random()*360,
                        1,1,1,0.6 + random()/3, qtrue, radius , qfalse );
     }
+        }else if ( le->leMarkType == LEMT_BURN ) {
 
+		radius = 8 + (rand()&15);
+		CG_ImpactMark( cgs.media.burnMarkShader, trace->endpos, trace->plane.normal, random()*360,
+			1,1,1,1, qtrue, radius, qfalse );
+	}
     // don't allow a fragment to make multiple marks, or they
     // pile up while settling
     le->leMarkType = LEMT_NONE;
