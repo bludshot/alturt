@@ -563,6 +563,7 @@ char	*modNames[] = {
 	"MOD_TELEFRAG",
 	"MOD_FALLING",
 	"MOD_SUICIDE",
+ 	"MOD_BLED",       
 	"MOD_TARGET_LASER",
 	"MOD_TRIGGER_HURT",
 #ifdef MISSIONPACK
@@ -1273,7 +1274,11 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
                           targ->client->ps.stats[STAT_LEG_DAMAGE] += take;
                           break;
                       }
-
+                      
+                      if(bleeding){
+                      targ->client->ps.pm_flags |= PMF_BLEEDING;
+                     // G_Printf("bleeding true\n");
+                      }
 
         // if a grenade hit was encountered, remove stamina
                            if(dflags & DAMAGE_RADIUS) {
