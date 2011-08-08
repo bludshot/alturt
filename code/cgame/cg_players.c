@@ -1531,7 +1531,23 @@ Handles seperate torso motion
   if < 45 degrees, also show in torso
 ===============
 */
-static void CG_PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t torso[3], vec3_t head[3] ) {
+/*
+===============
+CG_PlayerAngles
+
+Handles seperate torso motion
+
+  legs pivot based on direction of movement
+
+  head always looks exactly at cent->lerpAngles
+
+  if motion < 20 degrees, show in head only
+  if < 45 degrees, also show in torso
+===============
+*/
+static void CG_PlayerAngles( centity_t *cent, vec3_t srcAngles,
+                             vec3_t legs[ 3 ], vec3_t torso[ 3 ], vec3_t head[ 3 ] )
+{
 	vec3_t		legsAngles, torsoAngles, headAngles;
 	float		dest;
 	static	int	movementOffsets[8] = { 0, 22, 45, -22, 0, 22, -45, -22 };
@@ -1540,7 +1556,7 @@ static void CG_PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t torso[3], v
 	int			dir, clientNum;
 	clientInfo_t	*ci;
 
-	VectorCopy( cent->lerpAngles, headAngles );
+  VectorCopy( srcAngles, headAngles );
 	headAngles[YAW] = AngleMod( headAngles[YAW] );
 	VectorClear( legsAngles );
 	VectorClear( torsoAngles );
@@ -1548,8 +1564,9 @@ static void CG_PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t torso[3], v
 	// --------- yaw -------------
 
 	// allow yaw to drift a bit
-	if ( ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) != LEGS_IDLE
-		|| ( cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT ) != TORSO_STAND  ) {
+  if( ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) != LEGS_IDLE ||
+      ( cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT ) != TORSO_STAND  )
+  {
 		// if not standing still, always point all in the same direction
 		cent->pe.torso.yawing = qtrue;	// always center
 		cent->pe.torso.pitching = qtrue;	// always center
@@ -1560,18 +1577,32 @@ static void CG_PlayerAngles( centity_t *cent, vec3_t legs[3], vec3_t torso[3], v
 	if ( cent->currentState.eFlags & EF_DEAD ) {
 		// don't let dead bodies twitch
 		dir = 0;
-	} else {
-		dir = cent->currentState.angles2[YAW];
-		if ( dir < 0 || dir > 7 ) {
-			CG_Error( "Bad player movement angle" );
 		}
+  else
+  {
+    // did use angles2.. now uses time2.. looks a bit funny but time2 isn't used othwise
+    dir = cent->currentState.time2;
+    if( dir < 0 || dir > 7 )
+      CG_Error( "Bad player movement angle" );
 	}
 	legsAngles[YAW] = headAngles[YAW] + movementOffsets[ dir ];
 	torsoAngles[YAW] = headAngles[YAW] + 0.25 * movementOffsets[ dir ];
 
 	// torso
-	CG_SwingAngles( torsoAngles[YAW], 25, 90, cg_swingSpeed.value, &cent->pe.torso.yawAngle, &cent->pe.torso.yawing );
-	CG_SwingAngles( legsAngles[YAW], 40, 90, cg_swingSpeed.value, &cent->pe.legs.yawAngle, &cent->pe.legs.yawing );
+  if( cent->currentState.eFlags & EF_DEAD )
+  {
+    CG_SwingAngles( torsoAngles[ YAW ], 0, 0, cg_swingSpeed.value,
+      &cent->pe.torso.yawAngle, &cent->pe.torso.yawing );
+    CG_SwingAngles( legsAngles[ YAW ], 0, 0, cg_swingSpeed.value,
+      &cent->pe.legs.yawAngle, &cent->pe.legs.yawing );
+  }
+  else
+  {
+    CG_SwingAngles( torsoAngles[ YAW ], 25, 90, cg_swingSpeed.value,
+      &cent->pe.torso.yawAngle, &cent->pe.torso.yawing );
+    CG_SwingAngles( legsAngles[ YAW ], 40, 90, cg_swingSpeed.value,
+      &cent->pe.legs.yawAngle, &cent->pe.legs.yawing );
+  }
 
 	torsoAngles[YAW] = cent->pe.torso.yawAngle;
 	legsAngles[YAW] = cent->pe.legs.yawAngle;
@@ -2346,13 +2377,18 @@ void CG_Player( centity_t *cent ) {
 	int			renderfx;
 	qboolean		shadow;
 	float			shadowPlane;
+        
+
+                 vec3_t			 angles; 
+
+
 #ifdef MISSIONPACK
 	refEntity_t		skull;
 	refEntity_t		powerup;
 	int				t;
 	float			c;
 	float			angle;
-	vec3_t			dir, angles; //blud moved this back up here to fix error/warning
+	vec3_t			dir; //blud moved this back up here to fix error/warning
 #endif
 
         
@@ -2405,15 +2441,26 @@ void CG_Player( centity_t *cent ) {
 	memset( &head, 0, sizeof(head) );
         memset( &helmet, 0, sizeof(helmet) );
 
+
+  //rotate lerpAngles to floor
+    VectorCopy( cent->lerpAngles, angles );
+
+  //normalise the pitch
+  if( angles[ PITCH ] < -180.0f )
+    angles[ PITCH ] += 360.0f;
+
+
 	// get the rotation information
-	CG_PlayerAngles( cent, legs.axis, torso.axis, head.axis );
+                  CG_PlayerAngles( cent, angles, legs.axis, torso.axis, head.axis );
+//	CG_PlayerAngles( cent, legs.axis, torso.axis, head.axis );
+                    
 
 	// get the animation state (after rotation, to allow feet shuffle)
 	CG_PlayerAnimation( cent, &legs.oldframe, &legs.frame, &legs.backlerp,
 		 &torso.oldframe, &torso.frame, &torso.backlerp );
 
 	// add the talk baloon or disconnect icon
-	CG_PlayerSprites( cent );
+	CG_PlayerSprites( cent );//Need these for Bomb mode!!  --Xamis
 
 
 
@@ -2445,6 +2492,13 @@ void CG_Player( centity_t *cent ) {
 	legs.renderfx = renderfx;
 	VectorCopy (legs.origin, legs.oldorigin);	// don't positionally lerp at all
 
+
+  //offset on the Z axis if required
+ // VectorMA( legs.origin, BG_ClassConfig( class )->zOffset, surfNormal, legs.origin );
+  VectorCopy( legs.origin, legs.lightingOrigin );
+  VectorCopy( legs.origin, legs.oldorigin ); // don't positionally lerp at all
+
+        
 	CG_AddRefEntityWithPowerups( &legs, &cent->currentState, ci->team );
 
 	// if the model failed, allow the default nullmodel to be displayed
