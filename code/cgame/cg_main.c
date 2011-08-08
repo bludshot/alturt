@@ -695,7 +695,8 @@ static void CG_RegisterSounds( void ) {
 	cgs.media.ladderSound = trap_S_RegisterSound ("sound/player/footsteps/clank1.wav", qfalse ); //Xamis
 	cgs.media.jumpPadSound = trap_S_RegisterSound ("sound/world/jumppad.wav", qfalse );
 	cgs.media.noammoSound = trap_S_RegisterSound ("sound/weapons/beretta/92G_noammo.wav", qfalse );
-	cgs.media.zoomSound = trap_S_RegisterSound ("sound/zoom.wav", qfalse );                  
+	cgs.media.zoomSound = trap_S_RegisterSound ("sound/zoom.wav", qfalse );
+                  cgs.media.bandageSound = trap_S_RegisterSound ("sound/bandage.wav", qfalse );
                 
 
 	for (i=0 ; i<4 ; i++) {
@@ -851,6 +852,11 @@ static void CG_RegisterGraphics( void ) {
 	for ( i=0 ; i<11 ; i++) {
 		cgs.media.numberShaders[i] = trap_R_RegisterShader( sb_nums[i] );
 	}
+        
+                   cgs.media.bloodMark[0] = trap_R_RegisterShader( "bloodMark");
+            for ( i = 1 ; i < 4 ; i++ ) {
+                   cgs.media.bloodMark[i] = trap_R_RegisterShader( va("bloodMark%i", i+1) );
+                   }
 
 	cgs.media.botSkillShaders[0] = trap_R_RegisterShader( "menu/art/skill1.tga" );
 	cgs.media.botSkillShaders[1] = trap_R_RegisterShader( "menu/art/skill2.tga" );
