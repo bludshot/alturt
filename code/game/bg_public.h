@@ -296,7 +296,7 @@ typedef enum {
         STAT_ARM_DAMAGE,   //Xamis                         // arm damage
         STAT_LEG_DAMAGE,  //Xamis                          // player walks slower when he got some legdamage,
         STAT_CHEST_DAMAGE,  //Xamis                        // chest damage
-        STAT_STOMACH_DAMAGE, //Xamis                       // stomach damage
+      //  STAT_STOMACH_DAMAGE, //Xamis                       // stomach damage
         STAT_HEAD_DAMAGE,//Xamis
 
 
