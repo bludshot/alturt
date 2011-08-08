@@ -1458,7 +1458,7 @@ void BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t resu
 
 char *eventnames[] = {
         "EV_NONE",
-
+        "EV_BANDAGE",
         "EV_FOOTSTEP",
         "EV_FOOTSTEP_METAL",
         "EV_FOOTSTEP_LADDER",
@@ -1479,6 +1479,7 @@ char *eventnames[] = {
         "EV_JUMP_PAD",                  // boing sound at origin", jump sound on player
 
         "EV_JUMP",
+        "EV_BLEED",
         "EV_WATER_TOUCH",       // foot touches
         "EV_WATER_LEAVE",       // foot leaves
         "EV_WATER_UNDER",       // head touches
