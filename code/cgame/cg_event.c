@@ -301,6 +301,10 @@ static void CG_Obituary( entityState_t *ent ) {
 			message = "was blasted by";
 			message2 = "'s BFG";
 			break;
+                                   	case MOD_BLED:
+			message = "Bled to death from";
+			message2 = "'s attacks";
+                                                        break;
 #ifdef MISSIONPACK
 		case MOD_NAIL:
 			message = "was nailed by";
@@ -484,7 +488,14 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	//
 	// movement generated events
 	//
-	case EV_FOOTSTEP:
+
+            
+                   case EV_BANDAGE:
+		DEBUGNAME("EV_BANDAGE");
+			trap_S_StartSound (NULL, es->number, CHAN_BODY,cgs.media.bandageSound );
+		break;         
+            
+                case EV_FOOTSTEP:
 		DEBUGNAME("EV_FOOTSTEP");
 		if (cg_footsteps.integer) {
 			trap_S_StartSound (NULL, es->number, CHAN_BODY,
@@ -641,6 +652,11 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
                 VectorCopy( surfNormal, cg.lastNormal );
                 }
 		break;
+                 case EV_BLEED:
+                                    DEBUGNAME("EV_BLEED");
+                                    CG_PlayerBleed(cent->currentState.clientNum, 55, es->pos.trBase, dir );
+                                     break;
+                
 	case EV_TAUNT:
 		DEBUGNAME("EV_TAUNT");
 		trap_S_StartSound (NULL, es->number, CHAN_VOICE, CG_CustomSound( es->number, "*taunt.wav" ) );
