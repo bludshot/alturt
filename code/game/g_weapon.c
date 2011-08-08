@@ -76,8 +76,6 @@ void weapon_knife_fire (gentity_t *ent) {
 
 	VectorAdd( m->s.pos.trDelta, ent->client->ps.velocity, m->s.pos.trDelta );	// "real" physics
 }
-
-
 /*
 ===============
 CheckGauntletAttack
@@ -123,6 +121,50 @@ qboolean CheckGauntletAttack( gentity_t *ent ) {
                 damage, 0, MOD_GAUNTLET );
 
         return qtrue;
+}
+
+/*
+===============
+CheckMed
+ * 
+ *Bandage opponent.
+===============
+*/
+void CheckMed( gentity_t *ent ) {
+        trace_t         tr;
+        vec3_t          end;
+        gentity_t       *traceEnt;
+
+
+        // set aiming directions
+        AngleVectors (ent->client->ps.viewangles, forward, right, up);
+        if ( !(ent->client->buttons & BUTTON_HEAL)){
+            return;
+        }
+        CalcMuzzlePoint ( ent, forward, right, up, muzzle );
+
+        VectorMA (muzzle, 32, forward, end);
+
+        trap_Trace (&tr, muzzle, NULL, NULL, end, ent->s.number, MASK_SHOT);
+        if ( tr.surfaceFlags & SURF_NOIMPACT ) {
+                return;
+        }
+
+        traceEnt = &g_entities[ tr.entityNum ];
+
+        if ( !traceEnt->takedamage) {
+                return;
+        }
+
+        if ( traceEnt->takedamage && traceEnt->client ) {
+            if ( traceEnt->health <100  )
+            traceEnt->health+=5;
+            traceEnt->client->ps.pm_flags &=  ~ PMF_BLEEDING;
+            ent->client->ps.weaponstate = WEAPON_START_BANDAGING;
+        }
+
+
+
 }
 
 
