@@ -676,7 +676,9 @@ void Reached_BinaryMover( gentity_t *ent ) {
 		}
 
        //  return to pos1 after a delay
+                if( !(ent->wait == -1))
 		ent->think = ReturnToPos1;
+          
 		//if( ent->wait > 0 )
 		ent->nextthink = level.time + ent->wait;
             //    if( ent->trigger_only )
