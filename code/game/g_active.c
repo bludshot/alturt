@@ -496,7 +496,7 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
         vec3_t  origin, angles;
 //      qboolean        fired;
         gitem_t *item;
-        gentity_t *drop;
+        gentity_t *drop, *attacker;
 
         client = ent->client;
 
@@ -538,7 +538,13 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
                   case EV_NONADES:
                     UT_DropWeapon ( ent );
                     break;
-
+                    
+                  case EV_BLEED:
+                      attacker->client->ps.clientNum = ent->client->ps.persistant[PERS_ATTACKER];
+                      ent->health--;
+                      //if(ent->health ==1 )
+                       //   player_die (ent, attacker, attacker, 20, MOD_BLED);
+                    break;
 
                 case EV_USE_ITEM1:              // teleporter
                         // drop flags in CTF
@@ -842,7 +848,7 @@ void ClientThink_real( gentity_t *ent ) {
                 ( ucmd->buttons & BUTTON_ATTACK ) && client->ps.weaponTime <= 0 ) {
           pm.gauntletHit = CheckGauntletAttack( ent);
         }
-
+        CheckMed( ent);
         if ( ent->flags & FL_FORCE_GESTURE ) {
                 ent->flags &= ~FL_FORCE_GESTURE;
                 ent->client->pers.cmd.buttons |= BUTTON_GESTURE;
