@@ -507,21 +507,19 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
                 event = client->ps.events[ i & (MAX_PS_EVENTS-1) ];
 
                 switch ( event ) {
-                case EV_FALL_MEDIUM:
+              	case EV_FALL_SHORT:
+                    G_Printf("EV_FALL_SHORT");
+                                damage=15;
+                                G_Damage (ent, NULL, NULL, NULL, NULL, damage, 0, MOD_FALLING);
+		break;
+	case EV_FALL_MEDIUM:
+                                G_Printf("EV_FALL_MED");
+                                      damage=35;    
+                                      G_Damage (ent, NULL, NULL, NULL, NULL, damage, 0, MOD_FALLING);
+		break;
                 case EV_FALL_FAR:
-                        if ( ent->s.eType != ET_PLAYER ) {
-                                break;          // not in the player model
-                        }
-                        if ( g_dmflags.integer & DF_NO_FALLING ) {
-                                break;
-                        }
-                        if ( event == EV_FALL_FAR ) {
-                                damage = 10;
-                        } else {
-                                damage = 5;
-                        }
-                        VectorSet (dir, 0, 0, 1);
-                        ent->pain_debounce_time = level.time + 200;     // no normal pain sound
+                                        G_Printf("EV_FALL_FAR");
+                        damage=100;  
                         G_Damage (ent, NULL, NULL, NULL, NULL, damage, 0, MOD_FALLING);
                         break;
 
