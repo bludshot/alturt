@@ -521,7 +521,45 @@ void CG_Bleed( vec3_t origin, int entityNum ) {
 	}
 }
 
+/*
+================
+NSQ3 CG_BleederTrail
+by: dX
+date: 14-feb-2k
+desc: Mostly the same as CG_Bloodtrail, but with smaller drops
+================
+*/
+void CG_BleederTrail( localEntity_t *le ) {
+    int		t;
+    int		t2;
+    int		step;
+    vec3_t	newOrigin;
+    localEntity_t	*blood;
 
+    if (!cg_blood.integer)
+        return;
+
+    step = 20; // original *=3
+    t = step * ( (cg.time - cg.frametime + step ) / step );
+    t2 = step * ( cg.time / step );
+
+    for ( ; t <= t2; t += step ) {
+        BG_EvaluateTrajectory( &le->pos, t, newOrigin );
+
+
+        blood = CG_SmokePuff( newOrigin, vec3_origin,
+                              2,		// radius : original = 20
+                              1, 1, 1, 0.4f,	// color
+                              250,		// trailTime [�000 = 2scs]
+                              cg.time,		// startTime
+                              0,0,		// flags
+                              cgs.media.bloodExplosionShader );
+        // use the optimized version
+        blood->leType = LE_FALL_SCALE_FADE;
+        // drop a total of 40 units over its lifetime
+        blood->pos.trDelta[2] = 40;
+    }
+}
 
 /*
 ==================
@@ -683,9 +721,9 @@ Generated a bunch of gibs launching out from the bodies location
 void CG_BigExplode( vec3_t playerOrigin ) {
 	vec3_t	origin, velocity;
 
-	if ( !cg_blood.integer ) {
-		return;
-	}
+	//if ( !cg_blood.integer ) {
+	//	return;
+	//}
 
 	VectorCopy( playerOrigin, origin );
 	velocity[0] = crandom()*EXP_VELOCITY;
