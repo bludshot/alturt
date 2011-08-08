@@ -1206,6 +1206,7 @@ static void PM_CrashLand( void ) {
         float           t;
         float           a, b, c, den;
 
+        
         // decide which landing animation to use
         if ( pm->ps->pm_flags & PMF_BACKWARDS_JUMP ) {
                 PM_ForceLegsAnim( LEGS_LANDB );
@@ -1255,20 +1256,21 @@ static void PM_CrashLand( void ) {
         if ( delta < 1 ) {
                 return;
         }
-
+        Com_Printf("Delta is %f\n", delta);
         // create a local entity event to play the sound
 
         // SURF_NODAMAGE is used for bounce pads where you don't ever
         // want to take damage or play a crunch sound
         if ( !(pml.groundTrace.surfaceFlags & SURF_NODAMAGE) )  {
-                if ( delta > 145 ) {
+                if ( delta >65 ) {
                         PM_AddEvent( EV_FALL_FAR );
-                } else if ( delta > 125 ) {
+                       
+                } else if ( delta > 50 ) {
                         // this is a pain grunt, so don't play it if dead
                         if ( pm->ps->stats[STAT_HEALTH] > 0 ) {
                                 PM_AddEvent( EV_FALL_MEDIUM );
                         }
-                } else if ( delta > 72 ) {
+                } else if ( delta > 24 ) {
                         PM_AddEvent( EV_FALL_SHORT );
                 } else {
                         PM_AddEvent( PM_FootstepForSurface() );
@@ -2708,15 +2710,19 @@ void PmoveSingle (pmove_t *pmove) {
             PM_AddEvent(EV_BLEED);
 
        //    pm->ps->stats[STAT_HEALTH]=pm->ps->stats[STAT_HEALTH]-1;
-           Com_Printf("HEALTH is %i\n",pm->ps->stats[STAT_HEALTH] );
+    //       Com_Printf("HEALTH is %i\n",pm->ps->stats[STAT_HEALTH] );
            }
           //Com_Printf("PMF_BLEEDING TRUE\n");  
         }
         
         if (pm->cmd.buttons & BUTTON_HEAL &&  pm->ps->pm_flags & PMF_BLEEDING){
-           pm->ps->pm_flags &= ~ PMF_BLEEDING;
-           pm->cmd.buttons &= ~BUTTON_HEAL;
-           pm->ps->weaponstate = WEAPON_START_BANDAGING;
+            pm->ps->pm_flags &= ~ PMF_BLEEDING;
+            pm->cmd.buttons &= ~BUTTON_HEAL;
+            pm->ps->stats[STAT_LEG_DAMAGE]=0;
+            pm->ps->stats[STAT_CHEST_DAMAGE] =  0;
+            pm->ps->stats[STAT_ARM_DAMAGE] = 0;
+            pm->ps->stats[STAT_HEAD_DAMAGE] = 0;
+            pm->ps->weaponstate = WEAPON_START_BANDAGING;
         }
 
         // if talk button is down, dissallow all other input
