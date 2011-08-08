@@ -492,7 +492,13 @@ static void PM_SetMovementDir( void ) {
         }
 }
 
-//Draws Heavily from Tremulous --Xamis
+
+
+/*
+=============
+PM_CheckJump
+=============
+*/
 static qboolean PM_CheckJump( void )
 {
   vec3_t normal;
@@ -554,6 +560,7 @@ PM_CheckWallJump
 Code Modified from Tremulous --Xamis
 =============
 */
+/*
 static qboolean PM_CheckWallJump( void )
 {
         vec3_t  dir, forward, movedir, point;
@@ -631,7 +638,7 @@ static qboolean PM_CheckWallJump( void )
         if( VectorLength( pm->ps->velocity ) > 320 )
         {
                 VectorNormalize( pm->ps->velocity );
-                VectorScale( pm->ps->velocity, 320, pm->ps->velocity );
+		VectorScale( pm->ps->velocity, JUMP_VELOCITY, pm->ps->velocity );
         }
 
         PM_AddEvent( EV_JUMP );
@@ -650,6 +657,7 @@ static qboolean PM_CheckWallJump( void )
         return qtrue;
 }
 
+ */
 /*
 =============
 PM_CheckWaterJump
@@ -868,7 +876,7 @@ static void PM_AirMove( void ) {
         float           wishspeed;
         float           scale;
         usercmd_t       cmd;
-        PM_CheckWallJump( );
+        //PM_CheckWallJump( );
         PM_Friction();
 
         fmove = pm->cmd.forwardmove;
@@ -2082,6 +2090,25 @@ static void PM_Weapon( void ) {
         }
         
         
+        //If were in the process of bandaging we can't fire  --Xamis
+       if ( pm->ps->weaponstate == WEAPON_DOWN_BANDAGING && pm->ps->weaponTime > 0 ) {
+
+                return;
+        }
+        
+               if ( pm->ps->weaponstate == WEAPON_DOWN_BANDAGING && pm->ps->weaponTime <= 0 ) {
+
+                   pm->ps->weaponstate = WEAPON_READY;
+        }
+        
+       if ( pm->ps->weaponstate == WEAPON_START_BANDAGING ) {
+                   pm->ps->weaponTime = 400;
+                   PM_StartTorsoAnim( TORSO_BANDAGE );
+                   pm->ps->weaponstate = WEAPON_DOWN_BANDAGING;
+                   PM_AddEvent( EV_BANDAGE);
+          }
+
+
         //if ( pm->ps->weaponstate == WEAPON_READY_FIRE_ALT && pm->ps->weaponTime > 0 ) {
 
           //      return;
@@ -2642,6 +2669,7 @@ void PmoveSingle (pmove_t *pmove) {
       // Com_Printf("pm->ps->stats[STAT_XYSPEED] = %i\n", pm->ps->stats[STAT_XYSPEED] );
         if ( pm->ps->stats[STAT_HEALTH] <= 0 ) {
                 pm->tracemask &= ~CONTENTS_BODY;        // corpses can fly through bodies
+                pm->ps->pm_flags &= ~ PMF_BLEEDING;
         }
 
         // make sure walking button is clear if they are running, to avoid
@@ -2672,6 +2700,23 @@ void PmoveSingle (pmove_t *pmove) {
         if ( pm->ps->stats[STAT_HEALTH] > 0 &&
                 !( pm->cmd.buttons & (BUTTON_ATTACK | BUTTON_USE_HOLDABLE) ) ) {
                 pm->ps->pm_flags &= ~PMF_RESPAWNED;
+        }
+
+        
+        if( pm->ps->pm_flags & PMF_BLEEDING){
+           if(  pmove->cmd.serverTime   % 100 == 0 ){
+            PM_AddEvent(EV_BLEED);
+
+       //    pm->ps->stats[STAT_HEALTH]=pm->ps->stats[STAT_HEALTH]-1;
+           Com_Printf("HEALTH is %i\n",pm->ps->stats[STAT_HEALTH] );
+           }
+          //Com_Printf("PMF_BLEEDING TRUE\n");  
+        }
+        
+        if (pm->cmd.buttons & BUTTON_HEAL &&  pm->ps->pm_flags & PMF_BLEEDING){
+           pm->ps->pm_flags &= ~ PMF_BLEEDING;
+           pm->cmd.buttons &= ~BUTTON_HEAL;
+           pm->ps->weaponstate = WEAPON_START_BANDAGING;
         }
 
         // if talk button is down, dissallow all other input
