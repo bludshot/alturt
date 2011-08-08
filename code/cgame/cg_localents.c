@@ -149,12 +149,126 @@ void CG_BloodTrail( localEntity_t *le ) {
 	}
 }
 
+/*
+================
+CG_FragmentBounceMark
+================
+*/
+void CG_FragmentBounceMark( localEntity_t *le, trace_t *trace ) {
+    float			radius;
+    int i;
+    qhandle_t shader;
+    int max = 14;
+
+    if ( le->leMarkType == LEMT_BLOOD  )
+        radius = 0.75 + random()*2.5 + random()*2.5  + random();
+
+
+    i = random()*max;
+
+    if (i>max)
+        i=max;
+
+    if (i<0)
+        i=0;
+
+    if ( le->radius <= 5 )
+    {
+        max = 4;
+
+        i = random()*max;
+
+        if (i>max)
+            i=max;
+
+        shader = cgs.media.bloodMark[i];
+    }
+    else
+        shader = cgs.media.bloodMark[i];
+
+
+   {
+
+
+        CG_ImpactMark( shader, trace->endpos, trace->plane.normal, random()*360,
+                       1,1,1,0.6 + random()/3, qtrue, radius , qfalse );
+    }
+
+    // don't allow a fragment to make multiple marks, or they
+    // pile up while settling
+    le->leMarkType = LEMT_NONE;
+}
+
+/*
+==================
+CG_AddParticle
+==================
+*/
+vec3_t pMins = { -0.5,-0.5,-0.5 };
+vec3_t pMaxs = {  0.5, 0.5, 0.5 };
+static void CG_AddParticle ( localEntity_t *le ) {
+    refEntity_t	*re;
+    float		c;
+    trace_t	trace;
+    vec3_t	oldOrigin;
+
+    re = &le->refEntity;
+
+    if ( le->fadeInTime > le->startTime && cg.time < le->fadeInTime ) {
+        // fade / grow time
+        c = 1.0 - (float) ( le->fadeInTime - cg.time ) / ( le->fadeInTime - le->startTime );
+    }
+    else {
+        // fade / grow time
+        c = ( le->endTime - cg.time ) * le->lifeRate;
+    }
+
+    re->shaderRGBA[0] = 255 * le->color[0];
+    re->shaderRGBA[1] = 255 * le->color[1];
+    re->shaderRGBA[2] = 255 * le->color[2];
+    re->shaderRGBA[3] = 255 * c;// * c;// * le->color[3];
+
+    if ( !( le->leFlags & LEF_PUFF_DONT_SCALE ) ) {
+        re->radius = le->radius * ( (/*1.0 -*/ c ) );
+    }
+    else if ( re->radius <= 0 || !re->radius )
+        re->radius = le->radius;
+
+    // early start ( might be stuck in a wall - no coldet)
+    if ( cg.time < le->startTime + 50 )
+    {
+        BG_EvaluateTrajectory( &le->pos, cg.time, re->origin );
+    } else {
+        // new position this frame
+        BG_EvaluateTrajectory( &le->pos, cg.time, oldOrigin );
+        // trace a line from previous position to new position
+        CG_Trace(&trace, le->refEntity.origin, NULL, NULL, oldOrigin , -1, MASK_SOLID );
+        // if touched ground
+        if ( trace.fraction == 1 )
+        {
+            VectorCopy( oldOrigin, re->origin );
+        }
+        else
+        {
+            if ( le->leMarkType != LEMT_NONE )
+            {
+                CG_FragmentBounceMark( le, &trace );
+            }
+
+            //CG_ReflectVelocity( le, &trace );
+        }
+    }
+
+    trap_R_AddRefEntityToScene( &le->refEntity );
+}
+
 
 /*
 ================
 CG_FragmentBounceMark
 ================
 */
+/*
 void CG_FragmentBounceMark( localEntity_t *le, trace_t *trace ) {
 	int			radius;
 
@@ -175,7 +289,7 @@ void CG_FragmentBounceMark( localEntity_t *le, trace_t *trace ) {
 	// pile up while settling
 	le->leMarkType = LEMT_NONE;
 }
-
+*/
 /*
 ================
 CG_FragmentBounceSound
@@ -872,6 +986,9 @@ void CG_AddLocalEntities( void ) {
 		case LE_SCOREPLUM:
 			CG_AddScorePlum( le );
 			break;
+                                   case LE_PARTICLE:
+                                                      CG_AddParticle( le );
+                                                      break;
 
 #ifdef MISSIONPACK
 		case LE_KAMIKAZE:
