@@ -127,10 +127,7 @@ qboolean inback (gentity_t *self, vec3_t point, float mod)
 }
 /*
 =================
-NSQ3 GetLocationalDamage
-by: dX
-date: around 10th feburary 2k
-return value: returns damage as #define
+GetLocationalDamage
 =================
 */
 
@@ -1138,7 +1135,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
         if ( mod == MOD_FALLING ) {
         // add damage to both legs...
           targ->client->ps.stats[STAT_LEG_DAMAGE] += take;
-
+           targ->client->ps.pm_flags |= PMF_BLEEDING;
         // remove stamina
           dummy = take*2;
           if (targ->client->ps.stats[STAT_STAMINA] < dummy) {
@@ -1174,7 +1171,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
                       G_Printf("got Hitlocation: %i\n", HitLocation);
 
         // if nothing was hit, return
-                      if (HitLocation == LOC_NULL) return;
+                     if (HitLocation == LOC_NULL ) return;
 
         // extra handling for grenades
                       if (dflags & DAMAGE_RADIUS) {
@@ -1201,7 +1198,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
                           if ( (random() < 0.4) || HasPowerup(targ, PW_VEST) ) bleeding = qfalse;
                           else bleeding = qtrue;
                           targ->client->ps.stats[STAT_CHEST_DAMAGE] += take*0.45;
-                          targ->client->ps.stats[STAT_STOMACH_DAMAGE] += take*0.15;
                           targ->client->ps.stats[STAT_LEG_DAMAGE] += take*0.2;
                           targ->client->ps.stats[STAT_ARM_DAMAGE] += take*0.1;
                           targ->client->ps.stats[STAT_HEAD_DAMAGE] += take*0.1;
@@ -1233,13 +1229,13 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
                           break;
                         case LOC_CHEST:
                           take *= 2.5;
-                          if ( (random() < 0.4) || HasPowerup(targ, PW_VEST) ) bleeding = qfalse;
+                          if ( HasPowerup(targ, PW_VEST) ) bleeding = qfalse;
                           else bleeding = qtrue;
                           targ->client->ps.stats[STAT_CHEST_DAMAGE] += take;
                           break;
                         case LOC_BACK:
                           take *= 2.0;
-                          if ( (random() < 0.4) || HasPowerup(targ, PW_VEST) ) bleeding = qfalse;
+                          if (  HasPowerup(targ, PW_VEST) ) bleeding = qfalse;
                           else bleeding = qtrue;
                           targ->client->ps.stats[STAT_CHEST_DAMAGE] += take;
                           break;
@@ -1247,7 +1243,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
                           take *= 2.5;
                           if ( HasPowerup(targ, PW_VEST) ) bleeding = qfalse;
                           else bleeding = qtrue;
-                          targ->client->ps.stats[STAT_STOMACH_DAMAGE] += take;
+                          targ->client->ps.stats[STAT_CHEST_DAMAGE] += take;
                           break;
                         case LOC_RIGHTARM:
                           take *= 1.63;
@@ -1263,22 +1259,17 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
                           break;
                         case LOC_RIGHTLEG:
                           take *= 1.75;
-                          if ( random() < 0.6 ) bleeding = qfalse;
-                          else bleeding = qtrue;
+                         bleeding = qtrue;
                           targ->client->ps.stats[STAT_LEG_DAMAGE] += take;
                           break;
                         case LOC_LEFTLEG:
                           take *= 1.75;
-                          if ( random() < 0.6 ) bleeding = qfalse;
-                          else bleeding = qtrue;
+                          bleeding = qtrue;
                           targ->client->ps.stats[STAT_LEG_DAMAGE] += take;
                           break;
                       }
                       
-                      if(bleeding){
-                      targ->client->ps.pm_flags |= PMF_BLEEDING;
-                     // G_Printf("bleeding true\n");
-                      }
+
 
         // if a grenade hit was encountered, remove stamina
                            if(dflags & DAMAGE_RADIUS) {
@@ -1290,7 +1281,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
                                targ->client->ps.stats[STAT_STAMINA] = 0;
                                targ->client->ps.stats[STAT_HEAD_DAMAGE] += dummy*0.2;
                                targ->client->ps.stats[STAT_CHEST_DAMAGE] += dummy*0.3;
-                               targ->client->ps.stats[STAT_STOMACH_DAMAGE] += dummy*0.1;
                                targ->client->ps.stats[STAT_ARM_DAMAGE] += dummy*0.2;
                                targ->client->ps.stats[STAT_LEG_DAMAGE] += dummy*0.2;
                                take += dummy;
@@ -1440,7 +1430,12 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		targ->client->lasthurt_client = attacker->s.number;
 		targ->client->lasthurt_mod = mod;
 	}
-
+   }
+        
+                  if(bleeding){
+                      targ->client->ps.pm_flags |= PMF_BLEEDING;
+                     // G_Printf("bleeding true\n");
+                      }
 	// do the damage
 	if (take) {
 		targ->health = targ->health - take;
@@ -1463,7 +1458,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		}
 	}
 
-   }
+
 }
 
 
