@@ -1299,7 +1299,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	qboolean lasersight;
 	qboolean silenced;
 	qboolean vestOn;
-                  float	len, distance;
+                  float	len;
 
 	vestOn = lasersight = silenced = qfalse;
 
@@ -3445,7 +3445,9 @@ void CG_Bullet( vec3_t end, int sourceEntityNum, vec3_t normal, qboolean flesh, 
         trace_t trace;
         int sourceContentType, destContentType;
         vec3_t          start;
-
+            centity_t	*cent;
+        
+        cent = &cg_entities[sourceEntityNum];
         // if the shooter is currently valid, calc a source point and possibly
         // do trail effects
         if ( sourceEntityNum >= 0 && cg_tracerChance.value > 0 ) {
@@ -3477,9 +3479,81 @@ void CG_Bullet( vec3_t end, int sourceEntityNum, vec3_t normal, qboolean flesh, 
 
         // impact splash and mark
         if ( flesh ) {
-                CG_Bleed( end, fleshEntityNum );
+              //  CG_Bleed( end, fleshEntityNum );
+                 CG_PlayerBleed( cent->currentState.clientNum, 25, end, normal );
         } else {
                 CG_MissileHitWall( WP_M4, 0, end, normal, IMPACTSOUND_DEFAULT );
         }
 
+}
+
+localEntity_t *CG_SpawnBloodParticle( vec3_t org, vec3_t dir, float speed, float bouncefactor, float radius, float r,float g,float b,float a, qboolean size ) {
+    localEntity_t	*le;
+    refEntity_t		*re;
+
+    le = CG_AllocLocalEntity();
+    re = &le->refEntity;
+
+    VectorCopy( org, le->pos.trBase ); // move to origin vector org
+    VectorCopy( org, le->refEntity.origin ); // move to origin vector org
+    VectorScale(dir, speed, le->pos.trDelta); // add velocity vector based on speed
+    le->pos.trType = TR_GRAVITY;	// movement type
+    le->pos.trTime = cg.time;		// set start time of calculation
+    le->leType = LE_PARTICLE;		// render as particle
+    le->startTime = cg.time;		// start time
+    le->endTime = cg.time + 9000;	// time it will be removed from the scene
+    le->lifeRate = 1.0 / ( le->endTime - le->startTime );
+    le->radius = 2;//radius; //
+    le->color[0] = r;
+    le->color[1] = g;
+    le->color[2] = b;
+    le->color[3] = a;
+    le->bounceFactor = bouncefactor;
+    le->refEntity.reType = RT_SPRITE;
+    //if ( random() < ( 0.25 * 15 ) )
+        le->leMarkType = LEMT_BLOOD;
+  //  else
+     //   le->leMarkType = LEMT_NONE;
+    le->leBounceSoundType = 0;
+    if (!size)
+        le->leFlags = LEF_PUFF_DONT_SCALE;
+    le->refEntity.customShader = cgs.media.bloodMark[0];
+
+    return le;
+
+    //	trap_R_AddLightToScene( org, 20, 0.5f, 0.5f, 0.5f );
+
+}
+
+/*
+=================
+CG_PlayerBleed
+
+Caused by ev_bullet
+=================
+*/
+void CG_PlayerBleed(  int clientNum, int damage, vec3_t origin, vec3_t dir ) {
+    //	int				r;
+    int			i;//, s;
+    vec3_t dir2;
+
+    if (!cg_blood.integer)
+        return;
+
+
+
+  //  CG_SmokePuff( origin, dir, 5, 1.0f, 0.2f, 0.2f, 0.8f, 750, cg.time-250,cg.time-250,LE_MOVE_SCALE_FADE,cgs.media.smokePuffShader );
+
+    for(i = 0; i < damage; i++)
+    {
+        {
+            VectorCopy( dir, dir2 );
+
+            dir2[0] += -0.50 + random();
+            dir2[1] += -0.50 + random();
+            dir2[2] -= random();
+
+            CG_SpawnBloodParticle( origin, dir2, 60 + i*3, 0.0f, 3.0f +random()/2.0f, 0.4+random()/10,0.1f,0.1f,1.0f, qtrue );
+        }
+    }
 }
