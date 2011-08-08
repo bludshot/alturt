@@ -831,6 +831,7 @@ static void CG_DrawStatusBar( void ) {
 
 void CG_DrawStatusHud( void )
 {
+     qhandle_t            damage_legs, damage_arms, damage_chest, damage_head;
     //  int x;
     //  int y;
   int base_x = 12;
@@ -849,7 +850,12 @@ void CG_DrawStatusHud( void )
                                          stamina[6]  =       trap_R_RegisterShaderNoMip( "gfx/hud/stamina7.tga" );
                                          stamina[7]  =       trap_R_RegisterShaderNoMip( "gfx/hud/stamina8.tga" );
                                          stamina[8]  =       trap_R_RegisterShaderNoMip( "gfx/hud/stamina9.tga" );
+                                         
 
+                                        damage_legs= trap_R_RegisterShaderNoMip( "gfx/hud/damage/both_leg.tga" );
+                                        damage_arms= trap_R_RegisterShaderNoMip( "gfx/hud/damage/both_arm.tga" );
+                                        damage_chest= trap_R_RegisterShaderNoMip( "gfx/hud/damage/all_chest.tga" );
+                                        damage_head= trap_R_RegisterShaderNoMip( "gfx/hud/damage/head.tga" );                        
                                          {
                                            vec4_t hcolor_alpha1 = { 1.0,1.0,1.0, 1.0 };
                                            //stamina bar colors
@@ -864,7 +870,11 @@ void CG_DrawStatusHud( void )
                                            trap_R_SetColor( NULL );
                                          }
 
-
+                                        
+                                        
+                                          
+                                         
+                                         
                                          {
                                            float healthV = cg.snap->ps.stats[STAT_HEALTH];
                                            vec4_t hColor2;
@@ -872,7 +882,6 @@ void CG_DrawStatusHud( void )
                                            hColor2[1]= 0.2f;
                                            hColor2[2]  = 0.2f;
                                            hColor2[3] = 0.3f;
-
 
 
                                            if ( healthV > 90 )
@@ -1165,7 +1174,50 @@ void CG_DrawStatusHud( void )
                                            trap_R_SetColor( NULL );
                                          }
 
+                                    if(  cg.snap->ps.stats[STAT_ARM_DAMAGE]){
+                                         
+                                           vec4_t hColor3;
+                                           hColor3[0] = 0.4f;
+                                           hColor3[1]= 0.0f;
+                                           hColor3[2]  = 0.0f;
+                                           hColor3[3] = 1.0f;
+                                          trap_R_SetColor( hColor3 );
+                                         CG_DrawPic( base_x , base_y , 40,86, damage_arms );
 
+                                      }     
+                                     if(  cg.snap->ps.stats[STAT_LEG_DAMAGE]){
+                                         
+                                           vec4_t hColor3;
+                                           hColor3[0] = 0.4f;
+                                           hColor3[1]= 0.0f;
+                                           hColor3[2]  = 0.0f;
+                                           hColor3[3] = 1.0f;
+                                          trap_R_SetColor( hColor3 );
+                                         CG_DrawPic( base_x , base_y , 40,86, damage_legs );
+
+                                      }  
+                                    if(  cg.snap->ps.stats[STAT_HEAD_DAMAGE]){
+                                         
+                                           vec4_t hColor3;
+                                           hColor3[0] = 0.4f;
+                                           hColor3[1]= 0.0f;
+                                           hColor3[2]  = 0.0f;
+                                           hColor3[3] = 1.0f;
+                                          trap_R_SetColor( hColor3 );
+                                         CG_DrawPic( base_x , base_y , 40,86, damage_head );
+
+                                      }     
+                                     if(  cg.snap->ps.stats[STAT_CHEST_DAMAGE]){
+                                         
+                                           vec4_t hColor3;
+                                           hColor3[0] = 0.4f;
+                                           hColor3[1]= 0.0f;
+                                           hColor3[2]  = 0.0f;
+                                           hColor3[3] = 1.0f;
+                                          trap_R_SetColor( hColor3 );
+                                         CG_DrawPic( base_x , base_y , 40,86, damage_chest );
+
+                                      }  trap_R_SetColor( NULL );
 
 }
 
