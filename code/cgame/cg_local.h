@@ -236,6 +236,7 @@ typedef enum {
 	LE_FADE_RGB,
 	LE_SCALE_FADE,
 	LE_SCOREPLUM,
+                  LE_PARTICLE,
 #ifdef MISSIONPACK
 	LE_KAMIKAZE,
 	LE_INVULIMPACT,
@@ -879,7 +880,7 @@ typedef struct {
 #endif
 
 	qhandle_t	numberShaders[11];
-
+	qhandle_t	bloodMark[4];
 	qhandle_t	shadowMarkShader;
 
 	qhandle_t	botSkillShaders[5];
@@ -1011,7 +1012,8 @@ typedef struct {
 	sfxHandle_t jumpPadSound;
 	sfxHandle_t ladderSound;
 	sfxHandle_t noammoSound;
-                 sfxHandle_t zoomSound;
+                  sfxHandle_t zoomSound;
+                  sfxHandle_t                bandageSound;
 
 	sfxHandle_t oneMinuteSound;
 	sfxHandle_t fiveMinuteSound;
@@ -1837,3 +1839,5 @@ char *CG_GetPlayerSkinName( clientInfo_t *ci );
 char *CG_GetPlayerModelName( clientInfo_t *ci );
 void CG_ZoomReset_f (void);
 void CG_ChatPrint( const char *str,  int charWidth );
+void CG_Particle_Bleed (qhandle_t pshader, vec3_t start, vec3_t dir, int fleshEntityNum, int duration);
+void CG_PlayerBleed( int clientNum, int damage, vec3_t origin, vec3_t dir );
