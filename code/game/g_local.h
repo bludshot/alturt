@@ -71,7 +71,9 @@ typedef enum {
 	ROTATOR_POS1,
 	ROTATOR_POS2,
 	ROTATOR_1TO2,
-	ROTATOR_2TO1
+	ROTATOR_2TO1,
+                 ROTATOR_STOP_1TO2,
+                 ROTATOR_STOP_2TO1,
 
 } moverState_t;
 
@@ -630,6 +632,8 @@ void SnapVectorTowards( vec3_t v, vec3_t to );
 qboolean CheckGauntletAttack( gentity_t *ent );
 void Weapon_HookFree (gentity_t *ent);
 void Weapon_HookThink (gentity_t *ent);
+void CheckMed( gentity_t *ent );
+
 
 
 //

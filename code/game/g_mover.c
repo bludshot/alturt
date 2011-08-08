@@ -527,22 +527,22 @@ void SetMoverState( gentity_t *ent, moverState_t moverState, int time ) {
 		VectorScale( delta, f, ent->s.pos.trDelta );
 		ent->s.pos.trType = TR_LINEAR_STOP;
 		break;
-		case MOVER_STOP_1TO2:
-			VectorCopy( ent->r.currentOrigin, ent->s.pos.trBase );
-			VectorSubtract( ent->pos2, ent->r.currentOrigin, delta );
-			f = 1000.0 / ent->s.pos.trDuration;
-			VectorScale( delta, f, ent->s.pos.trDelta );
-			ent->moverState = MOVER_1TO2;
-			ent->s.pos.trType = TR_LINEAR_STOP;
-			break;
-		case MOVER_STOP_2TO1:
-			VectorCopy( ent->r.currentOrigin, ent->s.pos.trBase );
-			VectorSubtract( ent->pos1, ent->r.currentOrigin, delta );
-			f = 1000.0 / ent->s.pos.trDuration;
-			VectorScale( delta, f, ent->s.pos.trDelta );
-			ent->moverState = MOVER_2TO1;
-			ent->s.pos.trType = TR_LINEAR_STOP;
-			break;
+            case MOVER_STOP_1TO2:
+                    VectorCopy( ent->r.currentOrigin, ent->s.pos.trBase );
+                    VectorSubtract( ent->pos2, ent->r.currentOrigin, delta );
+                    f = 1000.0 / ent->s.pos.trDuration;
+                    VectorScale( delta, f, ent->s.pos.trDelta );
+                    ent->moverState = MOVER_1TO2;
+                    ent->s.pos.trType = TR_LINEAR_STOP;
+                    break;
+            case MOVER_STOP_2TO1:
+                    VectorCopy( ent->r.currentOrigin, ent->s.pos.trBase );
+                    VectorSubtract( ent->pos1, ent->r.currentOrigin, delta );
+                    f = 1000.0 / ent->s.pos.trDuration;
+                    VectorScale( delta, f, ent->s.pos.trDelta );
+                    ent->moverState = MOVER_2TO1;
+                    ent->s.pos.trType = TR_LINEAR_STOP;
+                    break;
 	case ROTATOR_POS1:
 		VectorCopy( ent->pos1, ent->s.apos.trBase );
 		ent->s.apos.trType = TR_STATIONARY;
@@ -565,6 +565,22 @@ void SetMoverState( gentity_t *ent, moverState_t moverState, int time ) {
 		VectorScale( delta, f, ent->s.apos.trDelta );
 		ent->s.apos.trType = TR_LINEAR_STOP;
 		break;
+                case ROTATOR_STOP_1TO2:
+                    VectorCopy( ent->r.currentOrigin, ent->s.pos.trBase );
+                    VectorSubtract( ent->pos2, ent->r.currentOrigin, delta );
+                    f = 1000.0 / ent->s.apos.trDuration;
+                    VectorScale( delta, f, ent->s.apos.trDelta );
+                    ent->moverState = ROTATOR_1TO2;
+                    ent->s.apos.trType = TR_LINEAR_STOP;
+                    break;
+            case ROTATOR_STOP_2TO1:
+                    VectorCopy( ent->r.currentOrigin, ent->s.pos.trBase );
+                    VectorSubtract( ent->pos1, ent->r.currentOrigin, delta );
+                    f = 1000.0 / ent->s.apos.trDuration;
+                    VectorScale( delta, f, ent->s.apos.trDelta );
+                    ent->moverState = ROTATOR_2TO1;
+                    ent->s.apos.trType = TR_LINEAR_STOP;
+                    break;
 
 	}
 	BG_EvaluateTrajectory( &ent->s.pos, level.time, ent->r.currentOrigin );
@@ -600,7 +616,7 @@ void ReturnToPos1( gentity_t *ent ) {
     
 	MatchTeam( ent, MOVER_2TO1, level.time );
 
-        	G_Printf( "ReturnToPos1 called\n");
+        	//G_Printf( "ReturnToPos1 called\n");
 
 	// looping sound
 	ent->s.loopSound = ent->soundLoop;
@@ -648,10 +664,10 @@ void Reached_BinaryMover( gentity_t *ent ) {
 
 	if ( ent->moverState == MOVER_1TO2 ||
 		    ent->moverState == MOVER_STOP_1TO2 ) {
-					G_Printf( "Reached_BinaryMover moverState == MOVER_STOP_1TO2 or MOVER_1TO2 \n");
+					//G_Printf( "Reached_BinaryMover moverState == MOVER_STOP_1TO2 or MOVER_1TO2 \n");
         // reached pos2
 		SetMoverState( ent, MOVER_POS2, level.time );
-					G_Printf( "Reached_BinaryMover SetMoverState MOVER_POS2\n");
+					//G_Printf( "Reached_BinaryMover SetMoverState MOVER_POS2\n");
 
         // play sound
 		if ( ent->soundPos2 ) {
@@ -673,10 +689,10 @@ void Reached_BinaryMover( gentity_t *ent ) {
 		G_UseTargets( ent, ent->activator );
 		    } else if ( ent->moverState == MOVER_2TO1 ||
 			   ent->moverState == MOVER_STOP_2TO1 ) {
-				   G_Printf( "Reached_BinaryMover  moverState == MOVER_2TO1 or moverState == MOVER_STOP_2TO1\n");
+				 //  G_Printf( "Reached_BinaryMover  moverState == MOVER_2TO1 or moverState == MOVER_STOP_2TO1\n");
         // reached pos1
 			SetMoverState( ent, MOVER_POS1, level.time );
-					G_Printf( "Reached_BinaryMover SetMoverState MOVER_POS1\n");
+					//G_Printf( "Reached_BinaryMover SetMoverState MOVER_POS1\n");
         // play sound
 			 if ( ent->soundPos1 ) {
 			     G_AddEvent( ent, EV_GENERAL_SOUND, ent->soundPos1 );
@@ -686,7 +702,8 @@ void Reached_BinaryMover( gentity_t *ent ) {
 			 if ( ent->teammaster == ent || !ent->teammaster ) {
 			     trap_AdjustAreaPortalState( ent, qfalse );
 			    }
-			  } else if ( ent->moverState == ROTATOR_1TO2 ) {
+			  } else if ( ent->moverState == ROTATOR_1TO2 ||
+			   ent->moverState == ROTATOR_STOP_1TO2 ) {
 		// reached pos2
 		SetMoverState( ent, ROTATOR_POS2, level.time );
 
@@ -706,7 +723,8 @@ void Reached_BinaryMover( gentity_t *ent ) {
 			ent->activator = ent;
 		}
 		G_UseTargets( ent, ent->activator );
-	} else if ( ent->moverState == ROTATOR_2TO1 ) {
+	} else if ( ent->moverState == ROTATOR_2TO1||
+			   ent->moverState == ROTATOR_STOP_2TO1  ) {
 		// reached pos1
 		SetMoverState( ent, ROTATOR_POS1, level.time );
 
@@ -733,7 +751,7 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
 	int		total;
 	int		partial;
 	if( ent->trigger_only){
-		G_Printf( "Use_BinaryMover ent->trigger_only\n" );
+		//G_Printf( "Use_BinaryMover ent->trigger_only\n" );
 	}
     // only the master should be used
 	if ( ent->flags & FL_TEAMSLAVE ) {
@@ -745,12 +763,14 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
 	ent->activator = activator;
 if(!(ent->trigger_only)){
 	if ( ent->moverState == MOVER_STOP_1TO2 ||
-		    ent->moverState == MOVER_STOP_2TO1 ) {
+	    ent->moverState == MOVER_STOP_2TO1 ||
+	    ent->moverState == ROTATOR_STOP_1TO2 || 
+                      ent->moverState == ROTATOR_STOP_2TO1  ) {
         // start moving 50 msec later, becase if this was player
         // triggered, level.time hasn't been advanced yet
-		G_Printf( "Use_BinaryMover moverState == MOVER_STOP_1TO2 || moverState == MOVER_STOP_2TO1\n");
+		//G_Printf( "Use_BinaryMover moverState == MOVER_STOP_1TO2 || moverState == MOVER_STOP_2TO1\n");
 		MatchTeam( ent, ent->moverState , level.time );
-		G_Printf( "Use_BinaryMover %s MatchTeam called\n",ent->moverState );
+		//G_Printf( "Use_BinaryMover %s MatchTeam called\n",ent->moverState );
         // looping sound
 		ent->s.loopSound = ent->soundLoop;
 		return;
@@ -759,11 +779,11 @@ if(!(ent->trigger_only)){
 
 
 		    if ( ent->moverState == MOVER_POS1 ) {
-			G_Printf( "Use_BinaryMover moverState == MOVER_POS1\n");
+			//G_Printf( "Use_BinaryMover moverState == MOVER_POS1\n");
         // start moving 50 msec later, becase if this was player
         // triggered, level.time hasn't been advanced yet
 			    MatchTeam( ent, MOVER_1TO2, level.time + 50 );
-		G_Printf( "Use_BinaryMover MatchTeam MOVER_1TO2 called\n");
+		//G_Printf( "Use_BinaryMover MatchTeam MOVER_1TO2 called\n");
         // starting sound
 			    if ( ent->sound1to2 ) {
 					    G_AddEvent( ent, EV_GENERAL_SOUND, ent->sound1to2 );
@@ -781,11 +801,11 @@ if(!(ent->trigger_only)){
 
 
 		    if( ent->moverState == MOVER_POS2 && ent->wait > 0 ) {
-					G_Printf( "Use_BinaryMover moverState == MOVER_POS2 && ent->wait > 0\n");
+					//G_Printf( "Use_BinaryMover moverState == MOVER_POS2 && ent->wait > 0\n");
         // start moving 50 msec later, becase if this was player
         // triggered, level.time hasn't been advanced yet
 			    MatchTeam( ent, MOVER_2TO1, level.time + 50 );
-					G_Printf( "Use_BinaryMover MOVER_2TO1 MatchTeam called\n");
+					//G_Printf( "Use_BinaryMover MOVER_2TO1 MatchTeam called\n");
         // starting sound
 			    if ( ent->sound2to1 ) {
 					    G_AddEvent( ent, EV_GENERAL_SOUND, ent->sound2to1 );
@@ -800,14 +820,14 @@ if(!(ent->trigger_only)){
 			    }
 			    return;
 		    } else if ( ent->moverState == MOVER_POS2 && ent->wait > 0 ) { // this is for making the door stay up
-				G_Printf( "Use_BinaryMover moverState == MOVER_POS2 && ent->wait > 0\n");
+				//G_Printf( "Use_BinaryMover moverState == MOVER_POS2 && ent->wait > 0\n");
 			    ent->nextthink = level.time + ent->wait;
 			    return;
 		    }
 
 		    if ( ent->moverState == MOVER_2TO1 && !(ent->trigger_only))
 		    {
-				G_Printf( "Use_BinaryMover ent->moverState == MOVER_2TO1 && !(ent->trigger_only)\n");
+				//G_Printf( "Use_BinaryMover ent->moverState == MOVER_2TO1 && !(ent->trigger_only)\n");
 
 			    total = ent->s.pos.trDuration;
 
@@ -849,6 +869,18 @@ if(!(ent->trigger_only)){
 			    return;
 		    }
 	if ( ent->moverState == ROTATOR_POS1 ) {
+
+                        //     if(    ( ent->activator->client->ps.origin[1]   < ent->r.absmax[1]  && ent->activator->client->ps.origin[1] > ent->r.absmin[1]) 
+                       //  ){
+                     
+	//	VectorNegate ( ent->movedir, ent->movedir );
+                     //   	VectorMA ( ent->pos1, ent->distance, ent->movedir, ent->pos2 );
+
+              //   }
+
+
+
+      //      client->ps.origin
 		// start moving 50 msec later, becase if this was player
 		// triggered, level.time hasn't been advanced yet
 		MatchTeam( ent, ROTATOR_1TO2, level.time + 50 );
@@ -870,11 +902,11 @@ if(!(ent->trigger_only)){
 
 	// if all the way up, just delay before coming down
 if( ent->moverState == ROTATOR_POS2 && ent->wait > 0 ) {
-					G_Printf( "Use_BinaryMover moverState == MOVER_POS2 && ent->wait > 0\n");
+					//G_Printf( "Use_BinaryMover moverState == MOVER_POS2 && ent->wait > 0\n");
         // start moving 50 msec later, becase if this was player
         // triggered, level.time hasn't been advanced yet
 			    MatchTeam( ent, ROTATOR_2TO1, level.time + 50 );
-					G_Printf( "Use_BinaryMover MOVER_2TO1 MatchTeam called\n");
+					//G_Printf( "Use_BinaryMover MOVER_2TO1 MatchTeam called\n");
         // starting sound
 			    if ( ent->sound2to1 ) {
 					    G_AddEvent( ent, EV_GENERAL_SOUND, ent->sound2to1 );
@@ -1145,6 +1177,10 @@ void Blocked_Door( gentity_t *ent, gentity_t *other ) {
 	else if ( ent->moverState == MOVER_2TO1 )
 		ent->moverState = MOVER_STOP_2TO1;
 
+	if ( ent->moverState == ROTATOR_1TO2 )
+		ent->moverState = ROTATOR_STOP_1TO2;
+	else if ( ent->moverState == ROTATOR_2TO1 )
+		ent->moverState = ROTATOR_STOP_2TO1;
 	// remove anything other than a client
 	if ( !other->client ) {
 		// except CTF flags!!!!
