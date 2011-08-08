@@ -52,7 +52,7 @@ along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
 #define BUTTON_SPRINTING	256
 
 #undef	BUTTON_AFFIRMATIVE
-#define BUTTON_AFFIRMATIVE	64
+#define BUTTON_HEAL	64
 
 #undef	BUTTON_GUARDBASE
 #define BUTTON_GUARDBASE	4096
@@ -189,7 +189,9 @@ typedef enum {
     WEAPON_TONORMAL,
     WEAPON_IDLE_ALT,
     WEAPON_READY_FIRE_ALT,
-    WEAPON_READY_FIRE_IDLE_ALT
+    WEAPON_READY_FIRE_IDLE_ALT,
+    WEAPON_START_BANDAGING,                
+    WEAPON_DOWN_BANDAGING
                 
 } weaponstate_t;
 
@@ -217,6 +219,7 @@ typedef enum {
 #define PMF_FOLLOW              4096    // spectate following another player
 #define PMF_RELOADING           8192    // spectate as a scoreboard
 #define PMF_GRENADE_ARMED       16384
+#define PMF_BLEEDING       32768
 
 
 #define PMF_ALL_TIMES   (PMF_TIME_WATERJUMP|PMF_TIME_LAND|PMF_TIME_KNOCKBACK)
@@ -448,6 +451,7 @@ typedef enum {
 typedef enum {
         EV_NONE,
 
+        EV_BANDAGE,
         EV_FOOTSTEP,
         EV_FOOTSTEP_METAL,
         EV_FOOTSPLASH,
@@ -467,6 +471,7 @@ typedef enum {
         EV_JUMP_PAD,                    // boing sound at origin, jump sound on player
 
         EV_JUMP,
+        EV_BLEED,
         EV_WATER_TOUCH, // foot touches
         EV_WATER_LEAVE, // foot leaves
         EV_WATER_UNDER, // head touches
@@ -626,12 +631,14 @@ typedef enum {
         TORSO_ATTACK_PUMPGUN,
         TORSO_ATTACK_GRENADE,
         TORSO_ATTACK_KNIFE,
+        TORSO_BANDAGE,
         TORSO_GETFLAG,
         TORSO_GUARDBASE,
         TORSO_PATROL,
         TORSO_FOLLOWME,
         TORSO_AFFIRMATIVE,
         TORSO_NEGATIVE,
+
 
         MAX_ANIMATIONS,
 
@@ -748,6 +755,7 @@ typedef enum {
         MOD_TELEFRAG,
         MOD_FALLING,
         MOD_SUICIDE,
+        MOD_BLED,
         MOD_TARGET_LASER,
         MOD_TRIGGER_HURT,
 #ifdef MISSIONPACK
