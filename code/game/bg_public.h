@@ -191,7 +191,7 @@ typedef enum {
     WEAPON_READY_FIRE_ALT,
     WEAPON_READY_FIRE_IDLE_ALT,
     WEAPON_START_BANDAGING,                
-    WEAPON_DOWN_BANDAGING
+    WEAPON_DOWN_BANDAGING,
                 
 } weaponstate_t;
 
@@ -609,6 +609,8 @@ typedef enum {
         LEGS_RUN,
         LEGS_BACK,
         LEGS_SWIM,
+        LEGS_LIMP,
+        LEGS_BACKLIMP,	
 
         LEGS_JUMP,
         LEGS_LAND,

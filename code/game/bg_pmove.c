@@ -1694,18 +1694,29 @@ footstep = qfalse;
                 if ( !( pm->cmd.buttons & BUTTON_WALKING ) ) {
                         bobmove = 0.4f; // faster speeds bob faster
                         if ( pm->ps->pm_flags & PMF_BACKWARDS_RUN ) {
+                              if ( pm->ps->stats[STAT_LEG_DAMAGE]  ) {
+                                PM_ContinueLegsAnim( LEGS_BACKLIMP );
+                                }else
                                 PM_ContinueLegsAnim( LEGS_BACK );
                         }
                         else {
+                              if ( pm->ps->stats[STAT_LEG_DAMAGE]  ) {
+                                PM_ContinueLegsAnim( LEGS_LIMP );
+                                }else
                                 PM_ContinueLegsAnim( LEGS_RUN );
                         }
                         footstep = qtrue;
                 } else {
                         bobmove = 0.3f; // walking bobs slow
                         if ( pm->ps->pm_flags & PMF_BACKWARDS_RUN ) {
+                             if ( pm->ps->stats[STAT_LEG_DAMAGE]  ) {
+                                PM_ContinueLegsAnim( LEGS_BACKLIMP );
+                                }else
                                 PM_ContinueLegsAnim( LEGS_BACKWALK );
                         }
-                        else {
+                        else if ( pm->ps->stats[STAT_LEG_DAMAGE]  ) {
+                        PM_ContinueLegsAnim( LEGS_LIMP );
+                        } else{
                                 PM_ContinueLegsAnim( LEGS_WALK );
                         }
                 }
