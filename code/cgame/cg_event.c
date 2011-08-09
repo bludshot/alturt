@@ -415,7 +415,6 @@ static void CG_ItemPickup( int itemNum ) {
 
 }
 
-
 /*
 ================
 CG_PainEvent
@@ -654,7 +653,8 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		break;
                  case EV_BLEED:
                                     DEBUGNAME("EV_BLEED");
-                                    CG_PlayerBleed(cent->currentState.clientNum, 55, es->pos.trBase, dir );
+                                    CG_CreateBleeder( es->pos.trBase , 10, cent->currentState.clientNum ) ;
+                               //     CG_PlayerBleed(cent->currentState.clientNum, 10, es->pos.trBase, dir );
                                      break;
                 
 	case EV_TAUNT:
