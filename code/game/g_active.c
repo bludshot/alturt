@@ -497,9 +497,10 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 //      qboolean        fired;
         gitem_t *item;
         gentity_t *drop, *attacker;
+        usercmd_t       *ucmd;
 
         client = ent->client;
-
+        ucmd = &ent->client->pers.cmd;
         if ( oldEventSequence < client->ps.eventSequence - MAX_PS_EVENTS ) {
                 oldEventSequence = client->ps.eventSequence - MAX_PS_EVENTS;
         }
@@ -514,7 +515,7 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 		break;
 	case EV_FALL_MEDIUM:
                                 G_Printf("EV_FALL_MED");
-                                      damage=35;    
+                                      damage=55;    
                                       G_Damage (ent, NULL, NULL, NULL, NULL, damage, 0, MOD_FALLING);
 		break;
                 case EV_FALL_FAR:
@@ -538,7 +539,8 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
                     break;
                     
                   case EV_BLEED:
-                      attacker->client->ps.clientNum = ent->client->ps.persistant[PERS_ATTACKER];
+                      //attacker->client->ps.clientNum = ent->client->ps.persistant[PERS_ATTACKER];
+                      if(  ucmd->serverTime   % 20 == 0 )
                       ent->health--;
                       //if(ent->health ==1 )
                        //   player_die (ent, attacker, attacker, 20, MOD_BLED);
@@ -796,7 +798,7 @@ void ClientThink_real( gentity_t *ent ) {
           //if walking/ducking do nothing!
          // G_Printf( "ucmd->buttons & BUTTON_WALKING || client->ps.pm_flags & PMF_DUCKED\n");
 
-        }else if  ( client->ps.stats[STAT_STAMINA] > 0 && ucmd->buttons & BUTTON_SPRINTING && (int)xyspeed > 5  ) {
+        }else if  ( client->ps.stats[STAT_STAMINA] > 0 && ucmd->buttons & BUTTON_SPRINTING && (int)xyspeed > 5 && !(client->ps.pm_flags & PMF_BLEEDING) ) {
                         if (ucmd->rightmove == 0 && ucmd->forwardmove > 0) //blud disabling sprint for all other than forward movement only
 						{
 							client->ps.speed *= 1.5; //blud: was 1.3, fixed to match urt. I think we should move this value to a constant somewhere
@@ -808,6 +810,11 @@ void ClientThink_real( gentity_t *ent ) {
         //  G_Printf( "client->ps.stats[STAT_STAMINA] = %i ucmd->buttons & BUTTON_SPRINTING = %i xyspeed = %i\n",
            //         client->ps.stats[STAT_STAMINA],ucmd->buttons & BUTTON_SPRINTING, (int)xyspeed
            //       );
+        
+        if (client->ps.pm_flags & PMF_BLEEDING ){
+            client->ps.speed *= 0.5;
+            
+        }
 
                         // -- Xamis   Crude attempt at powerslide
       if( client->ps.pm_flags & PMF_DUCKED
