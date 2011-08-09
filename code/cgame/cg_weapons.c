@@ -2044,6 +2044,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
         
 }
 
+
 /*
 ==============
 CG_AddViewWeapon
@@ -3501,9 +3502,9 @@ localEntity_t *CG_SpawnBloodParticle( vec3_t org, vec3_t dir, float speed, float
     le->pos.trTime = cg.time;		// set start time of calculation
     le->leType = LE_PARTICLE;		// render as particle
     le->startTime = cg.time;		// start time
-    le->endTime = cg.time + 9000;	// time it will be removed from the scene
+    le->endTime = cg.time +20000;	// time it will be removed from the scene
     le->lifeRate = 1.0 / ( le->endTime - le->startTime );
-    le->radius = 2;//radius; //
+    le->radius = radius; //
     le->color[0] = r;
     le->color[1] = g;
     le->color[2] = b;
@@ -3556,4 +3557,30 @@ void CG_PlayerBleed(  int clientNum, int damage, vec3_t origin, vec3_t dir ) {
             CG_SpawnBloodParticle( origin, dir2, 60 + i*3, 0.0f, 3.0f +random()/2.0f, 0.4+random()/10,0.1f,0.1f,1.0f, qtrue );
         }
     }
+}
+
+
+void CG_CreateBleeder( vec3_t origin , int damage, int playerNum ) {
+    //	localEntity_t	*le;
+    //	refEntity_t		*re;
+    //	int a;
+    centity_t	*cent;
+    vec3_t dir;
+
+    cent = &cg_entities[ playerNum ];
+
+    if (!cent)
+        return;
+
+    if (!cg_blood.integer)
+        return;
+
+    AngleVectors( cent->lerpAngles, dir, NULL,NULL );
+
+    // add a little random factor
+    dir[0] += -0.5 + random();
+    dir[1] += -0.5 + random();
+
+    CG_PlayerBleed(  playerNum, damage*2, origin, dir );
+
 }
