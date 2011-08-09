@@ -532,9 +532,18 @@ static qboolean PM_CheckJump( void )
 
   if( pm->ps->velocity[ 2 ] < 0 )
     pm->ps->velocity[ 2 ] = 0;
-
+  
+  
+  
+  if (pm->ps->pm_flags & PMF_BLEEDING )
+VectorMA( pm->ps->velocity, JUMP_VELOCITY *0.5,
+            normal, pm->ps->velocity );
+  else
   VectorMA( pm->ps->velocity, JUMP_VELOCITY,
-            normal, pm->ps->velocity ); //JUMP_VELOCITY was hardcoded here at 300. blud increasing jump height to match urt
+            normal, pm->ps->velocity );
+  
+ // VectorMA( pm->ps->velocity, JUMP_VELOCITY,
+  //          normal, pm->ps->velocity ); //JUMP_VELOCITY was hardcoded here at 300. blud increasing jump height to match urt
 
   PM_AddEvent( EV_JUMP );
 
@@ -1256,21 +1265,21 @@ static void PM_CrashLand( void ) {
         if ( delta < 1 ) {
                 return;
         }
-        Com_Printf("Delta is %f\n", delta);
+        //Com_Printf("Delta is %f\n", delta);
         // create a local entity event to play the sound
 
         // SURF_NODAMAGE is used for bounce pads where you don't ever
         // want to take damage or play a crunch sound
         if ( !(pml.groundTrace.surfaceFlags & SURF_NODAMAGE) )  {
-                if ( delta >65 ) {
+                if ( delta >75 ) {
                         PM_AddEvent( EV_FALL_FAR );
                        
-                } else if ( delta > 50 ) {
+                } else if ( delta > 60 ) {
                         // this is a pain grunt, so don't play it if dead
                         if ( pm->ps->stats[STAT_HEALTH] > 0 ) {
                                 PM_AddEvent( EV_FALL_MEDIUM );
                         }
-                } else if ( delta > 24 ) {
+                } else if ( delta > 34 ) {
                         PM_AddEvent( EV_FALL_SHORT );
                 } else {
                         PM_AddEvent( PM_FootstepForSurface() );
@@ -1788,8 +1797,6 @@ static void PM_BeginWeaponChange( int weapon ) {
 
         PM_AddEvent( EV_CHANGE_WEAPON );
         pm->ps->weaponstate = WEAPON_DROPPING;
-        pm->ps->weaponTime += 200;
-       // PM_StartWeaponAnim(WPN_DRAW);
         PM_StartTorsoAnim( TORSO_DROP );
 }
 
@@ -1811,11 +1818,14 @@ static void PM_FinishWeaponChange( void ) {
           return;
         }
 
+       if ( pm->ps->weaponstate == WEAPON_RAISING ) {
+                return;
+        }
         pm->ps->pm_flags &= ~PMF_GRENADE_ARMED;
 	bg_nadeTimer.fuseTime[pm->ps->clientNum] = 6000;
         pm->ps->weapon = weapon;
-        pm->ps->weaponstate = WEAPON_RAISING;
-        pm->ps->weaponTime += 250;
+        pm->ps->weaponstate = WEAPON_RAISING;        
+       //PM_StartWeaponAnim(WPN_DRAW);
         PM_StartTorsoAnim( TORSO_RAISE );
         PM_AddEvent( EV_CHANGE_WEAPON );
 }
@@ -1978,6 +1988,32 @@ int ReloadEndTime( int w )        {
 
 }
 
+qboolean PM_HasDrawAnimation( int weapon ){
+    
+     switch( weapon ) {
+        default:
+            
+        case WP_KNIFE:
+        case WP_BERETTA:
+        case WP_DEAGLE:                                       
+        case WP_M4:
+            return qtrue;
+            break;        
+        case WP_MP5K:
+        case WP_LR300:
+        case WP_G36:
+        case WP_SPAS:
+        case WP_PSG1:
+        case WP_SR8:
+        case WP_UMP45:
+        case WP_NEGEV:
+        case WP_AK103:
+        case WP_HK69:
+        case WP_HE:
+        case WP_SMOKE:
+            return qfalse;
+        }    
+}
 
 /*
 ==============
@@ -2085,12 +2121,7 @@ static void PM_Weapon( void ) {
         if ( bg_nadeTimer.throwStrength[pm->ps->clientNum] > 80000 )
           bg_nadeTimer.throwStrength[pm->ps->clientNum]= 80000;
 
-
-        if ( pm->ps->weaponstate == WEAPON_DROPPING && pm->ps->weaponTime > 0 ) {
-
-                return;
-        }
-        
+  
         
         //If were in the process of bandaging we can't fire  --Xamis
        if ( pm->ps->weaponstate == WEAPON_DOWN_BANDAGING && pm->ps->weaponTime > 0 ) {
@@ -2099,12 +2130,16 @@ static void PM_Weapon( void ) {
         }
         
                if ( pm->ps->weaponstate == WEAPON_DOWN_BANDAGING && pm->ps->weaponTime <= 0 ) {
-
+                   pm->ps->pm_flags &=  ~ PMF_BLEEDING;
+                   pm->ps->stats[STAT_LEG_DAMAGE]=0;
+                   pm->ps->stats[STAT_CHEST_DAMAGE] =  0;
+                   pm->ps->stats[STAT_ARM_DAMAGE] = 0;
+                   pm->ps->stats[STAT_HEAD_DAMAGE] = 0;
                    pm->ps->weaponstate = WEAPON_READY;
         }
         
        if ( pm->ps->weaponstate == WEAPON_START_BANDAGING ) {
-                   pm->ps->weaponTime = 400;
+                   pm->ps->weaponTime = 1000;
                    PM_StartTorsoAnim( TORSO_BANDAGE );
                    pm->ps->weaponstate = WEAPON_DOWN_BANDAGING;
                    PM_AddEvent( EV_BANDAGE);
@@ -2248,14 +2283,17 @@ static void PM_Weapon( void ) {
         }
 
     // change weapon if time
-        if ( pm->ps->weaponstate == WEAPON_DROPPING ) {
-            
+        if ( pm->ps->weaponstate == WEAPON_DROPPING &&  pm->ps->weaponTime <= 0) {
+            if ( PM_HasDrawAnimation( pm->ps->weapon )){
+                PM_StartWeaponAnim(WPN_DRAW);
+                pm->ps->weaponTime += 300;
+                }
                 PM_FinishWeaponChange();
-                return;
+                 return;
         }
-
-        if ( pm->ps->weaponstate == WEAPON_RAISING ) {
-            PM_StartWeaponAnim(WPN_DRAW);
+            
+            
+        if ( pm->ps->weaponstate == WEAPON_RAISING &&  pm->ps->weaponTime <= 0 ) {
                 pm->ps->weaponstate = WEAPON_READY;
                 if ( pm->ps->weapon == WP_KNIFE || BG_Grenade(pm->ps->weapon ) ) {
                   PM_StartTorsoAnim( TORSO_STAND2 );
@@ -2706,7 +2744,7 @@ void PmoveSingle (pmove_t *pmove) {
 
         
         if( pm->ps->pm_flags & PMF_BLEEDING){
-           if(  pmove->cmd.serverTime   % 100 == 0 ){
+           if(  pmove->cmd.serverTime   % 50 == 0 ){
             PM_AddEvent(EV_BLEED);
 
        //    pm->ps->stats[STAT_HEALTH]=pm->ps->stats[STAT_HEALTH]-1;
@@ -2716,13 +2754,8 @@ void PmoveSingle (pmove_t *pmove) {
         }
         
         if (pm->cmd.buttons & BUTTON_HEAL &&  pm->ps->pm_flags & PMF_BLEEDING){
-            pm->ps->pm_flags &= ~ PMF_BLEEDING;
-            pm->cmd.buttons &= ~BUTTON_HEAL;
-            pm->ps->stats[STAT_LEG_DAMAGE]=0;
-            pm->ps->stats[STAT_CHEST_DAMAGE] =  0;
-            pm->ps->stats[STAT_ARM_DAMAGE] = 0;
-            pm->ps->stats[STAT_HEAD_DAMAGE] = 0;
-            pm->ps->weaponstate = WEAPON_START_BANDAGING;
+             pm->ps->weaponstate = WEAPON_START_BANDAGING;
+             pm->cmd.buttons &= ~BUTTON_HEAL;
         }
 
         // if talk button is down, dissallow all other input
