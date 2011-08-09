@@ -831,9 +831,11 @@ static void CG_DrawStatusBar( void ) {
 
 void CG_DrawStatusHud( void )
 {
+      int current;
      qhandle_t            damage_legs, damage_arms, damage_chest, damage_head;
     //  int x;
     //  int y;
+  float alpha[4] ={ 0.3f, 0.5f, 0.8f, 1.0f};
   int base_x = 12;
   int base_y = 386;
 
@@ -871,7 +873,10 @@ void CG_DrawStatusHud( void )
                                          }
 
                                         
-                                        
+  					if(  cg.snap->ps.pm_flags & PMF_BLEEDING ){
+						current = (cg.time >> 8) & 1; // flash
+					}else
+						current = 0;                                      
                                           
                                          
                                          
@@ -887,91 +892,91 @@ void CG_DrawStatusHud( void )
                                            if ( healthV > 90 )
                                            {
                                              VectorCopy( colorWhite, hColor2 );
-                                             hColor2[3] = 0.3f;
+                                             hColor2[3] = alpha[current];
                                              healthV = 90;
                                            }
                                            trap_R_SetColor( hColor2 );
                                            CG_DrawPic( base_x , base_y , 40,86, stamina[0] );
                                            trap_R_SetColor( NULL );
 
-                                           hColor2[3] = 0.3f;
+                                           hColor2[3] = alpha[current];
                                            if ( healthV > 80 )
                                            {
                                              VectorCopy( colorWhite, hColor2 );
-                                             hColor2[3] = 0.3f;
+                                             hColor2[3] = alpha[current];
                                              healthV = 80;
                                            }
                                            trap_R_SetColor( hColor2 );
                                            CG_DrawPic( base_x , base_y , 40,86, stamina[1] );
                                            trap_R_SetColor( NULL );
 
-                                           hColor2[3] = 0.3f;
+                                           hColor2[3] = alpha[current];
 
                                            if ( healthV > 70 )
                                            {
                                              VectorCopy( colorWhite, hColor2 );
-                                             hColor2[3] = 0.3f;
+                                             hColor2[3] = alpha[current];
                                              healthV = 70;
                                            }
                                            trap_R_SetColor( hColor2 );
                                            CG_DrawPic( base_x , base_y , 40,86, stamina[2] );
                                            trap_R_SetColor( NULL );
 
-                                           hColor2[3] = 0.3f;
+                                           hColor2[3] = alpha[current];
 
                                            if ( healthV > 60 )
                                            {
                                              VectorCopy( colorWhite, hColor2 );
-                                             hColor2[3] = 0.3f;
+                                             hColor2[3] = alpha[current];
                                              healthV = 60;
                                            }
                                            trap_R_SetColor( hColor2 );
                                            CG_DrawPic( base_x , base_y , 40,86, stamina[3] );
                                            trap_R_SetColor( NULL );
 
-                                           hColor2[3] = 0.3f;
+                                           hColor2[3] = alpha[current];
 
                                            if ( healthV > 50 )
                                            {
                                              VectorCopy( colorWhite, hColor2 );
-                                             hColor2[3] = 0.3f;
+                                             hColor2[3] = alpha[current];
                                              healthV = 50;
                                            }
                                            trap_R_SetColor( hColor2 );
                                            CG_DrawPic( base_x , base_y , 40,86, stamina[4] );
                                            trap_R_SetColor( NULL );
 
-                                           hColor2[3] = 0.3f;
+                                           hColor2[3] = alpha[current];
 
 
                                            if ( healthV > 40 )
                                            {
                                              VectorCopy( colorWhite, hColor2 );
-                                             hColor2[3] = 0.3f;
+                                             hColor2[3] = alpha[current];
                                              healthV = 40;
                                            }
                                            trap_R_SetColor( hColor2 );
                                            CG_DrawPic( base_x , base_y , 40,86, stamina[5] );
                                            trap_R_SetColor( NULL );
 
-                                           hColor2[3] = 0.3f;
+                                           hColor2[3] = alpha[current];
 
                                            if ( healthV > 30 )
                                            {
                                              VectorCopy( colorWhite, hColor2 );
-                                             hColor2[3] = 0.3f;
+                                             hColor2[3] = alpha[current];
                                              healthV = 30;
                                            }
                                            trap_R_SetColor( hColor2 );
                                            CG_DrawPic( base_x , base_y , 40,86, stamina[6] );
                                            trap_R_SetColor( NULL );
 
-                                           hColor2[3] = 0.3f;
+                                           hColor2[3] = alpha[current];
 
                                            if ( healthV > 20 )
                                            {
                                              VectorCopy( colorWhite, hColor2 );
-                                             hColor2[3] = 0.3f;
+                                             hColor2[3] = alpha[current];
 
                                              healthV = 20;
                                            }
@@ -979,12 +984,12 @@ void CG_DrawStatusHud( void )
                                            CG_DrawPic( base_x , base_y , 40,86, stamina[7] );
                                            trap_R_SetColor( NULL );
 
-                                           hColor2[3] = 0.3f;
+                                           hColor2[3] = alpha[current];
 
                                            if ( healthV > 0 )
                                            {
                                              VectorCopy( colorWhite, hColor2 );
-                                             hColor2[3] = 0.3f;
+                                             hColor2[3] = alpha[current];
                                            }
                                            trap_R_SetColor( hColor2 );
                                            CG_DrawPic( base_x , base_y , 40,86, stamina[8] );
@@ -2804,11 +2809,10 @@ static void CG_DrawCrosshairNames( void ) {
 	CG_Text_Paint( 320 - w / 2, 190, 0.3f, color, name, 0, 0, ITEM_TEXTSTYLE_SHADOWED);
 #else
 
-        
+                         teamstat = va("Health: %i ", 	cgs.clientinfo[ cg.crosshairClientNum ].health);
         //team info Xamis
                 if (cgs.clientinfo[cg.crosshairClientNum].health){
-                 teamstat = va("Health: %i ",
- 	cgs.clientinfo[ cg.crosshairClientNum ].health);
+
                 w = CG_DrawStrlen( teamstat ) * SMALLCHAR_WIDTH;
                 CG_DrawSmallString( 320 - w / 2, 190, teamstat, color[3] * 0.5 );
                 	w = CG_DrawStrlen( name ) * BIGCHAR_WIDTH;
