@@ -1470,8 +1470,19 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 
 
         gun.backlerp = parent->backlerp;
-        CG_WeaponAnimation( cent, &gun.oldframe, &gun.frame, &gun.backlerp );
-        //CG_PositionRotatedEntityOnTag( &gun, parent, parent->hModel, "tag_weapon" );
+
+
+if ( !ps ) {
+CG_PositionEntityOnTag( &gun, parent, parent->hModel, "tag_weapon");
+}
+else {
+CG_WeaponAnimation( cent, &gun.oldframe, &gun.frame, &gun.backlerp );
+CG_PositionWeaponOnTag( &gun, parent, parent->hModel, "tag_weapon");
+} 
+
+
+       // CG_WeaponAnimation( cent, &gun.oldframe, &gun.frame, &gun.backlerp );
+       // CG_PositionEntityOnTag( &gun, parent, parent->hModel, "tag_weapon" );
         CG_AddWeaponWithPowerups( &gun, cent->currentState.powerups );
 
 
@@ -1483,11 +1494,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
           weaponModel.shadowPlane = parent->shadowPlane;
           weaponModel.renderfx = parent->renderfx;
           weaponModel.hModel = weapon->weaponModel;
-          angles[YAW] = 0;
-          angles[PITCH] = 0;
-          angles[ROLL] = 0;
-          AnglesToAxis( angles, weaponModel.axis );
-          CG_PositionRotatedEntityOnTag( &weaponModel, &gun, weapon->handsModel, "tag_weapon" );
+          CG_PositionEntityOnTag( &weaponModel, &gun, weapon->handsModel, "tag_weapon" );
           CG_AddWeaponWithPowerups( &weaponModel, cent->currentState.powerups );
 
         }
@@ -1501,11 +1508,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
           viewmainModel.shadowPlane = parent->shadowPlane;
           viewmainModel.renderfx = parent->renderfx;
           viewmainModel.hModel = weapon->vmainModel;
-          angles[YAW] = 0;
-          angles[PITCH] = 0;
-          angles[ROLL] = 0;
-          AnglesToAxis( angles, viewmainModel.axis );
-          CG_PositionRotatedEntityOnTag( &viewmainModel, &gun, weapon->holdsModel, "tag_main" );
+          CG_PositionEntityOnTag( &viewmainModel, &gun, weapon->holdsModel, "tag_main" );
           CG_AddWeaponWithPowerups( &viewmainModel, cent->currentState.powerups );
 
         }
@@ -1522,12 +1525,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
                 silencer.renderfx = parent->renderfx;
                 silencer.hModel = weapon->silencerModel;
                 weapon->flashSound[0] = weapon->silenceSound[0];
-                angles[YAW] = 0;
-                angles[PITCH] = 0;
-                angles[ROLL] = 0;
-
-                AnglesToAxis( angles, silencer.axis );
-                CG_PositionRotatedEntityOnTag( &silencer, &gun, weapon->holdsModel , "tag_flash" );
+                CG_PositionEntityOnTag( &silencer, &gun, weapon->holdsModel , "tag_flash" );
 
 
                 CG_AddWeaponWithPowerups( &silencer, cent->currentState.powerups );
@@ -1544,13 +1542,8 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
                 laser.shadowPlane = parent->shadowPlane;
                 laser.renderfx = parent->renderfx;
                 laser.hModel = weapon->laserModel;
-                angles[YAW] = 0;
-                angles[PITCH] = 0;
-                angles[ROLL] = 0;
-
-                AnglesToAxis( angles, laser.axis );
                  if ( weaponNum != WP_AK103)
-                CG_PositionRotatedEntityOnTag( &laser, &gun, weapon->holdsModel , "tag_laser" );
+                CG_PositionEntityOnTag( &laser, &gun, weapon->holdsModel , "tag_laser" );
     {
     
         vec3_t forward;
@@ -1996,7 +1989,6 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
         // add the flash
           if ( cg.time - cent->muzzleFlashTime > MUZZLE_FLASH_TIME && !cent->pe.railgunFlash
                && weaponNum != WP_KNIFE
-               && weaponNum != WP_HE
                &&!(BG_Grenade(weaponNum))
              ) {
                         return; //removed some stuff, trying to prevent flash on knife, looked real dumb  --Xamis
@@ -2044,7 +2036,6 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
         
 }
 
-
 /*
 ==============
 CG_AddViewWeapon
@@ -2052,6 +2043,7 @@ CG_AddViewWeapon
 Add the weapon, and flash for the player's view
 ==============
 */
+
 void CG_AddViewWeapon( playerState_t *ps ) {
         refEntity_t     hand;
         centity_t       *cent;
@@ -2063,7 +2055,7 @@ void CG_AddViewWeapon( playerState_t *ps ) {
         if ( ps->persistant[PERS_TEAM] == TEAM_SPECTATOR ) {
                 return;
         }
-
+        
         if ( ps->pm_type == PM_INTERMISSION ) {
                 return;
         }
@@ -2170,6 +2162,7 @@ void CG_AddViewWeapon( playerState_t *ps ) {
         // add everything onto the hand
         CG_AddPlayerWeapon( &hand, ps, &cg.predictedPlayerEntity, ps->persistant[PERS_TEAM], CG_GetPlayerModelName(ci), ci->skin );
 }
+
 
 void CG_DrawItemSelect( void ) {
         //int           value;
@@ -3184,6 +3177,58 @@ void CG_FireWeapon( centity_t *cent ) {
                 weap->ejectBrassFunc( cent );
         }
 }
+
+/*
+=================
+CG_LaserHitWall
+
+=================
+*/
+void CG_LaserHitWall( int clientNum, vec3_t origin, vec3_t dir ) {
+        qhandle_t               mod;
+        qhandle_t               mark;
+        qhandle_t               shader;
+        sfxHandle_t             sfx;
+        float                   radius;
+        float                   light;
+        vec3_t                  lightColor;
+        localEntity_t   *le;
+        int                             r;
+        qboolean                alphaFade;
+        qboolean                isSprite;
+        int                             duration;
+
+        mark = 0;
+        radius = 32;
+        sfx = 0;
+        mod = 0;
+        shader = 0;
+        light = 0;
+        lightColor[0] = 1;
+        lightColor[1] = 1;
+        lightColor[2] = 0;
+
+        // set defaults
+        isSprite = qfalse;
+        duration = 10;
+
+                mod = cgs.media.dishFlashModel;
+                shader = cgs.media.grenadeExplosionShader;
+                sfx = cgs.media.sfx_rockexp;
+                mark = cgs.media.burnMarkShader;
+                radius = 64;
+                light = 300;
+                isSprite = qtrue;
+
+        //
+        // impact mark
+        //
+        	alphaFade = (mark == cgs.media.energyMarkShader);       // plasma fades alpha, all others fade color
+
+                CG_ImpactMark( mark, origin, dir, random()*360, 1,1,1,1, alphaFade, radius, qfalse );
+
+}
+
 
 
 /*
