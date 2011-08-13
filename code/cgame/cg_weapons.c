@@ -970,7 +970,7 @@ static int CG_MapTorsoToWeaponFrame( clientInfo_t *ci, int frame ) {
                 && frame < ci->animations[TORSO_DROP].firstFrame + 9 ) {
                 return frame - ci->animations[TORSO_DROP].firstFrame + 6;
         }
-
+        
         // stand attack
         if ( frame >= ci->animations[TORSO_ATTACK].firstFrame
                 && frame < ci->animations[TORSO_ATTACK].firstFrame + 6 ) {
@@ -1288,9 +1288,18 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	refEntity_t     vshell;
 	refEntity_t     vgrenade;
 	refEntity_t     weaponModel;
+        	refEntity_t     PriweaponModel;
+                  refEntity_t     SecweaponModel;
+                  refEntity_t     SidweaponModel;
 	vec3_t          angles;
 	weapon_t        weaponNum;
+                  weapon_t        PriweaponNum;
+                  weapon_t        SecweaponNum;
+                  weapon_t        SidweaponNum;
 	weaponInfo_t    *weapon;
+                  weaponInfo_t    *weapon1;
+                  weaponInfo_t    *weapon2;
+                  weaponInfo_t    *weapon3;
 	centity_t       *nonPredictedCent;
 	orientation_t   lerped;
 	int             powerups;
@@ -1299,20 +1308,45 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	qboolean lasersight;
 	qboolean silenced;
 	qboolean vestOn;
+ 	qboolean        weaponDown;
                   float	len;
+                  int            anim;
 
 	vestOn = lasersight = silenced = qfalse;
 
 	powerups = cent->currentState.powerups;
 
 	weaponNum = cent->currentState.weapon;
+        
+                  SidweaponNum = CG_GetSidearm();
+                  PriweaponNum = CG_GetPrimary();
+                  SecweaponNum = CG_GetWorstSecondary();
 
+                  
 	CG_RegisterWeapon( weaponNum );
+        	CG_RegisterWeapon( PriweaponNum );
+                	CG_RegisterWeapon( SecweaponNum );
+                  CG_RegisterWeapon( SidweaponNum );
+                  
 	weapon = &cg_weapons[weaponNum];
+ 	weapon1 = &cg_weapons[PriweaponNum];
+        	weapon2 = &cg_weapons[SecweaponNum];
+                	weapon3 = &cg_weapons[SidweaponNum];
+                        
 	ci = &cgs.clientinfo[cent->currentState.clientNum];
 
-	//Determine what items the user has --Xamis
+        
+        
+                        
 
+	//Determine what items the user has --Xamis
+            anim = cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT;
+
+            if ( anim == BOTH_CLIMB ||  anim == BOTH_CLIMB_IDLE || anim == TORSO_BANDAGE ){
+                      weaponDown=qtrue;
+                  } else
+                      weaponDown=qfalse;
+        
 	if ( powerups & ( 1 << PW_SILENCER ) )
 		silenced = qtrue;
 
@@ -1363,6 +1397,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 
 	if(!ps)
 	{
+                                    weapon->handsModel = trap_R_RegisterModel( "models/weapons2/handskins/hands.md3" );
 		gun.hModel = weapon->handsModel;
 	}
 
@@ -1466,18 +1501,18 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
         }
 
         MatrixMultiply(lerped.axis, ((refEntity_t *)parent)->axis, gun.axis);
-
-
-
         gun.backlerp = parent->backlerp;
 
 
 if ( !ps ) {
-CG_PositionEntityOnTag( &gun, parent, parent->hModel, "tag_weapon");
+
+        CG_PositionEntityOnTag( &gun, parent, parent->hModel, "tag_weapon");
+
 }
 else {
 CG_WeaponAnimation( cent, &gun.oldframe, &gun.frame, &gun.backlerp );
 CG_PositionWeaponOnTag( &gun, parent, parent->hModel, "tag_weapon");
+
 } 
 
 
@@ -1487,16 +1522,53 @@ CG_PositionWeaponOnTag( &gun, parent, parent->hModel, "tag_weapon");
 
 
         if ( !ps ) {
-
+            
 
           memset( &weaponModel, 0, sizeof( weaponModel ) );
           VectorCopy( parent->lightingOrigin, weaponModel.lightingOrigin );
           weaponModel.shadowPlane = parent->shadowPlane;
           weaponModel.renderfx = parent->renderfx;
           weaponModel.hModel = weapon->weaponModel;
+          
+if ( weaponDown ) {
+       if (  BG_Primary( cent->currentState.weapon))
+        CG_PositionEntityOnTag( &weaponModel, parent, parent->hModel, "tag_primary" );
+    if (  BG_Secondary(cent->currentState.weapon ))
+        CG_PositionEntityOnTag( &weaponModel, parent, parent->hModel, "tag_secondar" );
+    if (  BG_Sidearm(cent->currentState.weapon ))
+        CG_PositionEntityOnTag( &weaponModel, parent, parent->hModel, "tag_sidearm" );
+}else
           CG_PositionEntityOnTag( &weaponModel, &gun, weapon->handsModel, "tag_weapon" );
           CG_AddWeaponWithPowerups( &weaponModel, cent->currentState.powerups );
 
+          
+          if ( PriweaponNum != cent->currentState.weapon ){
+          	memset( &PriweaponModel, 0, sizeof( PriweaponModel ) );
+	VectorCopy( parent->lightingOrigin, PriweaponModel.lightingOrigin );
+	PriweaponModel.shadowPlane = parent->shadowPlane;
+	PriweaponModel.renderfx = parent->renderfx;
+                  PriweaponModel.hModel = weapon1->weaponModel;
+                CG_PositionEntityOnTag( &PriweaponModel, parent, parent->hModel, "tag_primary" );
+                CG_AddWeaponWithPowerups( &PriweaponModel, cent->currentState.powerups );
+          }
+          if ( SecweaponNum != cent->currentState.weapon ){
+          	memset( &SecweaponModel, 0, sizeof( SecweaponModel ) );
+	VectorCopy( parent->lightingOrigin, SecweaponModel.lightingOrigin );
+	SecweaponModel.shadowPlane = parent->shadowPlane;
+	SecweaponModel.renderfx = parent->renderfx;
+                 SecweaponModel.hModel = weapon2->weaponModel;
+                CG_PositionEntityOnTag( &SecweaponModel, parent, parent->hModel, "tag_secondar" );
+                CG_AddWeaponWithPowerups( &SecweaponModel, cent->currentState.powerups );
+          }
+          if ( SidweaponNum != cent->currentState.weapon ){
+          	memset( &SidweaponModel, 0, sizeof( SidweaponModel ) );
+	VectorCopy( parent->lightingOrigin, SidweaponModel.lightingOrigin );
+	SidweaponModel.shadowPlane = parent->shadowPlane;
+	SidweaponModel.renderfx = parent->renderfx;
+                  SidweaponModel.hModel = weapon3->weaponModel;
+                CG_PositionEntityOnTag( &SidweaponModel, parent, parent->hModel, "tag_sidearm" );
+                CG_AddWeaponWithPowerups( &SidweaponModel, cent->currentState.powerups );
+          }
         }
 
 
@@ -1509,6 +1581,7 @@ CG_PositionWeaponOnTag( &gun, parent, parent->hModel, "tag_weapon");
           viewmainModel.renderfx = parent->renderfx;
           viewmainModel.hModel = weapon->vmainModel;
           CG_PositionEntityOnTag( &viewmainModel, &gun, weapon->holdsModel, "tag_main" );
+
           CG_AddWeaponWithPowerups( &viewmainModel, cent->currentState.powerups );
 
         }
@@ -2051,6 +2124,7 @@ void CG_AddViewWeapon( playerState_t *ps ) {
         float           fovOffset;
         vec3_t          angles;
         weaponInfo_t    *weapon;
+        int             anim;
 
         if ( ps->persistant[PERS_TEAM] == TEAM_SPECTATOR ) {
                 return;
@@ -2065,8 +2139,11 @@ void CG_AddViewWeapon( playerState_t *ps ) {
         if ( cg.renderingThirdPerson ) {
                 return;
         }
-
-
+        if ( ps->pm_flags & PMF_ONLADDER ) {
+            return;
+        }
+        
+        
         // allow the gun to be completely removed
         if ( !cg_drawGun.integer ) {
                 vec3_t          origin;
@@ -2099,7 +2176,7 @@ void CG_AddViewWeapon( playerState_t *ps ) {
         }
 
         // drop gun lower at higher fov
-        if ( cg_fov.integer > 90 ) {
+        if ( cg_fov.integer > 110 ) {
             cg_fov.integer=110;
                 fovOffset = -0.2 * ( cg_fov.integer - 90 );
         } else {
@@ -2107,6 +2184,12 @@ void CG_AddViewWeapon( playerState_t *ps ) {
         }
 
         cent = &cg.predictedPlayerEntity;       // &cg_entities[cg.snap->ps.clientNum];
+        anim = cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT;
+
+            if ( anim == TORSO_BANDAGE ){
+                return;
+                  } 
+        
         CG_RegisterWeapon( ps->weapon );
         weapon = &cg_weapons[ ps->weapon ];
 
@@ -2155,10 +2238,9 @@ void CG_AddViewWeapon( playerState_t *ps ) {
 			hand.oldframe = CG_MapTorsoToWeaponFrame( ci, cent->pe.torso.oldFrame );
 			hand.backlerp = cent->pe.torso.backlerp;
 		}
-
+        weapon->handsModel = trap_R_RegisterModel( "models/weapons2/shotgun/shotgun_hand.md3" );
         hand.hModel = weapon->handsModel;
         hand.renderfx = RF_DEPTHHACK | RF_FIRST_PERSON | RF_MINLIGHT;
-//        CG_Printf( "modelname is %s\n", CG_GetClientModelName(ci) );
         // add everything onto the hand
         CG_AddPlayerWeapon( &hand, ps, &cg.predictedPlayerEntity, ps->persistant[PERS_TEAM], CG_GetPlayerModelName(ci), ci->skin );
 }
@@ -3192,8 +3274,6 @@ void CG_LaserHitWall( int clientNum, vec3_t origin, vec3_t dir ) {
         float                   radius;
         float                   light;
         vec3_t                  lightColor;
-        localEntity_t   *le;
-        int                             r;
         qboolean                alphaFade;
         qboolean                isSprite;
         int                             duration;
