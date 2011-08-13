@@ -1621,6 +1621,7 @@ static void PM_Footsteps( void ) {
 
         if ( onladder == -1 || onladder == 1 ) // on ladder
         {
+            pm->ps->pm_flags |= PMF_ONLADDER;
         // moving up or down)
                 if ( xyzspeed ) {
                   PM_ContinueTorsoAnim ( BOTH_CLIMB );
@@ -1808,7 +1809,9 @@ static void PM_BeginWeaponChange( int weapon ) {
 
         PM_AddEvent( EV_CHANGE_WEAPON );
         pm->ps->weaponstate = WEAPON_DROPPING;
+        pm->ps->weaponTime +=200;
         PM_StartTorsoAnim( TORSO_DROP );
+        pm->ps->torsoTimer +=400;
 }
 
 
@@ -1837,6 +1840,8 @@ static void PM_FinishWeaponChange( void ) {
         pm->ps->weapon = weapon;
         pm->ps->weaponstate = WEAPON_RAISING;        
        //PM_StartWeaponAnim(WPN_DRAW);
+        pm->ps->weaponTime +=200;
+        pm->ps->torsoTimer +=400;
         PM_StartTorsoAnim( TORSO_RAISE );
         PM_AddEvent( EV_CHANGE_WEAPON );
 }
@@ -2295,10 +2300,10 @@ static void PM_Weapon( void ) {
 
     // change weapon if time
         if ( pm->ps->weaponstate == WEAPON_DROPPING &&  pm->ps->weaponTime <= 0) {
-            if ( PM_HasDrawAnimation( pm->ps->weapon )){
-                PM_StartWeaponAnim(WPN_DRAW);
-                pm->ps->weaponTime += 300;
-                }
+            //if ( PM_HasDrawAnimation( pm->ps->weapon )){
+             //   PM_StartWeaponAnim(WPN_DRAW);
+               // pm->ps->weaponTime += 300;
+              //  }
                 PM_FinishWeaponChange();
                  return;
         }
@@ -2890,9 +2895,10 @@ void PmoveSingle (pmove_t *pmove) {
         PM_SetWaterLevel();
 
         // weapons
-        if ( CheckLadder () == 0 )
+        if ( CheckLadder () == 0 ){
         PM_Weapon();
-
+        pm->ps->pm_flags &= ~ PMF_ONLADDER;
+        }
         // torso animation
         PM_TorsoAnimation();
 

@@ -220,6 +220,7 @@ typedef enum {
 #define PMF_RELOADING           8192    // spectate as a scoreboard
 #define PMF_GRENADE_ARMED       16384
 #define PMF_BLEEDING       32768
+#define PMF_ONLADDER    65536
 
 
 #define PMF_ALL_TIMES   (PMF_TIME_WATERJUMP|PMF_TIME_LAND|PMF_TIME_KNOCKBACK)
