@@ -2111,7 +2111,7 @@ static void PM_Weapon( void ) {
         if(BG_Grenade(pm->ps->weapon) )
          PM_AddEvent( EV_NONADES );
         }
-
+        
     // make weapon function
         if ( pm->ps->weaponTime > 0 )
         pm->ps->weaponTime -= pml.msec;
@@ -2254,7 +2254,7 @@ static void PM_Weapon( void ) {
           PM_AddEvent( EV_FIRE_WEAPON );
           PM_StartWeaponAnim( WPN_FIRE );
           pm->ps->weaponstate = WEAPON_FIRING;
-          bg_weaponlist[0].rounds[pm->ps->clientNum]++;
+          bg_weaponlist[0].rounds[pm->ps->clientNum]++; //Round count for burst mode.
           if( bg_weaponlist[0].rounds[pm->ps->clientNum] == 3)
             pm->ps->pm_flags |= PMF_SINGLE_SHOT;
           return;
@@ -2333,6 +2333,7 @@ static void PM_Weapon( void ) {
 
     // check for fire
         if (!(pm->cmd.buttons & 1) ) {
+            bg_weaponlist[0].numClips[pm->ps->clientNum] = 0;
           if(BG_Grenade(pm->ps->weapon) && pm->ps->pm_flags & PMF_GRENADE_ARMED){
             PM_StartWeaponAnim( WPN_FIRE );
             pm->ps->weaponstate = WEAPON_FIRING;
@@ -2364,9 +2365,8 @@ static void PM_Weapon( void ) {
         // remove flag
                 if ( pm->ps->pm_flags & PMF_SINGLE_SHOT ){
                         pm->ps->pm_flags &= ~PMF_SINGLE_SHOT;
-                      // pm->burstCount = 0;
-
                         bg_weaponlist[0].rounds[pm->ps->clientNum] = 0;
+                        bg_weaponlist[0].numClips[pm->ps->clientNum] = 0;
                 }
                 return;
           }
@@ -2393,6 +2393,8 @@ static void PM_Weapon( void ) {
 
         if ( pm->ps->weapon <= WP_NONE )
                 return;
+
+        
 
                                 // check for out of ammo
         if ( (pm->ps->stats[STAT_ROUNDS] == 0 && !BG_Grenade(pm->ps->weapon))
@@ -2443,6 +2445,7 @@ static void PM_Weapon( void ) {
 			  else
                           pm->ps->weaponTime = PM_WeaponTime(pm->ps->weapon );
                           PM_AddEvent( EV_FIRE_WEAPON );
+                          bg_weaponlist[0].numClips[pm->ps->clientNum]++; //This is a round count for spread.
                           if (pm->ps->weapon == WP_SR8 || pm->ps->weapon == WP_SPAS ){
                             pm->ps->pm_flags |= PMF_RELOADING;
      

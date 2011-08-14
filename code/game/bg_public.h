@@ -223,6 +223,7 @@ typedef enum {
 #define PMF_ONLADDER    65536
 
 
+
 #define PMF_ALL_TIMES   (PMF_TIME_WATERJUMP|PMF_TIME_LAND|PMF_TIME_KNOCKBACK)
 
 
@@ -953,12 +954,12 @@ void       BG_LastKnife(void);
 
 
 
-#define SPREAD_JUMPING 120.0;
-#define SPREAD_STANDING 5.0
+#define SPREAD_JUMPING 190.0;
+#define SPREAD_STANDING 15.0
 #define SPREAD_CROUCHING 0.0
-#define SPREAD_WALKING 30.0
-#define SPREAD_RUNNING 60.0
-#define SPREAD_SPRINTING 90.0
+#define SPREAD_WALKING 50.0
+#define SPREAD_RUNNING 90.0
+#define SPREAD_SPRINTING 120.0
 
 
 #define ALTURT_SMOKENADETIME 120 // time the smoke nade will spawn smoke for each numbr

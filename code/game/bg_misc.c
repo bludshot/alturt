@@ -35,7 +35,7 @@ nadeInfo_t bg_nadeTimer;
 wp_sort_t bg_inventory;
 
 wpinfo_t bg_weaponlist[] ={
-  {  //WP_NONE, //0
+  {  //WP_NONE, //0 Used for misc counts, rounds are for burst count.
     "",
     {0}, //weapMode
     {0},                // numClips ammo that fits in the weapon
