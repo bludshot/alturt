@@ -33,6 +33,55 @@ static  vec3_t  muzzle;
 
 #define NUM_NAILSHOTS 15
 
+
+void G_FixHitboxes( void ) {
+    int i;
+    gentity_t *ent;
+    gclient_t *client;
+
+    for (i = 0; i < level.maxclients; i++ ) {
+        client = &level.clients[i];
+        ent = &g_entities[ client - level.clients ];
+
+        if (!client) continue;
+
+        // we only want connected clients
+        if ( client->pers.connected != CON_CONNECTED) continue;
+
+        // we only want active players
+        if ( client->sess.sessionTeam == TEAM_SPECTATOR ) continue;
+
+        if ( ent->r.maxs[2] == PLAYER_STANDHEIGHT ) ent->r.maxs[2] = 26;
+        if ( ent->r.maxs[2] == PLAYER_CROUCHHEIGHT ) ent->r.maxs[2] = 14.5;
+
+    }
+}
+
+void G_RestoreHitboxes( void ) {
+    int i;
+    gentity_t *ent;
+    gclient_t *client;
+
+    for (i = 0; i < level.maxclients; i++ ) {
+        client = &level.clients[i];
+        ent = &g_entities[ client - level.clients ];
+
+        if (!client) continue;
+
+        // we only want connected clients
+        if ( client->pers.connected != CON_CONNECTED) continue;
+
+        // we only want active players
+        if ( client->sess.sessionTeam == TEAM_SPECTATOR ) continue;
+
+        if ( ent->r.maxs[2] == 26 ) ent->r.maxs[2] = PLAYER_STANDHEIGHT;
+        if ( ent->r.maxs[2] == 14.5 ) ent->r.maxs[2] = PLAYER_CROUCHHEIGHT;
+
+    }
+}
+
+
+
 /*
 ================
 G_BounceProjectile
@@ -95,7 +144,10 @@ qboolean CheckGauntletAttack( gentity_t *ent ) {
 
         VectorMA (muzzle, 32, forward, end);
         }
+       G_FixHitboxes();
         trap_Trace (&tr, muzzle, NULL, NULL, end, ent->s.number, MASK_SHOT);
+       G_RestoreHitboxes();
+        
         if ( tr.surfaceFlags & SURF_NOIMPACT ) {
                 return qfalse;
         }
@@ -144,8 +196,9 @@ void CheckMed( gentity_t *ent ) {
         CalcMuzzlePoint ( ent, forward, right, up, muzzle );
 
         VectorMA (muzzle, 32, forward, end);
-
+       G_FixHitboxes();
         trap_Trace (&tr, muzzle, NULL, NULL, end, ent->s.number, MASK_SHOT);
+        G_RestoreHitboxes();
         if ( tr.surfaceFlags & SURF_NOIMPACT ) {
                 return;
         }
@@ -243,7 +296,7 @@ void Bullet_Fire (gentity_t *ent, float spread, int damage ) {
         gentity_t       *tent;
         gentity_t       *traceEnt;
         int                     i, passent, spreadAdjustment;
-        spread += BG_CalcSpread(ent->client->ps);
+        spread += BG_CalcSpread(ent->client->ps) + ((bg_weaponlist[0].numClips[ent->client->ps.clientNum]*50));
         damage *= s_quadFactor;
        // G_Printf ("spread = %f\n xyspeed = %f", spread, BG_CalcSpread(ent->client->ps) );
 
@@ -253,6 +306,7 @@ void Bullet_Fire (gentity_t *ent, float spread, int damage ) {
         spreadAdjustment = 12;
         }else
 	spreadAdjustment = 16;
+        G_Printf( "Spread round count is %i\n", bg_weaponlist[0].numClips[ent->client->ps.clientNum] );
         r = random() * M_PI * 2.0f;
         u = sin(r) * crandom() * spread * spreadAdjustment;
         r = cos(r) * crandom() * spread * spreadAdjustment;
@@ -262,8 +316,9 @@ void Bullet_Fire (gentity_t *ent, float spread, int damage ) {
 
         passent = ent->s.number;
         for (i = 0; i < 10; i++) {
-
+                       G_FixHitboxes();
                 trap_Trace (&tr, muzzle, NULL, NULL, end, passent, MASK_SHOT);
+                G_RestoreHitboxes();
                 if ( tr.surfaceFlags & SURF_NOIMPACT ) {
                         return;
                 }
@@ -316,6 +371,7 @@ void Bullet_Fire (gentity_t *ent, float spread, int damage ) {
 
 
 
+
 /*
 ======================================================================
 
@@ -341,7 +397,10 @@ qboolean ShotgunPellet( vec3_t start, vec3_t end, gentity_t *ent ) {
         VectorCopy( start, tr_start );
         VectorCopy( end, tr_end );
         for (i = 0; i < 10; i++) {
+                       G_FixHitboxes();
                 trap_Trace (&tr, tr_start, NULL, NULL, tr_end, passent, MASK_SHOT);
+                G_RestoreHitboxes();
+                
                 traceEnt = &g_entities[ tr.entityNum ];
 
                 // send bullet impact
