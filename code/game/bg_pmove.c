@@ -2255,6 +2255,7 @@ static void PM_Weapon( void ) {
           PM_StartWeaponAnim( WPN_FIRE );
           pm->ps->weaponstate = WEAPON_FIRING;
           bg_weaponlist[0].rounds[pm->ps->clientNum]++; //Round count for burst mode.
+          bg_weaponlist[0].numClips[pm->ps->clientNum]++; //Round count for spread.
           if( bg_weaponlist[0].rounds[pm->ps->clientNum] == 3)
             pm->ps->pm_flags |= PMF_SINGLE_SHOT;
           return;
