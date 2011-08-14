@@ -84,7 +84,7 @@ along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
 
 #define VOTE_TIME                       30000   // 30 seconds before vote times out
 
-#define MINS_Z                          -24
+#define MINS_Z                          -20
 #define DEFAULT_VIEWHEIGHT      38 //blud, was 26
 #define CROUCH_VIEWHEIGHT       20 //blud, was 12
 #define DEAD_VIEWHEIGHT         -16
