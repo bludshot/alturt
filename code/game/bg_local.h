@@ -26,7 +26,7 @@ along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
 
 #define	MIN_WALK_NORMAL	0.7f		// can't walk on very steep slopes
 
-#define	STEPSIZE		18
+#define	STEPSIZE		20
 
 #define	JUMP_VELOCITY	364.0f //Xamis -> blud (was 320)
 
