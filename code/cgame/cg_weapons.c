@@ -1309,7 +1309,6 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	qboolean silenced;
 	qboolean vestOn;
  	qboolean        weaponDown;
-                  float	len;
                   int            anim;
 
 	vestOn = lasersight = silenced = qfalse;
@@ -1541,7 +1540,7 @@ if ( weaponDown ) {
           CG_PositionEntityOnTag( &weaponModel, &gun, weapon->handsModel, "tag_weapon" );
           CG_AddWeaponWithPowerups( &weaponModel, cent->currentState.powerups );
 
-          
+         if( 0  ){
           if ( PriweaponNum != cent->currentState.weapon ){
           	memset( &PriweaponModel, 0, sizeof( PriweaponModel ) );
 	VectorCopy( parent->lightingOrigin, PriweaponModel.lightingOrigin );
@@ -1570,7 +1569,7 @@ if ( weaponDown ) {
                 CG_AddWeaponWithPowerups( &SidweaponModel, cent->currentState.powerups );
           }
         }
-
+        }
 
         if ( ps ) {
 
@@ -1617,121 +1616,35 @@ if ( weaponDown ) {
                 laser.hModel = weapon->laserModel;
                  if ( weaponNum != WP_AK103)
                 CG_PositionEntityOnTag( &laser, &gun, weapon->holdsModel , "tag_laser" );
-    {
-    
-        vec3_t forward;
-        trace_t		trace;
-        vec3_t		muzzlePoint, endPoint;
-        refEntity_t		beam;
-        qhandle_t laserBeam;
-        int	rf;
-
-
-        memset( &beam, 0, sizeof( beam ) );
-        memset( &flash, 0, sizeof( flash ) );
-
-
-        CG_PositionRotatedEntityOnTag( &flash, &gun, weapon->holdsModel , "tag_laser");
-        // find muzzle point for this frame
-        VectorCopy ( flash.origin,muzzlePoint );
-
-       len =Distance( beam.origin, trace.endpos ); 
-
-        AngleVectors( cent->currentState.apos.trBase , forward, NULL, NULL );
-
-        // project forward by the lightning range
-        
-       // 
-        
-
-
-        VectorMA( cent->currentState.pos.trBase , 1000, forward, endPoint );
-
-        { 
-            int anim;
-
-            anim = cent->currentState.legsAnim & ~ANIM_TOGGLEBIT;
-
-            if ( anim == LEGS_WALKCR  || anim == LEGS_BACKCR || anim == LEGS_IDLECR )
-                endPoint[2] += CROUCH_VIEWHEIGHT;
-            else
-                endPoint[2] += DEFAULT_VIEWHEIGHT;
-        }
-
-        laserBeam = trap_R_RegisterShader( "laserShader" );
-        // see if it hit a wall
-        CG_Trace( &trace, muzzlePoint, vec3_origin, vec3_origin, endPoint,
-                  cent->currentState.number, MASK_SHOT );
-
-        VectorCopy( trace.endpos , endPoint );
-
-   //     if ( cent->currentState.number == cg.snap->ps.clientNum && !cg.renderingThirdPerson ) {
- //           rf = RF_THIRD_PERSON;		// only show in mirrors
-  //      } else {
-            rf = 0;
-    //    }
-
-        if (! (CG_PointContents( muzzlePoint, cent->currentState.number ) & CONTENTS_SOLID) &&
-                !trace.startsolid )
-        {
-      //      if ( !rf) {
-                vec4_t rgba;
-
-                rgba[0] = rgba[1] = rgba[2] = 1;
-                rgba[3] = 0.6f;
-
-          //      CG_Tracer( muzzlePoint, endPoint, 0.1f, laserBeam , rgba ); //the actual beam
-    //        }
-
-            // add the impact flare if it hit something
-            if ( trace.fraction < 1.0 ) {
-
-               // beam.customShader = cgs.media.laserShader;
-                beam.reType = RT_SPRITE;
-                beam.radius = 0.8;
-
-                beam.renderfx = rf;
-                VectorMA( trace.endpos, .1, forward, beam.origin );
-                // trap_R_AddRefEntityToScene( &beam );
-                 
-                }
-        }
             
-                     len = Distance( flash.origin,beam.origin ) ;
-
-
-            
-    }
-                
-                 {
-    
+  {
         vec3_t forward2;
         trace_t		trace2;
         vec3_t		muzzlePoint2, endPoint2;
         refEntity_t		beam2;
         qhandle_t laserBeam2;
         int	rf;
-        float distance;
+        int anim;
+                    
+                    
         memset( &beam2, 0, sizeof( beam2 ) );
+        anim = cent->currentState.legsAnim & ~ANIM_TOGGLEBIT;
+        rf = 0;
 
-        // find muzzle point for this frame
-        VectorCopy ( flash.origin,muzzlePoint2 );
+        VectorCopy ( ps->origin,muzzlePoint2 );
+
+            if ( anim == LEGS_WALKCR  || anim == LEGS_BACKCR || anim == LEGS_IDLECR )
+               muzzlePoint2[2] += CROUCH_VIEWHEIGHT +1;
+            else
+                muzzlePoint2[2] += DEFAULT_VIEWHEIGHT +1;
 
 
         AngleVectors( cent->currentState.apos.trBase , forward2, NULL, NULL );
 
-        // project forward by the lightning range
-        
-       // 
-        
-        distance = len*1.6;
-        VectorMA( cent->currentState.pos.trBase , distance, forward2, endPoint2 );
+
+        VectorMA( ps->origin , 8192*16, forward2, endPoint2 );
 
         { 
-            int anim;
-
-            anim = cent->currentState.legsAnim & ~ANIM_TOGGLEBIT;
-
             if ( anim == LEGS_WALKCR  || anim == LEGS_BACKCR || anim == LEGS_IDLECR )
                 endPoint2[2] += CROUCH_VIEWHEIGHT +1;
             else
@@ -1746,23 +1659,9 @@ if ( weaponDown ) {
 
         VectorCopy( trace2.endpos , endPoint2 );
 
-   //     if ( cent->currentState.number == cg.snap->ps.clientNum && !cg.renderingThirdPerson ) {
- //           rf = RF_THIRD_PERSON;		// only show in mirrors
-  //      } else {
-            rf = 0;
-    //    }
-
         if (! (CG_PointContents( muzzlePoint2, cent->currentState.number ) & CONTENTS_SOLID) &&
                 !trace2.startsolid )
         {
-      //      if ( !rf) {
-                vec4_t rgba;
-
-                rgba[0] = rgba[1] = rgba[2] = 1;
-                rgba[3] = 0.6f;
-
-          //      CG_Tracer( muzzlePoint, endPoint, 0.1f, laserBeam , rgba ); //the actual beam
-    //        }
 
             // add the impact flare if it hit something
             if ( trace2.fraction < 1.0 ) {
@@ -1784,8 +1683,7 @@ if ( weaponDown ) {
             
             
             
-    }
-   
+    } 
         
 
                 CG_AddWeaponWithPowerups( &laser, cent->currentState.powerups );
