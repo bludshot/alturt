@@ -1432,7 +1432,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	}
    }
         
-                  if(bleeding){
+                  if(bleeding && !(targ->r.svFlags & SVF_BOT) ){
                       targ->client->ps.pm_flags |= PMF_BLEEDING;
                      // G_Printf("bleeding true\n");
                       }
