@@ -285,6 +285,51 @@ void SnapVectorTowards( vec3_t v, vec3_t to ) {
 #define MP5K_DAMAGE   22 //25
 
 
+
+
+void Apply_Weapon_Kick ( gentity_t *ent, int weapon )
+{
+
+    double   kickfact;
+    double   kickangle = 0.0;
+
+
+    kickfact = bg_weaponlist[0].numClips[ent->client->ps.clientNum]/6 ;
+
+
+
+    switch (ent->s.weapon) {
+    case WP_BERETTA: kickangle = .2; break;
+    case WP_DEAGLE: kickangle = .7; break;
+
+    case WP_AK103: kickangle = .4; break;
+    case WP_M4: kickangle = .4; break;
+    case WP_LR300: kickangle = .4; break;
+
+
+    case WP_SPAS: kickangle = 2; break;
+    case WP_MP5K: kickangle = .3; break;
+    case WP_UMP45: kickangle = .4; break;
+
+    case WP_PSG1: kickangle = .2; break;
+    case WP_SR8: kickangle = 20; break;
+
+
+
+
+    default: kickangle = 0; break;
+    }
+
+ 
+    kickangle += kickfact;
+    ent->client->ps.delta_angles[PITCH] -= ANGLE2SHORT( kickangle );
+
+
+}
+
+
+
+
 void Bullet_Fire (gentity_t *ent, float spread, int damage ) {
         trace_t         tr;
         vec3_t          end;
@@ -296,24 +341,34 @@ void Bullet_Fire (gentity_t *ent, float spread, int damage ) {
         gentity_t       *tent;
         gentity_t       *traceEnt;
         int                     i, passent, spreadAdjustment;
-        spread += BG_CalcSpread(ent->client->ps) + ((bg_weaponlist[0].numClips[ent->client->ps.clientNum]*50));
+        spread += BG_CalcSpread(ent->client->ps) + ((bg_weaponlist[0].numClips[ent->client->ps.clientNum]*20));
         damage *= s_quadFactor;
        // G_Printf ("spread = %f\n xyspeed = %f", spread, BG_CalcSpread(ent->client->ps) );
-
-	if( ent->client->ps.powerups[ PW_LASERSIGHT ] ){
-	spreadAdjustment = 8;
-	}else if( ent->client->ps.powerups[ PW_SILENCER ] ){
+           
+       Apply_Weapon_Kick( ent, ent->s.weapon );
+        
+      if( ent->client->ps.powerups[ PW_LASERSIGHT ] ){
+        spreadAdjustment = 8;
+      }else if( ent->client->ps.powerups[ PW_SILENCER ] ){
         spreadAdjustment = 12;
         }else
-	spreadAdjustment = 16;
-        G_Printf( "Spread round count is %i\n", bg_weaponlist[0].numClips[ent->client->ps.clientNum] );
+        spreadAdjustment = 16;
+      
+      //  G_Printf( "Spread round count is %i\n", bg_weaponlist[0].numClips[ent->client->ps.clientNum] );
         r = random() * M_PI * 2.0f;
         u = sin(r) * crandom() * spread * spreadAdjustment;
-        r = cos(r) * crandom() * spread * spreadAdjustment;
+        r = cos(r) * crandom() * spread * spreadAdjustment*2;
         VectorMA (muzzle, 8192*16, forward, end);
         VectorMA (end, r, right, end);
         VectorMA (end, u, up, end);
+        end[PITCH] += bg_weaponlist[0].numClips[ent->client->ps.clientNum];
 
+        VectorCopy( ent->client->ps.origin, muzzle );
+        muzzle[2] += ent->client->ps.viewheight;
+
+ 
+
+    
         passent = ent->s.number;
         for (i = 0; i < 10; i++) {
                        G_FixHitboxes();
