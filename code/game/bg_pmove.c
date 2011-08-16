@@ -2140,7 +2140,7 @@ static void PM_Weapon( void ) {
   
         
         //If were in the process of bandaging we can't fire  --Xamis
-       if ( pm->ps->weaponstate == WEAPON_DOWN_BANDAGING && pm->ps->weaponTime > 0 ) {
+       if ( (pm->ps->weaponstate == WEAPON_DOWN_BANDAGING || pm->ps->weaponstate == WEAPON_DOWN_BANDAGING_OTHER) && pm->ps->weaponTime > 0 ) {
 
                 return;
         }
@@ -2154,12 +2154,22 @@ static void PM_Weapon( void ) {
                    pm->ps->weaponstate = WEAPON_READY;
         }
         
+               if ( pm->ps->weaponstate == WEAPON_DOWN_BANDAGING_OTHER && pm->ps->weaponTime <= 0 ) {
+                           pm->ps->weaponstate = WEAPON_READY;
+                }
        if ( pm->ps->weaponstate == WEAPON_START_BANDAGING ) {
-                   pm->ps->weaponTime = 1000;
+                   pm->ps->weaponTime = 3000;
                    PM_StartTorsoAnim( TORSO_BANDAGE );
                    pm->ps->weaponstate = WEAPON_DOWN_BANDAGING;
                    PM_AddEvent( EV_BANDAGE);
           }
+               if ( pm->ps->weaponstate == WEAPON_START_BANDAGING_OTHER) {
+                   pm->ps->weaponTime = 2000;
+                   PM_StartTorsoAnim( TORSO_BANDAGE );
+                   pm->ps->weaponstate = WEAPON_DOWN_BANDAGING_OTHER;
+                   PM_AddEvent( EV_BANDAGE);
+          }
+
 
 
         //if ( pm->ps->weaponstate == WEAPON_READY_FIRE_ALT && pm->ps->weaponTime > 0 ) {

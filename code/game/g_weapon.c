@@ -179,7 +179,7 @@ qboolean CheckGauntletAttack( gentity_t *ent ) {
 ===============
 CheckMed
  * 
- *Bandage opponent.
+ *Bandage target.
 ===============
 */
 void CheckMed( gentity_t *ent ) {
@@ -213,7 +213,7 @@ void CheckMed( gentity_t *ent ) {
             if ( traceEnt->health <100  )
             traceEnt->health+=5;
             traceEnt->client->ps.pm_flags &=  ~ PMF_BLEEDING;
-            ent->client->ps.weaponstate = WEAPON_START_BANDAGING;
+            ent->client->ps.weaponstate = WEAPON_START_BANDAGING_OTHER;
             ent->client->ps.stats[STAT_LEG_DAMAGE]=0;
             ent->client->ps.stats[STAT_CHEST_DAMAGE] =  0;
             ent->client->ps.stats[STAT_ARM_DAMAGE] = 0;
