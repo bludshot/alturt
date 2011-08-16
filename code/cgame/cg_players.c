@@ -1358,12 +1358,14 @@ void CG_WeaponAnimation( centity_t *cent, int *weaponOld, int *weapon, float *we
   ci = &cgs.clientinfo[ clientNum ];
   
   // Check for sounds that should start on each frame --Xamis
+  if    (  ( cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT ) != TORSO_ATTACK_PISTOL  )   {
   for ( i = 0 ; i < 14 ; i++ ) {
 
   if (weap->sounds[i].type == 1 && cent->pe.weapon.frame == weap->sounds[i].startFrame  ){
       
       trap_S_StartSound( NULL, clientNum, CHAN_WEAPON,weap->sounds[i].soundPath );
  }
+  }
   }
   CG_RunLerpFrame( ci, &cent->pe.weapon, cent->currentState.generic1, 1, qtrue );
 
@@ -2372,12 +2374,12 @@ void CG_Player( centity_t *cent ) {
 	refEntity_t		legs;
 	refEntity_t		torso;
 	refEntity_t		head;
-        refEntity_t             helmet;
-        int     		clientNum;
-	int			renderfx;
+                  refEntity_t                   helmet;
+                  int                                clientNum;
+	int		renderfx;
 	qboolean		shadow;
-	float			shadowPlane;
-        
+	float		shadowPlane;
+
 
                  vec3_t			 angles; 
 
@@ -2532,6 +2534,8 @@ void CG_Player( centity_t *cent ) {
 	torso.renderfx = renderfx;
 
 	CG_AddRefEntityWithPowerups( &torso, &cent->currentState, ci->team );
+        
+      
 
 #ifdef MISSIONPACK
 	if ( cent->currentState.eFlags & EF_KAMIKAZE ) {
