@@ -108,7 +108,10 @@ features.
 Open Arena (and Q3Min, but mostly Open Arena) for various graphics and sounds 
 to replace missing Q3A/TA stuff.
 
+dr_gore2000 for the menu music: http://ccmixter.org/files/dr_gore2000/6172 / CC BY 2.5 http://creativecommons.org/licenses/by/2.5/
+
 Alturt may (and in some cases does) contain some code (either copied from or just our own new code that we made but learned how to do by looking at code) from: Tremulous, Navy Seals: Covert Ops, Smokin Guns, Open Arena, and Q3 modding tutorial web pages. [We sometimes document it, but other time it's just bits and pieces and it becomes hard to remember or keep track of, but suffice it to say: Thank you for your open source code!]
+
 
 
 Thanks to:
