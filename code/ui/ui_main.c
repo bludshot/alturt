@@ -1,22 +1,24 @@
 /*
 ===========================================================================
 Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2009-2010 Brian Labbie and Dave Richardson.
 
-This file is part of Quake III Arena source code.
+http://sourceforge.net/projects/alturt/
 
-Quake III Arena source code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License,
+This file is part of Alturt source code.
+
+Alturt source code is free software: you can redistribute it
+and/or modify it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
-Quake III Arena source code is distributed in the hope that it will be
+Alturt source code is distributed in the hope that it will be
 useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Affero General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Quake III Arena source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+You should have received a copy of the GNU Affero General Public License
+along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 //
@@ -32,6 +34,8 @@ USER INTERFACE MAIN
 //#define PRE_RELEASE_TADEMO
 
 #include "ui_local.h"
+
+int alturtActiveItem = -1;
 
 uiInfo_t uiInfo;
 
@@ -126,7 +130,25 @@ static char quake3worldMessage[] = "Visit www.quake3world.com - News, Community,
 static int gamecodetoui[] = {4,2,3,0,5,1,6};
 static int uitogamecode[] = {4,6,2,3,1,5,7};
 
-
+char *UI_GetUIgearCvarNameFromGear_Constant(int gearNum); //blud
+int UI_Gear_ConstantToGear_Slot_Constant(int gearNum); //blud
+int UI_Gear_Slot_ConstantToGear_Constant(int gearSlotNum); //blud
+int UI_GearToUIgear(char itemChar); //blud
+char UI_UIgearToGear(int item); //blud
+void UI_GearWrite(void); //blud
+void UI_GearRead(void); //blud
+void UI_CopyGearLoadoutToUIgearLoadout(void); //blud
+void UI_GearResetItemCount(void); //blud
+void UI_GearFix(void); //blud
+void UI_UIgearFix(void); //blud
+void UI_GearFixUIgearItem(int gearSlot); //blud
+void UI_GearFixGearItem(int gearSlot); //blud
+int UI_GearGetFixedItem(int gearSlot); //blud
+qboolean UI_IsInventoryItem(int item); //blud
+qboolean UI_GearCheckItem(int item, int gearSlot); //blud
+char UI_GetGearValueAtSlot(int slot); //blud
+qboolean UI_UIgearCheck(void); //blud
+qboolean UI_GearCheck(void); //blud
 static void UI_StartServerRefresh(qboolean full);
 static void UI_StopServerRefresh( void );
 static void UI_DoServerRefresh( void );
@@ -241,6 +263,34 @@ void AssetCache( void ) {
 	}
 
 	uiInfo.newHighScoreSound = trap_S_RegisterSound("sound/feedback/voc_newhighscore.wav", qfalse);
+
+	//blud caching gear
+	uiInfo.uiDC.Gear.gearArray[UI_GEAR_NONE] = trap_R_RegisterModel( "models/weapons2/beretta/beretta.md3" ); //temporary none model
+	uiInfo.uiDC.Gear.gearArray[UI_GEAR_BERETTA] = trap_R_RegisterModel( "models/weapons2/beretta/beretta.md3" );
+	uiInfo.uiDC.Gear.gearArray[UI_GEAR_DEAGLE] = trap_R_RegisterModel( "models/weapons2/deserteagle/deagle.md3" );
+	uiInfo.uiDC.Gear.gearArray[UI_GEAR_SPAS12] = trap_R_RegisterModel( "models/weapons2/spas12/spas12.MD3" );
+	uiInfo.uiDC.Gear.gearArray[UI_GEAR_MP5K] = trap_R_RegisterModel( "models/weapons2/mp5k/mp5k.MD3" );
+	uiInfo.uiDC.Gear.gearArray[UI_GEAR_UMP45] = trap_R_RegisterModel( "models/weapons2/ump45/ump45.md3" );
+	uiInfo.uiDC.Gear.gearArray[UI_GEAR_HK69] = trap_R_RegisterModel( "models/weapons2/hk69/hk69.md3" );
+	uiInfo.uiDC.Gear.gearArray[UI_GEAR_LR] = trap_R_RegisterModel( "models/weapons2/zm300/lr.MD3" );
+	uiInfo.uiDC.Gear.gearArray[UI_GEAR_G36] = trap_R_RegisterModel( "models/weapons2/g36/g36.MD3" );
+	uiInfo.uiDC.Gear.gearArray[UI_GEAR_PSG1] = trap_R_RegisterModel( "models/weapons2/psg1/psg1.MD3" );
+	uiInfo.uiDC.Gear.gearArray[UI_GEAR_GRENADE_HE] = trap_R_RegisterModel( "models/weapons2/grenade/grenade.MD3" );
+	uiInfo.uiDC.Gear.gearArray[UI_GEAR_GRENADE_SMOKE] = trap_R_RegisterModel( "models/weapons2/grenade/grenade.MD3" );
+	uiInfo.uiDC.Gear.gearArray[UI_GEAR_VEST] = trap_R_RegisterModel( "models/players/orion/vest.md3" );
+	uiInfo.uiDC.Gear.gearArray[UI_GEAR_NVG] = trap_R_RegisterModel( "models/players/orion/nvg.md3" );
+	uiInfo.uiDC.Gear.gearArray[UI_GEAR_MEDKIT] = trap_R_RegisterModel( "models/players/gear/backpack.md3" );
+	uiInfo.uiDC.Gear.gearArray[UI_GEAR_SILENCER] = trap_R_RegisterModel( "models/weapons2/m4/m4_silencer.md3" );
+	uiInfo.uiDC.Gear.gearArray[UI_GEAR_LASER] = trap_R_RegisterModel( "models/weapons2/m4/m4_laser.md3" );
+	uiInfo.uiDC.Gear.gearArray[UI_GEAR_HELMET] = trap_R_RegisterModel( "models/players/orion/helmet.md3" );
+	uiInfo.uiDC.Gear.gearArray[UI_GEAR_AMMO] = trap_R_RegisterModel( "models/weapons2/shells/s_shell.md3" );
+	uiInfo.uiDC.Gear.gearArray[UI_GEAR_SR8] = trap_R_RegisterModel( "models/weapons2/sr8/sr8.MD3" );
+	uiInfo.uiDC.Gear.gearArray[UI_GEAR_AK103] = trap_R_RegisterModel( "models/weapons2/ak103/ak103.MD3" );
+	uiInfo.uiDC.Gear.gearArray[UI_GEAR_NEGEV] = trap_R_RegisterModel( "models/weapons2/negev/negev.MD3" );
+	uiInfo.uiDC.Gear.gearArray[UI_GEAR_M4] = trap_R_RegisterModel( "models/weapons2/m4/m4.MD3" );
+
+	//special case custom skins for weapons that re-use models of other weapons but with a different skin (currently only the smoke grenades)
+	uiInfo.uiDC.Gear.smokeGrenadeSkin = trap_R_RegisterSkin( "models/weapons2/grenade/grenade_smoke.skin" );
 }
 
 void _UI_DrawSides(float x, float y, float w, float h, float size) {
@@ -1266,6 +1316,204 @@ static void UI_DrawMapCinematic(rectDef_t *rect, float scale, vec4_t color, qboo
 static qboolean updateModel = qtrue;
 static qboolean q3Model = qfalse;
 
+
+
+
+//Draws a model in an ownerdraw itemDef
+//blud: new UI function that I'm using for dynamically displaying
+//the gear models on the root in-game weapon selection menu
+static void UI_DrawGearModel(rectDef_t *rect, int special, int yawAngle, qboolean rotate) {
+	int			gear;
+	refdef_t	refdef;
+	refEntity_t	gearModel;
+	float		x, y, w, h;
+	vec3_t		angles;
+	vec3_t		origin;
+	float		yOffset;
+
+	//blud: I'm probably going to come back to this function and improve it
+	//I could add more to this function, more arguments like:
+	//origin, fov, spinning rate (0 for no spinning), angle.
+	//(I could also add pitch rotating if I wanted)
+	//Then I could use it for all drawing of models in the menus and have
+	//much more control. (I'd replace the current models in the weapon
+	//sub menus with itemDefs that use this, and also replace
+	//the info itemDefs with the spinning guns which have issues as well.
+	//I should check other q3 games/mods and see if they already do this
+	//kind of thing in their menu?
+
+	//I need to know what the ownerdrawParam is. Can I get that?
+	//No, I can't get it without adding it as an argument to UI_OwnerDraw, which 
+	//I don't beleive I can really do since that gets down into engine coding I think?
+	//So instead, I'm just hijacking "special" since it does the job fine.
+
+	//gear equals the value of the ui_gear* cvar in question
+	gear = (int)trap_Cvar_VariableValue(UI_GetUIgearCvarNameFromGear_Constant(special));
+	//so now we have the number for the actual weapon or item we want to display.
+
+	//but if it's None, we don't want to display a model at all.
+	if (!gear)
+	{
+		return;
+	}
+
+	//Com_Printf("in UI_DrawGearModel*%d*\n", gear); //blud debug
+
+	yOffset = (float)((int)(((rect->w - rect->h)/4)/3)); //I don't exactly know why this makes a good y offset
+
+	x = rect->x;
+	y = rect->y;
+	w = rect->w;
+	h = rect->w; //used to be h, but I'm trying to make the guns 1:1
+
+	UI_AdjustFrom640( &x, &y, &w, &h );
+
+	memset( &refdef, 0, sizeof( refdef ) );
+	memset( &gearModel, 0, sizeof( gearModel ) );
+	
+	VectorClear( angles );
+
+	if (rotate)
+	{
+		angles[YAW] = ( uiInfo.uiDC.realTime & 2047 ) * 360 / 2048.0;
+	}
+	else
+	{
+		angles[YAW]= yawAngle;
+	}
+	
+	origin[0] = 90; //no idea...
+  	origin[1] = 0;	//seems to just make the gun disappear if you change it
+	origin[2] = yOffset;
+
+	//Com_Printf("*%f*\n", yOffset ); //blud debug
+
+	gearModel.hModel = uiInfo.uiDC.Gear.gearArray[gear];
+
+	//if this is the smoke nade, set the skin
+	if (gear == UI_GEAR_GRENADE_SMOKE)
+	{
+		gearModel.customSkin = uiInfo.uiDC.Gear.smokeGrenadeSkin;
+	}
+
+	AnglesToAxis( angles, gearModel.axis );
+	VectorCopy( origin, gearModel.origin );
+
+	gearModel.renderfx = RF_NOSHADOW;		// no stencil shadows
+
+	refdef.rdflags = RDF_NOWORLDMODEL;
+
+	AxisClear( refdef.viewaxis );
+
+	refdef.fov_x = 30;
+	refdef.fov_y = 30;
+
+	refdef.x = x;
+	refdef.y = y;
+	refdef.width = w;
+	refdef.height = h;
+
+	refdef.time = uiInfo.uiDC.realTime;
+
+	trap_R_ClearScene();
+	trap_R_AddRefEntityToScene( &gearModel );
+	trap_R_RenderScene( &refdef );
+
+	/*
+	THIS IS MY FIRST TRY AT THIS FUNCTION (BELOW)
+	Leaving this in for now because I might come back and improve
+	this function 'soon'
+
+	int			gear;
+	refdef_t	refdef;
+	refEntity_t	gearModel;
+	vec3_t		origin;
+	float		x, y, w, h;
+	int			alturt_dp_realtime;
+	int			renderfx;
+	vec3_t		mins = {-16, -16, -24};
+	vec3_t		maxs = {16, 16, 32};
+	float		len;
+	float		xx;
+
+	Com_Printf("in UI_DrawGearModel\n");
+
+	alturt_dp_realtime = uiInfo.uiDC.realTime / 2;
+
+	x = rect->x;
+	y = rect->y;
+	w = rect->w;
+	h = rect->h;
+
+	//I need to access ownerdrawParam :|
+	//depending on which ownerdrawParam it is I will get the gear number
+	//from the correct ui_gear* cvar
+	//but for now I will just always get ui_gearPrimary
+
+	gear = (int)trap_Cvar_VariableValue("ui_gearPrimary");
+
+	UI_AdjustFrom640( &x, &y, &w, &h );
+
+	memset( &refdef, 0, sizeof( refdef ) );
+	memset( &gearModel, 0, sizeof(gearModel) );
+
+	refdef.rdflags = RDF_NOWORLDMODEL;
+
+	AxisClear( refdef.viewaxis );
+
+	refdef.x = x;
+	refdef.y = y;
+	refdef.width = w;
+	refdef.height = h;
+
+	refdef.fov_x = (int)((float)refdef.width / 640.0f * 90.0f);
+	xx = refdef.width / tan( refdef.fov_x / 360 * M_PI );
+	refdef.fov_y = atan2( refdef.height, xx );
+	refdef.fov_y *= ( 360 / (float)M_PI );
+
+	// calculate distance so the gear nearly fills the box
+	len = 0.7 * ( maxs[2] - mins[2] );
+	origin[0] = len / tan( DEG2RAD(refdef.fov_x) * 0.5 );
+	origin[1] = 0.5 * ( mins[1] + maxs[1] );
+	origin[2] = -0.5 * ( mins[2] + maxs[2] );
+
+	refdef.time = alturt_dp_realtime;
+
+	trap_R_ClearScene();
+
+	renderfx = RF_LIGHTING_ORIGIN | RF_NOSHADOW;
+
+	//add the gear model, for now it's always a smoke grenade lol
+	gearModel.hModel = trap_R_RegisterModel( "models/weapons2/grenade/grenade.MD3" );
+	gearModel.customSkin = trap_R_RegisterSkin( "models/weapons2/grenade/grenade_smoke.skin" );
+
+	VectorCopy( origin, gearModel.origin );
+
+	VectorCopy( origin, gearModel.lightingOrigin );
+	gearModel.renderfx = renderfx;
+	VectorCopy (gearModel.origin, gearModel.oldorigin);
+
+	trap_R_AddRefEntityToScene( &gearModel );
+
+	//
+	// add an accent light
+	//
+	origin[0] -= 100;	// + = behind, - = in front
+	origin[1] += 100;	// + = left, - = right
+	origin[2] += 100;	// + = above, - = below
+	trap_R_AddLightToScene( origin, 500, 1.0, 1.0, 1.0 );
+
+	origin[0] -= 100;
+	origin[1] -= 100;
+	origin[2] -= 100;
+	trap_R_AddLightToScene( origin, 500, 1.0, 0.0, 0.0 );
+
+	trap_R_RenderScene( &refdef );
+
+	*/
+
+}
+
 static void UI_DrawPlayerModel(rectDef_t *rect) {
   static playerInfo_t info;
   char model[MAX_QPATH];
@@ -1926,6 +2174,170 @@ static void UI_DrawKeyBindStatus(rectDef_t *rect, float scale, vec4_t color, int
 	}
 }
 
+
+//blud: the new functions for Alturt gear selection
+//note: I think these were what I was originally going to use for drawing
+//		vanilla urt style images of the weapons before I went with models
+//		I really don't remember writing this code, I guess it might be from nsco
+
+static void UI_DrawGearImage(rectDef_t *rect, float scale, vec4_t color, qboolean doineedthis) {
+	//all it does is just always draw the none picture for now
+	UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/none"));
+}
+
+static void UI_DrawGearName(rectDef_t *rect, float scale, vec4_t color, qboolean doineedthis) {
+	//all it does is just always draw the none picture for now
+	UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/none"));
+}
+
+static void UI_DrawItemImage(rectDef_t *rect, float scale, vec4_t color, qboolean doineedthis) {
+	//all it does is just always draw the none picture for now
+	UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/none"));
+}
+
+static void UI_DrawItemName(rectDef_t *rect, float scale, vec4_t color, qboolean doineedthis) {
+	//all it does is just always draw the none picture for now
+	UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/none"));
+}
+
+static void UI_DrawGear(rectDef_t *rect, float scale, vec4_t color, qboolean doineedthis, int ownerDraw) {
+	//all it does is just always draw the none picture for now
+	UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/none"));
+
+	switch (ownerDraw) {
+		case GEAR_PRIMARY:
+			//Ok, I should look at UI_Cvar_VariableString("ui_gearPrimary") and basically do a switch
+			//case. If that value (which is the 'currently selected primary' weapon) is valid
+			//then I will draw the corresponding weapon for that value (see code bits below for how)
+
+			//UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/none"));
+			//Text_Paint(rect->x, rect->y, scale, color, UI_Cvar_VariableString("ui_opponentName"),
+
+			//* also, the other cases below will need the same kind of thing.
+
+			//but for right now I will just draw "none"
+			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/none"));
+			break;
+		case GEAR_SECONDARY:
+			//ui_gearSecondary
+			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/none"));
+			break;
+		case GEAR_SIDEARM:
+			//ui_gearSidearm
+			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/none"));
+			break;
+		case GEAR_GRENADE:
+			//ui_gearGrenade
+			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/none"));
+			break;
+		case GEAR_ITEM_1:
+			//ui_gearItem1
+			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/none"));
+			break;
+		case GEAR_ITEM_2:
+			//ui_gearItem2
+			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/none"));
+			break;
+		case GEAR_ITEM_3:
+			//ui_gearItem3
+			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/none"));
+			break;
+		default:
+			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/none"));
+			break;
+	}
+}
+
+static void UI_DrawItem(rectDef_t *rect, float scale, vec4_t color, qboolean doineedthis, int ownerDraw) {
+	switch (ownerDraw) {
+		case ITEM_NONE:
+			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/none"));
+			break;
+		case ITEM_KNIFE:
+			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/kbar"));
+			break;
+		case ITEM_BERETTA:
+			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/beretta"));
+			break;
+		case ITEM_DEAGLE:
+			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/deserteagle"));
+			break;
+		case ITEM_SPAS12:
+			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/spas12"));
+			break;
+		case ITEM_MP5K:
+			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/mp5k"));
+			break;
+		case ITEM_UMP45:
+			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/ump45"));
+			break;
+		case ITEM_HK69:
+			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/hk69"));
+			break;
+		case ITEM_LR:
+			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/lr"));
+			break;
+		case ITEM_G36:
+			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/g36"));
+			break;
+		case ITEM_AK103:
+			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/ak103"));
+			break;
+		case ITEM_PSG1:
+			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/psg1"));
+			break;
+		case ITEM_GRENADE_HE:
+			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/grenade_he"));
+			break;
+		case ITEM_GRENADE_FLASH:
+			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/grenade_flash"));
+			break;
+		case ITEM_GRENADE_SMOKE:
+			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/grenade_smoke"));
+			break;
+		case ITEM_VEST:
+			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/items/vest"));
+			break;
+		case ITEM_NVG:
+			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/items/nvg"));
+			break;
+		case ITEM_MEDKIT:
+			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/items/medkit"));
+			break;
+		case ITEM_SILENCER:
+			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/items/silencer"));
+			break;
+		case ITEM_LASER:
+			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/items/laser"));
+			break;
+		case ITEM_HELMET:
+			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/items/helmet"));
+			break;
+		case ITEM_AMMO:
+			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/items/extraammo"));
+			break;
+		case ITEM_APR:
+			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/items/none"));
+			break;
+		case ITEM_SR8:
+			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/sr8"));
+			break;
+		case ITEM_NEGEV:
+			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/negev"));
+			break;
+		case ITEM_GRENADE_FRAG:
+			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/none"));
+			break;
+		case ITEM_M4:
+			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/m4"));
+			break;
+		default:
+			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/none"));
+			break;
+	}
+}
+
+
 static void UI_DrawGLInfo(rectDef_t *rect, float scale, vec4_t color, int textStyle) {
 	char * eptr;
 	char buff[1024];
@@ -2135,6 +2547,35 @@ static void UI_OwnerDraw(float x, float y, float w, float h, float text_x, float
 			break;
 		case UI_KEYBINDSTATUS:
 			UI_DrawKeyBindStatus(&rect,scale, color, textStyle);
+			break;
+		case UI_GEARMODEL:
+			//blud adding this to display gear models in the root weapon selection in-game menu
+			//Com_Printf("case UI_GEARMODEL\n"); //blud debug
+			//ok, since I can't actually see the ownerdrawParam without getting deeper
+			//into this code than I want to (or easily know how to at the moment)
+			//I'm just going to hijack "special" for my own use here!
+			//Also hijacked textStyle for angle, even though I might have to override it
+			//for some models in the UI code
+
+			//only draw the gun if the slot is not secondary, or if the slot is secondary and the primary is not the negev
+			//(ie: don't draw the gun if the slot is secondary and the primary is negev)
+			if ((int)special != GEAR_SECONDARY || 
+				((int)special == GEAR_SECONDARY && (int)trap_Cvar_VariableValue("ui_gearPrimary") != UI_GEAR_NEGEV))
+			{
+				UI_DrawGearModel(&rect, (int)special, textStyle, qfalse);
+			}
+			break;
+		case UI_GEAR_IMAGE:
+			UI_DrawGearImage(&rect, scale, color, qtrue); //might not even need these 4 UI_GEAR ones if the stuff below does it all...
+			break;
+		case UI_GEAR_NAME:
+			UI_DrawGearName(&rect, scale, color, qtrue);
+			break;
+		case UI_ITEM_IMAGE:
+			UI_DrawItemImage(&rect, scale, color, qtrue);
+			break;
+		case UI_ITEM_NAME:
+			UI_DrawItemName(&rect, scale, color, qtrue);
 			break;
     default:
       break;
@@ -3524,11 +3965,836 @@ static void UI_RunMenuScript(char **args) {
 			int stat;
 			if ( Int_Parse( args, &stat ) )
 				trap_SetPbClStatus( stat );
+		} else if (Q_stricmp(name, "gearWrite") == 0) { 
+			UI_GearWrite();
+		} else if (Q_stricmp(name, "gearRead") == 0) { 
+			UI_GearRead();
 		}
 		else {
 			Com_Printf("unknown UI script %s\n", name);
 		}
 	}
+}
+
+//blud:	Converts a int (which is expected to be one of the 7 GEAR_ constants)
+//		(or 'special' ('special' is an integer argument from an ownerdraw itemDef 
+//		which actually starts as a float but I'm hijacking it and just using 
+//		ints)) which indicates what gear weapon/item you want, such as GEAR_PRIMARY)
+//		into a ui_gear* cvar name
+char *UI_GetUIgearCvarNameFromGear_Constant(int gearNum)
+{
+	char* uigearCvarName;
+
+	switch( gearNum )
+	{
+		case GEAR_PRIMARY:		uigearCvarName = "ui_gearPrimary";		break;
+		case GEAR_SECONDARY:	uigearCvarName = "ui_gearSecondary";	break;
+		case GEAR_SIDEARM:		uigearCvarName = "ui_gearSidearm";		break;
+		case GEAR_GRENADE:		uigearCvarName = "ui_gearGrenade";		break;
+		case GEAR_ITEM_1:		uigearCvarName = "ui_gearItem1";		break;
+		case GEAR_ITEM_2:		uigearCvarName = "ui_gearItem2";		break;
+		case GEAR_ITEM_3:		uigearCvarName = "ui_gearItem3";		break;
+		default:
+			Com_Printf("Error: Invalid gearNum:%d\n", gearNum);
+			//setting it to *something*
+			uigearCvarName = "ui_gearPrimary";
+			break;
+	}
+
+	return uigearCvarName;
+}
+
+//blud:	Accepts a gearNum (as in from a GEAR_ constant) and
+//		returns a gearSlotNum (as in a GEAR_SLOT_ constant)
+//		(Another gear conversion for urt's half dozen gear numbering systems lol)
+//		[NOTE:	Even without my crappy Primary = 8 instead of 0, I still need this
+//				because they don't line up.]
+int UI_Gear_ConstantToGear_Slot_Constant(int gearNum)
+{
+	int gearSlotNum;
+
+	switch (gearNum)
+	{
+		case GEAR_PRIMARY:
+			gearSlotNum = GEAR_SLOT_PRIMARY;
+			break;
+		case GEAR_SECONDARY:
+			gearSlotNum = GEAR_SLOT_SECONDARY;
+			break;
+		case GEAR_SIDEARM:
+			gearSlotNum = GEAR_SLOT_SIDEARM;
+			break;
+		case GEAR_GRENADE:
+			gearSlotNum = GEAR_SLOT_GRENADE;
+			break;
+		case GEAR_ITEM_1:
+			gearSlotNum = GEAR_SLOT_ITEM_1;
+			break;
+		case GEAR_ITEM_2:
+			gearSlotNum = GEAR_SLOT_ITEM_2;
+			break;
+		case GEAR_ITEM_3:
+			gearSlotNum = GEAR_SLOT_ITEM_3;
+			break;
+		default:
+			//set it to sidearm so it's set to something
+			gearSlotNum = GEAR_SLOT_SIDEARM;
+			Com_Printf("Error: gearNum %i out of bounds\n", gearNum);
+			break;
+	}
+
+	return gearSlotNum;
+}
+
+//blud:	Accepts a gearSlotNum (as in from a GEAR_SLOT_ constant) and
+//		returns a gearNum (as in a GEAR_ constant)
+//		(Yet another gear conversion for urt's half dozen gear numbering systems lol)
+int UI_Gear_Slot_ConstantToGear_Constant(int gearSlotNum)
+{
+	int gearNum;
+
+	switch (gearSlotNum)
+	{
+		case GEAR_SLOT_PRIMARY:
+			gearNum = GEAR_PRIMARY;
+			break;
+		case GEAR_SLOT_SECONDARY:
+			gearNum = GEAR_SECONDARY;
+			break;
+		case GEAR_SLOT_SIDEARM:
+			gearNum = GEAR_SIDEARM;
+			break;
+		case GEAR_SLOT_GRENADE:
+			gearNum = GEAR_GRENADE;
+			break;
+		case GEAR_SLOT_ITEM_1:
+			gearNum = GEAR_ITEM_1;
+			break;
+		case GEAR_SLOT_ITEM_2:
+			gearNum = GEAR_ITEM_2;
+			break;
+		case GEAR_SLOT_ITEM_3:
+			gearNum = GEAR_ITEM_3;
+			break;
+		default:
+			//set it to sidearm by default so it's set to something
+			gearNum = GEAR_SIDEARM;
+			Com_Printf("Error: gearSlotNum out of bounds\n");
+			break;
+	}
+
+	return gearNum;
+}
+
+//blud: Converts the gear cvar slot char values to ui_gear* cvar int values
+int UI_GearToUIgear(char itemChar)
+{
+	int item;
+
+	switch (itemChar)
+	{
+		case GEAR_NONE:
+			item = UI_GEAR_NONE;
+			break;
+		case GEAR_BERETTA:
+			item = UI_GEAR_BERETTA;
+			break;
+		case GEAR_DEAGLE:
+			item = UI_GEAR_DEAGLE;
+			break;
+		case GEAR_SPAS12:
+			item = UI_GEAR_SPAS12;
+			break;
+		case GEAR_MP5K:
+			item = UI_GEAR_MP5K;
+			break;
+		case GEAR_UMP45:
+			item = UI_GEAR_UMP45;
+			break;
+		case GEAR_HK69:
+			item = UI_GEAR_HK69;
+			break;
+		case GEAR_LR:
+			item = UI_GEAR_LR;
+			break;
+		case GEAR_G36:
+			item = UI_GEAR_G36;
+			break;
+		case GEAR_PSG1:
+			item = UI_GEAR_PSG1;
+			break;
+		case GEAR_GRENADE_HE:
+			item = UI_GEAR_GRENADE_HE;
+			break;
+		case GEAR_GRENADE_SMOKE:
+			item = UI_GEAR_GRENADE_SMOKE;
+			break;
+		case GEAR_VEST:
+			item = UI_GEAR_VEST;
+			break;
+		case GEAR_NVG:
+			item = UI_GEAR_NVG;
+			break;
+		case GEAR_MEDKIT:
+			item = UI_GEAR_MEDKIT;
+			break;
+		case GEAR_SILENCER:
+			item = UI_GEAR_SILENCER;
+			break;
+		case GEAR_LASER:
+			item = UI_GEAR_LASER;
+			break;
+		case GEAR_HELMET:
+			item = UI_GEAR_HELMET;
+			break;
+		case GEAR_AMMO:
+			item = UI_GEAR_AMMO;
+			break;
+		case GEAR_SR8:
+			item = UI_GEAR_SR8;
+			break;
+		case GEAR_AK103:
+			item = UI_GEAR_AK103;
+			break;
+		case GEAR_NEGEV:
+			item = UI_GEAR_NEGEV;
+			break;
+		case GEAR_M4:
+			item = UI_GEAR_M4;
+			break;
+		default:
+			//should never happen. Just going to set it to none
+			item = UI_GEAR_NONE;
+			break;
+	}
+
+	return item;
+}
+
+//blud: Converts the ui_gear* cvar values to gear cvar slot values
+//		(Retarded urban terror has like 3 or 4 numbering systems for the weapons and items, 
+//		and I'm stuck with that to preserve compatibility)
+char UI_UIgearToGear(int item)
+{
+	char itemChar;
+
+	switch (item)
+	{
+		case UI_GEAR_NONE:
+			itemChar = GEAR_NONE;
+			break;
+		case UI_GEAR_BERETTA:
+			itemChar = GEAR_BERETTA;
+			break;
+		case UI_GEAR_DEAGLE:
+			itemChar = GEAR_DEAGLE;
+			break;
+		case UI_GEAR_SPAS12:
+			itemChar = GEAR_SPAS12;
+			break;
+		case UI_GEAR_MP5K:
+			itemChar = GEAR_MP5K;
+			break;
+		case UI_GEAR_UMP45:
+			itemChar = GEAR_UMP45;
+			break;
+		case UI_GEAR_HK69:
+			itemChar = GEAR_HK69;
+			break;
+		case UI_GEAR_LR:
+			itemChar = GEAR_LR;
+			break;
+		case UI_GEAR_G36:
+			itemChar = GEAR_G36;
+			break;
+		case UI_GEAR_PSG1:
+			itemChar = GEAR_PSG1;
+			break;
+		case UI_GEAR_GRENADE_HE:
+			itemChar = GEAR_GRENADE_HE;
+			break;
+		case UI_GEAR_GRENADE_SMOKE:
+			itemChar = GEAR_GRENADE_SMOKE;
+			break;
+		case UI_GEAR_VEST:
+			itemChar = GEAR_VEST;
+			break;
+		case UI_GEAR_NVG:
+			itemChar = GEAR_NVG;
+			break;
+		case UI_GEAR_MEDKIT:
+			itemChar = GEAR_MEDKIT;
+			break;
+		case UI_GEAR_SILENCER:
+			itemChar = GEAR_SILENCER;
+			break;
+		case UI_GEAR_LASER:
+			itemChar = GEAR_LASER;
+			break;
+		case UI_GEAR_HELMET:
+			itemChar = GEAR_HELMET;
+			break;
+		case UI_GEAR_AMMO:
+			itemChar = GEAR_AMMO;
+			break;
+		case UI_GEAR_SR8:
+			itemChar = GEAR_SR8;
+			break;
+		case UI_GEAR_AK103:
+			itemChar = GEAR_AK103;
+			break;
+		case UI_GEAR_NEGEV:
+			itemChar = GEAR_NEGEV;
+			break;
+		case UI_GEAR_M4:
+			itemChar = GEAR_M4;
+			break;
+		default:
+			//should never happen. Just going to set it to none
+			itemChar = GEAR_NONE;
+			break;
+	}
+
+	return itemChar;
+}
+
+
+//blud: Fixes all the ui_gear* cvar values if any of them contain anything invalid
+void UI_UIgearFix(void)
+{
+	int i;
+
+	for (i = 0; i < GEAR_SLOT_MAX; i++)
+	{
+		if (!UI_GearCheckItem( (int)trap_Cvar_VariableValue(UI_GetUIgearCvarNameFromGear_Constant(UI_Gear_Slot_ConstantToGear_Constant(i))), i))
+		{
+			//Com_Printf("Item *%i* was found to be bad, fixing it!\n", i); //blud debug
+			UI_GearFixUIgearItem(i);
+		}
+	}
+}
+
+//blud: Fixes the gear cvar value if it contains anything invalid
+void UI_GearFix(void)
+{
+	char		gearString[GEAR_SLOT_MAX+1];
+	int			len;
+	int			i;
+
+	//read the gear cvar
+	trap_Cvar_VariableStringBuffer( "gear", gearString, sizeof(gearString) );
+
+	len = strlen(gearString);
+
+	if (len < GEAR_SLOT_MAX)
+	{
+		//append characters onto the gear cvar to make it the right length
+		for (i = len; i < GEAR_SLOT_MAX; i++)
+		{
+			gearString[i] = GEAR_NONE;
+		}
+
+		gearString[GEAR_SLOT_MAX] = '\0';
+	}
+	else if (len > GEAR_SLOT_MAX)
+	{
+		//truncate the gear cvar
+		gearString[GEAR_SLOT_MAX] = '\0';
+	}
+
+	//now the gear string has the proper length
+
+	//fix any bad slots
+	for (i = 0; i < GEAR_SLOT_MAX; i++)
+	{
+		if (!UI_GearCheckItem(UI_GearToUIgear(gearString[i]), i))
+		{
+			UI_GearFixGearItem(i);
+		}
+	}
+}
+
+
+//blud: Checks all the ui_gear* cvar values to make sure they are valid
+//		Returns qfalse if any of them aren't, qtrue if they all are
+qboolean UI_UIgearCheck(void) {
+	qboolean uiGearOK = qtrue;
+	int i;
+
+	for (i = 0; i < GEAR_SLOT_MAX; i++)
+	{
+		uiGearOK = UI_GearCheckItem(trap_Cvar_VariableValue(UI_GetUIgearCvarNameFromGear_Constant(UI_Gear_Slot_ConstantToGear_Constant(i))), i);
+		if (!uiGearOK) {break;}
+	}
+
+	return uiGearOK;
+}
+
+
+//blud:	Accepts a gear slot
+//		Returns the char value at that slot
+char UI_GetGearValueAtSlot(int slot)
+{
+	char	gearString[GEAR_SLOT_MAX+1];
+	int		len;
+	char	value;
+
+	//if the slot is valid
+	if (!(slot < 0 || slot >= GEAR_SLOT_MAX))
+	{
+		//read the gear cvar
+		trap_Cvar_VariableStringBuffer( "gear", gearString, sizeof(gearString) );
+
+		//check if it is long enough to include the slot we want to look at (it should be but who knows)
+		len = strlen(gearString);
+
+		if (len < slot+1)
+		{
+			//it's not long enough, it doesn't have the slot we're looking for
+			//so I guess we'll just say None.
+			value = UI_GEAR_NONE;
+		}
+		else
+		{
+			value = gearString[slot];
+			//note: this function doesn't care if the value at this slot is valid it not,
+			//		it just returns whatever it finds there.
+		}
+	}
+	else //the slot was not valid
+	{
+		//might as well just return none (my code should never reach here)
+		value = UI_GEAR_NONE;
+	}
+
+	return value;
+}
+
+//blud: does the actual writing of the fixed item to the ui_gear* cvar
+void UI_GearFixUIgearItem(int gearSlot)
+{
+	//fix the ui_gear* cvar that corresponds to gearSlot
+	trap_Cvar_Set(UI_GetUIgearCvarNameFromGear_Constant(UI_Gear_Slot_ConstantToGear_Constant(gearSlot)), va("%i",UI_GearGetFixedItem(gearSlot)));
+}
+
+//blud: does the actual writing of the fixed item to the gear cvar
+void UI_GearFixGearItem(int gearSlot)
+{
+	char gearString[GEAR_SLOT_MAX+1];
+
+	//fix the gear char in the gear cvar at the slot gearSlot
+
+	trap_Cvar_VariableStringBuffer( "gear", gearString, sizeof(gearString) );
+
+	if (!(gearSlot >= GEAR_SLOT_MAX))
+	{
+		gearString[gearSlot] = UI_UIgearToGear(UI_GearGetFixedItem(gearSlot));
+		trap_Cvar_Set("gear", gearString);
+	}
+	else
+	{
+		Com_Printf("Error: gearSlot exceeds GEAR SLOT MAX\n");
+	}
+}
+
+
+//blud: Accepts an item int
+//		Returns qtrue if the item is an Inventory Item (like Vest, Helmet, etc), qfalse if not
+qboolean UI_IsInventoryItem(int item)
+{
+	if (item >= UI_GEAR_VEST && item <= UI_GEAR_AMMO)
+	{
+		return qtrue;
+	}
+	else
+	{
+		return qfalse;
+	}
+}
+
+//blud: Returns a valid (default) item gear int for any slot which apparently currently
+//		has an invalid item in it (or else why is this function being called?)
+//		Accepts a gear slot
+//		Returns a gear item int
+int UI_GearGetFixedItem(int gearSlot)
+{
+	int fixedItem;
+
+	switch (gearSlot)
+	{
+		case GEAR_SLOT_SIDEARM:		fixedItem = UI_GEAR_DEAGLE;	break;
+		case GEAR_SLOT_PRIMARY:		fixedItem = UI_GEAR_LR;		break;
+		case GEAR_SLOT_SECONDARY:	fixedItem = UI_GEAR_NONE;	break;
+		case GEAR_SLOT_GRENADE:		fixedItem = UI_GEAR_NONE;	break;
+		case GEAR_SLOT_ITEM_1:		fixedItem = UI_GEAR_VEST;	break;
+		case GEAR_SLOT_ITEM_2:		fixedItem = UI_GEAR_NONE;	break;
+		case GEAR_SLOT_ITEM_3:		fixedItem = UI_GEAR_NONE;	break;
+		
+		default:
+			//set it to none so it's set to something
+			fixedItem = UI_GEAR_NONE;
+			Com_Printf("Error: gearSlot larger than actual number of gear slots.\n");
+			break;
+	}
+
+	return fixedItem;
+}
+
+
+//blud: Accepts a uigear item int and gear slot
+//		Returns false if the item is not valid for the gear slot, otherwise true
+qboolean UI_GearCheckItem(int item, int gearSlot)
+{
+	qboolean itemOK = qtrue; //it's ok unless we find it isn't
+	int primary;
+	int secondary;
+	int grenade;
+	int item1;
+	int item2;
+	
+	//first check to see if the gearNum can't possibly be valid
+	if (item < 0 || item >= UI_GEAR_MAX)
+	{
+		itemOK = qfalse;
+	}
+	else if (	item == 1 || 
+				item == 2 ||
+				item == 3 ||
+				item == 4 ||
+				item == 15 ||
+				item == 24 ||
+				item == 27 ||
+				item == 29 ) //gg's urban terror for this code lameness
+	{
+		itemOK = qfalse;
+	}
+
+	//now it might be valid but it depends on the slot
+
+	if (itemOK) //if the item could still be ok, continue checking
+	{
+		//We need to get the current primary, secondary, and grenade for some special case tests below
+		if (alturtActiveItem == -1)
+		{ 
+			//gear governs loadout
+			primary		= UI_GearToUIgear(UI_GetGearValueAtSlot(GEAR_SLOT_PRIMARY));
+			secondary	= UI_GearToUIgear(UI_GetGearValueAtSlot(GEAR_SLOT_SECONDARY));
+			grenade		= UI_GearToUIgear(UI_GetGearValueAtSlot(GEAR_SLOT_GRENADE));
+			item1		= UI_GearToUIgear(UI_GetGearValueAtSlot(GEAR_SLOT_ITEM_1));
+			item2		= UI_GearToUIgear(UI_GetGearValueAtSlot(GEAR_SLOT_ITEM_2));
+		}
+		else
+		{
+			//ui_gear* governs loadout
+			primary		= trap_Cvar_VariableValue(UI_GetUIgearCvarNameFromGear_Constant(UI_Gear_Slot_ConstantToGear_Constant(GEAR_SLOT_PRIMARY)));
+			secondary	= trap_Cvar_VariableValue(UI_GetUIgearCvarNameFromGear_Constant(UI_Gear_Slot_ConstantToGear_Constant(GEAR_SLOT_SECONDARY)));
+			grenade		= trap_Cvar_VariableValue(UI_GetUIgearCvarNameFromGear_Constant(UI_Gear_Slot_ConstantToGear_Constant(GEAR_SLOT_GRENADE)));
+			item1		= trap_Cvar_VariableValue(UI_GetUIgearCvarNameFromGear_Constant(UI_Gear_Slot_ConstantToGear_Constant(GEAR_SLOT_ITEM_1)));
+			item2		= trap_Cvar_VariableValue(UI_GetUIgearCvarNameFromGear_Constant(UI_Gear_Slot_ConstantToGear_Constant(GEAR_SLOT_ITEM_2)));
+		}
+
+		switch (gearSlot)
+		{
+			case GEAR_SLOT_SIDEARM:
+				if (!(item == UI_GEAR_BERETTA || item == UI_GEAR_DEAGLE))
+				{
+					itemOK = qfalse;
+				}
+				break;
+			case GEAR_SLOT_PRIMARY:
+				if (!(	item == UI_GEAR_SPAS12	||
+						item == UI_GEAR_MP5K	||
+						item == UI_GEAR_UMP45	||
+						item == UI_GEAR_HK69	||
+						item == UI_GEAR_LR		||
+						item == UI_GEAR_G36		||
+						item == UI_GEAR_PSG1	||
+						item == UI_GEAR_SR8		||
+						item == UI_GEAR_AK103	||
+						item == UI_GEAR_NEGEV	||
+						item == UI_GEAR_M4 ))
+				{
+					itemOK = qfalse;
+				}
+				break;
+			case GEAR_SLOT_SECONDARY:
+				//special consideration: can't have same secondary as one in primary slot
+
+				//if the primary slot contains a secondary
+				if (primary == UI_GEAR_SPAS12 ||
+					primary == UI_GEAR_MP5K ||
+					primary == UI_GEAR_UMP45)
+				{
+					//if the primary (which contains a secondary) is the same as our secondary
+					if(item == primary)
+					{
+						itemOK = qfalse;
+					}
+				}
+
+				//special consideration: secondary must be None if primary is Negev
+				if (primary == UI_GEAR_NEGEV && item != UI_GEAR_NONE)
+				{
+					itemOK = qfalse;
+				}
+				
+				if (!(item == UI_GEAR_NONE ||
+					item == UI_GEAR_SPAS12 ||
+					item == UI_GEAR_MP5K ||
+					item == UI_GEAR_UMP45))
+				{
+					itemOK = qfalse;
+				}
+				break;
+			case GEAR_SLOT_GRENADE:
+				if (!(item == UI_GEAR_NONE || item == UI_GEAR_GRENADE_HE || item == UI_GEAR_GRENADE_SMOKE))
+				{
+					itemOK = qfalse;
+				}
+				break;
+			case GEAR_SLOT_ITEM_1:
+				if (!(	item == UI_GEAR_VEST		||
+						item == UI_GEAR_NVG			||
+						item == UI_GEAR_MEDKIT		||
+						item == UI_GEAR_SILENCER	||
+						item == UI_GEAR_LASER		||
+						item == UI_GEAR_HELMET		||
+						item == UI_GEAR_AMMO ))
+				{
+					itemOK = qfalse;
+				}
+				break;
+			case GEAR_SLOT_ITEM_2:
+				//special consideration:	if both secondary and grenade are full
+				//							then this has to be None.
+				if (secondary != UI_GEAR_NONE && grenade != UI_GEAR_NONE)
+				{
+					if (item != UI_GEAR_NONE)
+					{
+						itemOK = qfalse;
+					}
+				}
+
+				//if this item is already in the first item slot you can't have it in the 2nd slot
+				if (item == item1)
+				{
+					itemOK = qfalse;
+				}
+				
+				if (!(	item == UI_GEAR_NONE		||
+						item == UI_GEAR_VEST		||
+						item == UI_GEAR_NVG			||
+						item == UI_GEAR_MEDKIT		||
+						item == UI_GEAR_SILENCER	||
+						item == UI_GEAR_LASER		||
+						item == UI_GEAR_HELMET		||
+						item == UI_GEAR_AMMO ))
+				{
+					itemOK = qfalse;
+				}
+				break;
+			case GEAR_SLOT_ITEM_3:
+				//special consideration: if there's a secondary or a grenade, you can't have a 3rd item
+				if (secondary != UI_GEAR_NONE || grenade != UI_GEAR_NONE)
+				{
+					if (item != UI_GEAR_NONE)
+					{
+						itemOK = qfalse;
+					}
+				}
+
+				//if this item is already in the 1st or 2nd item slot you can't have it in the 3rd slot
+				if (item == item1 || item == item2)
+				{
+					itemOK = qfalse;
+				}
+
+				if (!(	item == UI_GEAR_NONE		||
+						item == UI_GEAR_VEST		||
+						item == UI_GEAR_NVG			||
+						item == UI_GEAR_MEDKIT		||
+						item == UI_GEAR_SILENCER	||
+						item == UI_GEAR_LASER		||
+						item == UI_GEAR_HELMET		||
+						item == UI_GEAR_AMMO ))
+				{
+					itemOK = qfalse;
+				}
+				break;
+			default:
+				//don't do an error msg, because the user could put wrong values and cause the error msg
+				//and it doesn't matter, because we'll fix the problem in the Fix function
+				break;
+		}
+	}
+
+	return itemOK;
+}
+
+//blud: Checks the gear cvar value to make sure it is valid
+//		Returns qfalse if it isn't, qtrue if it is
+qboolean UI_GearCheck(void) {
+	char		gearString[GEAR_SLOT_MAX+1];
+	int			len;
+	int			i;
+	qboolean	gearOK = qtrue; //it's ok unless we find it isn't
+
+	//read the gear cvar, check to make sure it's valid
+	trap_Cvar_VariableStringBuffer( "gear", gearString, sizeof(gearString) );
+
+	len = strlen(gearString);
+
+	if (len != GEAR_SLOT_MAX) //gear cvar isn't set properly, it should have exactly GEAR_SLOT_MAX characters
+	{
+		gearOK = qfalse;
+	}
+	else //gear cvar has the expected 7 characters in it
+	{
+		//check through each character to make sure it's ok
+		//as soon as we hit an bad one we can stop looking
+		for (i = 0; i < GEAR_SLOT_MAX; i++)
+		{
+			gearOK = UI_GearCheckItem(UI_GearToUIgear(gearString[i]), i);
+			if (!gearOK){break;}
+		}
+	}
+
+	return gearOK;
+}
+
+
+//Blud: Resets the ui_gearItemCount cvar to the correct number for the current ui_gear* loadout
+void UI_GearResetItemCount(void)
+{
+	int secondary;
+	int grenade;
+	int uiGearItemCount;
+	
+	//assumes valid values in ui_gear* cvars
+
+	//possible ui_gearItemCount values are 1, 2, or 3
+	//ui_gearItemCount is how many Items you *can* have, not how many you currently have
+
+	secondary	= trap_Cvar_VariableValue(UI_GetUIgearCvarNameFromGear_Constant(UI_Gear_Slot_ConstantToGear_Constant(GEAR_SLOT_SECONDARY)));
+	grenade		= trap_Cvar_VariableValue(UI_GetUIgearCvarNameFromGear_Constant(UI_Gear_Slot_ConstantToGear_Constant(GEAR_SLOT_GRENADE)));
+
+	if (secondary == UI_GEAR_NONE && grenade == UI_GEAR_NONE)
+	{
+		uiGearItemCount = 3;
+	}
+	else if ((secondary != UI_GEAR_NONE && grenade == UI_GEAR_NONE) || (grenade != UI_GEAR_NONE && secondary == UI_GEAR_NONE))
+	{
+		uiGearItemCount = 2;
+	}
+	else //they have a grenade and a secondary
+	{
+		uiGearItemCount = 1;
+	}
+
+	trap_Cvar_SetValue( "ui_gearItemCount", uiGearItemCount );
+}
+
+//Blud:	Copies the loadout from the gear cvar to the ui_gear* cvars
+void UI_CopyGearLoadoutToUIgearLoadout(void)
+{
+	char gearString[GEAR_SLOT_MAX+1];
+	int i;
+	
+	//read the gear cvar
+	trap_Cvar_VariableStringBuffer( "gear", gearString, sizeof(gearString) );
+
+	//Com_Printf("Gear is %s\n", gearString); //blud debug
+
+	//write the ui_gear cvars
+	for (i = 0; i < GEAR_SLOT_MAX; i++)
+	{
+		//Com_Printf	("Copying slot %i to %s, value:%c\n", i, UI_GetUIgearCvarNameFromGear_Constant(UI_Gear_Slot_ConstantToGear_Constant(i)), gearString[i]); //blud debug
+		trap_Cvar_Set(UI_GetUIgearCvarNameFromGear_Constant(UI_Gear_Slot_ConstantToGear_Constant(i)), va("%i", UI_GearToUIgear(gearString[i])));
+	}
+
+	//SIDEARM, PRIMARY, SECONDARY, GRENADE, ITEM1, ITEM2, ITEM3 //blud debug
+	/*
+	Com_Printf("ui_gear*'s are now:\n"); //blud debug
+	Com_Printf("%i\n", (int)trap_Cvar_VariableValue("ui_gearSidearm")); //blud debug
+	Com_Printf("%i\n", (int)trap_Cvar_VariableValue("ui_gearPrimary")); //blud debug
+	Com_Printf("%i\n", (int)trap_Cvar_VariableValue("ui_gearSecondary")); //blud debug
+	Com_Printf("%i\n", (int)trap_Cvar_VariableValue("ui_gearGrenade")); //blud debug
+	Com_Printf("%i\n", (int)trap_Cvar_VariableValue("ui_gearItem1")); //blud debug
+	Com_Printf("%i\n", (int)trap_Cvar_VariableValue("ui_gearItem2")); //blud debug
+	Com_Printf("%i\n", (int)trap_Cvar_VariableValue("ui_gearItem3")); //blud debug
+	*/
+}
+
+
+//Blud:	So that the weapon menu can display the right things,
+//		If we're in the ingame weapon menu fresh, this function reads in from the
+//		gear cvar and sets all of the ui_gear* cvars including ui_gearItemCount
+//		ElseIf the user has been to submenus, this function just sets the ui_gearItemCount
+//		Also, it keeps the gear and ui_gear* values valid if they have been corrupted,
+//		for example manually through the console
+void UI_GearRead(void) {
+	//this gets called every time the root weapon menu is displayed (when
+	//it's opened for the first time AND when you return to it from sub-menus)
+
+	if (alturtActiveItem == -1) //the menu has been opened freshly
+	{
+		//Com_Printf("alturtActiveItem is -1, First time in menu\n"); //blud debug
+		//the menu has been opened freshly, so we go by the gear value
+
+		//check to make sure the gear cvar value is valid
+		//and if it isn't, fix it
+		if (!UI_GearCheck())
+		{
+			//Com_Printf("Gear was bad! Fixing it...\n"); //blud debug
+			UI_GearFix();
+		}
+
+		//now we have a good and valid gear cvar
+
+		//overwrite all the ui_gear values from the gear value.
+		UI_CopyGearLoadoutToUIgearLoadout();
+	}
+	else //the user has already been to a submenu
+	{
+		//the user has already been to a submenu, so we go by the ui_gear* values
+
+		//check to make sure the ui_gear* values are valid
+		//(they should be, but users can alter them manually in the console)
+		//and if they aren't, fix them
+		if (!UI_UIgearCheck())
+		{
+			//ok, problem here, if I have 2 items and a secondary, and then they add a
+			//grenade, it decides that it's a problem and sets secondary to none!
+			//but it should set the 2nd item to none.
+			UI_UIgearFix();
+		}
+	}
+	
+	//Set the ui_gearItemCount cvar so it is correct for the loadout found ui_gear*
+	//(which now matches the loadout found in gear)
+	UI_GearResetItemCount();
+}
+
+
+
+//construct the gear string and write it to the gear cvar
+//function written by blud
+void UI_GearWrite(void) {
+	char gearString[GEAR_SLOT_MAX+1];
+
+	gearString[GEAR_SLOT_SIDEARM]	= UI_UIgearToGear((int)trap_Cvar_VariableValue("ui_gearSidearm"));
+	gearString[GEAR_SLOT_PRIMARY]	= UI_UIgearToGear((int)trap_Cvar_VariableValue("ui_gearPrimary"));
+	gearString[GEAR_SLOT_SECONDARY] = UI_UIgearToGear((int)trap_Cvar_VariableValue("ui_gearSecondary"));
+	gearString[GEAR_SLOT_GRENADE]	= UI_UIgearToGear((int)trap_Cvar_VariableValue("ui_gearGrenade"));
+	gearString[GEAR_SLOT_ITEM_1]	= UI_UIgearToGear((int)trap_Cvar_VariableValue("ui_gearItem1"));
+	gearString[GEAR_SLOT_ITEM_2]	= UI_UIgearToGear((int)trap_Cvar_VariableValue("ui_gearItem2"));
+	gearString[GEAR_SLOT_ITEM_3]	= UI_UIgearToGear((int)trap_Cvar_VariableValue("ui_gearItem3"));
+
+	gearString[GEAR_SLOT_MAX] = '\0';
+
+	trap_Cvar_Set("gear", gearString);
+
+	alturtActiveItem = -1; //resetting so UI_GearRead() knows there is no active item yet
 }
 
 static void UI_GetTeamColor(vec4_t *color) {
@@ -4939,6 +6205,173 @@ static void UI_RunCinematicFrame(int handle) {
 }
 
 
+//blud adding ownerdrawParam
+//itemDefs with an ownerdrawParam call this function passing their ui_Script and
+//ownerdrawParam. The ui_Script is in the args (which becomes name) and the ownerdrawParam
+//is simply parameter.
+void UI_RunExtendedMenuScript(char **args, int parameter )
+{
+    const char *name;
+	char *itemSlot;
+	char *secondarySlot;
+	char *noneSlot;
+
+	//Com_Printf("XGEARITEM1:*%d*", (int)trap_Cvar_VariableValue("ui_gearitem1")); //blud debug
+
+    if (String_Parse(args, &name))
+    {
+		if (Q_stricmp(name, "gearSetActive") == 0)
+		{
+			//save the active item 
+			//(so if they clicked Secondary, they are about to pick a Secondary. 
+			//If they clicked Primary, they are about to pick a Primary, etc)
+			alturtActiveItem = parameter;
+		}
+		else if (Q_stricmp(name, "gearSetItem") == 0)
+		{
+			switch (parameter)
+			{
+				case ITEM_NONE:
+					//they clicked a none, figure out which slot it's for
+					switch (alturtActiveItem)
+					{
+						case GEAR_SECONDARY: noneSlot = "ui_gearSecondary"; break;
+						case GEAR_GRENADE: noneSlot = "ui_gearGrenade"; break;
+						//case GEAR_ITEM_1: noneSlot = "ui_gearItem1"; break;
+						//I don't want to let them click none for Item1!
+						case GEAR_ITEM_2: noneSlot = "ui_gearItem2"; break;
+						case GEAR_ITEM_3: noneSlot = "ui_gearItem3"; break;
+						default:
+							noneSlot = "ui_gearSecondary";  //set it to secondary since we don't know what to set it to (this should never happen anyways)
+							//Com_Printf("*%d* is not a valid activeItem number\n", alturtActiveItem); //blud debug
+							break;
+					}
+					//You cannot make Item1 be none.
+					if (alturtActiveItem != GEAR_ITEM_1)
+					{
+						trap_Cvar_Set(noneSlot, va("%i",UI_GEAR_NONE));
+					}
+					break;
+				case ITEM_BERETTA:
+					trap_Cvar_Set("ui_gearSidearm", va("%i",UI_GEAR_BERETTA));
+					break;
+				case ITEM_DEAGLE:
+					trap_Cvar_Set("ui_gearSidearm", va("%i",UI_GEAR_DEAGLE));
+					break;
+				case ITEM_SPAS12:
+				case ITEM_MP5K:
+				case ITEM_UMP45:
+					//they clicked a secondary, check if it's for secondary or primary slot
+					switch (alturtActiveItem)
+					{
+						case GEAR_PRIMARY: secondarySlot = "ui_gearPrimary"; break;
+						case GEAR_SECONDARY: secondarySlot = "ui_gearSecondary"; break;
+						default:
+							secondarySlot = "ui_gearPrimary"; //set it to primary since we don't know what to set it to (this should never happen anyways)
+							Com_Printf("Unknown Weapon Slot for secondary weapon, how did you click on it?\n");
+							break;
+					}
+					switch (parameter)
+					{
+						case ITEM_SPAS12:
+							trap_Cvar_Set(secondarySlot, va("%i",UI_GEAR_SPAS12));
+							break;
+						case ITEM_MP5K:
+							trap_Cvar_Set(secondarySlot, va("%i",UI_GEAR_MP5K));
+							break;
+						case ITEM_UMP45:
+							trap_Cvar_Set(secondarySlot, va("%i",UI_GEAR_UMP45));
+							break;
+						default:
+							Com_Printf("Unknown secondary, how did you click on it?\n");
+							break;
+					}
+					break;
+				case ITEM_HK69:
+					trap_Cvar_Set("ui_gearPrimary", va("%i",UI_GEAR_HK69));
+					break;
+				case ITEM_LR:
+					trap_Cvar_Set("ui_gearPrimary", va("%i",UI_GEAR_LR));
+					break;
+				case ITEM_G36:
+					trap_Cvar_Set("ui_gearPrimary", va("%i",UI_GEAR_G36));
+					break;
+				case ITEM_AK103:
+					trap_Cvar_Set("ui_gearPrimary", va("%i",UI_GEAR_AK103));
+					break;
+				case ITEM_PSG1:
+					trap_Cvar_Set("ui_gearPrimary", va("%i",UI_GEAR_PSG1));
+					break;
+				case ITEM_GRENADE_HE:
+					trap_Cvar_Set("ui_gearGrenade", va("%i",UI_GEAR_GRENADE_HE));
+					break;
+				case ITEM_GRENADE_SMOKE:
+					trap_Cvar_Set("ui_gearGrenade", va("%i",UI_GEAR_GRENADE_SMOKE));
+					break;
+				case ITEM_SR8:
+					trap_Cvar_Set("ui_gearPrimary", va("%i",UI_GEAR_SR8));
+					break;
+				case ITEM_NEGEV:
+					trap_Cvar_Set("ui_gearPrimary", va("%i",UI_GEAR_NEGEV));
+					//special case, when you have Negev you can't have a secondary
+					trap_Cvar_Set("ui_gearSecondary", va("%i",UI_GEAR_NONE));
+					break;
+				case ITEM_M4:
+					trap_Cvar_Set("ui_gearPrimary", va("%i",UI_GEAR_M4));
+					break;
+				case ITEM_VEST:
+				case ITEM_NVG:
+				case ITEM_MEDKIT:
+				case ITEM_SILENCER:
+				case ITEM_LASER:
+				case ITEM_HELMET:
+				case ITEM_AMMO:
+					//they clicked on some item, check which slot it is for
+					switch (alturtActiveItem)
+					{
+						case GEAR_ITEM_1: itemSlot = "ui_gearItem1"; break;
+						case GEAR_ITEM_2: itemSlot = "ui_gearItem2"; break;
+						case GEAR_ITEM_3: itemSlot = "ui_gearItem3"; break;
+						default:
+							itemSlot = "ui_gearItem1"; //set it to 1 since we don't know what to set it to (this should never happen anyways)
+							Com_Printf("Unknown Item Slot, how did you click on it?\n");
+							break;
+					}
+					switch (parameter)
+					{
+						case ITEM_VEST:
+							trap_Cvar_Set(itemSlot, va("%i",UI_GEAR_VEST));
+							break;
+						case ITEM_NVG:
+							trap_Cvar_Set(itemSlot, va("%i",UI_GEAR_NVG));
+							break;
+						case ITEM_MEDKIT:
+							trap_Cvar_Set(itemSlot, va("%i",UI_GEAR_MEDKIT));
+							break;
+						case ITEM_SILENCER:
+							trap_Cvar_Set(itemSlot, va("%i",UI_GEAR_SILENCER));
+							break;
+						case ITEM_LASER:
+							trap_Cvar_Set(itemSlot, va("%i",UI_GEAR_LASER));
+							break;
+						case ITEM_HELMET:
+							trap_Cvar_Set(itemSlot, va("%i",UI_GEAR_HELMET));
+							break;
+						case ITEM_AMMO:
+							trap_Cvar_Set(itemSlot, va("%i",UI_GEAR_AMMO));
+							break;
+						default:
+							Com_Printf("Unknown Item, how did you click on it?\n");
+							break;
+					}
+					break;
+				default:
+					Com_Printf("Unknown Weapon, how did you click on it?\n");
+					break;
+			}
+		}
+    }
+}
 
 /*
 =================
@@ -5064,6 +6497,7 @@ void _UI_Init( qboolean inGameLoad ) {
 	uiInfo.uiDC.getValue = &UI_GetValue;
 	uiInfo.uiDC.ownerDrawVisible = &UI_OwnerDrawVisible;
 	uiInfo.uiDC.runScript = &UI_RunMenuScript;
+	uiInfo.uiDC.setWeapon = &UI_RunExtendedMenuScript;
 	uiInfo.uiDC.getTeamColor = &UI_GetTeamColor;
 	uiInfo.uiDC.setCVar = trap_Cvar_Set;
 	uiInfo.uiDC.getCVarString = trap_Cvar_VariableStringBuffer;
@@ -5682,6 +7116,17 @@ vmCvar_t	ui_scoreShutoutBonus;
 vmCvar_t	ui_scoreTime;
 vmCvar_t	ui_captureLimit;
 vmCvar_t	ui_fragLimit;
+
+//blud for ingame gear select menus
+vmCvar_t	ui_gearItemCount;
+vmCvar_t	ui_gearGrenade;
+vmCvar_t	ui_gearPrimary;
+vmCvar_t	ui_gearSecondary;
+vmCvar_t	ui_gearSidearm;
+vmCvar_t	ui_gearItem1;
+vmCvar_t	ui_gearItem2;
+vmCvar_t	ui_gearItem3;
+
 vmCvar_t	ui_smallFont;
 vmCvar_t	ui_bigFont;
 vmCvar_t	ui_findPlayer;
@@ -5800,6 +7245,16 @@ static cvarTable_t		cvarTable[] = {
 	{ &ui_scoreSkillBonus, "ui_scoreSkillBonus", "0", CVAR_ARCHIVE},
 	{ &ui_scoreShutoutBonus, "ui_scoreShutoutBonus", "0", CVAR_ARCHIVE},
 	{ &ui_fragLimit, "ui_fragLimit", "10", 0},
+
+	{ &ui_gearItemCount, "ui_gearItemCount", "1", CVAR_ARCHIVE},
+	{ &ui_gearGrenade, "ui_gearGrenade", "0", CVAR_ARCHIVE},
+	{ &ui_gearPrimary, "ui_gearPrimary", "26", CVAR_ARCHIVE},
+	{ &ui_gearSecondary, "ui_gearSecondary", "0", CVAR_ARCHIVE},
+	{ &ui_gearSidearm, "ui_gearSidearm", "6", CVAR_ARCHIVE},
+	{ &ui_gearItem1, "ui_gearItem1", "21", CVAR_ARCHIVE},
+	{ &ui_gearItem2, "ui_gearItem2", "0", CVAR_ARCHIVE},
+	{ &ui_gearItem3, "ui_gearItem3", "19", CVAR_ARCHIVE},
+
 	{ &ui_captureLimit, "ui_captureLimit", "5", 0},
 	{ &ui_smallFont, "ui_smallFont", "0.25", CVAR_ARCHIVE},
 	{ &ui_bigFont, "ui_bigFont", "0.4", CVAR_ARCHIVE},
