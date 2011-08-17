@@ -25,8 +25,10 @@ along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
 // cg_main.c -- initialization and primary entry point for cgame
 #include "cg_local.h"
 
-#ifdef MISSIONPACK
 #include "../ui/ui_shared.h"
+
+#ifdef MISSIONPACK
+
 // display context for new ui stuff
 displayContextDef_t cgDC;
 #endif
@@ -1758,7 +1760,9 @@ static float CG_Cvar_Get(const char *cvar) {
 }
 #endif
 
+
 #ifdef MISSIONPACK
+
 void CG_Text_PaintWithCursor(float x, float y, float scale, vec4_t color, const char *text, int cursorPos, char cursor, int limit, int style) {
 	CG_Text_Paint(x, y, scale, color, text, 0, limit, style);
 }
@@ -1902,6 +1906,7 @@ void CG_AssetCache( void ) {
 	cgDC.Assets.sliderThumb = trap_R_RegisterShaderNoMip( ASSET_SLIDER_THUMB );
 }
 #endif
+
 /*
 =================
 CG_Init
