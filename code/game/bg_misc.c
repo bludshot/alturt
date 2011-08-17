@@ -1095,6 +1095,10 @@ gitem_t *BG_FindItemForHoldable( holdable_t pw ) {
 }
 
 
+
+
+
+
 /*
 ===============
 BG_FindItemForWeapon
