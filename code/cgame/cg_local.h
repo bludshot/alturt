@@ -871,6 +871,7 @@ typedef struct {
 		qhandle_t       handsOrangeSkin; //blud
 		qhandle_t       handsPurpleSkin; //blud
 		qhandle_t       handsYellowSkin; //blud
+		qhandle_t		smokeGrenade; //blud for in-game weapon menu
 	qhandle_t	plasmaBallShader;
 	qhandle_t	waterBubbleShader;
 	qhandle_t	bloodTrailShader;
