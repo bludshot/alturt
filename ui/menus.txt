@@ -1,39 +1,47 @@
-// menu defs
-// 
-{	
-	loadMenu { "ui/main.menu" }
- 	loadMenu { "ui/joinserver.menu" }
- 	loadMenu { "ui/filter.menu" }
-	loadMenu { "ui/punkbuster.menu" }
- 	loadMenu { "ui/player.menu" }
- 	loadMenu { "ui/setup.menu" }
- 	loadMenu { "ui/fight.menu" }
- 	loadMenu { "ui/skirmish.menu" }
- 	loadMenu { "ui/createserver.menu" }
-	loadMenu { "ui/controls.menu" }
-	loadMenu { "ui/cdkey.menu" }
-	loadMenu { "ui/system.menu" }
-	loadMenu { "ui/options.menu" }
-	loadMenu { "ui/help.menu" }
-	loadMenu { "ui/ordershelp.menu" }
- 	loadMenu { "ui/mod.menu" }
-	loadMenu { "ui/demo.menu" }
-	loadMenu { "ui/cinematicmenu.menu" }
-	loadMenu { "ui/credit.menu" }
-	loadMenu { "ui/demo_quit.menu" }
-	loadMenu { "ui/connect.menu" }
-	loadMenu { "ui/powerup.menu" } 
-	loadMenu { "ui/password.menu" }
-	loadMenu { "ui/quake3.menu" }
-	loadMenu { "ui/quit.menu" }
-	loadMenu { "ui/vid_restart.menu" }
-	loadMenu { "ui/default.menu" }
-	loadMenu { "ui/addfilter.menu" }
-	loadMenu { "ui/error.menu" }
-	loadMenu { "ui/serverinfo.menu" }
-	loadMenu { "ui/findplayer.menu" }
-	loadMenu { "ui/endofgame.menu" }
-	loadMenu { "ui/quitcredit.menu" }
-	loadMenu { "ui/resetscore.menu" }
-	loadMenu { "ui/createfavorite.menu" }
+/*
+===========================================================================
+Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2009-2010 Brian Labbie and Dave Richardson.
+
+http://sourceforge.net/projects/alturt/
+
+This file is part of Alturt source code.
+
+Alturt source code is free software: you can redistribute it
+and/or modify it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the License,
+or (at your option) any later version.
+
+Alturt source code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
+===========================================================================
+*/
+
+// menuloader
+{
+	loadMenu { "ui/main.menu" }		// main menu
+	loadMenu { "ui/joinserver.menu" }	// join a game server 
+	loadMenu { "ui/password.menu" }		// enter a password
+	loadMenu { "ui/serverinfo.menu" }	// info about a server
+	loadMenu { "ui/findplayer.menu" }	// find player on server
+	loadMenu { "ui/createfavorite.menu" }	// create fav server
+	loadMenu { "ui/createserver.menu" }	// create game server
+	loadMenu { "ui/serversettings.menu" }	// advanced server settings
+	loadMenu { "ui/setup.menu" }		// setup top bar
+	loadMenu { "ui/vid_restart.menu" }	// setup popup: apply vid
+	loadMenu { "ui/controls.menu" }		// setup controls
+	loadMenu { "ui/system.menu" }		// setup system
+	loadMenu { "ui/options.menu" }		// setup game options
+	loadMenu { "ui/player.menu" }		// setup looks
+	loadMenu { "ui/default.menu" }		// reset defaults
+	loadMenu { "ui/demo.menu" }		// demo list
+	loadMenu { "ui/quitcredit.menu" }	// quit credits
+	loadMenu { "ui/connect.menu" }		// connection screen
+	loadMenu { "ui/error.menu" }		// error
+	loadMenu { "ui/sourceurl.menu" }	// sourceurl download popup
 }

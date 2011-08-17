@@ -1,16 +1,65 @@
-// menu defs
-// 
+/*
+===========================================================================
+Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2009-2010 Brian Labbie and Dave Richardson.
+
+http://sourceforge.net/projects/alturt/
+
+This file is part of Alturt source code.
+
+Alturt source code is free software: you can redistribute it
+and/or modify it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the License,
+or (at your option) any later version.
+
+Alturt source code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
+===========================================================================
+*/
+
+// ingame menu loader
 {	
- 	loadMenu { "ui/ingame.menu" }
-	loadMenu { "ui/ingame_vote.menu" }
-	loadMenu { "ui/ingame_about.menu" }
-	loadMenu { "ui/ingame_controls.menu" }
-	loadMenu { "ui/ingame_join.menu" }
-	loadMenu { "ui/ingame_options.menu" }
-	loadMenu { "ui/ingame_system.menu" }
-	loadMenu { "ui/ingame_leave.menu" }
-	loadMenu { "ui/ingame_player.menu" }
-	loadMenu { "ui/ingame_addbot.menu" }
-	loadMenu { "ui/ingame_callvote.menu" }
-	loadMenu { "ui/ingame_orders.menu" }
+ 	loadMenu { "ui/ingame.menu" }		// ingame menu bar (at top of screen)
+
+ 	loadMenu { "ui/ingame_about.menu" }
+
+	loadMenu { "ui/ingame_select_team.menu" }
+	loadMenu { "ui/ingame_select_gear.menu" }
+
+
+	loadMenu { "ui/ingame_select_gear_grenade.menu" }
+	loadMenu { "ui/ingame_select_gear_item.menu" }
+	loadMenu { "ui/ingame_select_gear_primary.menu" }
+	loadMenu { "ui/ingame_select_gear_secondary.menu" }
+	loadMenu { "ui/ingame_select_gear_sidearm.menu" }
+
+
+
+	loadMenu { "ui/ingame_player_setup.menu" }
+	loadMenu { "ui/ingame_matchmode.menu" }
+
+	loadMenu { "ui/ingame_vote.menu" }	// Vote Popdown menu
+	loadMenu { "ui/ingame_votecall.menu" } 	// Call a vote
+
+	loadMenu { "ui/ingame_player.menu" }	// Setup Player
+
+	loadMenu { "ui/ingame_stats.menu" }
+
+	loadMenu { "ui/ingame_join.menu" }	// Join Selected Team
+
+	loadMenu { "ui/ingame_controls.menu" }	// change Keys (Controls)
+
+	loadMenu { "ui/ingame_options.menu" }	// change Game Options
+
+	loadMenu { "ui/ingame_system.menu" }	// change SystemSetup
+
+	loadMenu { "ui/ingame_quit.menu" }	// Quit Popdown menu
+	
+	loadMenu { "ui/ingame_rcon.menu" }	// rcon Popdown menu
+
 }
