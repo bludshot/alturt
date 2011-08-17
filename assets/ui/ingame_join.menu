@@ -1,0 +1,182 @@
+/*
+===========================================================================
+Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2009-2010 Brian Labbie and Dave Richardson.
+
+http://sourceforge.net/projects/alturt/
+
+This file is part of Alturt source code.
+
+Alturt source code is free software: you can redistribute it
+and/or modify it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the License,
+or (at your option) any later version.
+
+Alturt source code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
+===========================================================================
+*/
+
+#include "ui/menudef.h"
+
+{
+\\ SERVER INFO MENU \\
+
+menuDef {
+ 	name "ingame_join"
+    	visible 0
+    	fullScreen 0
+	outOfBoundsClick			
+    	rect 256 45 128 120
+	focusColor 1 0 0 1
+
+
+itemDef {
+     	name window
+	style WINDOW_STYLE_FILLED
+    	rect 0 0 128 120
+	backcolor .1 .1 .37 1
+      	visible 1 
+	border 1
+	bordercolor 1 1 1 .25
+     	decoration
+	background "ui/assets/ingame_back.tga"
+    	}
+
+itemDef {
+	name Seals
+	text "Join Seals"
+     	rect 8 8 112 20
+	type 1  
+	style WINDOW_STYLE_FILLED
+
+	cvarTest "g_gametype"
+	hideCvar { "0" }
+
+	border 1
+	bordercolor 1 1 1 .25
+     	textalign 1	
+     	textalignx 56
+    	textaligny 14
+	textscale .25
+      	forecolor  1 1 1 1
+	backcolor .1 .2 .6 0.5
+      	visible 1 
+      	action { exec "cmd team seals" ;
+		 close ingame_join ;
+		 open ingame_char }
+	mouseEnter { setitemcolor Seals backcolor .75 .75 .75 0.5 } 
+	mouseExit { setitemcolor Seals backcolor .1 .2 .6 0.5 } 		
+    	}
+
+itemDef {
+      	name tangos
+      	text "Join Tangos"
+      	rect 8 36 112 20 
+	type 1
+	style WINDOW_STYLE_FILLED
+
+	cvarTest "g_gametype"
+	hideCvar { "0" }
+
+	border 1
+	bordercolor 1 1 1 .25
+      	textalign 1	
+     	textalignx 56
+    	textaligny 14
+	textscale .25
+      	forecolor  1 1 1 1
+	backcolor .1 .2 .6 0.5
+      	visible 1 
+      	action { exec "cmd team tangos" ;
+		 close ingame_join ;
+		 open ingame_char }
+	mouseEnter { setitemcolor tangos backcolor .75 .75 .75 0.5 } 
+	mouseExit { setitemcolor tangos backcolor .1 .2 .6 0.5 } 	
+    	}
+
+itemDef {
+	name random
+	text "Auto Team"
+      	rect 8 64 112 20 
+	type 1
+	style WINDOW_STYLE_FILLED
+
+	cvarTest "g_gametype"
+	hideCvar { "0" }
+
+	border 1
+	bordercolor 1 1 1 .25
+      	textalign 1	
+     	textalignx 56
+    	textaligny 14
+	textscale .25
+      	forecolor  1 1 1 1
+	backcolor .1 .2 .6 0.5
+	visible 1
+      	action { exec "cmd team free" ;
+		 close ingame_join ;
+		 open ingame_char }
+	mouseEnter { setitemcolor random backcolor .75 .75 .75 0.5 } 
+	mouseExit { setitemcolor random backcolor .1 .2 .6 0.5 } 	
+	}
+
+itemDef {
+      	name dmjoin
+      	text "Join Game"
+      	rect 8 18 112 56 
+	type 1
+	style WINDOW_STYLE_FILLED
+
+	cvarTest "g_gametype"
+	showCvar { "0" }
+
+	border 1
+	bordercolor 1 1 1 .25
+      	textalign 1	
+     	textalignx 56
+    	textaligny 32
+	textscale .25
+      	forecolor  1 1 1 1
+	backcolor .1 .2 .6 0.5
+      	visible 1 
+      	action { exec "cmd team free" ; uiScript closeingame }
+	mouseEnter { setitemcolor dmjoin backcolor .75 .75 .75 0.5 } 
+	mouseExit { setitemcolor dmjoin backcolor .1 .2 .6 0.5 } 	
+    	}
+
+itemDef {
+	name spectate
+	text "Spectate"
+      	rect 8 92 112 20 
+	type 1
+	style WINDOW_STYLE_FILLED
+	border 1
+	bordercolor 1 1 1 .25
+      	textalign 1	
+     	textalignx 56
+    	textaligny 14
+	textscale .25
+      	forecolor  1 1 1 1
+	backcolor .1 .2 .6 0.5
+	visible 1
+      	action { exec "cmd team s" ; uiScript closeingame }
+	mouseEnter { setitemcolor spectate backcolor .75 .75 .75 0.5 } 
+	mouseExit { setitemcolor spectate backcolor .1 .2 .6 0.5 } 	
+	}
+
+
+
+}
+
+
+
+}
+
+
+}

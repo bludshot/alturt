@@ -1,0 +1,233 @@
+/*
+===========================================================================
+Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2009-2010 Brian Labbie and Dave Richardson.
+
+http://sourceforge.net/projects/alturt/
+
+This file is part of Alturt source code.
+
+Alturt source code is free software: you can redistribute it
+and/or modify it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the License,
+or (at your option) any later version.
+
+Alturt source code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
+===========================================================================
+*/
+
+#include "ui/menudef.h"
+
+{
+menuDef {
+    	name "setup_menu"
+	background "ui/assets/mod_menuback.jpg"
+    	fullscreen 1
+    	rect 0 0 640 480
+    	visible 0
+	focusColor 1 0 0 1	
+    	style 1
+	onOpen { }
+	onEsc {  close setup_menu ;
+		 open main }
+
+
+// TITLES
+
+	itemDef {
+		name title
+		text "Your Mod Name Here"
+		style 0
+		type ITEM_TYPE_TEXT
+		textstyle 0
+		textscale 0.6
+		rect 15 15 300 35
+		textalign ITEM_ALIGN_LEFT
+		textalignx 0
+		textaligny 35
+		forecolor 1 1 1 1
+		visible 1
+		decoration
+		}
+
+	itemDef {
+		name modfor
+		text "a mod for Urban Terror"
+		style 0
+		type ITEM_TYPE_TEXT
+		textstyle 0
+		textscale 0.2
+		rect 315 55 300 15
+		textalign ITEM_ALIGN_RIGHT
+		textalignx 0
+		textaligny 10
+		forecolor 1 1 1 1
+		visible 1
+		decoration
+		}
+
+	// Buttons
+
+	itemDef {
+		name controls
+		text "Controls"
+		textscale 0.3
+		textalign ITEM_ALIGN_LEFT
+		textalignx 15
+		textaligny 20
+		style 1
+		rect 480 180 160 30
+		border 0
+		backcolor .1 .1 .1 .5
+		forecolor 1 1 1 1
+		visible 1
+		textstyle 0
+		type ITEM_TYPE_BUTTON
+		action { play "ui/assets/menu_yes.wav" ; 
+			 close control_menu ; 
+			 close player_menu ;   
+			 close options_menu ; 
+			 close system_menu ;
+			 close default_menu ;
+			 open control_menu }
+		mouseEnter { setitemcolor controls backcolor .1 .2 .6 0.5 }
+		mouseExit { setitemcolor controls backcolor .1 .1 .1 .5 }
+		}
+
+	itemDef {
+		name player
+		text "Player"
+		textscale 0.3
+		textalign ITEM_ALIGN_LEFT
+		textalignx 15
+		textaligny 20
+		style 1
+		rect 480 300 160 30
+		border 0
+		backcolor .1 .1 .1 .5
+		forecolor 1 1 1 1
+		visible 1
+		textstyle 0
+		type ITEM_TYPE_BUTTON
+		action { play "ui/assets/menu_yes.wav" ; 
+		 close control_menu ; 
+		 close player_menu ; 
+		 close options_menu ; 
+		 close system_menu ;
+		 close default_menu ;
+		 open player_menu }
+		mouseEnter { setitemcolor player backcolor .1 .2 .6 0.5 }
+		mouseExit { setitemcolor player backcolor .1 .1 .1 .5 }
+		}
+
+	itemDef {
+		name options
+		text "Game Options"
+		textscale 0.3
+		textalign ITEM_ALIGN_LEFT
+		textalignx 15
+		textaligny 20
+		style 1
+		rect 480 260 160 30
+		border 0
+		backcolor .1 .1 .1 .5
+		forecolor 1 1 1 1
+		visible 1
+		textstyle 0
+		type ITEM_TYPE_BUTTON
+		action { play "ui/assets/menu_yes.wav" ; 
+		 close control_menu ; 
+		 close player_menu ; 
+		 close options_menu ;    
+		 close system_menu ;
+		 close default_menu ;
+		 open options_menu }
+		mouseEnter { setitemcolor options backcolor .1 .2 .6 0.5 }
+		mouseExit { setitemcolor options backcolor .1 .1 .1 .5 }
+		}
+
+	itemDef {
+		name system
+		text "System"
+		textscale 0.3
+		textalign ITEM_ALIGN_LEFT
+		textalignx 15
+		textaligny 20
+		style 1
+		rect 480 220 160 30
+		border 0
+		backcolor .1 .1 .1 .5
+		forecolor 1 1 1 1
+		visible 1
+		textstyle 0
+		type ITEM_TYPE_BUTTON
+		action { play "ui/assets/menu_yes.wav" ; 
+		 close control_menu ; 
+		 close player_menu ;  
+		 close options_menu ; 
+		 close system_menu ;
+		 close default_menu ;
+		 open system_menu }
+		mouseEnter { setitemcolor system backcolor .1 .2 .6 0.5 }
+		mouseExit { setitemcolor system backcolor .1 .1 .1 .5 }
+		}
+
+	itemDef {
+		name restore
+		text "Restore Defaults"
+		textscale 0.3
+		textalign ITEM_ALIGN_LEFT
+		textalignx 15
+		textaligny 20
+		style 1
+		rect 480 340 160 30
+		border 0
+		backcolor .1 .1 .1 .5
+		forecolor 1 1 1 1
+		visible 1
+		textstyle 0
+		type ITEM_TYPE_BUTTON
+		action { play "ui/assets/menu_yes.wav" ; 
+		 close control_menu ; 
+		 close player_menu ;  
+		 close options_menu ; 
+		 close system_menu ;
+		 close default_menu ;
+		 open default_menu }
+		mouseEnter { setitemcolor restore backcolor .1 .2 .6 0.5 }
+		mouseExit { setitemcolor restore backcolor .1 .1 .1 .5 }
+		}
+
+itemDef {
+      	name back_n_quit_button
+	style 1
+	text "< Back"
+	textscale .275
+	textalign ITEM_ALIGN_LEFT
+      	textalignx 12
+      	textaligny 20
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 0.5
+	border 1
+	bordercolor 1 1 1 .25
+	type ITEM_TYPE_BUTTON
+      	rect 15 430 70 30
+
+	action  { play "ui/assets/menu_no.wav" ; close setup_menu ; open main }
+
+      	visible 1
+	}
+
+
+
+
+}
+
+
+}

@@ -1,0 +1,306 @@
+/*
+===========================================================================
+Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2009-2010 Brian Labbie and Dave Richardson.
+
+http://sourceforge.net/projects/alturt/
+
+This file is part of Alturt source code.
+
+Alturt source code is free software: you can redistribute it
+and/or modify it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the License,
+or (at your option) any later version.
+
+Alturt source code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
+===========================================================================
+*/
+
+#include "ui/menudef.h"
+
+{
+assetGlobalDef {
+	font "fonts/font" 16
+	smallFont "fonts/smallfont" 12
+	bigFont "fonts/bigfont" 20
+
+	cursor "ui/assets/3_cursor3.tga"
+	itemFocusSound "sound/misc/menu2.wav"
+
+	fadeClamp 1.0	// sets the fadeup alpha
+	fadeCycle 1	// how often fade happens in milliseconds
+	fadeAmount 0.1	// amount to adjust alpha per cycle
+
+	shadowColor 0.1 0.1 0.1 0.0	// shadow color
+	}
+
+
+menuDef {
+	name "main"
+	background "ui/assets/mod_menuback.jpg"
+	fullScreen MENU_TRUE
+	//rect 0 0 640 480	// Size and position of the menu
+	visible MENU_TRUE	// Visible on open
+	focusColor 1 1 1 1	// Menu focus color for text and items
+
+	onOpen { uiScript "stopRefresh" ; playlooped "music/mod_mainmenu.wav"}	//stops in-game server browser refreshing (in case someone leaves the server browser and comes back to the main menu)
+
+	onESC { close main; open quitcredit }
+
+
+	// TITLES
+
+	itemDef {
+		name title
+		text "Your Mod Name Here"
+		style 0
+		type ITEM_TYPE_TEXT
+		textstyle 0
+		textscale 0.6
+		rect 15 15 300 35
+		textalign ITEM_ALIGN_LEFT
+		textalignx 0
+		textaligny 35
+		forecolor 1 1 1 1
+		visible 1
+		decoration
+		}
+
+	itemDef {
+		name modfor
+		text "a mod for Urban Terror"
+		style 0
+		type ITEM_TYPE_TEXT
+		textstyle 0
+		textscale 0.2
+		rect 315 55 300 15
+		textalign ITEM_ALIGN_RIGHT
+		textalignx 0
+		textaligny 10
+		forecolor 1 1 1 1
+		visible 1
+		decoration
+		}
+
+
+
+	// MENU BUTTONS
+
+	//*note: to do non-pulsing text (when mouse is over) I need to do the actual text as 
+	//       separate decoration items because the default (that you can't change) is for
+	//       the moused over text to pulse. [not bothering with this for now though]
+
+	itemDef {
+		name playonline
+		text "play online"
+		textscale 0.3
+		textalign ITEM_ALIGN_LEFT
+		textalignx 15
+		textaligny 20
+		style 1
+		rect 480 180 160 30
+		border 0
+		backcolor .1 .1 .1 .5
+		forecolor 1 1 1 1
+		visible 1
+		textstyle 0
+		type ITEM_TYPE_BUTTON
+		action { play "ui/assets/menu_yes.wav" ; close main ; open joinserver }
+		mouseEnter { setitemcolor playonline backcolor .1 .2 .6 0.5 }
+		mouseExit { setitemcolor playonline backcolor .1 .1 .1 .5 }
+		}
+
+	itemDef {
+		name setup
+		text "setup"
+		textscale 0.3
+		textalign ITEM_ALIGN_LEFT
+		textalignx 15
+		textaligny 20
+		style 1
+		rect 480 220 160 30
+		border 0
+		backcolor .1 .1 .1 .5
+		forecolor 1 1 1 1
+		visible 1
+		textstyle 0
+		type ITEM_TYPE_BUTTON
+		action { play "ui/assets/menu_yes.wav" ; close main ; open setup_menu }
+		mouseEnter { setitemcolor setup backcolor .1 .2 .6 0.5 }
+		mouseExit { setitemcolor setup backcolor .1 .1 .1 .5 }
+		}
+
+	itemDef {
+		name startserver
+		text "start server"
+		textscale 0.3
+		textalign ITEM_ALIGN_LEFT
+		textalignx 15
+		textaligny 20
+		style 1
+		rect 480 260 160 30
+		border 0
+		backcolor .1 .1 .1 .5
+		forecolor 1 1 1 1
+		visible 1
+		textstyle 0
+		type ITEM_TYPE_BUTTON
+		action { play "ui/assets/menu_yes.wav" ; close main ; open createserver }
+		mouseEnter { setitemcolor startserver backcolor .1 .2 .6 0.5 }
+		mouseExit { setitemcolor startserver backcolor .1 .1 .1 .5 }
+		}
+
+	itemDef {
+		name demos
+		text "demos"
+		textscale 0.3
+		textalign ITEM_ALIGN_LEFT
+		textalignx 15
+		textaligny 20
+		style 1
+		rect 480 300 160 30
+		border 0
+		backcolor .1 .1 .1 .5
+		forecolor 1 1 1 1
+		visible 1
+		textstyle 0
+		type ITEM_TYPE_BUTTON
+		action { play "ui/assets/menu_yes.wav" ; close main ; open demo }
+		mouseEnter { setitemcolor demos backcolor .1 .2 .6 0.5 }
+		mouseExit { setitemcolor demos backcolor .1 .1 .1 .5 }
+		}
+
+	itemDef {
+		name quit
+		text "quit"
+		textscale 0.3
+		textalign ITEM_ALIGN_LEFT
+		textalignx 15
+		textaligny 20
+		style 1
+		rect 480 340 160 30
+		border 0
+		backcolor .1 .1 .1 .5
+		forecolor 1 1 1 1
+		visible 1
+		textstyle 0
+		type ITEM_TYPE_BUTTON
+		action { play "ui/assets/menu_no.wav" ; close main ; open quitcredit }
+		mouseEnter { setitemcolor quit backcolor .1 .2 .6 0.5 }
+		mouseExit { setitemcolor quit backcolor .1 .1 .1 .5 }
+		}
+
+
+
+	// NOTICES
+
+	itemDef {
+		name copyright
+		text "Your mod copyright message here (leave the ones below as is)"
+		style 0
+		type ITEM_TYPE_TEXT
+		textstyle 0
+		textscale 0.18
+		rect 15 410 440 15
+		textalign ITEM_ALIGN_LEFT
+		textalignx 0
+		textaligny 15
+		forecolor 0.7 0.7 0.7 1
+		visible 1
+		decoration
+		}
+
+	itemDef {
+		name copyright2
+		text "Alturt Copyright (C) 2009-2010 Brian Labbie and Dave Richardson"
+		style 0
+		type ITEM_TYPE_TEXT
+		textstyle 0
+		textscale 0.18
+		rect 15 420 440 15
+		textalign ITEM_ALIGN_LEFT
+		textalignx 0
+		textaligny 15
+		forecolor 0.7 0.7 0.7 1
+		visible 1
+		decoration
+		}
+
+	itemDef {
+		name copyright3
+		text "Contains code from ioquake3, Open Arena, NS:CO, and Smokin' Guns"
+		style 0
+		type ITEM_TYPE_TEXT
+		textstyle 0
+		textscale 0.18
+		rect 15 430 440 15
+		textalign ITEM_ALIGN_LEFT
+		textalignx 0
+		textaligny 15
+		forecolor 0.7 0.7 0.7 1
+		visible 1
+		decoration
+		}
+
+	itemDef {
+		name copyright4
+		text "Urban Terror (tm) (c) 2000-2007 SID/Frozen Sand LLC"
+		style 0
+		type ITEM_TYPE_TEXT
+		textstyle 0
+		textscale 0.18
+		rect 15 440 440 15
+		textalign ITEM_ALIGN_LEFT
+		textalignx 0
+		textaligny 15
+		forecolor 0.7 0.7 0.7 1
+		visible 1
+		decoration
+		}
+
+	itemDef {
+		name copyright5
+		text "Quake 3 Arena Copyright (C) 1999-2005 Id Software, Inc."
+		style 0
+		type ITEM_TYPE_TEXT
+		textstyle 0
+		textscale 0.18
+		rect 15 450 440 15
+		textalign ITEM_ALIGN_LEFT
+		textalignx 0
+		textaligny 15
+		forecolor 0.7 0.7 0.7 1
+		visible 1
+		decoration
+		}
+
+
+
+	// Download source button
+
+	itemDef {
+		name sourceurl
+		text "*download the source code for this mod"
+		style 0
+		type ITEM_TYPE_BUTTON
+		textstyle 0
+		textscale 0.18
+		rect 465 450 160 15
+		textalign ITEM_ALIGN_LEFT
+		textalignx 0
+		textaligny 15
+		forecolor 0.7 0.7 0.7 1
+		action { play "ui/assets/menu_yes.wav" ; open sourceurl_popmenu }
+		visible 1
+		}
+
+
+
+	}
+}

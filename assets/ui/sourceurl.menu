@@ -1,0 +1,247 @@
+/*
+===========================================================================
+Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2009-2010 Brian Labbie and Dave Richardson.
+
+http://sourceforge.net/projects/alturt/
+
+This file is part of Alturt source code.
+
+Alturt source code is free software: you can redistribute it
+and/or modify it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the License,
+or (at your option) any later version.
+
+Alturt source code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
+===========================================================================
+*/
+
+#include "ui/menudef.h"
+
+{
+menuDef {
+	name "sourceurl_popmenu"
+   	visible 0
+   	fullscreen 0
+   	rect 158 80 320 340
+	focusColor 1 0 0 1
+   	style 1
+   	border 1
+	popup
+	onESC { close sourceurl_popmenu ; open main }
+
+itemDef {
+	name window
+	rect 0 0 320 340
+	style 1
+	background "ui/assets/mod_popup_big.tga"
+	backcolor 1 1 1 1
+	forecolor 1 1 1 1
+	visible 1
+	decoration
+	}
+
+// FRAME	//
+
+itemDef {
+	name dltitle
+	rect 0 32 320 20	
+	text "Download Source Code" 
+	style 0
+	textscale .3 
+	textstyle 4
+	textalign 1
+	textalignx 160
+	textaligny 2
+	decoration
+	forecolor 1 1 1 1
+	visible 1
+	}
+
+itemDef {
+	name dlinfo1
+	rect 40 60 200 270
+	type ITEM_TYPE_TEXT
+	style 1
+	textstyle 3
+	text "You can download the source code for"
+	textalign ITEM_ALIGN_LEFT
+	textalignx 0
+	textaligny 0
+	textscale .25
+	forecolor 1 1 1 1
+	visible 1
+	decoration
+}
+
+itemDef {
+	name dlinfo2
+	rect 40 74 200 270
+	type ITEM_TYPE_TEXT
+	style 1
+	textstyle 3
+	text "this mod at:"
+	textalign ITEM_ALIGN_LEFT
+	textalignx 0
+	textaligny 0
+	textscale .25
+	forecolor 1 1 1 1
+	visible 1
+	decoration
+}
+
+itemDef {
+	name sourceurlvalue
+	rect 60 102 200 270
+	type ITEM_TYPE_TEXT
+	style 1
+	textstyle 3
+	autowrapped
+	//cvar "sourceurl"
+	cvar "name"
+	textalign ITEM_ALIGN_CENTER
+	textalignx 0
+	textaligny 0
+	textscale .25
+	forecolor 1 0 0 1
+	visible 1
+	decoration
+}
+
+itemDef {
+	name dlinfo3
+	rect 40 130 200 270
+	type ITEM_TYPE_TEXT
+	style 1
+	textstyle 3
+	text "Also if you are connected to a server"
+	textalign ITEM_ALIGN_LEFT
+	textalignx 0
+	textaligny 0
+	textscale .25
+	forecolor 1 1 1 1
+	visible 1
+	decoration
+}
+
+itemDef {
+	name dlinfo4
+	rect 40 144 200 270
+	type ITEM_TYPE_TEXT
+	style 1
+	textstyle 3
+	text "that is running custom server-side only"
+	textalign ITEM_ALIGN_LEFT
+	textalignx 0
+	textaligny 0
+	textscale .25
+	forecolor 1 1 1 1
+	visible 1
+	decoration
+}
+
+itemDef {
+	name dlinfo5
+	rect 40 158 200 270
+	type ITEM_TYPE_TEXT
+	style 1
+	textstyle 3
+	text "mod code, you can get the download"
+	textalign ITEM_ALIGN_LEFT
+	textalignx 0
+	textaligny 0
+	textscale .25
+	forecolor 1 1 1 1
+	visible 1
+	decoration
+}
+
+itemDef {
+	name dlinfo6
+	rect 40 172 200 270
+	type ITEM_TYPE_TEXT
+	style 1
+	textstyle 3
+	text "url for that source code at any time"
+	textalign ITEM_ALIGN_LEFT
+	textalignx 0
+	textaligny 0
+	textscale .25
+	forecolor 1 1 1 1
+	visible 1
+	decoration
+}
+
+itemDef {
+	name dlinfo7
+	rect 40 186 200 270
+	type ITEM_TYPE_TEXT
+	style 1
+	textstyle 3
+	text "by typing sourceurl in the console."
+	textalign ITEM_ALIGN_LEFT
+	textalignx 0
+	textaligny 0
+	textscale .25
+	forecolor 1 1 1 1
+	visible 1
+	decoration
+}
+
+
+itemDef {
+	name ok
+	text "Ok"
+	type 1
+	textscale .25
+	style WINDOW_STYLE_FILLED
+	border 1
+	bordercolor 1 1 1 .25
+	rect 208 285 80 26
+	textalign 1
+	textalignx 39
+	textaligny 18
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 0.5
+	visible 1
+	action { close sourceurl_popmenu ; open main }
+	mouseEnter { setitemcolor ok backcolor .75 .75 .75 0.5 } 
+	mouseExit { setitemcolor ok backcolor .1 .2 .6 0.5 } 	
+	}
+
+
+itemDef {
+	name windowexit
+	text "x"
+	rect 284 20 15 15
+	type 1
+	style WINDOW_STYLE_FILLED
+	textalign 1
+	textalignx 6
+	textaligny 13
+	textscale .35
+	forecolor 1 1 1 1
+	backcolor .1 .1 .37 0.5
+	border 1
+	bordercolor 1 1 1 .25
+	action { close sourceurl_popmenu ; open main }
+	mouseEnter { setitemcolor windowexit backcolor .1 .2 .6 0.5 } 
+	mouseExit { setitemcolor windowexit backcolor .1 .1 .37 0.5 } 	
+	visible 1	
+	}
+
+
+
+	
+}
+
+
+}
+
+

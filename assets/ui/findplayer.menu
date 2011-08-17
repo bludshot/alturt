@@ -1,0 +1,235 @@
+/*
+===========================================================================
+Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2009-2010 Brian Labbie and Dave Richardson.
+
+http://sourceforge.net/projects/alturt/
+
+This file is part of Alturt source code.
+
+Alturt source code is free software: you can redistribute it
+and/or modify it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the License,
+or (at your option) any later version.
+
+Alturt source code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
+===========================================================================
+*/
+
+#include "ui/menudef.h"
+
+{
+\\ Server Information Popup Menu \\
+
+menuDef {
+	name "findplayer_popmenu"
+   	visible 0
+   	fullscreen 0
+   	rect 158 80 320 340
+	focusColor 1 0 0 1
+   	style 1
+   	border 1
+	popup
+	onOpen { uiScript FindPlayer ; setfocus namefield }
+	onESC { close findplayer_popmenu ; open joinserver }
+
+itemDef {
+	name window
+	rect 0 0 320 340
+	style 1
+	background "ui/assets/mod_popup_big.tga"
+	backcolor 1 1 1 1
+	forecolor 1 1 1 1
+	visible 1
+	decoration
+	}
+
+// FRAME	//
+
+itemDef {
+	name findplayer
+	rect 0 32 320 20	
+	text "Find a Friend" 
+	style 0
+	textscale .3 
+	textstyle 4
+	textalign 1
+	textalignx 160
+	textaligny 2
+	decoration
+	forecolor 1 1 1 1
+	visible 1
+	}
+
+itemDef {
+      	name namefield
+      	type ITEM_TYPE_EDITFIELD
+	text "Name:"
+	textscale .2     
+	style WINDOW_STYLE_FILLED
+	border 1
+	bordercolor 1 1 1 .25
+
+	maxChars 20
+	cvar "ui_findplayer"
+
+      	rect 30 48 260 20
+
+      	textalign 0		
+      	textalignx 4
+      	textaligny 15
+
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 0.5
+
+	action { ui_script FindPlayer }
+	mouseEnter { setitemcolor namefield backcolor .1 .1 .3 0.5 } 
+	mouseExit { setitemcolor namefield backcolor .1 .2 .6 0.5 } 	
+	
+      	visible 1 
+    	}
+
+
+itemDef {
+	name serverNameList		//LIST OF SERVER NAMES//
+	rect 30 75 260 80
+	type ITEM_TYPE_LISTBOX
+	style WINDOW_STYLE_FILLED
+
+	elementwidth 110
+	elementheight 16
+
+	textscale .225
+
+	backcolor .1 .2 .6 0.5
+
+	border 1
+	bordersize 1
+
+	bordercolor 1 1 1 .25
+
+	elementtype LISTBOX_TEXT
+
+	feeder FEEDER_FINDPLAYER
+
+	visible 1
+
+	mouseenter { setitemcolor serverNameList bordercolor .7 0 0 1 ;
+		    setitemcolor serverNameList backcolor .1 .1 .3 0.5 }
+	mouseexit { setitemcolor serverNameList bordercolor 1 1 1 .25 ;
+		    setitemcolor serverNameList backcolor .1 .2 .6 0.5 }
+	}
+
+itemDef {
+	name serverInfoList		//LIST OF SERVER STATUS INFORMATION//
+	rect 30 165 260 110
+	type ITEM_TYPE_LISTBOX
+	style WINDOW_STYLE_FILLED
+
+	elementwidth 120
+	elementheight 16
+
+	textscale .225
+
+	backcolor .1 .2 .6 0.5
+	border 1
+	bordercolor 1 1 1 .25
+
+	elementtype LISTBOX_TEXT
+	feeder FEEDER_SERVERSTATUS
+
+	notselectable
+
+	visible 1
+	columns 4	2 40 20
+			40 40 10
+			90 40 10
+			135 40 20
+	mouseenter { setitemcolor serverInfoList bordercolor .7 0 0 1  ;
+		     setitemcolor serverInfoList backcolor .1 .1 .3 0.5 }
+	mouseexit { setitemcolor serverInfoList	bordercolor 1 1 1 .25 ;
+		    setitemcolor serverInfoList backcolor .1 .2 .6 0.5 }
+
+	 	}
+
+
+//	BUTTON	//
+
+itemDef {
+	name search
+	text "Search"
+	type 1
+	textscale .25
+	style WINDOW_STYLE_FILLED
+	border 1
+	bordercolor 1 1 1 .25
+	rect 32 285 80 26
+	textalign 1
+	textalignx 39
+	textaligny 18
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 0.5
+	visible 1
+	action { play "sound/misc/nomenu.wav" ;	ui_script FindPlayer }
+	mouseEnter { setitemcolor search backcolor .75 .75 .75 0.5 } 
+	mouseExit { setitemcolor search backcolor .1 .2 .6 0.5 } 		
+	}
+
+
+
+itemDef {
+	name join
+	text "Join"
+	type 1
+	textscale .25
+	style WINDOW_STYLE_FILLED
+	border 1
+	bordercolor 1 1 1 .25
+	rect 208 285 80 26
+	textalign 1
+	textalignx 39
+	textaligny 18
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 0.5
+	visible 1
+	action { ui_script FoundPlayerJoinServer }
+	mouseEnter { setitemcolor join backcolor .75 .75 .75 0.5 } 
+	mouseExit { setitemcolor join backcolor .1 .2 .6 0.5 } 	
+	}
+
+
+itemDef {
+	name windowexit
+	text "x"
+	rect 284 20 15 15
+	type 1
+	style WINDOW_STYLE_FILLED
+	textalign 1
+	textalignx 6
+	textaligny 13
+	textscale .35
+	forecolor 1 1 1 1
+	backcolor .1 .1 .37 0.5
+	border 1
+	bordercolor 1 1 1 .25
+	action { close findplayer_popmenu ; open joinserver }
+	mouseEnter { setitemcolor windowexit backcolor .1 .2 .6 0.5 } 
+	mouseExit { setitemcolor windowexit backcolor .1 .1 .37 0.5 } 	
+	visible 1	
+	}
+
+
+
+	
+}
+
+
+}
+
+

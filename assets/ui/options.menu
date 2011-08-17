@@ -1,0 +1,588 @@
+/*
+===========================================================================
+Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2009-2010 Brian Labbie and Dave Richardson.
+
+http://sourceforge.net/projects/alturt/
+
+This file is part of Alturt source code.
+
+Alturt source code is free software: you can redistribute it
+and/or modify it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the License,
+or (at your option) any later version.
+
+Alturt source code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
+===========================================================================
+*/
+
+#include "ui/menudef.h"
+
+{
+\\ SETUP MENU \\
+
+menuDef {
+	name "options_menu"
+	visible 0
+	fullscreen 0
+	rect 48 144 432 256
+	focusColor 1 0 0 1
+	style 1
+	border 0
+	disableColor .5 .5 .5 1
+	onOpen { hide grpHUD ; hide grpFx ; show grpGame }
+	onEsc { close options_menu ; close setup_menu ; open main }
+	
+itemDef {
+	name ctr_game
+	text "Game"
+	type 1
+	textscale .25
+	style WINDOW_STYLE_FILLED
+	border 1
+	bordercolor 1 1 1 .25
+	rect 176 220 64 16
+	textalign 1
+	textalignx 31
+	textaligny 13
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 0.5
+	visible 1
+	action { hide grpFx ; show grpGame ; hide grpHUD } 	
+	mouseEnter { setitemcolor ctr_game backcolor .75 .75 .75 0.5 } 
+	mouseExit { setitemcolor ctr_game backcolor .1 .2 .6 0.5 } 		
+	}
+
+itemDef {
+	name ctr_fx
+	text "Effects"
+	type 1
+	textscale .25
+	style WINDOW_STYLE_FILLED
+	border 1
+	bordercolor 1 1 1 .25
+	rect 248 220 64 16
+	textalign 1
+	textalignx 31
+	textaligny 13
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 0.5
+	visible 1
+	action { show grpFx ; hide grpGame ; hide grpHUD } 	
+	mouseEnter { setitemcolor ctr_fx backcolor .75 .75 .75 0.5 } 
+	mouseExit { setitemcolor ctr_fx backcolor .1 .2 .6 0.5 } 		
+	}
+
+itemDef {
+	name ctr_HUD
+	text "HUD"
+	type 1
+	textscale .25
+	style WINDOW_STYLE_FILLED
+	border 1
+	bordercolor 1 1 1 .25
+	rect 320 220 64 16
+	textalign 1
+	textalignx 31
+	textaligny 13
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 0.5
+	visible 1
+	action { hide grpFx ; hide grpGame ; show grpHUD } 	
+	mouseEnter { setitemcolor ctr_HUD backcolor .75 .75 .75 0.5 } 
+	mouseExit { setitemcolor ctr_HUD backcolor .1 .2 .6 0.5 } 		
+	}
+
+
+//	OPTIONS		//
+
+itemDef {
+  		name options
+		group grpGame 
+  		type ITEM_TYPE_YESNO
+		text "Simple Items:"
+		cvar "cg_simpleItems"
+		rect 152 32 240 16
+		textalign 2
+  		textalignx 120 
+		textaligny 13 
+		textscale .22        
+  		forecolor 1 1 1 1
+  		visible 1 
+		}
+
+	itemDef {
+  		name options
+		group grpGame 
+  		type ITEM_TYPE_YESNO
+		text "Dynamic Lights:"
+		cvar "r_dynamiclight"
+		rect 152 48 240 16
+		textalign 2
+  		textalignx 120 
+		textaligny 13 
+		textscale .22       
+  		forecolor 1 1 1 1
+  		visible 1 
+		}
+
+	itemDef {
+  		name options
+		group grpGame 
+  		type ITEM_TYPE_YESNO
+		text "Lag Compensation:"
+		cvar "cg_antilag"
+		rect 152 64 240 16
+		textalign 2
+  		textalignx 120 
+		textaligny 13 
+		textscale .22        
+  		forecolor 1 1 1 1
+  		visible 1 
+		}
+
+	itemDef {
+  		name options
+		group grpGame 
+  		type ITEM_TYPE_YESNO
+		text "Auto Download:"
+		cvar "cl_allowDownload"
+		rect 152 80 240 16
+		textalign 2
+  		textalignx 120 
+		textaligny 13 
+		textscale .22            
+  		forecolor 1 1 1 1
+  		visible 1 
+		}
+
+	itemDef {
+  		name options
+		group grpGame 
+  		type ITEM_TYPE_YESNO
+		text "Sync Every Frame:"
+		cvar "weapon 5"
+		rect 152 96 240 16
+		textalign 2
+  		textalignx 120 
+		textaligny 13 
+		textscale .22        
+  		forecolor 1 1 1 1
+  		visible 1 
+		}
+
+
+	itemDef {
+  		name options		
+		group grpGame 
+  		type ITEM_TYPE_YESNO
+		text "Team Chats Only:"
+		cvar "cg_teamChatsOnly"
+		rect 152 112 240 16
+		textalign 2
+  		textalignx 120 
+		textaligny 13 
+		textscale .22         
+  		forecolor 1 1 1 1
+  		visible 1 
+		}
+
+	itemDef {
+  		name options		
+		group grpGame 
+  		type ITEM_TYPE_YESNO
+		text "Chat Beeps:"
+		cvar "cg_chatBeep"
+		rect 152 128 240 16
+		textalign 2
+  		textalignx 120 
+		textaligny 13 
+		textscale .22         
+  		forecolor 1 1 1 1
+  		visible 1 
+		}
+
+	itemDef {
+  		name options		
+		group grpGame 
+  		type ITEM_TYPE_MULTI
+		text "Show Help Messages:"
+		cvar "cg_newbeetime"
+		cvarStrList { Off "0" Short "2" Long "5" }
+		rect 152 144 240 16
+		textalign 2
+  		textalignx 120 
+		textaligny 13 
+		textscale .22           
+  		forecolor 1 1 1 1
+  		visible 1 
+		}
+
+	itemDef {
+  		name options	
+		group grpGame
+		type ITEM_TYPE_MULTI
+		text "Gun Model:" 
+		cvar cg_drawgun
+		cvarFloatList { "Normal" 1 "None" 0 "Gun Only" 2 "Small Gun" 3 "Small Gun Only" 4 } 
+		rect 152 160 240 16
+		textalign 2
+  		textalignx 120 
+		textaligny 13 
+		textscale .22            
+  		forecolor 1 1 1 1
+  		visible 1 
+		}
+
+	itemDef {
+  		name options	
+		group grpGame
+  		type ITEM_TYPE_YESNO
+		text "Auto Reload:" 
+		cvar cg_autoreload
+		rect 152 176 240 16
+		textalign 2
+  		textalignx 120 
+		textaligny 13 
+		textscale .22            
+  		forecolor 1 1 1 1
+  		visible 1 
+		}
+
+//	EFFECTS		//
+
+	itemDef {
+  		name options
+		group grpFx
+ 		text "Blood:"
+		cvar "com_blood"
+		type ITEM_TYPE_YESNO
+		rect 152 32 240 16
+		textalign 2
+  		textalignx 120 
+		textaligny 13 
+		textscale .22            
+  		forecolor 1 1 1 1
+  		visible 1 
+		}
+
+	itemDef {
+  		name options
+		group grpFx
+  		type ITEM_TYPE_MULTI	
+		text "Blood Level:"
+		cvar "cg_gorelevel"
+		cvarFloatList { "Low" 0.5 "Normal" 1 "High" 1.5 "Extreme" 2 } 
+		rect 152 48 240 16
+		textalign 2
+  		textalignx 120 
+		textaligny 13 
+		textscale .22            
+  		forecolor 1 1 1 1
+  		visible 1 
+		}
+
+	itemDef {
+  		name options
+		group grpFx
+  		type ITEM_TYPE_MULTI	
+		text "Marks On Walls:"
+		cvar "cg_marks"
+		cvarFloatList { "Extreme" 65535 "Long" 1000 "Med" 600 "Short" 300 "Off" 0 } 
+		rect 152 64 240 16
+		textalign 2
+  		textalignx 120 
+		textaligny 13 
+		textscale .22            
+  		forecolor 1 1 1 1
+  		visible 1 
+		}
+
+	itemDef {
+  		name options
+		group grpFx
+  		type ITEM_TYPE_MULTI	
+		text "Ejecting Brass:"
+		cvar "cg_brassTime"
+		cvarFloatList { "Extreme" 65535 "Long" 1000 "Med" 600 "Short" 300 "Off" 0 } 
+		rect 152 80 240 16
+		textalign 2
+  		textalignx 120 
+		textaligny 13 
+		textscale .22               
+  		forecolor 1 1 1 1
+  		visible 1 
+		}
+	
+	itemDef {
+  		name options
+		group grpFx
+  		type ITEM_TYPE_YESNO
+		text "Low Quality Sky:"
+		cvar "r_fastsky"
+		rect 152 96 240 16
+		textalign 2
+  		textalignx 120 
+		textaligny 13 
+		textscale .22         
+  		forecolor 1 1 1 1
+  		visible 1 
+		}
+
+	itemDef {
+  		name options
+		group grpFx
+		text "environment FX:"
+		cvar "cg_enviromentFX"
+		type ITEM_TYPE_YESNO
+		rect 152 112 240 16
+		textalign 2
+  		textalignx 120 
+		textaligny 13 
+		textscale .22             
+  		forecolor 1 1 1 1
+  		visible 1 
+		}
+		
+	itemDef {
+  		name options
+		group grpFx
+  		type ITEM_TYPE_MULTI	
+		text "env FX quality:"
+		cvar "cg_enviromentFX_quality"
+		cvarFloatList { "Low" 1 "High" 0 } 
+		rect 152 128 240 16
+		textalign 2
+  		textalignx 120 
+		textaligny 13 
+		textscale .22         
+  		forecolor 1 1 1 1
+  		visible 1 
+		}
+
+	itemDef {
+  		name options
+		group grpFx
+		type ITEM_TYPE_MULTI
+		text "Gun Smoke:" 
+		cvar cg_gunSmoke
+		cvarFloatList { "All" 2 "1st Person only" 1 "3rd Person only" -1 "Off" 0 } 
+		rect 152 144 240 16
+		textalign 2
+  		textalignx 120 
+		textaligny 13 
+		textscale .22           
+  		forecolor 1 1 1 1
+  		visible 1 
+		}
+
+	itemDef {
+  		name options
+		group grpFx
+		type ITEM_TYPE_MULTI
+		text "Gun Smoke Time:" 
+		cvar cg_gunSmokeTime
+		cvarFloatList { "Long" 1500 "Med" 1000 "Short" 500 "Off" 0 } 
+		rect 152 160 240 16
+		textalign 2
+  		textalignx 120 
+		textaligny 13 
+		textscale .22    
+  		forecolor 1 1 1 1
+  		visible 1 
+		}
+
+	itemDef {
+  		name options
+		group grpFx
+		type ITEM_TYPE_MULTI
+		text "Particle Time:" 
+		cvar cg_particleTime
+		cvarFloatList { "Long" 1500 "Med" 1000 "Short" 500 "Off" 0 } 
+		rect 152 176 240 16
+		textalign 2
+  		textalignx 120 
+		textaligny 13 
+		textscale .22            
+  		forecolor 1 1 1 1
+  		visible 1 
+		}
+
+//	HUD		//
+
+	itemDef {
+  		name options		
+		group grpHUD
+  		type ITEM_TYPE_MULTI	
+		text "HUD Style:"
+		cvar "cg_hudStyle"
+		cvarStrList { "HUD 1" 1 "HUD 2" 2 "no HUD" 0 }
+		rect 152 32 240 16
+		textalign 2
+  		textalignx 120 
+		textaligny 13 
+		textscale .22           
+  		forecolor 1 1 1 1
+  		visible 1 
+		}
+	itemDef {
+  		name options
+		group grpHUD 
+  		type ITEM_TYPE_YESNO
+		text "Identify Target:"
+		cvar "cg_drawCrosshairNames"
+		rect 152 48 240 16
+		textalign 2
+  		textalignx 120 
+		textaligny 13 
+		textscale .22      
+  		forecolor 1 1 1 1
+  		visible 1 
+		}
+	itemDef {
+  		name options
+		group grpHUD 
+		text "Background:"
+      		type ITEM_TYPE_SLIDER
+		cvarfloat "cg_hudalpha1" 1 0 1
+		rect 152 64 240 16
+		textalign 2
+  		textalignx 120 
+		textaligny 13 
+		textscale .22      
+  		forecolor 1 1 1 1
+  		visible 1 
+
+		cvarTest "cg_hudStyle"
+		disableCvar { "0" }
+		}
+	itemDef {
+  		name options
+		group grpHUD 
+		text "Frames:"
+      		type ITEM_TYPE_SLIDER
+		cvarfloat "cg_hudalpha2" 1 0 1
+		rect 152 80 240 16
+		textalign 2
+  		textalignx 120 
+		textaligny 13 
+		textscale .22      
+  		forecolor 1 1 1 1
+  		visible 1 
+
+		cvarTest "cg_hudStyle"
+		disableCvar { "0" }
+		}
+	itemDef {
+  		name options
+		group grpHUD 
+		text "Change HUD Position"
+		rect 152 96 240 16
+  		textalign ITEM_ALIGN_CENTER
+  		textalignx 120 
+		textaligny 13 
+		textscale .22      
+  		forecolor 1 1 1 1
+  		visible 1 
+		action { exec "edithud" }
+
+		cvarTest "cg_hudStyle"
+		disableCvar { "0" }
+		}
+
+
+
+
+	itemDef {
+  		name options
+		group grpHUD 
+  		type ITEM_TYPE_MULTI	
+		text "TIMER Layout:"
+		cvar "cg_timerCustom"
+		cvarStrList { "Tiny" 0 "Small" 1 "Normal" 2 "Extended" 3 }
+		rect 152 120 240 16
+		textalign 2
+  		textalignx 120 
+		textaligny 13 
+		textscale .22      
+  		forecolor 1 1 1 1
+  		visible 1 
+		}
+	itemDef {
+  		name options
+		group grpHUD 
+  		type ITEM_TYPE_MULTI	
+		text "TIMER Position:"
+		cvar "cg_timerposY"
+		cvarStrList { "Top" 0 "Middle" 360 "Bottom" 550 }
+		rect 152 136 240 16
+  		textalign ITEM_ALIGN_RIGHT
+  		textalignx 120 
+		textaligny 13 
+		textscale .22      
+  		forecolor 1 1 1 1
+  		visible 1 
+		}
+
+
+
+
+
+	itemDef {
+  		name options
+		group grpHUD 
+  		type ITEM_TYPE_YESNO
+		text "GPS display:"
+		cvar "cg_drawRadar"
+		rect 152 160 240 16
+		textalign 2
+  		textalignx 120 
+		textaligny 13 
+		textscale .22      
+  		forecolor 1 1 1 1
+  		visible 1 
+		}
+	itemDef {
+  		name options
+		group grpHUD 
+		text "Update Time:"
+  		type ITEM_TYPE_MULTI	
+		cvar "cg_radarUpdate"
+		cvarStrList { "Normal" 350 "Slow" 500 "Fast" 100 }
+		rect 152 176 240 16
+		textalign 2
+  		textalignx 120 
+		textaligny 13 
+		textscale .22      
+  		forecolor 1 1 1 1
+  		visible 1 
+
+		cvarTest "cg_drawRadar"
+		disableCvar { "0" }
+		}
+	itemDef {
+  		name options
+		group grpHUD 
+		text "Change GPS Position"
+		rect 152 192 240 16
+  		textalign ITEM_ALIGN_CENTER
+  		textalignx 120 
+		textaligny 13 
+		textscale .22      
+  		forecolor 1 1 1 1
+  		visible 1 
+		action { exec "editradarpos" }
+
+		cvarTest "cg_drawRadar"
+		disableCvar { "0" }
+		}
+
+
+}
+}

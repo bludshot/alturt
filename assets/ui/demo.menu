@@ -1,0 +1,179 @@
+/*
+===========================================================================
+Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2009-2010 Brian Labbie and Dave Richardson.
+
+http://sourceforge.net/projects/alturt/
+
+This file is part of Alturt source code.
+
+Alturt source code is free software: you can redistribute it
+and/or modify it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the License,
+or (at your option) any later version.
+
+Alturt source code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
+===========================================================================
+*/
+
+#include "ui/menudef.h"
+
+{
+  menuDef {
+    	name "demo"
+    	visible 0
+    	fullscreen 1
+    	rect 0 0 640 480
+	background "ui/assets/mod_menuback.jpg"
+	focusColor 1 0 0 1	
+    	style 1
+	onEsc { play "ui/assets/menu_no.wav" ; close demo ; open main }
+	onOpen { uiScript LoadDemos }
+
+
+	// TITLES
+
+	itemDef {
+		name title
+		text "Your Mod Name Here"
+		style 0
+		type ITEM_TYPE_TEXT
+		textstyle 0
+		textscale 0.6
+		rect 15 15 300 35
+		textalign ITEM_ALIGN_LEFT
+		textalignx 0
+		textaligny 35
+		forecolor 1 1 1 1
+		visible 1
+		decoration
+		}
+
+	itemDef {
+		name modfor
+		text "a mod for Urban Terror"
+		style 0
+		type ITEM_TYPE_TEXT
+		textstyle 0
+		textscale 0.2
+		rect 315 55 300 15
+		textalign ITEM_ALIGN_RIGHT
+		textalignx 0
+		textaligny 10
+		forecolor 1 1 1 1
+		visible 1
+		decoration
+		}
+
+
+
+itemDef {
+	name headline
+	style 0 
+	rect 0 125 640 20
+	textalign 1
+	textalignx 320
+	textaligny 16
+   	textscale .333
+	textstyle 4
+	text "Run Recorded Demos"
+	forecolor 1 1 1 1
+	decoration 
+	visible 1
+	}
+
+// cinematic
+
+itemDef {
+	name demolist
+ 	rect 80 160 300 210
+	type ITEM_TYPE_LISTBOX
+	style WINDOW_STYLE_FILLED
+	elementwidth 120
+	elementheight 16
+	textscale .25
+	elementtype LISTBOX_TEXT
+	feeder FEEDER_DEMOS
+	doubleclick { uiScript RunDemo }
+	textalign 3
+	textaligny 14
+	border 1
+	bordercolor .5 .5 .5 .5
+	forecolor 1 1 1 1
+	backcolor .0 .1 .1 .125
+	outlinecolor 1 1 1 .25
+	visible 1
+	mouseEnter { setitemcolor demolist bordercolor 1 0 0 1 } 
+	mouseExit { setitemcolor demolist bordercolor .5 .5 .5 .5 } 
+  	}
+
+itemDef {
+	name mappreview
+      	style 5
+	cinematic "mpintro.roq"
+	rect 400 176 160 120
+	backcolor 1 1 1 .25
+	border 1
+	bordersize 1
+	bordercolor .5 .5 .5 .5
+	decoration
+	visible 1
+	}
+
+itemDef {
+  	name play_button
+	type ITEM_TYPE_BUTTON
+	text "Run Demo"
+    textscale .35
+	style WINDOW_STYLE_FILLED
+	rect 410 322 140 30
+
+	textalign 1
+    textalignx 70
+    textaligny 21
+	forecolor 1 1 1 1
+	backcolor .1 .5 .75 0.5
+	border 1
+	bordercolor 1 1 1 .25
+    visible 1 
+    action { close demo ; uiScript RunDemo }
+
+	mouseEnter { setitemcolor play_button backcolor .75 .75 .75 0.5 }
+	mouseExit { setitemcolor play_button backcolor   .1 .5 .75 0.5 }
+    }
+
+itemDef {
+      	name back_n_quit_button
+	style 1
+	text "< Back"
+	textscale .275
+	textalign ITEM_ALIGN_LEFT
+      	textalignx 12
+      	textaligny 20
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 0.5
+	border 1
+	bordercolor 1 1 1 .25
+	type ITEM_TYPE_BUTTON
+      	rect 15 430 70 30
+
+	action  { play "ui/assets/menu_no.wav" ; close demo ; open main }
+
+      	visible 1
+	}
+
+
+
+
+
+
+}
+}
+}
+}

@@ -1,0 +1,299 @@
+/*
+===========================================================================
+Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2009-2010 Brian Labbie and Dave Richardson.
+
+http://sourceforge.net/projects/alturt/
+
+This file is part of Alturt source code.
+
+Alturt source code is free software: you can redistribute it
+and/or modify it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the License,
+or (at your option) any later version.
+
+Alturt source code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
+===========================================================================
+*/
+
+#include "ui/menudef.h"
+{
+
+  assetGlobalDef {
+    	font "fonts/font" 18				// font
+    	smallFont "fonts/smallfont" 14			// font
+    	bigFont "fonts/bigfont" 22			// font		
+	
+	cursor "ui/assets/3_cursor3.tga"			
+
+	gradientBar "ui/assets/gradientbar2.tga"	
+
+	itemFocusSound "sound/misc/menu2.wav"	
+	
+    	fadeClamp 1.0					
+	fadeCycle 1					
+	fadeAmount 0.1					
+	shadowColor 0.1 0.1 0.1 0.25	
+  	}
+							   
+
+\\ INGAME MENU \\
+
+  menuDef {
+    	name "ingame"
+    	visible 0
+    	fullScreen 0
+	border 0
+	outOfBoundsClick		
+    	rect 0 0 640 40
+	focusColor 1 0 0 1
+	disableColor .5 .5 .5 1
+
+itemDef {
+	name window
+	rect 0 0 640 40
+	style 1
+	backcolor .1 .1 .37 1
+      	background "ui/assets/ingame_top_back.tga"
+      	visible 1 
+      	decoration
+	}
+
+itemDef {
+	name window
+	rect -1 -1 640 40
+	style 0
+	border 1
+  	bordercolor .6 .6 .6 1
+      	visible 1 
+     	decoration
+	}
+
+itemdef
+	{
+	name about
+	text "about"	
+	rect 16 12 50 20
+	type 1
+	style WINDOW_STYLE_FILLED
+	textalign 2
+	textalignx 46
+	textaligny 16
+	textscale .22
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 .5
+	visible 1
+	action { play "ui/assets/menu_yes.wav" ; 
+		 open ingame_about }
+	mouseEnter { setitemcolor about backcolor 1 1 1 0.75 }
+      	mouseExit { setitemcolor about backcolor .1 .2 .6 .5 }
+
+	border 1
+	bordercolor 1 1 1 .25
+	}
+
+
+itemDef {
+      	name player
+      	text "player"
+	rect 72 12 50 20
+	type 1
+	style WINDOW_STYLE_FILLED
+
+	cvarTest "ui_team"
+	hideCvar { "0" }
+	
+	textalign 2
+	textalignx 46
+	textaligny 16
+	textscale .22
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 .5
+	visible 1
+	action { play "ui/assets/menu_yes.wav" ; 
+		 open ingame_player }
+	mouseEnter { setitemcolor player backcolor 1 1 1 0.75 }
+      	mouseExit { setitemcolor player backcolor .1 .2 .6 .5 }
+
+	border 1
+	bordercolor 1 1 1 .25
+	}
+
+itemdef
+	{
+	name stats
+	text "stats"	
+	rect 128 12 50 20
+	type 1
+	style WINDOW_STYLE_FILLED
+	textalign 2
+	textalignx 46
+	textaligny 16
+	textscale .22
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 .5
+	visible 1
+	action { play "ui/assets/menu_yes.wav" ; 
+		 open ingame_stats }
+	mouseEnter { setitemcolor stats backcolor 1 1 1 0.75 }
+      	mouseExit { setitemcolor stats backcolor .1 .2 .6 .5 }
+
+	cvarTest "ui_team"
+	disableCvar { "0" }	
+
+	border 1
+	bordercolor 1 1 1 .25
+	}
+
+
+itemDef {
+      	name controls
+      	text "controls"
+	rect 184 12 50 20
+	type 1
+	style WINDOW_STYLE_FILLED
+	textalign 2
+	textalignx 46
+	textaligny 16
+	textscale .22
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 .5
+	visible 1
+	action { play "ui/assets/menu_yes.wav" ; 
+		 open ingame_controls }
+	mouseEnter { setitemcolor controls backcolor 1 1 1 0.75 }
+      	mouseExit { setitemcolor controls backcolor .1 .2 .6 .5 }
+
+	border 1
+	bordercolor 1 1 1 .25
+	}
+
+
+itemDef {
+      	name options
+      	text "options"
+	rect 240 12 50 20
+	type 1
+	style WINDOW_STYLE_FILLED
+	textalign 2
+	textalignx 46
+	textaligny 16
+	textscale .22
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 .5
+	visible 1
+	action { play "ui/assets/menu_yes.wav" ; 
+		 open ingame_options }
+	mouseEnter { setitemcolor options backcolor 1 1 1 0.75 }
+      	mouseExit { setitemcolor options backcolor .1 .2 .6 .5 }
+
+	border 1
+	bordercolor 1 1 1 .25
+	}
+
+
+itemDef {
+      	name system
+      	text "system"
+	rect 296 12 50 20
+	type 1
+	style WINDOW_STYLE_FILLED
+	textalign 2
+	textalignx 46
+	textaligny 16
+	textscale .22
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 .5
+	visible 1
+	action { play "ui/assets/menu_yes.wav" ; 
+		 open ingame_system }
+	mouseEnter { setitemcolor system backcolor 1 1 1 0.75 }
+      	mouseExit { setitemcolor system backcolor .1 .2 .6 .5 }
+
+	border 1
+	bordercolor 1 1 1 .25
+	}
+
+
+itemdef
+	{
+	name votes
+	text "votes"	
+	rect 352 12 50 20
+	type 1
+	style WINDOW_STYLE_FILLED
+
+	cvarTest "g_allowvote"
+	disableCvar { "0" }
+
+	cvarTest "ui_team"
+	disableCvar { "0" }
+	
+	textalign 2
+	textalignx 46
+	textaligny 16
+	textscale .22
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 .5
+	visible 1
+	action { play "ui/assets/menu_yes.wav" ; 
+		 open ingame_vote }
+	mouseEnter { setitemcolor votes backcolor 1 1 1 0.75 }
+      	mouseExit { setitemcolor votes backcolor .1 .2 .6 .5 }
+
+	border 1
+	bordercolor 1 1 1 .25
+	}
+
+
+itemDef {
+      	name rcon
+      	text "rcon"
+	rect 408 12 50 20
+	type 1
+	style WINDOW_STYLE_FILLED
+	textalign 2
+	textalignx 46
+	textaligny 16
+	textscale .22
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 .5
+	visible 1
+	action { play "ui/assets/menu_yes.wav" ; 
+		 open ingame_rcon }
+	mouseEnter { setitemcolor rcon backcolor 1 1 1 0.75 }
+      	mouseExit { setitemcolor rcon backcolor .1 .2 .6 .5 }
+
+	border 1
+	bordercolor 1 1 1 .25
+	}
+
+itemDef {
+      	name exit
+      	text "exit"
+	rect 464 12 50 20
+	type 1
+	style WINDOW_STYLE_FILLED
+	textalign 2
+	textalignx 46
+	textaligny 16
+	textscale .22
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 .5
+	visible 1
+	action { play "ui/assets/menu_yes.wav" ; 
+		 open ingame_quit }
+	mouseEnter { setitemcolor exit backcolor 1 1 1 0.75 }
+      	mouseExit { setitemcolor exit backcolor .1 .2 .6 .5 }
+
+	border 1
+	bordercolor 1 1 1 .25
+	}
+
+}

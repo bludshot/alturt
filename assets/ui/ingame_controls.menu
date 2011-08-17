@@ -1,0 +1,1464 @@
+/*
+===========================================================================
+Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2009-2010 Brian Labbie and Dave Richardson.
+
+http://sourceforge.net/projects/alturt/
+
+This file is part of Alturt source code.
+
+Alturt source code is free software: you can redistribute it
+and/or modify it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the License,
+or (at your option) any later version.
+
+Alturt source code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
+===========================================================================
+*/
+
+#include "ui/menudef.h"
+
+{
+\\ SETUP MENU \\
+
+menuDef {
+    	name "ingame_controls"
+    	visible 0
+    	fullscreen 0
+	outOfBoundsClick		
+    	rect 184 30 375 395
+    	focusColor 1 0 0 1
+    	style 1
+    	border 0
+	onClose { uiScript saveControls }
+	onopen { hide grpControls ; show move ; uiScript loadControls }
+
+itemDef {
+	name window
+	rect 20 15 355 380
+	style 1
+	border 1
+	bordercolor 1 1 1 .25
+	backcolor .1 .1 .37 1
+      	visible 1 
+     	decoration
+	background "ui/assets/ingame_back.tga"
+	}
+
+
+
+itemDef {
+	name ctr_move
+	text "Move"
+	type 1
+	textscale .25
+	group grpControlbutton
+	style WINDOW_STYLE_FILLED
+	rect 50 25 70 20
+	border 1
+	bordercolor 1 1 1 .25
+	textalign 1
+	textalignx 35
+	textaligny 14
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 0.5
+	visible 1
+	action { hide grpControls ; show move }
+	mouseEnter { setitemcolor ctr_move backcolor .75 .75 .75 0.5 ; show message_move }
+      	mouseExit { setitemcolor ctr_move backcolor .1 .2 .6 0.5 ; hide message_move }
+	}
+
+
+	itemDef {
+      		name move
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Move Left:"
+		cvar "+moveleft"
+		rect 40 55 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name move
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Move Right:"
+		cvar "+moveright"
+		rect 40 70 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name move
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Turn Left:"
+		cvar "+left"
+		rect 40 85 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name move
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Turn Right:"
+		cvar "+right"
+		rect 40 100 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name move
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Forward:"
+		cvar "+forward"
+		rect 40 115 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name move
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Backpedal:"
+		cvar "+back"
+		rect 40 130 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	
+	
+	itemDef {
+      		name move
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Strafe:"
+		cvar "+strafe"
+		rect 40 145 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name move
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Jump:"
+		cvar "+moveup"
+		rect 40 160 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name move
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Crouch:"
+		cvar "+movedown"
+		rect 40 175 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus } 
+    		}
+
+	itemDef {
+      		name move
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Run / Walk:"
+		cvar "+speed"
+		rect 40 190 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+    		}
+
+	itemDef {
+      		name move
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Sprint:"
+		cvar "+button5"
+		rect 40 205 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+    		}
+
+
+//	look
+
+	itemDef {
+      		name move
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Lookup:"
+		cvar "+lookup"
+		rect 40 230 320 15 
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12		
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name move
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Look Down:"
+		cvar "+lookdown"
+		rect 40 245 320 12 
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	
+	itemDef {
+      		name move
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Centerview:"
+		cvar "centerview"
+		rect 40 260 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name move
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Mouse Look:"
+		cvar "+mlook"
+		rect 40 275 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+
+ 	itemDef {
+      		name move
+		group grpControls
+      		type ITEM_TYPE_YESNO
+		text "Always Run:"
+		cvar "cl_run"
+		rect 40 290 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show yesno_message }
+		mouseexit { hide yesno_message }
+    		}
+
+
+	itemDef {
+      		name move
+		group grpControls
+      		type ITEM_TYPE_YESNO
+		text "Free Look:"
+		cvar "cl_freelook"
+		rect 40 305 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show yesno_message }
+		mouseexit { hide yesno_message }
+    		}
+
+	itemDef {
+      		name move
+		group grpControls
+      		type ITEM_TYPE_SLIDER
+		text "Sensitivity:"
+		cvarfloat "sensitivity" 5 1 30
+		rect 40 320 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25          
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show slider_message }
+		mouseexit { hide slider_message }
+    		}
+
+	itemDef {
+      		name move
+		group grpControls
+      		type ITEM_TYPE_YESNO
+		text "Invert Mouse:"
+		cvar "ui_mousePitch"
+		rect 40 335 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25               
+      		forecolor 1 1 1 1
+      		visible 0 
+		action { uiScript update ui_mousePitch }
+		mouseenter { show yesno_message }
+		mouseexit { hide yesno_message }
+    		}
+
+	itemDef {
+      		name move
+		group grpControls
+      		type ITEM_TYPE_YESNO
+		text "Smooth Mouse:"
+		cvar "m_filter"
+		rect 40 350 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25             
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show yesno_message }
+		mouseexit { hide yesno_message }
+    		}
+
+
+itemDef {
+	name ctr_shoot
+	text "Weapons"
+	type 1
+	textscale .25
+	group grpControlbutton
+	style WINDOW_STYLE_FILLED
+	rect 125 25 70 20
+	border 1
+	bordercolor 1 1 1 .25
+	textalign 1
+	textalignx 35
+	textaligny 14
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 0.5
+	visible 1
+	action { hide grpControls ; show shoot }
+	mouseEnter { setitemcolor ctr_shoot backcolor .75 .75 .75 0.5 ; show message_weapons }
+      	mouseExit { setitemcolor ctr_shoot backcolor .1 .2 .6 0.5 ; hide message_weapons  }
+	}
+
+
+	itemDef {
+      		name shoot
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Primary:"
+		cvar "weapon 1"
+		rect 40 55 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name shoot
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Sidearm:"
+		cvar "weapon 2"
+		rect 40 70 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name shoot
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Melee:"
+		cvar "weapon 3"
+		rect 40 85 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name shoot
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Explosives:"
+		cvar "weapon 4"
+		rect 40 100 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name shoot
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Equipment:"
+		cvar "weapon 5"
+		rect 40 115 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name shoot
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Previous Weapon:"
+		cvar "weapprev"
+		rect 40 145 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name shoot
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Next Weapon:"
+		cvar "weapnext"
+		rect 40 160 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25       
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	
+	itemDef {
+      		name shoot
+		group grpControls
+      		type ITEM_TYPE_YESNO
+		text "Autoswitch:"
+		cvar "cg_autoswitch"
+		rect 40 175 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show yesno_message }
+		mouseexit { hide yesno_message }
+    		}
+
+
+	itemDef {
+      		name shoot				
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Attack:"
+		cvar "+attack"
+		rect 40 200 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name shoot				
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Reload:"
+		cvar "+button6"
+		rect 40 215 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name shoot				
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Internal Firemode:"
+		cvar "+button7"
+		rect 40 245 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name shoot				
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Tactical Weaponmode:"
+		cvar "+button8"
+		rect 40 260 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name shoot				
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Battle Addon:"
+		cvar "+button9"
+		rect 40 275 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name shoot				
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Drop Weapon:"
+		cvar "dropweapon"
+		rect 40 290 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+
+
+
+
+itemDef {
+	name ctr_miscellaneous
+	text "Misc"
+	type 1
+	textscale .25
+	group grpControlbutton
+	style WINDOW_STYLE_FILLED
+	rect 200 25 70 20
+	border 1
+	bordercolor 1 1 1 .25
+	textalign 1
+	textalignx 35
+	textaligny 14
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 0.5
+	visible 1
+	action { hide grpControls ; show misc }
+	mouseEnter { setitemcolor ctr_miscellaneous backcolor .75 .75 .75 0.5 ; show message_misc }
+      	mouseExit { setitemcolor ctr_miscellaneous backcolor .1 .2 .6 0.5 ; hide message_misc }
+	}
+	
+
+	itemDef {
+      		name misc 
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Chat:"
+		cvar "messagemode"
+		rect 40 55 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}	
+	itemDef {
+      		name misc 
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Team Chat:"
+		cvar "messagemode2"
+		rect 40 70 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	
+
+	itemDef {
+      		name misc
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Use / Bandage:"
+		cvar "+button2"
+		rect 40 95 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+
+		cvarTest "cg_useBandage"
+		showCvar { "1" }
+
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name misc
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Use:"
+		cvar "+button2"
+		rect 40 95 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+
+		cvarTest "cg_useBandage"
+		hideCvar { "1" }
+
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name misc
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Bandage:"
+		cvar "bandage"
+		rect 40 110 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name misc
+		group grpControls
+      		type ITEM_TYPE_YESNO
+		text "Use / Bandage Combo:"
+		cvar "cg_useBandage"
+		rect 40 125 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show yesno_message }
+		mouseexit { hide yesno_message } 
+    		}
+
+	itemDef {
+      		name misc
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Show Scores:"
+		cvar "+scores"
+		rect 40 150 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name misc
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Scroll Scores Up:"
+		cvar "scoresUp"
+		rect 40 165 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name misc
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Scroll Scores Down:"
+		cvar "scoresDown"
+		rect 40 180 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name misc
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Display Mission Info:"
+		cvar "missioninfo"
+		rect 40 205 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name misc
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Open QCMD Menu:"
+		cvar "vqcmd"
+		rect 40 220 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+
+
+
+itemDef {
+	name ctr_radio
+	text "Radio"
+	type 1
+	textscale .25
+	group grpControlbutton
+	style WINDOW_STYLE_FILLED
+	rect 275 25 70 20
+	border 1
+	bordercolor 1 1 1 .25
+	textalign 1
+	textalignx 35
+	textaligny 14
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 0.5
+	visible 1
+	action { hide grpControls ; show radio }
+	mouseEnter { setitemcolor ctr_radio backcolor .75 .75 .75 0.5 ; show message_radio }
+      	mouseExit { setitemcolor ctr_radio backcolor .1 .2 .6 0.5 ; hide message_radio }
+	}
+
+
+	itemDef {
+      		name radio
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Affirmative:"
+		cvar "radio affirmative"
+		rect 40 55 320 14
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name radio
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Negative:"
+		cvar "radio negative"
+		rect 40 69 320 14
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name radio
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Follow Me:"
+		cvar "radio followme"
+		rect 40 83 320 14
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name radio
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Cover Me:"
+		cvar "radio coverme"
+		rect 40 97 320 14
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name radio
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Taking Fire:"
+		cvar "radio takefire"
+		rect 40 111 320 14
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name radio
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Enemy Spotted:"
+		cvar "radio espotted"
+		rect 40 125 320 14
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name radio
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Reporting in...:"
+		cvar "radio reportingin"
+		rect 40 139 320 14
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name radio
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Go Go Go:"
+		cvar "radio gogo"
+		rect 40 153 320 14
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name radio
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Regroup:"
+		cvar "radio regroup"
+		rect 40 167 320 14
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name radio
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Check the Area:"
+		cvar "radio check"
+		rect 40 181 320 14
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name radio
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Take Cover:"
+		cvar "radio takecover"
+		rect 40 195 320 14
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name radio
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Retreat:"
+		cvar "radio retreat"
+		rect 40 209 320 14
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name radio
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Team, report in:"
+		cvar "radio reportin"
+		rect 40 223 320 14
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name radio
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Secure this Area:"
+		cvar "radio guard"
+		rect 40 237 320 14
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name radio
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Lock 'n' Load:"
+		cvar "radio locknload"
+		rect 40 250 320 14
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name radio
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Objective Status?:"
+		cvar "radio objstatus"
+		rect 40 264 320 14
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name radio
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Objective Save:"
+		cvar "radio objsafe"
+		rect 40 278 320 14
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name radio
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Objective Lost:"
+		cvar "radio objlost"
+		rect 40 292 320 14
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name radio
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Objective in Danger:"
+		cvar "radio objdanger"
+		rect 40 306 320 14
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name radio
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Objective at Home:"
+		cvar "radio objhome"
+		rect 40 320 320 14
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name radio
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "I got the Bomb:"
+		cvar "radio bgot"
+		rect 40 334 320 14
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name radio
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Bomb Placed:"
+		cvar "radio bplaced"
+		rect 40 348 320 14
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name radio
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "I can Disarm the Bomb:"
+		cvar "radio bdisarm"
+		rect 40 362 320 14
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+
+// Messages
+
+itemDef {
+      	name keyBindStatus
+      	rect 40 375 320 15 
+	ownerdraw UI_KEYBINDSTATUS
+	text " "      
+	forecolor 1 1 1 0.5
+	textscale .20
+      	textalign 1
+      	textalignx 150
+	textaligny 10
+	visible 0
+      	decoration 
+	}
+
+itemDef {
+      	name yesno_message
+      	rect 40 375 320 15 
+	text "Select the Item to Toggle to Yes or No"      
+	forecolor 1 1 1 0.5
+	textscale .20
+      	textalign 1
+      	textalignx 160
+	textaligny 10
+	visible 0
+      	decoration 
+	}
+
+itemDef {
+      	name slider_message
+      	rect 40 375 320 15 
+	text "Drag the Slider to Increase and Decrease"  
+	forecolor 1 1 1 0.5
+	textscale .20
+      	textalign 1
+      	textalignx 160
+	textaligny 10
+	visible 0
+      	decoration 
+	}
+
+
+
+itemDef {
+      	name message_move
+      	rect 40 375 320 15 
+	group grpmessage
+	text "Shows all available MOVE and LOOK related commands" 
+	forecolor 1 1 1 0.5
+	textscale .20
+      	textalign 1
+      	textalignx 160
+	textaligny 10
+	visible 0
+      	decoration 
+	}
+
+itemDef {
+      	name message_weapons
+      	rect 40 375 320 15 
+	group grpmessage
+	text "Shows all available WEAPON and COMBAT related commands"  
+	forecolor 1 1 1 0.5
+	textscale .20
+      	textalign 1
+      	textalignx 160
+	textaligny 10
+	visible 0
+      	decoration 
+	}
+
+itemDef {
+      	name message_misc
+      	rect 40 375 320 15 
+	group grpmessage
+	text "Shows all available MISCELLANEOUS commands"  
+	forecolor 1 1 1 0.5
+	textscale .20
+      	textalign 1
+      	textalignx 160
+	textaligny 10
+	visible 0
+      	decoration 
+	}
+
+itemDef {
+      	name message_radio
+      	rect 40 375 320 15 
+	group grpmessage
+	text "Shows all available RADIO related commands"  
+	forecolor 1 1 1 0.5
+	textscale .20
+      	textalign 1
+      	textalignx 160
+	textaligny 10
+	visible 0
+      	decoration 
+	}
+
+
+
+}
+
+
+}

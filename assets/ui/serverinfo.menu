@@ -1,0 +1,153 @@
+/*
+===========================================================================
+Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2009-2010 Brian Labbie and Dave Richardson.
+
+http://sourceforge.net/projects/alturt/
+
+This file is part of Alturt source code.
+
+Alturt source code is free software: you can redistribute it
+and/or modify it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the License,
+or (at your option) any later version.
+
+Alturt source code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
+===========================================================================
+*/
+
+#include "ui/menudef.h"
+
+{
+\\ Server Information Popup Menu \\
+
+menuDef {
+	name "serverinfo_popmenu"
+   	visible 0
+   	fullscreen 0
+   	rect 158 80 320 340
+	focusColor 1 0 0 1
+   	style 1
+   	border 1
+	popup
+	onClose { }
+	onOpen { uiScript ServerStatus }
+	onESC { close serverinfo_popmenu ; open joinserver }
+
+
+itemDef {
+	name window
+	rect 0 0 320 340
+	style 1
+	background "ui/assets/mod_popup_big.tga"
+	backcolor 1 1 1 1
+	forecolor 1 1 1 1
+	visible 1
+	decoration
+	}
+
+// FRAME	//
+
+itemDef {
+	name serverinfo
+	rect 0 32 320 20	
+	text "Server Information" 
+	style 0
+	textscale .3 
+	textstyle 4
+	textalign 1
+	textalignx 160
+	textaligny 2
+	decoration
+	forecolor 1 1 1 1
+	visible 1
+	}
+
+itemDef {
+	name serverinfo
+	rect 30 45 260 230
+	type ITEM_TYPE_LISTBOX
+	style WINDOW_STYLE_FILLED
+	elementwidth 120
+	elementheight 16
+	textscale .2
+
+	backcolor .1 .2 .6 0.5
+	border 1
+	bordercolor 1 1 1 .25
+
+	elementtype LISTBOX_TEXT
+	feeder FEEDER_SERVERSTATUS
+	notselectable
+
+	visible 1
+	columns 4	2 40 20
+			40 40 10
+			90 40 10
+			135 40 20
+	mouseenter { setitemcolor serverInfo bordercolor .7 0 0 1  ;
+		     setitemcolor serverInfo backcolor .1 .1 .3 0.5 }
+	mouseexit { setitemcolor serverInfo bordercolor 1 1 1 .25 ;
+		    setitemcolor serverInfo backcolor .1 .2 .6 0.5 }
+	}
+
+
+//	BUTTON	//
+
+itemDef {
+	name refresh
+	text "Refresh"
+	type 1
+	textscale .25
+	style WINDOW_STYLE_FILLED
+	border 1
+	bordercolor 1 1 1 .25
+	rect 120 285 80 26
+	textalign 1
+	textalignx 39
+	textaligny 18
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 0.5
+	visible 1
+	action { uiScript ServerStatus }
+	mouseEnter { setitemcolor refresh backcolor .75 .75 .75 0.5 } 
+	mouseExit { setitemcolor refresh backcolor .1 .2 .6 0.5 } 	
+	}
+
+itemDef {
+	name windowexit
+	text "x"
+	rect 284 20 15 15
+	type 1
+	style WINDOW_STYLE_FILLED
+	textalign 1
+	textalignx 6
+	textaligny 13
+	textscale .35
+	forecolor 1 1 1 1
+	backcolor .1 .1 .37 0.5
+	border 1
+	bordercolor 1 1 1 .25
+	action { close serverinfo_popmenu ; open joinserver }
+	mouseEnter { setitemcolor windowexit backcolor .1 .2 .6 0.5 } 
+	mouseExit { setitemcolor windowexit backcolor .1 .1 .37 0.5 } 	
+	visible 1	
+	}
+
+
+
+
+
+	
+}
+
+
+}
+
+

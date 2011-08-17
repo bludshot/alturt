@@ -1,0 +1,902 @@
+/*
+===========================================================================
+Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2009-2010 Brian Labbie and Dave Richardson.
+
+http://sourceforge.net/projects/alturt/
+
+This file is part of Alturt source code.
+
+Alturt source code is free software: you can redistribute it
+and/or modify it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the License,
+or (at your option) any later version.
+
+Alturt source code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
+===========================================================================
+*/
+
+#include "ui/menudef.h"
+
+{
+menuDef {
+ 	name "ingame_select_gear_primary"
+    	visible 0
+    	fullScreen 0
+	outOfBoundsClick			
+    	rect 72 45 460 360
+	focusColor 1 0 0 1
+
+
+itemDef {
+     	name window
+	style WINDOW_STYLE_FILLED
+    	rect 0 0 460 360
+	backcolor .1 .1 .37 1
+      	visible 1 
+	border 1
+	bordercolor 1 1 1 .25
+     	decoration
+	background "ui/assets/ingame_back.tga"
+    	}
+
+
+itemDef {
+	name selectteam
+	text "select team"
+      	rect 8 8 144 16
+	type 1
+      	textalign 0	
+     	textalignx 8
+    	textaligny 14
+	textscale .3
+      	forecolor  1 1 1 1
+	visible 1
+	action { play "ui/assets/menu_yes.wav" ; 
+		 close ingame_select_gear_primary ; open ingame_select_team }
+	}
+
+
+itemDef {
+     	name selectgeartitle
+	style 0
+    	rect 150 8 135 16
+	wrapped
+	text "weapons / items"
+
+	textalign 0
+	textalignx 8
+	textaligny 14
+	textscale .3
+
+	forecolor 1 1 1 1
+      	visible 1 
+     	decoration
+    	}
+
+
+	itemDef {
+     	name temp
+	style 0
+    	rect 16 45 144 16
+	wrapped
+	text "Primary selection"
+
+	textalign 0
+	textalignx 8
+	textaligny 14
+	textscale .25
+
+	forecolor 1 1 1 1
+      	visible 1 
+     	decoration
+    	}
+
+
+//first row
+
+itemDef {
+	name window
+	type 1
+	rect 20 60 100 50
+	style WINDOW_STYLE_FILLED
+	forecolor 1 1 1 .5
+	backcolor 0 0 0 .6
+	border 1
+	bordercolor .5 .5 .5 1
+	visible 1
+	ownerdrawParam ITEM_G36
+     	action { uiScript "gearSetItem" ; play "sound/misc/kcaction.wav" ; 
+	close ingame_select_gear_primary; 
+	open ingame_select_gear }
+	mouseEnter { setcolor backcolor .5 .5 .5 .5 }
+	mouseExit { setcolor backcolor 0 0 0 .6 }
+	onFocus	{show g36_info }
+	leaveFocus { hide g36_info }
+}
+
+
+itemDef
+{
+	name g36_model
+	type ITEM_TYPE_MODEL
+	rect 20 30 110 110
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/weapons2/g36/g36.MD3"
+	model_angle 90
+	model_fovx 100
+	model_fovy 100
+	visible MENU_TRUE
+	decoration
+}
+
+
+
+itemDef {
+	name window
+	type 1
+	rect 130 60 100 50
+	style WINDOW_STYLE_FILLED
+	forecolor 1 1 1 .5
+	backcolor 0 0 0 .6
+	border 1
+	bordercolor .5 .5 .5 1
+	visible 1
+	ownerdrawParam ITEM_AK103
+     	action { uiScript "gearSetItem" ; play "sound/misc/kcaction.wav" ; 
+	close ingame_select_gear_primary; 
+	open ingame_select_gear }
+	mouseEnter { setcolor backcolor .5 .5 .5 .5 }
+	mouseExit { setcolor backcolor 0 0 0 .6 }
+	onFocus	{show ak103_info }
+	leaveFocus { hide ak103_info }
+}
+
+
+
+
+itemDef
+{
+	name ak103_model
+	type ITEM_TYPE_MODEL
+	rect 130 30 110 110
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/weapons2/ak103/ak103.MD3"
+	model_angle 90
+	model_fovx 100
+	model_fovy 100
+	visible MENU_TRUE
+	decoration
+}
+
+
+itemDef {
+	name window
+	type 1
+	rect 240 60 100 50
+	style WINDOW_STYLE_FILLED
+	forecolor 1 1 1 .5
+	backcolor 0 0 0 .6
+	border 1
+	bordercolor .5 .5 .5 1
+	visible 1
+	ownerdrawParam ITEM_LR
+     	action { uiScript "gearSetItem" ; play "sound/misc/kcaction.wav" ; 
+	close ingame_select_gear_primary; 
+	open ingame_select_gear }
+	mouseEnter { setcolor backcolor .5 .5 .5 .5 }
+	mouseExit { setcolor backcolor 0 0 0 .6 }
+	onFocus	{show lr_info }
+	leaveFocus { hide lr_info }
+}
+
+
+
+
+itemDef
+{
+	name lr_model
+	type ITEM_TYPE_MODEL
+	rect 240 30 110 110
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/weapons2/zm300/lr.MD3"
+	model_angle 90
+	model_fovx 100
+	model_fovy 100
+	visible MENU_TRUE
+	decoration
+}
+
+
+itemDef {
+	name window
+	type 1
+	rect 350 60 100 50
+	style WINDOW_STYLE_FILLED
+	forecolor 1 1 1 .5
+	backcolor 0 0 0 .6
+	border 1
+	bordercolor .5 .5 .5 1
+	visible 1
+	ownerdrawParam ITEM_HK69
+     	action { uiScript "gearSetItem" ; play "sound/misc/kcaction.wav" ; 
+	close ingame_select_gear_primary; 
+	open ingame_select_gear }
+	mouseEnter { setcolor backcolor .5 .5 .5 .5 }
+	mouseExit { setcolor backcolor 0 0 0 .6 }
+	onFocus	{show hk69_info }
+	leaveFocus { hide hk69_info }
+}
+
+
+
+
+itemDef
+{
+	name hk69_model
+	type ITEM_TYPE_MODEL
+	rect 350 30 110 110
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/weapons2/hk69/hk69.md3"
+	model_angle 90
+	model_fovx 100
+	model_fovy 100
+	visible MENU_TRUE
+	decoration
+}
+//end of first row
+
+//second row
+itemDef {
+	name window
+	type 1
+	rect 20 120 100 50
+	style WINDOW_STYLE_FILLED
+	forecolor 1 1 1 .5
+	backcolor 0 0 0 .6
+	border 1
+	bordercolor .5 .5 .5 1
+	visible 1
+	ownerdrawParam ITEM_PSG1
+     	action { uiScript "gearSetItem" ; play "sound/misc/kcaction.wav" ; 
+	close ingame_select_gear_primary; 
+	open ingame_select_gear }
+	mouseEnter { setcolor backcolor .5 .5 .5 .5 }
+	mouseExit { setcolor backcolor 0 0 0 .6 }
+	onFocus	{show psg1_info }
+	leaveFocus { hide psg1_info }
+}
+
+
+itemDef
+{
+	name psg1_model
+	type ITEM_TYPE_MODEL
+	rect 20 90 110 110
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/weapons2/psg1/psg1.MD3"
+	model_angle 90
+	model_fovx 100
+	model_fovy 100
+	visible MENU_TRUE
+	decoration
+}
+
+
+
+itemDef {
+	name window
+	type 1
+	rect 130 120 100 50
+	style WINDOW_STYLE_FILLED
+	forecolor 1 1 1 .5
+	backcolor 0 0 0 .6
+	border 1
+	bordercolor .5 .5 .5 1
+	visible 1
+	ownerdrawParam ITEM_SR8
+     	action { uiScript "gearSetItem" ; play "sound/misc/kcaction.wav" ; 
+	close ingame_select_gear_primary; 
+	open ingame_select_gear }
+	mouseEnter { setcolor backcolor .5 .5 .5 .5 }
+	mouseExit { setcolor backcolor 0 0 0 .6 }
+	onFocus	{show sr8_info }
+	leaveFocus { hide sr8_info }
+}
+
+
+
+
+itemDef
+{
+	name sr8_model
+	type ITEM_TYPE_MODEL
+	rect 130 90 110 110
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/weapons2/sr8/sr8.MD3"
+	model_angle 90
+	model_fovx 100
+	model_fovy 100
+	visible MENU_TRUE
+	decoration
+}
+
+
+itemDef {
+	name window
+	type 1
+	rect 240 120 100 50
+	style WINDOW_STYLE_FILLED
+	forecolor 1 1 1 .5
+	backcolor 0 0 0 .6
+	border 1
+	bordercolor .5 .5 .5 1
+	visible 1
+	ownerdrawParam ITEM_NEGEV
+     	action { uiScript "gearSetItem" ; play "sound/misc/kcaction.wav" ; 
+	close ingame_select_gear_primary; 
+	open ingame_select_gear }
+	mouseEnter { setcolor backcolor .5 .5 .5 .5 }
+	mouseExit { setcolor backcolor 0 0 0 .6 }
+	onFocus	{show negev_info }
+	leaveFocus { hide negev_info }
+}
+
+
+
+
+itemDef
+{
+	name negev_model
+	type ITEM_TYPE_MODEL
+	rect 240 90 110 110
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/weapons2/negev/negev.MD3"
+	model_angle 90
+	model_fovx 100
+	model_fovy 100
+	visible MENU_TRUE
+	decoration
+}
+
+
+itemDef {
+	name window
+	type 1
+	rect 350 120 100 50
+	style WINDOW_STYLE_FILLED
+	forecolor 1 1 1 .5
+	backcolor 0 0 0 .6
+	border 1
+	bordercolor .5 .5 .5 1
+	visible 1
+	ownerdrawParam ITEM_M4
+     	action { uiScript "gearSetItem" ; play "sound/misc/kcaction.wav" ; 
+	close ingame_select_gear_primary; 
+	open ingame_select_gear }
+	mouseEnter { setcolor backcolor .5 .5 .5 .5 }
+	mouseExit { setcolor backcolor 0 0 0 .6 }
+	onFocus	{show m4_info }
+	leaveFocus { hide m4_info }
+}
+
+
+
+
+itemDef
+{
+	name m4_model
+	type ITEM_TYPE_MODEL
+	rect 350 90 110 110
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/weapons2/m4/m4.MD3"
+	model_angle 90
+	model_fovx 100
+	model_fovy 100
+	visible MENU_TRUE
+	decoration
+}
+
+//end of second row
+
+//third row
+
+itemDef {
+	name window
+	type 1
+	rect 20 180 100 50
+	style WINDOW_STYLE_FILLED
+	forecolor 1 1 1 .5
+	backcolor 0 0 0 .6
+	border 1
+	bordercolor .5 .5 .5 1
+	visible 1
+	ownerdrawParam ITEM_SPAS12
+     	action { uiScript "gearSetItem" ; play "sound/misc/kcaction.wav" ; 
+	close ingame_select_gear_primary; 
+	open ingame_select_gear }
+	mouseEnter { setcolor backcolor .5 .5 .5 .5 }
+	mouseExit { setcolor backcolor 0 0 0 .6 }
+	onFocus	{show spas12_info }
+	leaveFocus { hide spas12_info }
+}
+
+
+itemDef
+{
+	name spas12_model
+	type ITEM_TYPE_MODEL
+	rect 30 150 110 110
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/weapons2/spas12/spas12.MD3"
+	model_angle 90
+	model_fovx 110
+	model_fovy 110
+	visible MENU_TRUE
+	decoration
+}
+
+
+
+itemDef {
+	name window
+	type 1
+	rect 130 180 100 50
+	style WINDOW_STYLE_FILLED
+	forecolor 1 1 1 .5
+	backcolor 0 0 0 .6
+	border 1
+	bordercolor .5 .5 .5 1
+	visible 1
+	ownerdrawParam ITEM_MP5K
+     	action { uiScript "gearSetItem" ; play "sound/misc/kcaction.wav" ; 
+	close ingame_select_gear_primary; 
+	open ingame_select_gear }
+	mouseEnter { setcolor backcolor .5 .5 .5 .5 }
+	mouseExit { setcolor backcolor 0 0 0 .6 }
+	onFocus	{show mp5k_info }
+	leaveFocus { hide mp5k_info }
+}
+
+
+
+
+itemDef
+{
+	name mp5k_model
+	type ITEM_TYPE_MODEL
+	rect 130 150 110 110
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/weapons2/mp5k/mp5k.MD3"
+	model_angle 90
+	model_fovx 100
+	model_fovy 100
+	visible MENU_TRUE
+	decoration
+}
+
+
+itemDef {
+	name window
+	type 1
+	rect 240 180 100 50
+	style WINDOW_STYLE_FILLED
+	forecolor 1 1 1 .5
+	backcolor 0 0 0 .6
+	border 1
+	bordercolor .5 .5 .5 1
+	visible 1
+	ownerdrawParam ITEM_UMP45
+     	action { uiScript "gearSetItem" ; play "sound/misc/kcaction.wav" ; 
+	close ingame_select_gear_primary; 
+	open ingame_select_gear }
+	mouseEnter { setcolor backcolor .5 .5 .5 .5 }
+	mouseExit { setcolor backcolor 0 0 0 .6 }
+	onFocus	{show ump45_info }
+	leaveFocus { hide ump45_info }
+}
+
+
+
+
+itemDef
+{
+	name ump45_model
+	type ITEM_TYPE_MODEL
+	rect 240 150 110 110
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/weapons2/ump45/ump45.md3"
+	model_angle 90
+	model_fovx 100
+	model_fovy 100
+	visible MENU_TRUE
+	decoration
+}
+//end of third row
+
+
+//Infos
+
+itemDef {
+     	name window
+	style WINDOW_STYLE_FILLED
+    	rect 0 240 460 120
+	forecolor 1 1 1 1
+	backcolor 0 0 0 .6
+      	visible 1 
+	border 1
+	bordercolor .5 .5 .5 1
+     	decoration
+    	}
+
+
+itemDef	{
+	name g36_info
+	rect 20 260 200 80
+	textscale .25    
+	textalignx 0
+	textaligny 0
+	forecolor .8 .8 .8 1
+	wrapped
+	text "Name:  H&K G36\r"
+	"Ammo:  30 round mag\r"
+	visible 0
+	decoration
+	}
+
+itemDef
+{
+	name g36_info
+	type ITEM_TYPE_MODEL
+	rect 180 180 260 260
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/weapons2/g36/g36.MD3"
+	model_angle 90
+	model_fovx 90
+	model_fovy 90
+	model_angle 45
+	model_rotation 10
+	visible 0
+	decoration
+}
+
+itemDef	{
+	name ak103_info
+	rect 20 260 200 80
+	textscale .25    
+	textalignx 0
+	textaligny 0
+	forecolor .8 .8 .8 1
+	wrapped
+	text "Name:  Kalashnikov AK103\r"
+	"Ammo:  30 round mag\r"
+	visible 0
+	decoration
+	}
+
+itemDef
+{
+	name ak103_info
+	type ITEM_TYPE_MODEL
+	rect 180 180 260 260
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/weapons2/ak103/ak103.MD3"
+	model_angle 90
+	model_fovx 90
+	model_fovy 90
+	model_angle 45
+	model_rotation 10
+	visible 0
+	decoration
+}
+
+itemDef	{
+	name lr_info
+	rect 20 260 200 80
+	textscale .25    
+	textalignx 0
+	textaligny 0
+	forecolor .8 .8 .8 1
+	wrapped
+	text "Name:  LR300\r"
+	"Ammo:  30 round mag\r"
+	visible 0
+	decoration
+	}
+
+itemDef
+{
+	name lr_info
+	type ITEM_TYPE_MODEL
+	rect 180 180 260 260
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/weapons2/zm300/lr.MD3"
+	model_angle 90
+	model_fovx 90
+	model_fovy 90
+	model_angle 45
+	model_rotation 10
+	visible 0
+	decoration
+}
+
+itemDef	{
+	name hk69_info
+	rect 20 260 200 80
+	textscale .25    
+	textalignx 0
+	textaligny 0
+	forecolor .8 .8 .8 1
+	wrapped
+	text "Name:  H&K 69\r"
+	"Ammo:  6 grenades\r"
+	visible 0
+	decoration
+	}
+
+itemDef
+{
+	name hk69_info
+	type ITEM_TYPE_MODEL
+	rect 180 180 260 260
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/weapons2/hk69/hk69.md3"
+	model_angle 90
+	model_fovx 90
+	model_fovy 90
+	model_angle 45
+	model_rotation 10
+	visible 0
+	decoration
+}
+
+itemDef	{
+	name psg1_info
+	rect 20 260 200 80
+	textscale .25    
+	textalignx 0
+	textaligny 0
+	forecolor .8 .8 .8 1
+	wrapped
+	text "Name:  PSG-1\r"
+	"Ammo:  5 round mag\r"
+	visible 0
+	decoration
+	}
+
+itemDef
+{
+	name psg1_info
+	type ITEM_TYPE_MODEL
+	rect 180 180 260 260
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/weapons2/psg1/psg1.MD3"
+	model_angle 90
+	model_fovx 90
+	model_fovy 90
+	model_angle 45
+	model_rotation 10
+	visible 0
+	decoration
+}
+
+itemDef	{
+	name sr8_info
+	rect 20 260 200 80
+	textscale .25    
+	textalignx 0
+	textaligny 0
+	forecolor .8 .8 .8 1
+	wrapped
+	text "Name:  Remington SR8\r"
+	"Ammo:  3 round mag\r"
+	visible 0
+	decoration
+	}
+
+itemDef
+{
+	name sr8_info
+	type ITEM_TYPE_MODEL
+	rect 180 180 260 260
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/weapons2/sr8/sr8.MD3"
+	model_angle 90
+	model_fovx 90
+	model_fovy 90
+	model_angle 45
+	model_rotation 10
+	visible 0
+	decoration
+}
+
+itemDef	{
+	name negev_info
+	rect 20 260 200 80
+	textscale .25    
+	textalignx 0
+	textaligny 0
+	forecolor .8 .8 .8 1
+	wrapped
+	text "Name:  IMI Negev\r"
+	"Ammo:  90 round belt\r"
+	visible 0
+	decoration
+	}
+
+itemDef
+{
+	name negev_info
+	type ITEM_TYPE_MODEL
+	rect 180 180 260 260
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/weapons2/negev/negev.MD3"
+	model_angle 90
+	model_fovx 90
+	model_fovy 90
+	model_angle 45
+	model_rotation 10
+	visible 0
+	decoration
+}
+
+itemDef	{
+	name m4_info
+	rect 20 260 200 80
+	textscale .25    
+	textalignx 0
+	textaligny 0
+	forecolor .8 .8 .8 1
+	wrapped
+	text "Name:  Colt M4\r"
+	"Ammo:  30 round mag\r"
+	visible 0
+	decoration
+	}
+
+itemDef
+{
+	name m4_info
+	type ITEM_TYPE_MODEL
+	rect 180 180 260 260
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/weapons2/m4/m4.MD3"
+	model_angle 90
+	model_fovx 90
+	model_fovy 90
+	model_angle 45
+	model_rotation 10
+	visible 0
+	decoration
+}
+
+
+
+
+
+//===
+
+itemDef	{
+	name spas12_info
+	rect 20 260 200 80
+	textscale .25    
+	textalignx 0
+	textaligny 0
+	forecolor .8 .8 .8 1
+	wrapped
+	text "Name:  SPAS-12\r"
+	"Ammo:  6 round chamber\r"
+	visible 0
+	decoration
+	}
+
+itemDef
+{
+	name spas12_info
+	type ITEM_TYPE_MODEL
+	rect 180 180 260 260
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/weapons2/spas12/spas12.MD3"
+	model_angle 90
+	model_fovx 90
+	model_fovy 90
+	model_angle 45
+	model_rotation 10
+	visible 0
+	decoration
+}
+
+itemDef	{
+	name mp5k_info
+	rect 20 260 200 80
+	textscale .25    
+	textalignx 0
+	textaligny 0
+	forecolor .8 .8 .8 1
+	wrapped
+	text "Name:  MP5k\r"
+	"Ammo:  30 round mag\r"
+	visible 0
+	decoration
+	}
+
+itemDef
+{
+	name mp5k_info
+	type ITEM_TYPE_MODEL
+	rect 180 180 260 260
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/weapons2/mp5k/mp5k.MD3"
+	model_angle 90
+	model_fovx 90
+	model_fovy 90
+	model_angle 45
+	model_rotation 10
+	visible 0
+	decoration
+}
+
+itemDef	{
+	name ump45_info
+	rect 20 260 200 80
+	textscale .25    
+	textalignx 0
+	textaligny 0
+	forecolor .8 .8 .8 1
+	wrapped
+	text "Name:  UMP45\r"
+	"Ammo:  30 round mag\r"
+	visible 0
+	decoration
+	}
+
+itemDef
+{
+	name ump45_info
+	type ITEM_TYPE_MODEL
+	rect 180 180 260 260
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/weapons2/ump45/ump45.md3"
+	model_angle 90
+	model_fovx 90
+	model_fovy 90
+	model_angle 45
+	model_rotation 10
+	visible 0
+	decoration
+}
+
+
+
+}
+
+
+}

@@ -1,0 +1,260 @@
+/*
+===========================================================================
+Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2009-2010 Brian Labbie and Dave Richardson.
+
+http://sourceforge.net/projects/alturt/
+
+This file is part of Alturt source code.
+
+Alturt source code is free software: you can redistribute it
+and/or modify it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the License,
+or (at your option) any later version.
+
+Alturt source code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
+===========================================================================
+*/
+
+#include "ui/menudef.h"
+
+{
+menuDef {
+ 	name "ingame_player_setup"
+    	visible 0
+    	fullScreen 0
+	outOfBoundsClick			
+    	rect 72 45 460 360
+	focusColor 1 0 0 1
+
+
+itemDef {
+     	name window
+	style WINDOW_STYLE_FILLED
+    	rect 0 0 460 360
+	backcolor .1 .1 .37 1
+      	visible 1 
+	border 1
+	bordercolor 1 1 1 .25
+     	decoration
+	background "ui/assets/ingame_back.tga"
+    	}
+
+
+
+itemDef {
+      	name name
+	text "Name:"
+	style 1
+
+      	rect 15 10 232 32 
+
+      	type ITEM_TYPE_EDITFIELD
+	cvar "ui_Name"
+	maxChars 32
+
+      	textalign ITEM_ALIGN_LEFT		
+      	textalignx 8
+      	textaligny 21 
+	textscale .275     
+   
+	backcolor .1 .1 .1 1
+      	forecolor 1 1 1 1
+	border 1
+	bordercolor 1 1 1 .25
+
+      	visible 1 
+    	}
+ 
+
+	itemDef {
+		name chooseracered
+		text "Choose your character for the red team:"
+		type ITEM_TYPE_MULTI
+		cvar "racered"
+		cvarStrList { "Sarah", "0", "Misu", "1", "Rafiq", "2", "Denzel", "3" }
+		textscale 0.2
+		rect 15 50 370 102
+		textalign ITEM_ALIGN_LEFT
+		textalignx 0
+		textaligny 10
+		forecolor 1 1 1 1
+		visible 1
+		}
+
+
+	itemDef {
+		name red0
+		rect 15 65 90 90  
+		style 3
+		type 1
+		background "ui/assets/red_f_0.tga"
+		visible 1
+		decoration
+	}
+
+	itemDef {
+		name red1
+		rect 115 65 90 90  
+		style 3
+		type 1
+		background "ui/assets/red_f_1.tga"
+		visible 1
+		decoration
+	}
+
+	itemDef {
+		name red2
+		rect 215 65 90 90  
+		style 3
+		type 1
+		background "ui/assets/red_m_2.tga"
+		visible 1
+		decoration
+	}
+
+	itemDef {
+		name red3
+		rect 315 65 90 90  
+		style 3
+		type 1
+		background "ui/assets/red_m_3.tga"
+		visible 1
+		decoration
+	}
+
+
+
+
+
+
+	itemDef {
+		name chooseraceblue
+		text "Choose your character for the blue team:"
+		type ITEM_TYPE_MULTI
+		cvar "raceblue"
+		cvarStrList { "Adala", "0", "Carla", "1", "Tom", "2", "Takeshi", "3" }
+		textscale 0.2
+		rect 15 160 370 102
+		textalign ITEM_ALIGN_LEFT
+		textalignx 0
+		textaligny 10
+		forecolor 1 1 1 1
+		visible 1
+		}
+
+
+	itemDef {
+		name blue0
+		rect 15 175 90 90  
+		style 3
+		type 1
+		background "ui/assets/blu_f_0.tga"
+		visible 1
+		decoration
+	}
+
+	itemDef {
+		name blue1
+		rect 115 175 90 90  
+		style 3
+		type 1
+		background "ui/assets/blu_f_1.tga"
+		visible 1
+		decoration
+	}
+
+	itemDef {
+		name blue2
+		rect 215 175 90 90  
+		style 3
+		type 1
+		background "ui/assets/blu_m_2.tga"
+		visible 1
+		decoration
+	}
+
+	itemDef {
+		name blue3
+		rect 315 175 90 90  
+		style 3
+		type 1
+		background "ui/assets/blu_m_3.tga"
+		visible 1
+		decoration
+	}
+
+
+
+
+
+
+
+
+	itemDef {
+		name chooseffamodel
+		text "Choose your gender for non-team gametypes:"
+		type ITEM_TYPE_MULTI
+		cvar "model"
+		cvarStrList { "Male", "orion", "Female", "athena" }
+		textscale 0.2
+		rect 15 280 300 15
+		textalign ITEM_ALIGN_LEFT
+		textalignx 0
+		textaligny 10
+		forecolor 1 1 1 1
+		visible 1
+		}
+
+	itemDef {
+		name chooseffaskin
+		text "Choose your skin color for non-team gametypes:"
+		type ITEM_TYPE_MULTI
+		cvar "skin"
+		cvarStrList { "^7White", "default", "^4Blue", "blue", "^4Blue2", "blue2", "^1Red", "red", "^1Red2", "red2", "^5Cyan", "cyan", "^1DarkRed", "darkred", "^2Green", "green", "^3Orange", "orange", "^6Purple", "purple", "^3Yellow", "yellow" }
+		textscale 0.2
+		rect 15 295 300 15
+		textalign ITEM_ALIGN_LEFT
+		textalignx 0
+		textaligny 10
+		forecolor 1 1 1 1
+		visible 1
+		}
+
+
+
+itemDef {
+      	name accept
+      	text "Accept"
+      	rect 200 330 60 20 
+	type 1
+	style WINDOW_STYLE_FILLED
+	border 1
+	bordercolor 1 1 1 .25
+      	textalign 1	
+     	textalignx 30
+    	textaligny 14
+	textscale .25
+      	forecolor  1 1 1 1
+	backcolor .1 .2 .6 0.5
+      	visible 1 
+	action { play "ui/assets/menu_yes.wav" ; uiScript closeingame }
+	mouseEnter { setitemcolor accept backcolor .75 .75 .75 0.5 } 
+	mouseExit { setitemcolor accept backcolor .1 .2 .6 0.5 } 	
+    	}
+
+
+
+
+
+
+}
+
+
+}

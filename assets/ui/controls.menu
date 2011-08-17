@@ -1,0 +1,1385 @@
+/*
+===========================================================================
+Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2009-2010 Brian Labbie and Dave Richardson.
+
+http://sourceforge.net/projects/alturt/
+
+This file is part of Alturt source code.
+
+Alturt source code is free software: you can redistribute it
+and/or modify it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the License,
+or (at your option) any later version.
+
+Alturt source code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
+===========================================================================
+*/
+
+#include "ui/menudef.h"
+
+{
+menuDef {
+    	name "control_menu"
+    	visible 0
+    	fullscreen 0
+	rect 48 144 432 256
+    	focusColor 1 0 0 1
+    	style 1
+    	border 0
+	onClose { uiScript saveControls }	
+	onOpen { hide grpmove ;
+		 hide grpweapons ;
+		 hide grpmisc ;
+		 hide grpradio ;
+		 show grpmove ;
+		 uiScript loadControls }
+	onEsc { close control_menu ; close setup_menu ; open main }
+
+// 40, 128, 208, 288, 368, 448
+itemDef {
+	name move 
+	text "Move"
+	type 1
+	textscale .25
+	style WINDOW_STYLE_FILLED
+	border 1
+	bordercolor 1 1 1 .25
+	rect 28 220 64 16
+	textalign 1
+	textalignx 31
+	textaligny 13
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 0.5
+	visible 1
+	action { play "ui/assets/menu_yes.wav" ; 
+		 hide grpmove ;
+		 hide grpweapons ;
+		 hide grpmisc ;
+		 hide grpradio ;
+		 show grpmove }
+	mouseEnter { setitemcolor move backcolor .75 .75 .75 0.5 } 
+	mouseExit { setitemcolor move backcolor .1 .2 .6 0.5 } 		
+	}
+	
+itemDef {
+	name weapons
+	text "Weapons"
+	type 1
+	textscale .25
+	style WINDOW_STYLE_FILLED
+	border 1
+	bordercolor 1 1 1 .25
+	rect 108 220 64 16
+	textalign 1
+	textalignx 31
+	textaligny 13
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 0.5
+	visible 1
+	action { play "ui/assets/menu_yes.wav" ; 
+		 hide grpmove ;
+		 hide grpweapons ;
+		 hide grpmisc ;
+		 hide grpradio ;
+		 show grpweapons }
+	mouseEnter { setitemcolor weapons backcolor .75 .75 .75 0.5 } 
+	mouseExit { setitemcolor weapons backcolor .1 .2 .6 0.5 } 
+	}
+
+itemDef {
+	name misc
+	text "Misc"
+	type 1
+	textscale .25
+	style WINDOW_STYLE_FILLED
+	border 1
+	bordercolor 1 1 1 .25
+	rect 188 220 64 16
+	textalign 1
+	textalignx 31
+	textaligny 13
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 0.5
+	visible 1
+	action { play "ui/assets/menu_yes.wav" ; 
+		 hide grpmove ;
+		 hide grpweapons ;
+		 hide grpmisc ;
+		 hide grpradio ;
+		 show grpmisc }
+	mouseEnter { setitemcolor misc backcolor .75 .75 .75 0.5 } 
+	mouseExit { setitemcolor misc backcolor .1 .2 .6 0.5 } 		
+	}
+
+itemDef {
+	name radio
+	text "Radio"
+	type 1
+	textscale .25
+	style WINDOW_STYLE_FILLED
+	border 1
+	bordercolor 1 1 1 .25
+	rect 268 220 64 16
+	textalign 1
+	textalignx 31
+	textaligny 13
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 0.5
+	visible 1
+	action { play "ui/assets/menu_yes.wav" ; 
+		 hide grpmove ;
+		 hide grpweapons ;
+		 hide grpmisc ;
+		 hide grpradio ;
+		 show grpradio }
+	mouseEnter { setitemcolor radio backcolor .75 .75 .75 0.5 } 
+	mouseExit { setitemcolor radio backcolor .1 .2 .6 0.5 } 		
+	}
+
+
+
+
+// CONTROLS
+/*
+itemDef {
+      	name ctrltype_box
+      	style 1 
+	rect 10 16 252 192
+      	border 1 
+      	bordersize 1
+      	bordercolor .5 .5 .5 .5
+      	backcolor 0 0 0 .25
+      	visible 1 
+      	decoration 
+	}
+itemDef {
+      	name ctrltype_box
+      	style 1 
+	rect 282 16 250 192
+      	border 1 
+      	bordersize 1
+      	bordercolor .5 .5 .5 .5
+      	backcolor 0 0 0 .25
+      	visible 1 
+      	decoration 
+	}
+*/
+// column1	column2		column3
+// x:   40 	x:  204 	x:  360
+
+// row1:  152-144 =   8
+// row2:  168-144 =  24
+// row3:  184-144 =  40
+// row1:  200-144 =  56
+// row2:  216-144 =  72
+// row4:  232-144 =  88
+// row5:  248-144 = 104
+// row6:  264-144 = 120
+// row7:  280-144 = 136
+// row8:  296-144 = 152
+// row9:  312-144 = 168
+// row0:  328-144 = 184
+
+// width:  144
+// height:  16
+
+
+// MOVE KEYS
+	
+	// column 1 = MOVE keys
+
+	itemDef {
+      		name move
+		group grpmove
+      		type ITEM_TYPE_BIND
+		text "Move Left:"
+		cvar "+moveleft"
+		rect 0 24 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name move
+		group grpmove
+      		type ITEM_TYPE_BIND
+		text "Move Right:"
+		cvar "+moveright"
+		rect 0 40 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name move
+		group grpmove
+      		type ITEM_TYPE_BIND
+		text "Turn Left:"
+		cvar "+left"
+		rect 0 56 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name move
+		group grpmove
+      		type ITEM_TYPE_BIND
+		text "Turn Right:"
+		cvar "+right"
+		rect 0 72 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13  
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus } 
+    		}
+	itemDef {
+      		name move
+		group grpmove
+      		type ITEM_TYPE_BIND
+		text "Forward:"
+		cvar "+forward"
+		rect 0 88 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name move
+		group grpmove
+      		type ITEM_TYPE_BIND
+		text "Backpedal:"
+		cvar "+back"
+		rect 0 104 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name move
+		group grpmove
+      		type ITEM_TYPE_BIND
+		text "Strafe:"
+		cvar "+strafe"
+		rect 0 120 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name move
+		group grpmove
+      		type ITEM_TYPE_BIND
+		text "Jump:"
+		cvar "+moveup"
+		rect 0 136 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name move
+		group grpmove
+      		type ITEM_TYPE_BIND
+		text "Crouch:"
+		cvar "+movedown"
+		rect 0 152 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name move
+		group grpmove
+      		type ITEM_TYPE_BIND
+		text "Run / Walk:"
+		cvar "+speed"
+		rect 0 168 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name move
+		group grpmove
+      		type ITEM_TYPE_BIND
+		text "Sprint:"
+		cvar "+button5"
+		rect 0 184 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	// column 2 = LOOK keys
+
+	itemDef {
+      		name move
+		group grpmove 
+      		type ITEM_TYPE_BIND
+		text "Look Up:"
+		cvar "+lookup"
+		rect 200 24 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name move
+		group grpmove 
+      		type ITEM_TYPE_BIND
+		text "Look Down:"
+		cvar "+lookdown"
+		rect 200 40 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	
+	itemDef {
+      		name move
+		group grpmove 
+      		type ITEM_TYPE_BIND
+		text "Centerview:"
+		cvar "centerview"
+		rect 200 56 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+
+	itemDef {
+      		name move
+		group grpmove 
+      		type ITEM_TYPE_BIND
+		text "Mouse Look:"
+		cvar "+mlook"
+		rect 200 72 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name move
+		group grpmove
+      		type ITEM_TYPE_YESNO
+		text "Always Run:"
+		cvar "cl_run"
+		rect 200 104 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+    		}
+
+
+
+	itemDef {
+      		name move
+		group grpmove 
+      		type ITEM_TYPE_YESNO
+		text "Free Look:"
+		cvar "cl_freelook"
+		rect 200 120 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+    		}
+
+	
+	itemDef {
+      		name move
+		group grpmove 
+      		type ITEM_TYPE_SLIDER
+		text "Sensitivity:"
+		cvarfloat "sensitivity" 5 1 30
+		rect 200 152 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+    		}
+
+	itemDef {
+      		name move
+		group grpmove 
+      		type ITEM_TYPE_YESNO
+		text "Invert Mouse:"
+		cvar "ui_mousePitch"
+		rect 200 168 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		action { uiScript update ui_mousePitch }
+    		}
+
+	itemDef {
+      		name move
+		group grpmove 
+      		type ITEM_TYPE_YESNO
+		text "Smooth Mouse:"
+		cvar "m_filter"
+		rect 200 184 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+    		}
+
+// FIRE KEYS
+	
+	// column 1 = weapon select keys
+
+	itemDef {
+      		name shoot
+		group grpweapons
+      		type ITEM_TYPE_BIND
+		text "Primary:"
+		cvar "weapon 1"
+		rect 0 24 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name shoot
+		group grpweapons
+      		type ITEM_TYPE_BIND
+		text "Sidearm:"
+		cvar "weapon 2"
+		rect 0 40 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name shoot
+		group grpweapons
+      		type ITEM_TYPE_BIND
+		text "Melee:"
+		cvar "weapon 3"
+		rect 0 56 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name shoot
+		group grpweapons
+      		type ITEM_TYPE_BIND
+		text "Explosives:"
+		cvar "weapon 4"
+		rect 0 72 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name shoot
+		group grpweapons
+      		type ITEM_TYPE_BIND
+		text "Equipment:"
+		cvar "weapon 5"
+		rect 0 88 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	
+
+	itemDef {
+      		name shoot
+		group grpweapons
+      		type ITEM_TYPE_BIND
+		text "Previous Weapon:"
+		cvar "weapprev"
+		rect 0 120 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name shoot
+		group grpweapons
+      		type ITEM_TYPE_BIND
+		text "Next Weapon:"
+		cvar "weapnext"
+		rect 0 136 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	
+	itemDef {
+      		name shoot
+		group grpweapons
+      		type ITEM_TYPE_YESNO
+		text "Autoswitch:"
+		cvar "cg_autoswitch"
+		rect 0 168 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+    		}
+
+
+	// column 2 = weapon fire/use keys
+
+	itemDef {
+      		name shoot				
+		group grpweapons
+      		type ITEM_TYPE_BIND
+		text "Attack:"
+		cvar "+attack"
+		rect 200 24 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name shoot				
+		group grpweapons
+      		type ITEM_TYPE_BIND
+		text "Reload:"
+		cvar "+button6"
+		rect 200 56 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name shoot				
+		group grpweapons
+      		type ITEM_TYPE_BIND
+		text "Internal Firemode:"
+		cvar "+button7"
+		rect 200 88 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name shoot				
+		group grpweapons
+      		type ITEM_TYPE_BIND
+		text "Tactical Weaponmode:"
+		cvar "+button8"
+		rect 200 104 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name shoot				
+		group grpweapons
+      		type ITEM_TYPE_BIND
+		text "Battle Addon:"
+		cvar "+button9"
+		rect 200 120 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+
+
+
+	itemDef {
+      		name shoot				
+		group grpweapons
+      		type ITEM_TYPE_BIND
+		text "Drop Weapon:"
+		cvar "dropweapon"
+		rect 200 152 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+// MISC KEYS
+
+	// column 1 = misc keys
+	
+	itemDef {
+      		name misc
+		group grpmisc
+      		type ITEM_TYPE_BIND
+		text "Chat:"
+		cvar "messagemode"
+		rect 152 24 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name misc
+		group grpmisc
+      		type ITEM_TYPE_BIND
+		text "Team Chat:"
+		cvar "messagemode2"
+		rect 152 40 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name misc
+		group grpmisc
+      		type ITEM_TYPE_BIND
+		text "Use / Bandage:"
+		cvar "+button2"
+		rect 152 56 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+
+		cvarTest "cg_useBandage"
+		showCvar { "1" }
+
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name misc
+		group grpmisc
+      		type ITEM_TYPE_BIND
+		text "Use:"
+		cvar "+button2"
+		rect 152 56 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+
+		cvarTest "cg_useBandage"
+		hideCvar { "1" }
+
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name misc
+		group grpmisc
+      		type ITEM_TYPE_BIND
+		text "Bandage:"
+		cvar "bandage"
+		rect 152 72 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name misc
+		group grpmisc
+      		type ITEM_TYPE_YESNO
+		text "Use / Bandage Combo Key:"
+		cvar "cg_useBandage"
+		rect 152 88 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+    		}
+
+		
+	itemDef {
+      		name misc
+		group grpmisc
+      		type ITEM_TYPE_BIND
+		text "Show Scores:"
+		cvar "+scores"
+		rect 152 120 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name misc
+		group grpmisc
+      		type ITEM_TYPE_BIND
+		text "Scroll Scores Up:"
+		cvar "scoresUp"
+		rect 152 136 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name misc
+		group grpmisc
+      		type ITEM_TYPE_BIND
+		text "Scroll Scores Down:"
+		cvar "scoresDown"
+		rect 152 152 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+
+	itemDef {
+      		name misc
+		group grpmisc
+      		type ITEM_TYPE_BIND
+		text "Display Mission Info:"
+		cvar "missioninfo"
+		rect 152 168 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name misc
+		group grpmisc
+      		type ITEM_TYPE_BIND
+		text "Open QCMD Menu:"
+		cvar "vqcmd"
+		rect 152 184 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+
+
+
+
+	
+
+		
+
+// RADIO KEYS
+	
+	// column 1 = PERSONAL keys
+
+	itemDef {
+      		name orders
+		group grpradio
+      		type ITEM_TYPE_BIND
+		text "Affirmative:"
+		cvar "radio affirmative"
+		rect 0 14 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name orders
+		group grpradio
+      		type ITEM_TYPE_BIND
+		text "Negative:"
+		cvar "radio negative"
+		rect 0 30 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name orders
+		group grpradio
+      		type ITEM_TYPE_BIND
+		text "Follow Me:"
+		cvar "radio followme"
+		rect 0 46 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name orders
+		group grpradio
+      		type ITEM_TYPE_BIND
+		text "Cover Me:"
+		cvar "radio coverme"
+		rect 0 62 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13  
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus } 
+    		}
+	itemDef {
+      		name orders
+		group grpradio
+      		type ITEM_TYPE_BIND
+		text "Taking Fire:"
+		cvar "radio takefire"
+		rect 0 78 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name orders
+		group grpradio
+      		type ITEM_TYPE_BIND
+		text "Enemy Spotted:"
+		cvar "radio espotted"
+		rect 0 94 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name orders
+		group grpradio
+      		type ITEM_TYPE_BIND
+		text "Reporting In...:"
+		cvar "radio reportingin"
+		rect 0 110 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name orders
+		group grpradio
+      		type ITEM_TYPE_BIND
+		text "Objective Status?:"
+		cvar "radio objstatus"
+		rect 0 146 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name orders
+		group grpradio
+      		type ITEM_TYPE_BIND
+		text "Objective Safe:"
+		cvar "radio objsafe"
+		rect 0 162 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name orders
+		group grpradio
+      		type ITEM_TYPE_BIND
+		text "Objective Lost:"
+		cvar "radio objlost"
+		rect 0 178 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name orders
+		group grpradio
+      		type ITEM_TYPE_BIND
+		text "Objective in Danger:"
+		cvar "radio objdanger"
+		rect 0 194 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	// column 2 = TEAM keys
+
+	itemDef {
+      		name orders
+		group grpradio
+      		type ITEM_TYPE_BIND
+		text "Go Go Go:"
+		cvar "radio gogo"
+		rect 200 14 190 14
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name orders
+		group grpradio
+      		type ITEM_TYPE_BIND
+		text "Regroup:"
+		cvar "radio regroup"
+		rect 200 28 190 14
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	
+	itemDef {
+      		name orders
+		group grpradio
+      		type ITEM_TYPE_BIND
+		text "Check the Area:"
+		cvar "radio check"
+		rect 200 42 190 14
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name orders
+		group grpradio
+      		type ITEM_TYPE_BIND
+		text "Take Cover:"
+		cvar "radio takecover"
+		rect 200 56 190 14
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name orders
+		group grpradio
+      		type ITEM_TYPE_BIND
+		text "Retreat:"
+		cvar "radio retreat"
+		rect 200 70 190 14
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+
+	itemDef {
+      		name orders
+		group grpradio
+      		type ITEM_TYPE_BIND
+		text "Team, Report In:"
+		cvar "radio reportin"
+		rect 200 84 190 14
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+
+	itemDef {
+      		name orders
+		group grpradio
+      		type ITEM_TYPE_BIND
+		text "Guard This Area:"
+		cvar "radio guard"
+		rect 200 98 190 14
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name orders
+		group grpradio
+      		type ITEM_TYPE_BIND
+		text "Lock 'n' Load:"
+		cvar "radio locknload"
+		rect 200 112 190 14
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	
+	itemDef {
+      		name orders
+		group grpradio
+      		type ITEM_TYPE_BIND
+		text "Objective at Home:"
+		cvar "radio objhome"
+		rect 200 144 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name orders
+		group grpradio
+      		type ITEM_TYPE_BIND
+		text "I got the Explosives:"
+		cvar "radio bgot"
+		rect 200 162 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name orders
+		group grpradio
+      		type ITEM_TYPE_BIND
+		text "Bomb Placed:"
+		cvar "radio bplaced"
+		rect 200 178 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name orders
+		group grpradio
+      		type ITEM_TYPE_BIND
+		text "I got the Toolkit:"
+		cvar "radio bdisarm"
+		rect 200 194 190 16
+		textalign 2
+      		textalignx 120 
+		textaligny 13 
+		textscale .22         
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+
+
+
+
+	
+
+
+
+}
+
+}
+
+}

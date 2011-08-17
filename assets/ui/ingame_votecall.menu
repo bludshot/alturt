@@ -1,0 +1,390 @@
+/*
+===========================================================================
+Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2009-2010 Brian Labbie and Dave Richardson.
+
+http://sourceforge.net/projects/alturt/
+
+This file is part of Alturt source code.
+
+Alturt source code is free software: you can redistribute it
+and/or modify it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the License,
+or (at your option) any later version.
+
+Alturt source code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
+===========================================================================
+*/
+
+#include "ui/menudef.h"
+
+{
+\\ CALL VOTE MENU \\
+
+menuDef {
+    	name "ingame_votecall"
+    	visible 0
+    	fullscreen 0
+    	rect 352 45 270 175
+	outOfBoundsClick	
+    	focusColor 1 0 0 1
+    	style 1
+    	border 0
+	onopen { hide grpcallVote ; show misc ; uiScript loadArenas }
+
+itemDef {
+	name window
+	rect 0 0 270 175
+	style 1
+	border 1
+	bordercolor 1 1 1 .25
+	backcolor .1 .1 .37 1
+	visible 1
+	decoration
+	background "ui/assets/ingame_back.tga" 
+	}
+
+
+// 	BUTTONS	//
+itemDef {
+	name ctr_misc
+	text "Misc"
+	textscale .25
+	group grpbutton
+	style WINDOW_STYLE_FILLED
+	border 1
+	bordercolor 1 1 1 .25
+//	background "ui/assets/button_back.tga"
+//	rect 15 10 55 20
+	rect 46 10 55 20
+	type 1
+	textalign 1
+	textalignx 26
+	textaligny 15
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 0.5
+	visible 1
+	action { play "ui/assets/menu_yes.wav" ; 
+		 hide grpCallVote ; show misc }
+	mouseEnter { setitemcolor ctr_misc backcolor .75 .75 .75 0.5 }
+      	mouseExit { setitemcolor ctr_misc backcolor .1 .2 .6 0.5 }
+	}
+/*
+itemDef {
+	name ctr_gametype
+	text "Type"
+	textscale .25
+	group grpbutton
+	style WINDOW_STYLE_FILLED
+	border 1
+	bordercolor 1 1 1 .25
+//	background "ui/assets/button_back.tga"
+	rect 76 10 55 20
+	type 1
+	textalign 1
+	textalignx 26
+	textaligny 15
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 0.5
+	visible 1
+	action { play "ui/assets/menu_yes.wav" ; 
+		 hide grpCallVote ; show type }
+	mouseEnter { setitemcolor ctr_gametype backcolor .75 .75 .75 0.5 }
+      	mouseExit { setitemcolor ctr_gametype backcolor .1 .2 .6 0.5 }
+	}
+*/
+itemDef {
+	name ctr_kickplayer
+	text "Kick"
+	textscale .25
+	group grpbutton
+	style WINDOW_STYLE_FILLED
+	border 1
+	bordercolor 1 1 1 .25
+//	background "ui/assets/button_back.tga"
+//	rect 137 10 55 20
+	rect 107 10 55 20
+	type 1
+	textalign 1
+	textalignx 26
+	textaligny 15
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 0.5
+	visible 1
+	action { play "ui/assets/menu_yes.wav" ; 
+		 hide grpCallVote ; show kick }
+	mouseEnter { setitemcolor ctr_kickplayer backcolor .75 .75 .75 0.5 }
+      	mouseExit { setitemcolor ctr_kickplayer backcolor .1 .2 .6 0.5 }
+	}
+itemDef {
+	name ctr_changemap
+	text "Map"
+	textscale .25
+	group grpbutton
+	style WINDOW_STYLE_FILLED
+	border 1
+	bordercolor 1 1 1 .25
+//	background "ui/assets/button_back.tga"
+//	rect 198 10 55 20
+	rect 168 10 55 20
+	type 1
+	textalign 1
+	textalignx 26
+	textaligny 15
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 0.5
+	visible 1
+	action { play "ui/assets/menu_yes.wav" ; 
+		 hide grpCallVote ; show map }
+	mouseEnter { setitemcolor ctr_changemap backcolor .75 .75 .75 0.5 }
+      	mouseExit { setitemcolor ctr_changemap backcolor .1 .2 .6 0.5 }
+	}
+
+
+// 	MISC	//		
+		 
+itemDef {
+	name misc
+	text "Restart Map"
+	group grpCallVote
+	textscale .25
+	rect 0 55 290 20
+	type 1
+	textalign 1
+	textalignx 145
+	textaligny 16
+	forecolor 1 1 1 1
+	visible 0
+	action { exec "cmd callvote map_restart" ; uiScript closeingame }
+	}
+
+
+itemDef {
+	name misc
+	group grpCallVote
+	text "Next Map"
+	textscale .25
+	rect 0 75 290 20
+	type 1
+	textalign 1
+	textalignx 145
+	textaligny 16
+	forecolor 1 1 1 1
+	visible 0
+	action { exec "cmd callvote nextmap" ; uiScript closeingame }
+	}
+itemDef {
+	name misc
+	group grpCallVote
+	text "Friendly Fire On"
+
+	cvarTest "ui_friendlyfire"
+	hideCvar { "1" }
+
+	textscale .25
+	rect 0 95 290 20
+	type 1
+	textalign 1
+	textalignx 145
+	textaligny 16
+	forecolor 1 1 1 1
+	visible 0
+	action { exec "cmd callvote friendlyfire 1" ; uiScript closeingame }
+	}
+itemDef {
+	name misc
+	group grpCallVote
+	text "Friendly Fire Off"
+
+	cvarTest "ui_friendlyfire"
+	hideCvar { "0" }
+
+	textscale .25
+	rect 0 95 290 20
+	type 1
+	textalign 1
+	textalignx 145
+	textaligny 16
+	forecolor 1 1 1 1
+	visible 0
+	action { exec "cmd callvote friendlyfire 0" ; uiScript closeingame }
+	}
+
+
+
+/*
+// Game Type //
+
+itemDef {
+	name type
+	group grpCallVote
+	text "Gametype:"
+	style 0
+	textscale .25
+	ownerdraw UI_NETGAMETYPE
+	rect 50 75 110 20
+	textalign 0
+	textalignx 0
+	textaligny 16
+	forecolor 1 1 1 1
+	visible 0
+	}
+itemDef {
+	name type
+	text "OK"
+	type 1
+	textscale .25
+	group grpCallVote
+	style WINDOW_STYLE_FILLED
+	border 1
+	bordercolor 1 1 1 .25
+//	background "ui/assets/button_back.tga"
+	rect 113 145 50 20
+	textalign 1
+	textalignx 24
+	textaligny 14
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 0.5
+	visible 0
+	action { play "ui/assets/menu_yes.wav" ; 
+		 uiScript voteGame ; uiScript closeingame }
+	mouseEnter { setcolor backcolor  .75 .75 .75 0.5 }
+      	mouseExit { setcolor backcolor .1 .2 .6 0.5 }	
+	}
+*/
+
+// 	KICK PLAYER	//
+
+itemDef {
+	name kick
+	group grpCallVote
+	text "Kick Player:"
+	textscale .25
+	rect 0 35 270 20
+	textalign 1
+	textalignx 135
+	textaligny 16
+	forecolor 1 1 1 1
+	visible 0
+	decoration
+	action { }
+	}
+itemDef {
+      	name kick
+	group grpCallVote
+       	rect 10 55 250 85
+	style WINDOW_STYLE_FILLED
+	type ITEM_TYPE_LISTBOX
+	elementwidth 120
+	elementheight 15
+	textscale .25
+	elementtype LISTBOX_TEXT
+	feeder FEEDER_PLAYER_LIST
+	border 1
+	bordercolor 1 1 1 .25
+	forecolor 1 1 1 1
+	backcolor 0 0 .5 .25
+	outlinecolor .1 .1 .7 .5
+	visible 0
+	mouseEnter { fadein message_arena ; setcolor bordercolor .7 0 0 1 } 
+	mouseExit { fadeout message_arena ; setcolor bordercolor 1 1 1 .25 }
+	}
+
+itemDef {
+	name kick
+	text "OK"
+	type 1
+	textscale .25
+	group grpCallVote
+	style WINDOW_STYLE_FILLED
+	border 1
+	bordercolor 1 1 1 .25
+//	background "ui/assets/button_back.tga"
+	rect 113 145 50 20
+	textalign 1
+	textalignx 24
+	textaligny 14
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 0.5
+	visible 0
+	action { play "ui/assets/menu_yes.wav" ; 
+		 uiScript voteKick ; uiScript closeingame }
+	mouseEnter { setcolor backcolor  .75 .75 .75 0.5 }
+      	mouseExit { setcolor backcolor .1 .2 .6 0.5 }	
+	}
+
+// 	NEW MAP	//
+
+itemDef {
+	name map
+	group grpCallVote
+	text "New Map:"
+	textscale .25
+	rect 0 35 270 20
+	textalign 1
+	textalignx 135
+	textaligny 16
+	forecolor 1 1 1 1
+	decoration
+	visible 0
+	action { }
+	}
+itemDef {
+	name map
+	group grpCallVote
+      	rect 10 55 250 85
+	type ITEM_TYPE_LISTBOX
+	style WINDOW_STYLE_FILLED
+	elementwidth 120
+	elementheight 15
+	textscale .25
+	elementtype LISTBOX_TEXT
+	feeder FEEDER_ALLMAPS
+	border 1
+	bordercolor 1 1 1 .25
+	forecolor 1 1 1 1
+	backcolor 0 0 .5 .25
+	outlinecolor .1 .1 .7 .5
+	visible 0
+	mouseEnter { fadein message_arena ; setcolor bordercolor .7 0 0 1 } 
+	mouseExit { fadeout message_arena ; setcolor bordercolor 1 1 1 .25 } 
+  	}
+
+
+itemDef {
+	name map
+	text "OK"
+	type 1
+	textscale .25
+	group grpCallVote
+	style WINDOW_STYLE_FILLED
+	border 1
+	bordercolor 1 1 1 .25
+//	background "ui/assets/button_back.tga"
+	rect 113 145 50 20
+	textalign 1
+	textalignx 24
+	textaligny 14
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 0.5 
+	visible 0
+	action { play "ui/assets/menu_yes.wav" ; 
+		 uiScript voteMap ; uiScript closeingame }
+	mouseEnter { setcolor backcolor  .75 .75 .75 0.5 }
+      	mouseExit { setcolor backcolor .1 .2 .6 0.5 }		
+	}
+	
+	
+	
+
+
+}
+
+
+}

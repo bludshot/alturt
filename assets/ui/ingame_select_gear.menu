@@ -1,0 +1,377 @@
+/*
+===========================================================================
+Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2009-2010 Brian Labbie and Dave Richardson.
+
+http://sourceforge.net/projects/alturt/
+
+This file is part of Alturt source code.
+
+Alturt source code is free software: you can redistribute it
+and/or modify it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the License,
+or (at your option) any later version.
+
+Alturt source code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
+===========================================================================
+*/
+
+#include "ui/menudef.h"
+
+{
+menuDef {
+ 	name "ingame_select_gear"
+    	visible 0
+    	fullScreen 0
+	outOfBoundsClick			
+    	rect 72 45 460 360
+	focusColor 1 0 0 1
+	onEsc { close ingame_select_gear }		
+	onOpen { uiScript gearRead }
+
+
+itemDef {
+     	name window
+	style WINDOW_STYLE_FILLED
+    	rect 0 0 460 360
+	backcolor .1 .1 .37 1
+      	visible 1 
+	border 1
+	bordercolor 1 1 1 .25
+     	decoration
+	background "ui/assets/ingame_back.tga"
+    	}
+
+
+itemDef {
+	name selectteam
+	text "select team"
+      	rect 8 8 144 16
+	type 1
+      	textalign 0	
+     	textalignx 8
+    	textaligny 14
+	textscale .3
+      	forecolor  1 1 1 1
+	visible 1
+	action { play "ui/assets/menu_yes.wav" ; 
+		 close ingame_select_gear ; open ingame_select_team }
+	}
+
+
+itemDef {
+     	name selectgeartitle
+	style 0
+    	rect 150 8 135 16
+	wrapped
+	text "weapons / items"
+
+	textalign 0
+	textalignx 8
+	textaligny 14
+	textscale .3
+
+	forecolor 1 1 1 1
+      	visible 1 
+     	decoration
+    	}
+
+
+
+// 1st row
+
+itemDef {
+	name window
+	type 1
+	rect 20 60 210 90
+	style WINDOW_STYLE_FILLED
+	forecolor 1 1 1 .5
+	backcolor 0 0 0 .6
+	border 1
+	bordercolor .5 .5 .5 1
+	visible 1
+	ownerdrawParam GEAR_PRIMARY
+     	action { uiScript "gearSetActive" ; play "ui/assets/menu_yes.wav" ; 
+	close ingame_select_gear ; open ingame_select_gear_primary  }
+	mouseEnter { setcolor backcolor .5 .5 .5 .5 }
+	mouseExit { setcolor backcolor 0 0 0 .6 }
+}
+
+itemDef	{
+	name primary_model
+	ownerdraw UI_GEARMODEL
+	special GEAR_PRIMARY
+	//hijacking textstyle to use for model angle
+	textstyle 90
+	rect 20 60 210 90
+	forecolor .5 0 0 1
+	border 1
+	visible 1
+	decoration
+	}
+
+itemDef {
+	name window
+	type 1
+	rect 240 60 100 90
+	style WINDOW_STYLE_FILLED
+	forecolor 1 1 1 .5
+	backcolor 0 0 0 .6
+	border 1
+	bordercolor .5 .5 .5 1
+	visible 1
+	ownerdrawParam GEAR_SECONDARY
+     	action { uiScript "gearSetActive" ; play "ui/assets/menu_yes.wav" ; 
+	close ingame_select_gear ; open ingame_select_gear_secondary }
+	mouseEnter { setcolor backcolor .5 .5 .5 .5 }
+	mouseExit { setcolor backcolor 0 0 0 .6 }
+	cvarTest "ui_gearPrimary"
+	disableCvar { "28" } //negev
+}
+
+itemDef	{
+	name secondary_model
+	ownerdraw UI_GEARMODEL
+	special GEAR_SECONDARY
+	//hijacking textstyle to use for model angle
+	textstyle 90
+	rect 240 60 100 90
+	forecolor .5 0 0 1
+	border 1
+	visible 1
+	cvarTest "ui_gearSecondary"
+	hideCvar { "0" }
+	decoration
+	}
+
+		itemdef
+		{
+		name not_available
+		rect 240 60 100 90
+		style WINDOW_STYLE_SHADER
+		background "ui/assets/na.tga"
+		visible 1
+		cvarTest "ui_gearPrimary"
+		showCvar { "28" } //negev
+		decoration
+		}
+
+itemDef {
+	name window
+	type 1
+	rect 350 60 100 90
+	style WINDOW_STYLE_FILLED
+	forecolor 1 1 1 .5
+	backcolor 0 0 0 .6
+	border 1
+	bordercolor .5 .5 .5 1
+	visible 1
+	ownerdrawParam GEAR_SIDEARM
+     	action { uiScript "gearSetActive" ; play "ui/assets/menu_yes.wav" ; 
+	close ingame_select_gear ; open ingame_select_gear_sidearm }
+	mouseEnter { setcolor backcolor .5 .5 .5 .5 }
+	mouseExit { setcolor backcolor 0 0 0 .6 }
+}
+
+itemDef	{
+	name sidearm_model
+	ownerdraw UI_GEARMODEL
+	special GEAR_SIDEARM
+	//hijacking textstyle to use for model angle
+	textstyle 90
+	rect 350 60 100 90
+	forecolor .5 0 0 1
+	border 1
+	visible 1
+	decoration
+	}
+
+
+// 2nd row
+
+itemDef {
+	name window
+	type 1
+	rect 20 180 100 90
+	style WINDOW_STYLE_FILLED
+	forecolor 1 1 1 .5
+	backcolor 0 0 0 .6
+	border 1
+	bordercolor .5 .5 .5 1
+	visible 1
+	ownerdrawParam GEAR_GRENADE
+     	action { uiScript "gearSetActive" ; play "ui/assets/menu_yes.wav" ; 
+	close ingame_select_gear ; open ingame_select_gear_grenade }
+	mouseEnter { setcolor backcolor .5 .5 .5 .5 }
+	mouseExit { setcolor backcolor 0 0 0 .6 }
+}
+
+itemDef	{
+	name grenade_model
+	ownerdraw UI_GEARMODEL
+	special GEAR_GRENADE
+	//hijacking textstyle to use for model angle
+	textstyle 90
+	rect 20 180 100 90
+	forecolor .5 0 0 1
+	border 1
+	visible 1
+	cvarTest "ui_gearGrenade"
+	hideCvar { "0"}
+	decoration
+	}
+
+itemDef {
+	name window
+	type 1
+	rect 130 180 100 90
+	style WINDOW_STYLE_FILLED
+	forecolor 1 1 1 .5
+	backcolor 0 0 0 .6
+	border 1
+	bordercolor .5 .5 .5 1
+	visible 1
+	ownerdrawParam GEAR_ITEM_1
+     	action { uiScript "gearSetActive" ; play "ui/assets/menu_yes.wav" ; 
+	close ingame_select_gear ; open ingame_select_gear_item }
+	mouseEnter { setcolor backcolor .5 .5 .5 .5 }
+	mouseExit { setcolor backcolor 0 0 0 .6 }
+}
+
+itemDef	{
+	name item1_model
+	ownerdraw UI_GEARMODEL
+	special GEAR_ITEM_1
+	//hijacking textstyle to use for model angle
+	textstyle 45
+	rect 130 180 100 90
+	forecolor .5 0 0 1
+	border 1
+	visible 1
+	decoration
+	}
+
+itemDef {
+	name window
+	type 1
+	rect 240 180 100 90
+	style WINDOW_STYLE_FILLED
+	forecolor 1 1 1 .5
+	backcolor 0 0 0 .6
+	border 1
+	bordercolor .5 .5 .5 1
+	visible 1
+	ownerdrawParam GEAR_ITEM_2
+     	action { uiScript "gearSetActive" ; play "ui/assets/menu_yes.wav" ; 
+	close ingame_select_gear ; open ingame_select_gear_item }
+	mouseEnter { setcolor backcolor .5 .5 .5 .5 }
+	mouseExit { setcolor backcolor 0 0 0 .6 }
+	cvarTest "ui_gearItemCount"
+	disableCvar { "1" }
+}
+
+itemDef	{
+	name item2_model
+	ownerdraw UI_GEARMODEL
+	special GEAR_ITEM_2
+	//hijacking textstyle to use for model angle
+	textstyle 45
+	rect 240 180 100 90
+	forecolor .5 0 0 1
+	border 1
+	visible 1
+	cvarTest "ui_gearItemCount"
+	hideCvar { "1" }
+	decoration
+	}
+
+		itemdef
+		{
+		name not_available
+		rect 240 180 100 90
+		style WINDOW_STYLE_SHADER
+		background "ui/assets/na.tga"
+		visible 1
+		cvarTest "ui_gearItemCount"
+		showCvar { "1" }
+		decoration
+		}
+
+itemDef {
+	name window
+	type 1
+	rect 350 180 100 90
+	style WINDOW_STYLE_FILLED
+	forecolor 1 1 1 .5
+	backcolor 0 0 0 .6
+	border 1
+	bordercolor .5 .5 .5 1
+	visible 1
+	ownerdrawParam GEAR_ITEM_3
+     	action { uiScript "gearSetActive" ; play "ui/assets/menu_yes.wav" ; 
+	close ingame_select_gear ; open ingame_select_gear_item }
+	mouseEnter { setcolor backcolor .5 .5 .5 .5 }
+	mouseExit { setcolor backcolor 0 0 0 .6 }
+	cvarTest "ui_gearItemCount"
+	disableCvar { "1" ; "2"}
+}
+
+itemDef	{
+	name item3_model
+	ownerdraw UI_GEARMODEL
+	special GEAR_ITEM_3
+	//hijacking textstyle to use for model angle
+	textstyle 45
+	rect 350 180 100 90
+	forecolor .5 0 0 1
+	border 1
+	visible 1
+	cvarTest "ui_gearItemCount"
+	hideCvar { "1" ; "2" }
+	decoration
+	}
+
+		itemdef
+		{
+		name not_available
+		rect 350 180 100 90
+		style WINDOW_STYLE_SHADER
+		background "ui/assets/na.tga"
+		visible 1
+		cvarTest "ui_gearItemCount"
+		showCvar { "1" ; "2" }
+		decoration
+		}
+
+itemDef {
+	name close
+	text "Close"
+      	rect 350 300 100 30 
+	type 1
+	style WINDOW_STYLE_FILLED
+	border 1
+	bordercolor 1 1 1 .25
+      	textalign 1	
+     	textalignx 50
+    	textaligny 18
+	textscale .25
+      	forecolor  1 1 1 1
+	backcolor .1 .2 .6 0.5
+	visible 1
+	action { uiScript gearWrite ; play "sound/misc/kcaction.wav" ;
+		 close ingame_select_gear }
+	mouseEnter { setitemcolor close backcolor .75 .75 .75 0.5 }
+	mouseExit { setitemcolor close backcolor .1 .2 .6 0.5 }
+	}
+
+
+}
+
+
+}

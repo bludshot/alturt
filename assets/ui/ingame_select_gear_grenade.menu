@@ -1,0 +1,304 @@
+/*
+===========================================================================
+Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2009-2010 Brian Labbie and Dave Richardson.
+
+http://sourceforge.net/projects/alturt/
+
+This file is part of Alturt source code.
+
+Alturt source code is free software: you can redistribute it
+and/or modify it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the License,
+or (at your option) any later version.
+
+Alturt source code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
+===========================================================================
+*/
+
+#include "ui/menudef.h"
+
+{
+menuDef {
+ 	name "ingame_select_gear_grenade"
+    	visible 0
+    	fullScreen 0
+	outOfBoundsClick			
+    	rect 72 45 460 360
+	focusColor 1 0 0 1
+
+
+itemDef {
+     	name window
+	style WINDOW_STYLE_FILLED
+    	rect 0 0 460 360
+	backcolor .1 .1 .37 1
+      	visible 1 
+	border 1
+	bordercolor 1 1 1 .25
+     	decoration
+	background "ui/assets/ingame_back.tga"
+    	}
+
+
+itemDef {
+	name selectteam
+	text "select team"
+      	rect 8 8 144 16
+	type 1
+      	textalign 0	
+     	textalignx 8
+    	textaligny 14
+	textscale .3
+      	forecolor  1 1 1 1
+	visible 1
+	action { play "ui/assets/menu_yes.wav" ; 
+		 close ingame_select_gear_grenade ; open ingame_select_team }
+	}
+
+
+itemDef {
+     	name selectgeartitle
+	style 0
+    	rect 150 8 135 16
+	wrapped
+	text "weapons / items"
+
+	textalign 0
+	textalignx 8
+	textaligny 14
+	textscale .3
+
+	forecolor 1 1 1 1
+      	visible 1 
+     	decoration
+    	}
+
+
+itemDef {
+     	name temp
+	style 0
+    	rect 16 45 144 16
+	wrapped
+	text "Grenade selection"
+
+	textalign 0
+	textalignx 8
+	textaligny 14
+	textscale .25
+
+	forecolor 1 1 1 1
+      	visible 1 
+     	decoration
+    	}
+
+
+itemDef {
+	name window
+	type 1
+	rect 20 60 100 50
+	style WINDOW_STYLE_FILLED
+	forecolor 1 1 1 .5
+	backcolor 0 0 0 .6
+	border 1
+	bordercolor .5 .5 .5 1
+	visible 1
+	ownerdrawParam ITEM_GRENADE_HE
+     	action { uiScript "gearSetItem" ; play "sound/misc/kcaction.wav" ; 
+	close ingame_select_gear_grenade; 
+	open ingame_select_gear }
+	mouseEnter { setcolor backcolor .5 .5 .5 .5 }
+	mouseExit { setcolor backcolor 0 0 0 .6 }
+	onFocus	{show grenade_he_info }
+	leaveFocus { hide grenade_he_info }
+}
+
+
+itemDef
+{
+	name he_model
+	type ITEM_TYPE_MODEL
+	rect 20 30 110 110
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/weapons2/grenade/grenade.MD3"
+	model_angle 90
+	model_fovx 100
+	model_fovy 100
+	visible MENU_TRUE
+	decoration
+}
+
+
+itemDef {
+	name window
+	type 1
+	rect 130 60 100 50
+	style WINDOW_STYLE_FILLED
+	forecolor 1 1 1 .5
+	backcolor 0 0 0 .6
+	border 1
+	bordercolor .5 .5 .5 1
+	visible 1
+	ownerdrawParam ITEM_GRENADE_SMOKE
+     	action { uiScript "gearSetItem" ; play "sound/misc/kcaction.wav" ; 
+	close ingame_select_gear_grenade; 
+	open ingame_select_gear }
+	mouseEnter { setcolor backcolor .5 .5 .5 .5 }
+	mouseExit { setcolor backcolor 0 0 0 .6 }
+	onFocus	{show grenade_smoke_info }
+	leaveFocus { hide grenade_smoke_info }
+}
+
+
+
+
+itemDef
+{
+	name smoke_model
+	type ITEM_TYPE_MODEL
+	rect 130 30 110 110
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/weapons2/grenade/grenade.MD3"
+	model_angle 90
+	model_fovx 100
+	model_fovy 100
+	visible MENU_TRUE
+	decoration
+}
+
+
+
+itemDef {
+	name window
+	type 1
+	rect 350 60 100 50
+	style WINDOW_STYLE_FILLED
+	forecolor 1 1 1 .5
+	backcolor 0 0 0 .6
+	border 1
+	bordercolor .5 .5 .5 1
+	visible 1
+	ownerdrawParam ITEM_NONE
+     	action { uiScript "gearSetItem" ; play "sound/misc/kcaction.wav" ; 
+	close ingame_select_gear_grenade; 
+	open ingame_select_gear }
+	mouseEnter { setcolor backcolor .5 .5 .5 .5 }
+	mouseExit { setcolor backcolor 0 0 0 .6 }
+	onFocus	{show grenade_none_info }
+	leaveFocus { hide grenade_none_info }
+}
+
+
+
+
+
+
+
+
+
+itemDef {
+     	name window
+	style WINDOW_STYLE_FILLED
+    	rect 0 240 460 120
+	forecolor 1 1 1 1
+	backcolor 0 0 0 .6
+      	visible 1 
+	border 1
+	bordercolor .5 .5 .5 1
+     	decoration
+    	}
+
+
+
+itemDef	{
+	name grenade_he_info
+	rect 20 260 200 80
+	textscale .25    
+	textalignx 0
+	textaligny 0
+	forecolor .8 .8 .8 1
+	wrapped
+	text "Name:  HE Grenades\r"
+	"Ammo:  2 issued\r"
+	visible 0
+	decoration
+	}
+
+itemDef
+{
+	name grenade_he_info
+	type ITEM_TYPE_MODEL
+	rect 180 180 260 260
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/weapons2/grenade/grenade.MD3"
+	model_angle 90
+	model_fovx 90
+	model_fovy 90
+	model_angle 45
+	model_rotation 10
+	visible 0
+	decoration
+}
+
+itemDef	{
+	name grenade_smoke_info
+	rect 20 260 200 80
+	textscale .25    
+	textalignx 0
+	textaligny 0
+	forecolor .8 .8 .8 1
+	wrapped
+	text "Name:  Smoke Grenades\r"
+	"Ammo:  2 issued\r"
+	visible 0
+	decoration
+	}
+
+itemDef
+{
+	name grenade_smoke_info
+	type ITEM_TYPE_MODEL
+	rect 180 180 260 260
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/weapons2/grenade/grenade.MD3"
+	model_angle 90
+	model_fovx 90
+	model_fovy 90
+	model_angle 45
+	model_rotation 10
+	visible 0
+	decoration
+}
+
+
+itemDef	{
+	name grenade_none_info
+	rect 20 260 200 80
+	textscale .25    
+	textalignx 0
+	textaligny 0
+	forecolor .8 .8 .8 1
+	wrapped
+	text "No Grenades\r"
+	visible 0
+	decoration
+	}
+
+
+
+
+
+}
+
+
+}

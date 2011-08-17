@@ -1,0 +1,143 @@
+/*
+===========================================================================
+Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2009-2010 Brian Labbie and Dave Richardson.
+
+http://sourceforge.net/projects/alturt/
+
+This file is part of Alturt source code.
+
+Alturt source code is free software: you can redistribute it
+and/or modify it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the License,
+or (at your option) any later version.
+
+Alturt source code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
+===========================================================================
+*/
+
+#include "ui/menudef.h"
+
+{
+\\ VID_RESTART POPUP MENU \\
+
+menuDef {
+	name "vid_restart_popmenu"
+    	visible 0
+    	fullscreen 0
+	rect 204 186 256 128
+	focusColor 1 0 0 1
+    	style 1
+    	border 1
+	popup
+	outOfBoundsClick
+	onESC { close vid_restart_popmenu ; 
+	open setup_menu ;  
+	open system_menu }
+
+itemDef {
+	name window
+	rect 0 0 256 128
+	style 3
+	background "ui/assets/mod_popup.tga"
+	visible 1
+	decoration
+	}
+
+	// VID_RESTART	//
+
+itemDef {
+	name confirm
+	text "Apply Video Settings"
+	style 0
+	textscale .3 
+	textstyle 4
+	rect 0 32 128 20
+	textalign 1
+	textalignx 128
+	textaligny 2
+	decoration
+	forecolor 1 1 1 1
+	visible 1
+	}
+
+	
+itemDef {
+	name yes
+	text "YES"
+	type 1
+	textscale .25
+	style WINDOW_STYLE_FILLED
+	border 1
+	bordercolor 1 1 1 .25
+	rect 32 56 64 32
+	textalign 1
+	textalignx 31
+	textaligny 21
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 1
+	visible 1
+	action {close vid_restart_popmenu ; 
+		exec "vid_restart" }
+	mouseEnter { setitemcolor yes backcolor .75 .75 .75 0.5 } 
+	mouseExit { setitemcolor yes backcolor .1 .2 .6 0.5 } 		
+	}
+
+
+itemDef {
+	name no
+	text "NO"
+	type 1
+	textscale .25
+	style WINDOW_STYLE_FILLED
+	border 1
+	bordercolor 1 1 1 .25
+	rect 160 56 64 32
+	textalign 1
+	textalignx 31
+	textaligny 21
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 1
+	visible 1
+	action { close vid_restart_popmenu ;  
+		open setup_menu ; 
+		open system_menu }
+	mouseEnter { setitemcolor no backcolor .75 .75 .75 0.5 } 
+	mouseExit { setitemcolor no backcolor .1 .2 .6 0.5 } 		
+	}
+
+itemDef {
+	name windowexit
+	text "x"
+	rect 220 20 15 15
+	type 1
+	style WINDOW_STYLE_FILLED
+	textalign 1
+	textalignx 6
+	textaligny 13
+	textscale .35
+	forecolor 1 1 1 1
+	backcolor .1 .1 .37 1
+	border 1
+	bordercolor 1 1 1 .25
+	action { close vid_restart_popmenu ; 
+		open setup_menu ;  
+		open system_menu }
+	mouseEnter { setitemcolor windowexit backcolor .1 .2 .6 0.5 } 
+	mouseExit { setitemcolor windowexit backcolor .1 .1 .37 0.5 } 	
+	visible 1	
+	}
+
+
+}
+
+
+}
+
+

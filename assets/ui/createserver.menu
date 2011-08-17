@@ -1,0 +1,896 @@
+/*
+===========================================================================
+Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2009-2010 Brian Labbie and Dave Richardson.
+
+http://sourceforge.net/projects/alturt/
+
+This file is part of Alturt source code.
+
+Alturt source code is free software: you can redistribute it
+and/or modify it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the License,
+or (at your option) any later version.
+
+Alturt source code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
+===========================================================================
+*/
+
+#include "ui/menudef.h"
+
+{
+  menuDef {
+    	name "createserver"
+    	visible 0
+    	fullscreen 1
+    	rect 0 0 640 480
+	background "ui/assets/mod_menuback.jpg"
+	focusColor 1 0 0 1	
+    	style 1
+	onEsc { play "ui/assets/menu_no.wav" ; close createserver ; open main }
+	onOpen { uiScript loadArenas }
+
+
+// TITLES
+
+	itemDef {
+		name title
+		text "Your Mod Name Here"
+		style 0
+		type ITEM_TYPE_TEXT
+		textstyle 0
+		textscale 0.6
+		rect 15 15 300 35
+		textalign ITEM_ALIGN_LEFT
+		textalignx 0
+		textaligny 35
+		forecolor 1 1 1 1
+		visible 1
+		decoration
+		}
+
+	itemDef {
+		name modfor
+		text "a mod for Urban Terror"
+		style 0
+		type ITEM_TYPE_TEXT
+		textstyle 0
+		textscale 0.2
+		rect 315 55 300 15
+		textalign ITEM_ALIGN_RIGHT
+		textalignx 0
+		textaligny 10
+		forecolor 1 1 1 1
+		visible 1
+		decoration
+		}
+
+
+
+itemDef {
+	name gametype
+	style 1
+	text "Type:"
+	ownerdraw UI_NETGAMETYPE
+    	rect 60 110 240 30 
+    	textalign 0	
+    	textalignx 4
+    	textaligny 20
+	textscale .275     
+
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 0.5
+	border 1
+	bordercolor 1 1 1 .25
+
+      	visible 1 
+	action { play "ui/assets/menu_yes.wav" }
+	mouseEnter { setitemcolor gametype backcolor .1 .1 .3 0.5 } 
+      	mouseExit { setitemcolor gametype backcolor .1 .2 .6 0.5 } 
+    	}
+
+itemDef {
+      	name netsource
+      	style 1
+	text "Skill:"
+	ownerdraw UI_SKILL
+    	rect 60 148 240 30 
+    	textalign 0	
+    	textalignx 4
+    	textaligny 20
+	textscale .275     
+
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 0.5
+	border 1
+	bordercolor 1 1 1 .25
+
+     	visible 1 
+	action { play "ui/assets/menu_yes.wav" }
+	mouseEnter { setitemcolor netsource backcolor .1 .1 .3 0.5 } 
+      	mouseExit { setitemcolor netsource backcolor .1 .2 .6 0.5 } 	
+    	}
+
+itemDef {
+      	name Windowsettings
+	style WINDOW_STYLE_FILLED	
+      	rect 460 205 120 95
+	backcolor .1 .2 .6 0.5
+	border 1
+	bordercolor 1 1 1 .25
+      	visible 1 
+	decoration
+	mouseEnter { setitemcolor Windowsettings backcolor .1 .1 .3 0.5 } 
+	mouseExit { setitemcolor Windowsettings backcolor .1 .2 .6 0.5 } 
+    	}
+
+
+itemDef {
+      	name Windownoteams
+	style WINDOW_STYLE_FILLED	
+      	rect 310 110 140 275
+	backcolor .1 .2 .6 0.5
+	border 1
+	bordercolor 1 1 1 .25
+	cvarTest "ui_actualNetGameType"
+	showCvar { "0" }
+      	visible 1 
+	decoration
+	mouseEnter { setitemcolor Windownoteams backcolor .1 .1 .3 0.5 } 
+	mouseExit {  setitemcolor Windownoteams backcolor .1 .2 .6 0.5 } 
+    	}
+
+itemDef {
+      	name Windowteams1
+	style WINDOW_STYLE_FILLED	
+      	rect 310 110 140 135
+	backcolor .1 .2 .6 0.5
+	border 1
+	bordercolor 1 1 1 .25
+	cvarTest "ui_actualNetGameType"
+	hideCvar { "0" }
+      	visible 1 
+	decoration
+	mouseEnter { setitemcolor Windowteams1 backcolor .1 .1 .3 0.5 } 
+	mouseExit {  setitemcolor Windowteams1 backcolor .1 .2 .6 0.5 } 
+    	}
+
+itemDef {
+      	name Windowteams2
+	style WINDOW_STYLE_FILLED	
+      	rect 310 250 140 135
+	backcolor .1 .2 .6 0.5
+	border 1
+	bordercolor 1 1 1 .25
+	cvarTest "ui_actualNetGameType"
+	hideCvar { "0" }
+      	visible 1 
+	decoration
+	mouseEnter { setitemcolor Windowteams2 backcolor .1 .1 .3 0.5 } 
+	mouseExit {  setitemcolor Windowteams2 backcolor .1 .2 .6 0.5 } 
+    	}
+
+// map selection
+
+itemDef {
+      	name mappreview
+      	style 0	
+ 	ownerdraw UI_STARTMAPCINEMATIC
+      	rect 460 110 120 90
+	border 1
+	bordercolor 1 1 1 .25
+      	visible 1 
+    }
+
+
+ itemDef {
+	name maplist
+	rect 60 185 240 200
+	type ITEM_TYPE_LISTBOX
+	style WINDOW_STYLE_FILLED
+	elementwidth 240
+	elementheight 16
+	textscale .25
+	elementtype LISTBOX_TEXT
+	feeder FEEDER_ALLMAPS
+	textalign 3
+	textaligny 13
+	border 1
+	bordercolor 1 1 1 .25
+	forecolor 1 1 1 1
+	backcolor 0 0 .7 .25
+	outlinecolor 1 1 1 .25
+	visible 1
+	columns 1 1 238 30
+	mouseEnter { setitemcolor maplist bordercolor .7 0 0 1 } 
+	mouseExit { setitemcolor maplist bordercolor .5 .5 .5 1 } 
+  	}
+
+// BOT LIST FOR TEAM GAMES
+
+itemDef {
+      	name gametypefield
+      	style 0	
+	text "Blue"
+      	rect 310 115 140 20 
+      	textalign 1
+      	textalignx 70
+      	textaligny 14
+	textscale .3  
+	forecolor .5 .5 1 1
+	border 0
+	bordercolor 0 0 0 0
+	visible 1  
+	  cvarTest "ui_actualNetGameType"
+	  hideCvar { "0" }
+	decoration
+    }
+
+itemDef {
+	name gametypefield
+	style 0	
+	ownerdraw UI_REDTEAM1
+      	rect 310 135 140 20 
+	text "1."
+      	textalign 0
+      	textalignx 15
+      	textaligny 14  
+	textscale .25
+	forecolor 1 1 1 1
+	border 0
+	bordercolor 0 0 0 0
+	visible 1 
+	  cvarTest "ui_actualNetGameType"
+	  hideCvar { "0" }
+	action { play "ui/assets/menu_yes.wav" }
+    }
+
+itemDef {
+      name gametypefield
+      style 0	
+ 	  ownerdraw UI_REDTEAM2
+      	rect 310 152 140 20 
+	text "2."
+      	textalign 0
+      	textalignx 15
+      	textaligny 14  
+	textscale .25
+	forecolor 1 1 1 1
+	border 0
+	bordercolor 0 0 0 0
+	visible 1 
+	  cvarTest "ui_actualNetGameType"
+	  hideCvar { "0" }
+	action { play "ui/assets/menu_yes.wav" }
+    }
+
+itemDef {
+      name gametypefield
+      style 0	
+ 	  ownerdraw UI_REDTEAM3
+      	rect 310 169 140 20 
+	text "3."
+      	textalign 0
+      	textalignx 15
+      	textaligny 14  
+	textscale .25
+	forecolor 1 1 1 1
+	border 0
+	bordercolor 0 0 0 0
+	visible 1 
+	  cvarTest "ui_actualNetGameType"
+	  hideCvar { "0" }
+	action { play "ui/assets/menu_yes.wav" }
+    }
+
+itemDef {
+      name gametypefield
+      style 0	
+ 	  ownerdraw UI_REDTEAM4
+      	rect 310 186 140 20 
+	text "4."
+      	textalign 0
+      	textalignx 15
+      	textaligny 14  
+	textscale .25
+	forecolor 1 1 1 1
+	border 0
+	bordercolor 0 0 0 0
+	visible 1 
+	  cvarTest "ui_actualNetGameType"
+	  hideCvar { "0" }
+	action { play "ui/assets/menu_yes.wav" }
+    }
+
+itemDef {
+      name gametypefield
+      style 0	
+ 	  ownerdraw UI_REDTEAM5
+      	rect 310 203 140 20 
+	text "5."
+      	textalign 0
+      	textalignx 15
+      	textaligny 14  
+	textscale .25
+	forecolor 1 1 1 1
+	border 0
+	bordercolor 0 0 0 0
+	visible 1 
+	  cvarTest "ui_actualNetGameType"
+	  hideCvar { "0" }
+	action { play "ui/assets/menu_yes.wav" }
+    }
+
+itemDef {
+      name gametypefield
+      style 0	
+ 	  ownerdraw UI_REDTEAM6
+      	rect 310 220 140 20 
+	text "6."
+      	textalign 0
+      	textalignx 15
+      	textaligny 14  
+	textscale .25
+	forecolor 1 1 1 1
+	border 0
+	bordercolor 0 0 0 0
+	visible 1 
+	  cvarTest "ui_actualNetGameType"
+	  hideCvar { "0" }
+	action { play "ui/assets/menu_yes.wav" }
+    }
+
+
+
+
+
+
+itemDef {
+      	name gametypefield
+	style 0	
+	text "Red"
+      	rect 310 255 140 20 
+      	textalign 1
+      	textalignx 70
+      	textaligny 14
+	textscale .3  
+	forecolor 1 .5 .5 1
+	border 0
+	bordercolor 0 0 0 0
+	visible 1  
+	  cvarTest "ui_actualNetGameType"
+	  hideCvar { "0" }
+	decoration
+    }
+
+itemDef {
+	name gametypefield
+	style 0	
+	ownerdraw UI_BLUETEAM1
+      	rect 310 275 140 20 
+	text "1."
+      	textalign 0
+      	textalignx 15
+      	textaligny 14  
+	textscale .25
+	forecolor 1 1 1 1
+	border 0
+	bordercolor 0 0 0 0
+	visible 1 
+	  cvarTest "ui_actualNetGameType"
+	  hideCvar { "0" }
+	action { play "ui/assets/menu_yes.wav" }
+	}
+
+itemDef {
+	name gametypefield
+	style 0	
+	ownerdraw UI_BLUETEAM2
+      	rect 310 292 140 20 
+	text "2."
+      	textalign 0
+      	textalignx 15
+      	textaligny 14  
+	textscale .25
+	forecolor 1 1 1 1
+	border 0
+	bordercolor 0 0 0 0
+	visible 1 
+	  cvarTest "ui_actualNetGameType"
+	  hideCvar { "0" }
+	action { play "ui/assets/menu_yes.wav" }
+    }
+
+itemDef {
+	name gametypefield
+	style 0	
+	ownerdraw UI_BLUETEAM3
+      	rect 310 309 140 20 
+	text "3."
+      	textalign 0
+      	textalignx 15
+      	textaligny 14  
+	textscale .25
+	forecolor 1 1 1 1
+	border 0
+	bordercolor 0 0 0 0
+	visible 1 
+	  cvarTest "ui_actualNetGameType"
+	  hideCvar { "0" }
+	action { play "ui/assets/menu_yes.wav" }
+	}
+
+itemDef {
+	name gametypefield
+	style 0	
+	ownerdraw UI_BLUETEAM4
+      	rect 310 326 140 20 
+	text "4."
+      	textalign 0
+      	textalignx 15
+      	textaligny 14  
+	textscale .25
+	forecolor 1 1 1 1
+	border 0
+	bordercolor 0 0 0 0
+	visible 1 
+	  cvarTest "ui_actualNetGameType"
+	  hideCvar { "0" }
+	action { play "ui/assets/menu_yes.wav" }
+    	}
+
+itemDef {
+      	name gametypefield
+      	style 0	
+	ownerdraw UI_BLUETEAM5
+      	rect 310 343 140 20 
+	text "5."
+      	textalign 0
+      	textalignx 15
+      	textaligny 14  
+	textscale .25
+	forecolor 1 1 1 1
+	border 0
+	bordercolor 0 0 0 0
+	visible 1 
+	  cvarTest "ui_actualNetGameType"
+	  hideCvar { "0" }
+	action { play "ui/assets/menu_yes.wav" }
+    	}
+
+itemDef {
+      	name gametypefield
+      	style 0	
+	ownerdraw UI_BLUETEAM6
+      	rect 310 360 140 20 
+	text "6."
+      	textalign 0
+      	textalignx 15
+      	textaligny 14  
+	textscale .25
+	forecolor 1 1 1 1
+	border 0
+	bordercolor 0 0 0 0
+	visible 1 
+	  cvarTest "ui_actualNetGameType"
+	  hideCvar { "0" }
+	action { play "ui/assets/menu_yes.wav" }
+    	}
+
+
+// BOT LIST FOR NONTEAMGAMES
+
+
+itemDef {
+	name gametypefield
+	style 0	
+	ownerdraw UI_BLUETEAM1
+      	rect 310 130 140 20 
+	text "1."
+      	textalign 0
+      	textalignx 15
+      	textaligny 14  
+	textscale .25
+	forecolor 1 1 1 1
+	border 0
+	bordercolor 0 0 0 0
+	visible 1 
+	  cvarTest "ui_actualNetGameType"
+	  showCvar { "0" }
+	action { play "ui/assets/menu_yes.wav" }
+    	}
+itemDef {
+	name gametypefield
+	style 0	
+	ownerdraw UI_REDTEAM1
+      	rect 310 150 140 20 
+	text "2."
+      	textalign 0
+      	textalignx 15
+      	textaligny 14  
+	textscale .25
+	forecolor 1 1 1 1
+	border 0
+	bordercolor 0 0 0 0
+	visible 1 
+	  cvarTest "ui_actualNetGameType"
+	  showCvar { "0" }
+	action { play "ui/assets/menu_yes.wav" }
+    	}
+itemDef {
+	name gametypefield
+	style 0
+	ownerdraw UI_BLUETEAM2
+      	rect 310 170 140 20 
+	text "3."
+      	textalign 0
+      	textalignx 15
+      	textaligny 14  
+	textscale .25
+	forecolor 1 1 1 1
+	border 0
+	bordercolor 0 0 0 0
+	visible 1 
+	  cvarTest "ui_actualNetGameType"
+	  showCvar { "0" }
+	action { play "ui/assets/menu_yes.wav" }
+	}
+itemDef {
+	name gametypefield
+	style 0
+	ownerdraw UI_REDTEAM2
+      	rect 310 190 140 20 
+	text "4."
+      	textalign 0
+      	textalignx 15
+      	textaligny 14  
+	textscale .25
+	forecolor 1 1 1 1
+	border 0
+	bordercolor 0 0 0 0
+	visible 1 
+	  cvarTest "ui_actualNetGameType"
+	  showCvar { "0" }
+	action { play "ui/assets/menu_yes.wav" }
+	}
+itemDef {
+	name gametypefield
+	style 0	
+	ownerdraw UI_BLUETEAM3
+      	rect 310 210 140 20 
+	text "5."
+      	textalign 0
+      	textalignx 15
+      	textaligny 14  
+	textscale .25
+	forecolor 1 1 1 1
+	border 0
+	bordercolor 0 0 0 0
+	visible 1 
+	  cvarTest "ui_actualNetGameType"
+	  showCvar { "0" }
+	action { play "ui/assets/menu_yes.wav" }
+    	}
+itemDef {
+      	name gametypefield
+      	style 0	
+	ownerdraw UI_REDTEAM3
+      	rect 310 230 140 20 
+	text "6."
+      	textalign 0
+      	textalignx 15
+      	textaligny 14  
+	textscale .25
+	forecolor 1 1 1 1
+	border 0
+	bordercolor 0 0 0 0
+	visible 1 
+	  cvarTest "ui_actualNetGameType"
+	  showCvar { "0" }
+	action { play "ui/assets/menu_yes.wav" }
+    	}
+itemDef {
+      	name gametypefield
+      	style 0	
+ 	ownerdraw UI_BLUETEAM4
+      	rect 310 250 140 20 
+	text "7."
+      	textalign 0
+      	textalignx 15
+      	textaligny 14  
+	textscale .25
+	forecolor 1 1 1 1
+	border 0
+	bordercolor 0 0 0 0
+	visible 1 
+	  cvarTest "ui_actualNetGameType"
+	  showCvar { "0" }
+	action { play "ui/assets/menu_yes.wav" }
+    	}
+itemDef {
+      	name gametypefield
+      	style 0	
+ 	ownerdraw UI_REDTEAM4
+      	rect 310 270 140 20 
+	text "8."
+      	textalign 0
+      	textalignx 15
+      	textaligny 14  
+	textscale .25
+	forecolor 1 1 1 1
+	border 0
+	bordercolor 0 0 0 0
+	visible 1 
+	  cvarTest "ui_actualNetGameType"
+	  showCvar { "0" }
+	action { play "ui/assets/menu_yes.wav" }
+    	}
+itemDef {
+	name gametypefield
+      	style 0	
+	ownerdraw UI_BLUETEAM5
+	rect 310 290 140 20 
+	text "9."
+      	textalign 0
+      	textalignx 15
+      	textaligny 14  
+	textscale .25
+	forecolor 1 1 1 1
+	border 0
+	bordercolor 0 0 0 0
+	visible 1 
+	  cvarTest "ui_actualNetGameType"
+	  showCvar { "0" }
+	action { play "ui/assets/menu_yes.wav" }
+    	}
+
+itemDef {
+      	name gametypefield
+      	style 0	
+	ownerdraw UI_REDTEAM5
+      	rect 310 310 140 20 
+	text "10."
+      	textalign 0
+      	textalignx 15
+      	textaligny 14  
+	textscale .25
+	forecolor 1 1 1 1
+	border 0
+	bordercolor 0 0 0 0
+	visible 1 
+	  cvarTest "ui_actualNetGameType"
+	  showCvar { "0" }
+	action { play "ui/assets/menu_yes.wav" }
+    	}
+
+itemDef {
+      	name gametypefield
+      	style 0	
+	ownerdraw UI_BLUETEAM6
+      	rect 310 330 140 20 
+	text "11."
+      	textalign 0
+      	textalignx 15
+      	textaligny 14  
+	textscale .25
+	forecolor 1 1 1 1
+	border 0
+	bordercolor 0 0 0 0
+	visible 1 
+	  cvarTest "ui_actualNetGameType"
+	  showCvar { "0" }
+	action { play "ui/assets/menu_yes.wav" }
+    	}
+
+itemDef {
+      	name gametypefield
+      	style 0	
+	ownerdraw UI_REDTEAM6
+      	rect 310 350 140 20 
+	text "12."
+      	textalign 0
+      	textalignx 15
+      	textaligny 14  
+	textscale .25
+	forecolor 1 1 1 1
+	border 0
+	bordercolor 0 0 0 0
+	visible 1 
+	  cvarTest "ui_actualNetGameType"
+	  showCvar { "0" }
+	action { play "ui/assets/menu_yes.wav" }
+    	}
+
+
+
+
+
+// 	NORMAL	//	
+
+    itemDef {
+      	name normal
+	group grpsettings
+        type ITEM_TYPE_NUMERICFIELD
+	text "Point Limit:"
+	cvar "teampointlimit" 
+	ownerdrawflag UI_SHOW_NETANYTEAMGAME  
+ 	rect 460 210 120 10
+	textalign ITEM_ALIGN_RIGHT
+	textalignx 85
+	textaligny 10
+	maxchars 3
+	textscale .22
+	forecolor 1 1 1 1
+	visible 1 
+    	}
+    itemDef {
+      	name normal
+	group grpsettings
+	type ITEM_TYPE_NUMERICFIELD
+	text "Frag Limit:"
+	cvar "fraglimit"
+	ownerdrawflag UI_SHOW_NETANYNONTEAMGAME 
+      	rect 460 210 120 10 
+      	textalign ITEM_ALIGN_RIGHT
+	textalignx 85
+      	textaligny 10
+	maxchars 3
+	textscale .22       
+      	forecolor 1 1 1 1
+      	visible 1  
+    	}
+    itemDef {
+      	name normal
+	group grpsettings
+      	type ITEM_TYPE_NUMERICFIELD
+	text "Time Limit:"
+	cvar "timelimit"
+      	rect 460 225 120 10 
+      	textalign ITEM_ALIGN_RIGHT
+	textalignx 85
+      	textaligny 10
+	maxchars 3
+	textscale .22        
+      	forecolor 1 1 1 1
+      	visible 1  
+    }
+
+
+    itemDef {
+      	name normal
+	group grpsettings
+      	type ITEM_TYPE_YESNO
+	text "Friendly Fire:"
+	cvar "g_friendlyfire"
+      	rect 460 240 120 10 
+      	textalign ITEM_ALIGN_RIGHT
+	textalignx 85
+      	textaligny 10
+	textscale .22       
+      	forecolor 1 1 1 1
+      	visible 1  
+    }
+
+    itemDef {
+  	name normal
+	group grpsettings
+      	type ITEM_TYPE_YESNO
+	text "Pure Server:"
+	cvar "sv_pure"
+      	rect 460 255 120 10 
+      	textalign ITEM_ALIGN_RIGHT
+	textalignx 85
+      	textaligny 10
+	textscale .22        
+      	forecolor 1 1 1 1
+      	visible 1  
+    	}
+
+    itemDef {
+      	name normal
+	group grpsettings
+      	type ITEM_TYPE_MULTI
+	text "Dedicated:"
+	cvar "ui_dedicated"
+	cvarFloatList { "No" 0 "LAN" 1 "Inet" 2 }
+	rect 460 270 120 10 
+	textalign ITEM_ALIGN_RIGHT
+	textalignx 85
+	textaligny 10
+	textscale .22        
+      	forecolor 1 1 1 1
+     	visible 1 
+    	}
+
+    itemDef {
+      	name normal
+	group grpsettings
+      	type ITEM_TYPE_MULTI
+		text "Punkbuster:"
+		cvar "sv_punkbuster"
+		cvarFloatList { "No" 0 "Yes" 1 }
+	rect 460 285 120 10 
+	textalign ITEM_ALIGN_RIGHT
+	textalignx 85
+	textaligny 10
+	textscale .22        
+      	forecolor 1 1 1 1
+     	visible 1 
+    	}
+
+
+// BACK BAR	//
+
+itemDef {
+      	name but_settings
+	type ITEM_TYPE_BUTTON
+	text "Settings"
+      	textscale .35
+	style WINDOW_STYLE_FILLED
+      	rect 460 310 115 30
+	textalign 1
+      	textalignx 57
+      	textaligny 21
+	forecolor 1 1 1 1
+	backcolor .1 .5 .75 0.5
+	border 1
+	bordercolor 1 1 1 .25
+      	visible 1 
+      	action { play "ui/assets/menu_yes.wav" ; 
+		 close createserver ; open serversettings }
+	mouseEnter { setitemcolor but_settings backcolor .75 .75 .75 0.5 } 
+      	mouseExit { setitemcolor but_settings backcolor   .1 .5 .75 0.5 } 	  	 
+    	}
+
+itemDef {
+      	name but_start
+	type ITEM_TYPE_BUTTON
+	text "Start"
+      	textscale .35
+	style WINDOW_STYLE_FILLED
+      	rect 460 350 115 30
+	textalign 1
+      	textalignx 57
+      	textaligny 21
+	forecolor 1 1 1 1
+	backcolor .1 .5 .75 0.5
+	border 1
+	bordercolor 1 1 1 .25
+      	visible 1 
+      	action { close createserver ; uiScript StartServer }
+	mouseEnter { setitemcolor but_start backcolor .75 .75 .75 0.5 } 
+      	mouseExit { setitemcolor but_start backcolor   .1 .5 .75 0.5 } 	
+    	}
+
+itemDef {
+      	name back_n_quit_button
+	style 1
+	text "< Back"
+	textscale .275
+	textalign ITEM_ALIGN_LEFT
+      	textalignx 12
+      	textaligny 20
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 0.5
+	border 1
+	bordercolor 1 1 1 .25
+	type ITEM_TYPE_BUTTON
+      	rect 15 430 70 30
+
+	action { play "ui/assets/menu_no.wav" ; close createserver ; open main }
+
+      	visible 1
+	}
+
+
+
+}
+}
+
+}

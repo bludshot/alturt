@@ -1,0 +1,545 @@
+/*
+===========================================================================
+Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2009-2010 Brian Labbie and Dave Richardson.
+
+http://sourceforge.net/projects/alturt/
+
+This file is part of Alturt source code.
+
+Alturt source code is free software: you can redistribute it
+and/or modify it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the License,
+or (at your option) any later version.
+
+Alturt source code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
+===========================================================================
+*/
+
+#include "ui/menudef.h"
+
+{
+  menuDef {
+    	name "serversettings"
+    	visible 0
+    	fullscreen 1
+    	rect 0 0 640 480
+	background "ui/assets/mod_menuback.jpg"
+	focusColor 1 0 0 1	
+    	style 1
+	onEsc { play "ui/assets/menu_yes.wav" ; close serversettings ; open createserver }
+
+	// TITLES
+
+	itemDef {
+		name title
+		text "Your Mod Name Here"
+		style 0
+		type ITEM_TYPE_TEXT
+		textstyle 0
+		textscale 0.6
+		rect 15 15 300 35
+		textalign ITEM_ALIGN_LEFT
+		textalignx 0
+		textaligny 35
+		forecolor 1 1 1 1
+		visible 1
+		decoration
+		}
+
+	itemDef {
+		name modfor
+		text "a mod for Urban Terror"
+		style 0
+		type ITEM_TYPE_TEXT
+		textstyle 0
+		textscale 0.2
+		rect 315 55 300 15
+		textalign ITEM_ALIGN_RIGHT
+		textalignx 0
+		textaligny 10
+		forecolor 1 1 1 1
+		visible 1
+		decoration
+		}
+
+
+
+itemDef {
+      	name Windowsettings1
+	style WINDOW_STYLE_FILLED	
+      	rect 60 110 310 140
+	backcolor .1 .2 .6 0.5
+	border 1
+	bordercolor 1 1 1 .25
+      	visible 1 
+	decoration
+	mouseEnter { setitemcolor Windowsettings1 backcolor .1 .1 .3 0.5 } 
+	mouseExit { setitemcolor Windowsettings1 backcolor .1 .2 .6 0.5 } 
+    	}
+
+itemDef {
+      	name Windowsettings2
+	style WINDOW_STYLE_FILLED	
+      	rect 60 260 310 125
+	backcolor .1 .2 .6 0.5
+	border 1
+	bordercolor 1 1 1 .25
+      	visible 1 
+	decoration
+	mouseEnter { setitemcolor Windowsettings2 backcolor .1 .1 .3 0.5 } 
+	mouseExit { setitemcolor Windowsettings2 backcolor .1 .2 .6 0.5 } 
+    	}
+itemDef {
+      	name Windowsettings3
+	style WINDOW_STYLE_FILLED	
+      	rect 380 110 195 140
+	backcolor .1 .2 .6 0.5
+	border 1
+	bordercolor 1 1 1 .25
+      	visible 1 
+	decoration
+	mouseEnter { setitemcolor Windowsettings3 backcolor .1 .1 .3 0.5 } 
+	mouseExit { setitemcolor Windowsettings3 backcolor .1 .2 .6 0.5 } 
+    	}
+itemDef {
+      	name Windowsettings4           
+	style WINDOW_STYLE_FILLED	
+      	rect 380 260 195 80
+	backcolor .1 .2 .6 0.5
+	border 1
+	bordercolor 1 1 1 .25
+      	visible 1 
+	decoration
+//	mouseEnter { setitemcolor Windowsettings4 backcolor .1 .1 .3 0.5 } 
+//	mouseExit { setitemcolor Windowsettings4 backcolor .1 .2 .6 0.5 } 
+    	}
+
+
+
+//	SETTINGS	//
+
+
+// 	EXPERT	//	
+
+
+// GENERAL
+
+    itemDef {
+      	name expert
+	group grpsettings
+	text "General Settings:"
+      	rect 60 120 340 12
+      	textalign ITEM_ALIGN_LEFT
+      	textalignx 10
+      	textaligny 13
+	textscale .27        
+      	forecolor 1 1 1 1
+      	visible 1  
+	decoration
+    }
+
+    itemDef {
+      	name expert
+	group grpsettings
+      	type ITEM_TYPE_EDITFIELD
+	text "Host Name:"
+	cvar "sv_hostname"
+	maxChars 32
+	maxPaintChars 20
+      	rect 60 140 340 12
+      	textalign ITEM_ALIGN_RIGHT
+      	textalignx 150
+      	textaligny 12
+	textscale .25        
+      	forecolor 1 1 1 1
+      	visible 1  
+    }
+
+    itemDef {
+      	name expert
+	group grpsettings
+      	type ITEM_TYPE_YESNO
+	text "Auto Download:"
+	cvar "sv_allowdownload"
+      	rect 60 155 340 12
+	textalign ITEM_ALIGN_RIGHT
+      	textalignx 150
+	textaligny 12
+	textscale .25        
+	forecolor 1 1 1 1
+	visible 1  
+    }
+
+    itemDef {
+      	name expert
+	group grpsettings
+      	type ITEM_TYPE_YESNO
+	text "Enable Voting:"
+	cvar "g_allowvote"
+      	rect 60 170 340 12
+      	textalign ITEM_ALIGN_RIGHT
+      	textalignx 150
+      	textaligny 12
+	textscale .25        
+      	forecolor 1 1 1 1
+      	visible 1  
+    	}
+
+   itemDef {
+      	name expert
+	group grpsettings
+      	type ITEM_TYPE_NUMERICFIELD
+	text "Maximum Players:"
+	cvar "sv_maxclients"
+      	rect 60 185 340 12
+      	textalign ITEM_ALIGN_RIGHT
+      	textalignx 150
+	maxchars 4
+      	textaligny 12
+	textscale .25        
+      	forecolor 1 1 1 1
+      	visible 1  
+    	}
+
+    itemDef {
+      	name expert
+	group grpsettings
+      	type ITEM_TYPE_NUMERICFIELD
+	text "Inventory Time:"
+ 	cvar "g_inventoryUpdateTime"
+      	rect 60 200 340 12
+      	textalign ITEM_ALIGN_RIGHT
+      	textalignx 150
+      	textaligny 12
+	textscale .25        
+      	forecolor 1 1 1 1
+      	visible 1 
+    	}
+
+    itemDef {
+      	name expert
+	group grpsettings
+ 	type ITEM_TYPE_YESNO
+	text "Require Password:"
+	cvar "g_needpassword"
+      	rect 60 215 340 12
+      	textalign ITEM_ALIGN_RIGHT
+      	textalignx 150
+      	textaligny 12
+	textscale .25        
+      	forecolor 1 1 1 1
+      	visible 1  
+    	}
+
+    itemDef {
+      	name expert
+	group grpsettings
+      	type 4
+	text "Password:"
+	cvar "g_password"
+      	rect 60 230 340 12
+	maxchars 10
+	maxPaintChars 10
+      	textalign ITEM_ALIGN_RIGHT
+      	textalignx 150
+      	textaligny 12
+	textscale .25        
+      	forecolor 1 1 1 1
+      	visible 1  
+    	}
+
+// GAMEPLAY
+
+    itemDef {
+      	name expert
+	group grpsettings
+	text "Gameplay Settings:"
+      	rect 60 270 340 12
+      	textalign ITEM_ALIGN_LEFT
+      	textalignx 10
+      	textaligny 13
+	textscale .27        
+      	forecolor 1 1 1 1
+      	visible 1  
+	decoration
+    }
+
+    itemDef {
+      	name expert
+	group grpsettings
+      	type ITEM_TYPE_NUMERICFIELD
+	text "Round Time:"
+	cvar "roundtime"
+	maxChars 4
+	maxPaintChars 10
+      	rect 60 290 340 12
+      	textalign ITEM_ALIGN_RIGHT
+      	textalignx 150
+      	textaligny 12
+	textscale .25        
+      	forecolor 1 1 1 1
+      	visible 1  
+    }
+
+    itemDef {
+      	name expert
+	group grpsettings
+	type ITEM_TYPE_YESNO
+	text "Override Objectives:"
+	cvar "g_overrideGoals"
+	maxChars 4
+	maxPaintChars 10
+      	rect 60 305 340 12
+      	textalign ITEM_ALIGN_RIGHT
+      	textalignx 150
+      	textaligny 12
+	textscale .25        
+      	forecolor 1 1 1 1
+      	visible 1  
+    }
+
+    itemDef {
+      	name expert
+	group grpsettings
+      	type ITEM_TYPE_NUMERICFIELD
+	text "Teamkiller Limit:"
+        cvar "g_maxTeamKill"
+	maxChars 4
+	maxPaintChars 10
+      	rect 60 320 340 12
+      	textalign ITEM_ALIGN_RIGHT
+      	textalignx 150
+      	textaligny 12
+	textscale .25        
+      	forecolor 1 1 1 1
+      	visible 1  
+    }
+
+    itemDef {
+	name expert
+	group grpsettings
+      	type ITEM_TYPE_YESNO
+	text "Force Join:"
+	cvar "g_teamautojoin"
+      	rect 60 335 340 12
+      	textalign ITEM_ALIGN_RIGHT
+      	textalignx 150
+      	textaligny 12
+	textscale .25        
+      	forecolor 1 1 1 1
+      	visible 1  
+    	}
+
+    itemDef {
+      	name expert
+	group grpsettings
+      	type ITEM_TYPE_YESNO
+	text "Even Teams:"
+	cvar "g_teamforcebalance"
+      	rect 60 350 340 12
+      	textalign ITEM_ALIGN_RIGHT
+      	textalignx 150
+      	textaligny 12
+	textscale .25        
+      	forecolor 1 1 1 1
+      	visible 1  
+    	}
+
+    itemDef {
+      	name expert
+	group grpsettings
+      	type ITEM_TYPE_YESNO
+	text "Cheats:"
+	cvar "sv_cheats"
+      	rect 60 365 340 12
+      	textalign ITEM_ALIGN_RIGHT
+      	textalignx 150
+      	textaligny 12
+	textscale .25        
+      	forecolor 1 1 1 1
+      	visible 1  
+    	}
+
+// NETWORK
+
+    itemDef {
+      	name expert
+	group grpsettings
+	text "Network Settings:"
+      	rect 380 120 165 12
+      	textalign ITEM_ALIGN_LEFT
+      	textalignx 10
+      	textaligny 13
+	textscale .27        
+      	forecolor 1 1 1 1
+      	visible 1  
+	decoration
+    }
+    itemDef {
+      	name expert
+	group grpsettings
+      	type ITEM_TYPE_NUMERICFIELD
+	text "Minimum Ping:"
+	cvar "sv_minping"
+      	rect 380 140 165 12
+      	textalign ITEM_ALIGN_RIGHT
+      	textalignx 150
+	maxchars 4
+      	textaligny 12
+	textscale .25        
+      	forecolor 1 1 1 1
+      	visible 1  
+    }
+
+    itemDef {
+	name expert
+	group grpsettings
+      	type ITEM_TYPE_NUMERICFIELD
+	text "Maximum Ping:"
+	cvar "sv_maxping"
+      	rect 380 155 165 12
+      	textalign ITEM_ALIGN_RIGHT
+      	textalignx 150
+      	textaligny 12
+	maxchars 4
+	textscale .25        
+      	forecolor 1 1 1 1
+      	visible 1  
+    }
+
+
+    itemDef {
+      	name expert
+	group grpsettings
+      	type ITEM_TYPE_YESNO
+	text "Synchronous Client:"
+	cvar "g_synchronousclients"
+      	rect 380 170 165 12
+      	textalign ITEM_ALIGN_RIGHT
+      	textalignx 150
+      	textaligny 12
+	textscale .25        
+      	forecolor 1 1 1 1
+      	visible 1
+    	}
+
+    itemDef {
+      	name expert
+	group grpsettings
+      	type ITEM_TYPE_NUMERICFIELD
+	text "Max Rate:"
+	cvar "sv_maxrate"
+      	rect 380 185 165 12
+      	textalign ITEM_ALIGN_RIGHT
+      	textalignx 150
+	maxchars 4
+      	textaligny 12
+	textscale .25        
+      	forecolor 1 1 1 1
+      	visible 1  
+    	}
+
+    itemDef {
+      	name expert
+	group grpsettings
+      	type ITEM_TYPE_NUMERICFIELD
+	text "Zombie Time:"
+	cvar "sv_zombietime"
+      	rect 380 200 165 12
+	maxchars 4
+      	textalign ITEM_ALIGN_RIGHT
+      	textalignx 150
+      	textaligny 12
+	textscale .25        
+      	forecolor 1 1 1 1
+      	visible 1  
+    	}
+
+    itemDef {
+      	name expert
+	group grpsettings
+      	type ITEM_TYPE_NUMERICFIELD
+	text "Reconnect Limit:"
+	cvar "sv_reconnectlimit"
+	maxchars 4
+      	rect 380 215 165 12
+      	textalign ITEM_ALIGN_RIGHT
+      	textalignx 150
+      	textaligny 12
+	textscale .25        
+      	forecolor 1 1 1 1
+      	visible 1  
+    	}
+
+// DISCLAIMER
+
+    itemDef {
+	name expert
+	group grpsettings
+	text "Only change these settings if you know what you're doing."
+      	rect 380 280 175 60
+      	textalign ITEM_ALIGN_CENTER
+      	textalignx 87
+      	textaligny 12
+	autowrapped
+	textscale .25        
+      	forecolor 1 1 1 1
+      	visible 1  
+	decoration
+    }
+
+
+
+// button
+
+itemDef {
+      	name but_back
+	type ITEM_TYPE_BUTTON
+	text "Back"
+      	textscale .30
+	style WINDOW_STYLE_FILLED
+      	rect 380 350 195 35
+	textalign 1
+      	textalignx 97
+      	textaligny 24
+	forecolor 1 1 1 1
+	backcolor .1 .5 .75 0.5
+	border 1
+	bordercolor 1 1 1 .25
+      	visible 1 
+      	action { play "ui/assets/menu_yes.wav" ; close serversettings ; open createserver }
+	mouseEnter { setitemcolor but_back backcolor .75 .75 .75 0.5 } 
+      	mouseExit { setitemcolor but_back backcolor   .1 .5 .75 0.5 } 	
+    	}
+
+/*
+itemDef {
+      	name back_n_quit_button
+	text "< Back"
+	textscale .22
+	textalign 1
+      	textalignx 55
+      	textaligny 14
+	forecolor 1 1 1 1
+	backcolor .1 .5 .75 0.5
+	type ITEM_TYPE_BUTTON
+      	rect 40 424 560 28
+
+	action { play "ui/assets/menu_yes.wav" ; close serversettings ; open createserver }
+
+      	visible 1
+	}
+*/
+
+
+
+}
+}
+}

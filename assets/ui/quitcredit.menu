@@ -1,0 +1,279 @@
+/*
+===========================================================================
+Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2009-2010 Brian Labbie and Dave Richardson.
+
+http://sourceforge.net/projects/alturt/
+
+This file is part of Alturt source code.
+
+Alturt source code is free software: you can redistribute it
+and/or modify it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the License,
+or (at your option) any later version.
+
+Alturt source code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
+===========================================================================
+*/
+
+#include "ui/menudef.h"
+
+{
+  menuDef {
+    	name "quitCredit"
+    	visible 0
+    	fullscreen 1
+    	rect 0 0 640 480
+	background "ui/assets/mod_menuback.jpg"
+	focusColor 1 0 0 1
+    	style 1
+	onEsc { uiScript "quit" }
+	onOpen { show grpother ; 
+		 setfocus click2 ;
+		 show click2 ; 
+		 show clicktoquit ;
+		 fadein grpother }
+
+
+
+	// TITLES
+
+	itemDef {
+		name title
+		text "Your Mod Name Here"
+		style 0
+		type ITEM_TYPE_TEXT
+		textstyle 0
+		textscale 0.6
+		rect 15 15 300 35
+		textalign ITEM_ALIGN_LEFT
+		textalignx 0
+		textaligny 35
+		forecolor 1 1 1 1
+		visible 1
+		decoration
+		}
+
+	itemDef {
+		name modfor
+		text "a mod for Urban Terror"
+		style 0
+		type ITEM_TYPE_TEXT
+		textstyle 0
+		textscale 0.2
+		rect 315 55 300 15
+		textalign ITEM_ALIGN_RIGHT
+		textalignx 0
+		textaligny 10
+		forecolor 1 1 1 1
+		visible 1
+		decoration
+		}
+
+
+itemDef {
+	name escapeexit
+	style 0 
+	rect 492 120 140 20
+	textalign ITEM_ALIGN_LEFT
+	textalignx 0
+	textaligny 0
+      	textscale .333
+	textstyle 4
+	text "[ Hit ESC to exit ]"
+	forecolor 0.8 0.8 0.8 1
+	decoration 
+	visible 1
+	}
+
+
+itemDef {
+	name creditz
+	style 0 
+	rect 15 120 305 20
+	textalign ITEM_ALIGN_LEFT
+	textalignx 0
+	textaligny 0
+      	textscale .333
+	textstyle 4
+	text "Alturt Credits"
+	forecolor 1 1 1 1
+	decoration 
+	visible 1
+	}
+
+
+itemDef {
+	name thanks
+	style 0 
+	rect 335 150 305 20
+	textalign ITEM_ALIGN_LEFT
+	textalignx 0
+	textaligny 0
+      	textscale .275
+	textstyle 4
+	text "Thanks to:"
+	forecolor 0.8 0.8 1 1
+	decoration 
+	visible 1
+	}
+
+
+
+
+
+
+// othercredit 
+
+itemDef {
+	name specialthx
+	group grpother 
+	style 0 
+	rect 30 150 290 270
+	textalign 0
+	textalignx 0
+	textaligny 0
+	textscale .25
+	textstyle 0
+	forecolor  1 1 1 1
+	decoration 
+	visible 0
+
+	wrapped
+
+	text
+
+	"The Alturt Dev Team:\r"
+	"  BludShoT - programmer\r"
+	"  Xamis - programmer\r\r"
+
+	"Some Alturt code was derived from:\r"
+	"  Navy Seals: Covert Ops\r"
+	"  Smokin' Guns\r"
+	"  Open Arena\r"
+	"  Q3 modding tutorial web pages\r\r"
+
+	"Alturt also contains some open source assets\r"
+	"from Open Arena and Q3Min.\r\r"
+	"Credit for the game this mod runs on goes to\r"
+	"Frozen Sand, ioquake3, and Id Software.\r"
+	}
+
+
+itemDef {
+	name thanksto
+	group grpother 
+	style 0 
+	rect 350 180 290 220
+	textalign 0
+	textalignx 0
+	textaligny 0
+	textscale .2
+	textstyle 0
+	forecolor  0.9 0.9 0.9 1
+	decoration 
+	visible 0
+
+	wrapped
+
+	text
+
+
+
+	"ioquake3\r"
+	"Id Software\r"
+	"Team Mirage\r"
+	"Smokin' Guns Productions\r"
+	"The Open Arena devs\r"
+	"Q3 mod tutorial writers\r"
+	"The authors of the Q3TA ui menu documentation\r"
+	"quake3world.com forum (misantropia)\r"
+	"Dairyman from The Reaction Factory\r"
+	"Darklegion Development\r"
+	"Frozen Sand\r"
+	"The makers of Q3 Model Tool, Quake Video Maker, GTK Radiant\r"
+	"Gaming Tilt and Teknix for hosting test servers\r"
+	"Those who have helped with testing\r"
+	"SourceForge\r"
+	"Anyone else who helped\r"
+	}
+
+
+itemDef {
+      	name seereadme
+      	text "See readme.txt for further Credit and Thanks details."
+      	style 1
+      	rect 200 430 440 50
+      	textalign ITEM_ALIGN_LEFT
+      	textaligny 0
+      	textalignx 0 
+      	textscale .2
+	textstyle 2 
+      	forecolor 0.7 0.7 0.7 1
+      	visible 0 
+      	decoration
+	}
+
+
+itemDef {
+      	name clicktoquit
+      	text "Click anywhere to Quit"
+      	style 1
+      	rect 320 420 560 28
+      	textalign 1
+      	textaligny 0
+      	textalignx 0 
+      	textscale .25
+	textstyle 2 
+      	forecolor 1 0 0 1
+      	visible 0 
+      	decoration 
+	}
+
+
+itemDef {
+      	name click2
+	type ITEM_TYPE_BUTTON
+	style 0
+      	rect 0 0 640 420
+      	visible 0 
+	action { close quitCredit ; uiScript "quit" }
+    	}
+
+
+itemDef {
+      	name back_n_quit_button
+	style 1
+	text "< Back"
+	textscale .275
+	textalign ITEM_ALIGN_LEFT
+      	textalignx 12
+      	textaligny 20
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 0.5
+	border 1
+	bordercolor 1 1 1 .25
+	type ITEM_TYPE_BUTTON
+      	rect 15 430 70 30
+
+	action  { play "ui/assets/menu_no.wav" ; close quitcredit ; open main }
+
+      	visible 1
+	}
+
+
+
+
+
+
+
+}
+
+}
+}

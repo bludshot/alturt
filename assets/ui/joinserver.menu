@@ -1,0 +1,639 @@
+/*
+===========================================================================
+Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2009-2010 Brian Labbie and Dave Richardson.
+
+http://sourceforge.net/projects/alturt/
+
+This file is part of Alturt source code.
+
+Alturt source code is free software: you can redistribute it
+and/or modify it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the License,
+or (at your option) any later version.
+
+Alturt source code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
+===========================================================================
+*/
+
+#include "ui/menudef.h"
+
+{
+  menuDef {
+    	name "joinserver"
+    	visible 0
+    	fullscreen 1
+    	rect 0 0 640 480
+	background "ui/assets/mod_menuback.jpg"
+	focusColor 1 0 0 1	
+    	style 1
+	onEsc { play "ui/assets/menu_no.wav" ; uiScript closeJoin }
+	onOpen { uiScript UpdateFilter  }
+
+
+
+	// TITLES
+
+	itemDef {
+		name title
+		text "Your Mod Name Here"
+		style 0
+		type ITEM_TYPE_TEXT
+		textstyle 0
+		textscale 0.6
+		rect 15 15 300 35
+		textalign ITEM_ALIGN_LEFT
+		textalignx 0
+		textaligny 35
+		forecolor 1 1 1 1
+		visible 1
+		decoration
+		}
+
+	itemDef {
+		name modfor
+		text "a mod for Urban Terror"
+		style 0
+		type ITEM_TYPE_TEXT
+		textstyle 0
+		textscale 0.2
+		rect 315 55 300 15
+		textalign ITEM_ALIGN_RIGHT
+		textalignx 0
+		textaligny 10
+		forecolor 1 1 1 1
+		visible 1
+		decoration
+		}
+
+
+
+
+// DATE AND MOTD
+
+itemDef {
+	name datewindow
+	rect 60 360 520 20
+	style WINDOW_STYLE_FILLED	
+	border 1
+	bordercolor .5 .5 .5 1
+	backcolor 0 0 0 .15
+	visible 1
+	}
+
+
+itemDef {
+      	name refreshdate
+	ownerdraw UI_SERVERREFRESHDATE
+      	textscale .20
+	rect 60 360 260 20
+	textalign 0
+      	textalignx 10	
+      	textaligny 16
+      	forecolor 1 1 1 1
+      	visible 1
+	decoration 
+    }
+
+
+
+// MAP SELECTION
+
+itemDef {
+      	name netsource
+      	style 1
+ 	ownerdraw UI_NETSOURCE
+    	rect 60 110 150 30 
+    	textalign 0	
+    	textalignx 4
+    	textaligny 20
+	textscale .275     
+
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 0.5
+	border 1
+	bordercolor 1 1 1 .25
+
+     	visible 1 
+	action { play "ui/assets/menu_yes.wav" }
+	mouseEnter { setitemcolor netsource backcolor .1 .1 .3 0.5 } 
+      	mouseExit { setitemcolor netsource backcolor .1 .2 .6 0.5 } 	
+    	}
+
+itemDef {
+	name gametype
+	style 1
+	text "Type:"
+	ownerdraw UI_JOINGAMETYPE
+    	rect 60 148 150 30 
+    	textalign 0	
+    	textalignx 4
+    	textaligny 20
+	textscale .275     
+
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 0.5
+	border 1
+	bordercolor 1 1 1 .25
+
+      	visible 1 
+	action { play "ui/assets/menu_yes.wav" }
+	mouseEnter { setitemcolor gametype backcolor .1 .1 .3 0.5 } 
+      	mouseExit { setitemcolor gametype backcolor .1 .2 .6 0.5 } 
+    }
+
+
+itemDef {
+      	name mappreview
+      	style 0	
+ 	ownerdraw UI_NETMAPCINEMATIC
+      	rect 460 110 120 90
+	border 1
+	bordercolor 1 1 1 .25
+      	visible 1 
+    }
+
+ itemDef {
+	name serverlist
+	rect 60 220 520 140
+	type ITEM_TYPE_LISTBOX
+	style WINDOW_STYLE_FILLED
+	elementwidth  520
+	elementheight 12
+	textscale .20
+	elementtype LISTBOX_TEXT
+	feeder FEEDER_SERVERS
+	border 1
+	bordercolor .5 .5 .5 1
+	forecolor 1 1 1 1
+	backcolor 0 0 .7 .25
+	outlinecolor 1 1 1 .25
+	visible 1
+	columns 5 	0 40 40 
+			230 40 20 
+			330 5 2 
+			360 20 10 
+			450 20 20
+	doubleClick { uiScript JoinServer }
+  }
+
+
+//	SORT TABS	//
+
+ itemDef {
+      	name server
+	group grpTabs
+      	text "Server Name"
+	type ITEM_TYPE_BUTTON
+      	textscale .2
+      	style WINDOW_STYLE_FILLED
+	background "ui/assets/sorttab.tga"
+	rect 60 210 230 12
+	textalign 1
+	textaligny 10
+	textalignx 115
+      	forecolor 1 1 1 1
+	backcolor .1 .2 .6 0.5
+      	visible 1 
+      	action { play "ui/assets/menu_yes.wav" ; 
+		uiScript ServerSort 0 ; 
+		setitemcolor grpTabs backcolor .1 .2 .6 0.5 ; 
+		setitemcolor server backcolor .1 .2 .6 1 ;
+		setitemcolor grpColumn backcolor 0 0 0 0 ; 
+		setitemcolor serverColumn backcolor  1 1 1 .25 ;
+		setitemcolor serverColumn forecolor 0 0 0 1 }
+
+	mouseEnter { setitemcolor serverColumn bordercolor 1 0 0 1 }
+      	mouseExit { setitemcolor serverColumn bordercolor .5 .5 .5 1 }  
+    }
+
+
+
+ itemDef {
+      	name map
+	group grpTabs
+	type ITEM_TYPE_BUTTON
+      	text "Map Name"
+      	textscale .2
+	style WINDOW_STYLE_FILLED
+	background "ui/assets/sorttab.tga"
+	rect 290 210 100 12
+	textalign 1
+	textaligny 10
+	textalignx 50
+	backcolor .1 .2 .6 0.5
+      	forecolor 1 1 1 1
+      	visible 1 
+      	action { play "ui/assets/menu_yes.wav" ; 
+		uiScript ServerSort 1 ; 
+		setitemcolor grpTabs backcolor .1 .2 .6 0.5 ; 
+		setitemcolor map backcolor .1 .2 .6 1 ;
+		setitemcolor grpColumn backcolor 0 0 0 0 ; 
+		setitemcolor mapColumn backcolor 1 1 1 .25 ;
+		setitemcolor mapColumn forecolor 0 0 0 1 }
+
+	mouseEnter { setitemcolor mapColumn bordercolor 1 0 0 1 }
+      	mouseExit { setitemcolor mapColumn bordercolor .5 .5 .5 1 }	  	  
+    }
+
+
+ itemDef {
+	name Players
+	group grpTabs
+	text "Plr"
+	type ITEM_TYPE_BUTTON
+	textscale .2
+	style WINDOW_STYLE_FILLED
+	background "ui/assets/sorttab.tga"
+	rect 390 210 30 12
+	textalign 1
+	textaligny 10
+	textalignx 15
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 0.5
+	visible 1 
+	action { play "ui/assets/menu_yes.wav" ; 
+		uiScript ServerSort 2 ;
+		setitemcolor grpTabs backcolor .1 .2 .6 0.5 ; 
+		setitemcolor Players backcolor .1 .2 .6 1 ;
+		setitemcolor grpColumn backcolor 0 0 0 0 ; 
+		setitemcolor playerColumn backcolor 1 1 1 .25 ;
+		setitemcolor playerColumn forecolor 0 0 0 1 }
+
+	mouseEnter { setitemcolor playerColumn bordercolor 1 0 0 1 }
+      	mouseExit { setitemcolor playerColumn bordercolor .5 .5 .5 1 }  	  
+    }
+
+
+
+
+itemDef {
+	name Type
+	group grpTabs
+	text "Type"
+	textscale .2
+	type ITEM_TYPE_BUTTON
+	style WINDOW_STYLE_FILLED
+	background "ui/assets/sorttab.tga"
+	rect 420 210 90 12
+	textalign 1
+	textaligny 10
+	textalignx 45
+	backcolor .1 .2 .6 0.5
+	forecolor 1 1 1 1
+	visible 1 
+	action { play "ui/assets/menu_yes.wav" ; 
+		uiScript ServerSort 3 ;
+		setitemcolor grpTabs backcolor .1 .2 .6 0.5 ; 
+		setitemcolor Type backcolor .1 .2 .6 1 ;
+		setitemcolor grpColumn backcolor 0 0 0 0 ; 
+		setitemcolor typeColumn backcolor 1 1 1 .25 ;
+		setitemcolor typeColumn forecolor 0 0 0 1 }
+
+	mouseEnter { setitemcolor typeColumn bordercolor 1 0 0 1 }
+      	mouseExit { setitemcolor typeColumn bordercolor .5 .5 .5 1 }	  	  
+    }
+
+itemDef {
+	name Ping
+	group grpTabs
+	text "Ping"
+	type ITEM_TYPE_BUTTON
+	textscale .2
+	style WINDOW_STYLE_FILLED
+	background "ui/assets/sorttab.tga"
+	rect 510 210 54 12
+	textalign 1
+	textaligny 10
+	textalignx 27
+	backcolor .1 .2 .6 0.5
+	forecolor 1 1 1 1
+	visible 1 
+	action { play "ui/assets/menu_yes.wav" ; 
+		uiScript ServerSort 4 ;
+		setitemcolor grpTabs backcolor .1 .2 .6 0.5 ; 
+		setitemcolor Ping backcolor .1 .2 .6 1 ;
+		setitemcolor grpColumn backcolor 0 0 0 0 ;
+		setitemcolor pingColumn backcolor 1 1 1 .25 ;
+		setitemcolor pingColumn forecolor 0 0 0 1 }
+
+	mouseEnter { setitemcolor pingColumn bordercolor 1 0 0 1 }
+      	mouseExit { setitemcolor pingColumn bordercolor .5 .5 .5 1 }	  
+    }
+
+
+
+
+//	COLUMNS	//
+
+
+
+itemDef {
+	name serverColumn
+	group grpColumn
+	rect 60 220 230 140
+	style WINDOW_STYLE_FILLED
+	border 1
+	backcolor 0 0 0 0
+	bordersize 1
+	bordercolor .5 .5 .5 1
+	visible 1
+	decoration
+  }
+itemDef {
+	name mapColumn
+	group grpColumn
+	rect 290 220 100 140
+	style WINDOW_STYLE_FILLED
+	border 1
+	backcolor 0 0 0 0
+	bordersize 1
+	bordercolor .5 .5 .5 1
+	visible 1
+	decoration
+  }
+itemDef {
+	name playerColumn
+	group grpColumn
+	rect 390 220 30 140
+	style WINDOW_STYLE_FILLED
+	border 1
+	backcolor 0 0 0 0
+	bordersize 1
+	bordercolor .5 .5 .5 1
+	visible 1
+	decoration
+  }
+itemDef {
+	name typeColumn
+	group grpColumn
+	rect 420 220 90 140
+	style WINDOW_STYLE_FILLED
+	border 1
+	backcolor 0 0 0 0
+	bordersize 1
+	bordercolor .5 .5 .5 1
+	visible 1
+	decoration
+  }
+itemDef {
+	name pingColumn
+	group grpColumn
+	rect 510 220 54 140
+	style WINDOW_STYLE_FILLED
+	border 1
+	backcolor 0 0 0 0
+	bordersize 1
+	bordercolor .5 .5 .5 1
+	visible 1
+	decoration
+  }
+
+
+// 	BUTTONS		//
+
+itemDef {
+      	name serverinfo
+      	text "View Server Info"
+	type ITEM_TYPE_BUTTON
+      	textscale .22
+	style WINDOW_STYLE_FILLED
+      	rect 60 185 150 18
+	textalign 1
+      	textalignx 75
+      	textaligny 14
+	forecolor 1 1 1 1
+	backcolor .1 .5 .75 0.5
+	border 1
+	bordercolor 1 1 1 .25
+      	visible 1 
+      	action { open serverinfo_popmenu }
+	mouseEnter { setitemcolor serverinfo backcolor .75 .75 .75 0.5 } 
+      	mouseExit { setitemcolor serverinfo backcolor  .1  .5 .75 0.5 } 	
+    	}
+
+itemDef {
+      	name viewEmpty
+	type ITEM_TYPE_YESNO
+	style WINDOW_STYLE_FILLED
+      	text "View Empty:"
+	cvar "ui_browserShowEmpty"
+      	textscale .22
+      	rect 220 110 110 18
+	textalign 1
+      	textalignx 40
+      	textaligny 14
+      	forecolor 1 1 1 1
+	backcolor .1 .5 .75 0.5
+	border 1
+	bordercolor 1 1 1 .25
+      	visible 1 
+	action { play "ui/assets/menu_yes.wav" ; uiScript RefreshFilter }
+	mouseEnter { setitemcolor viewEmpty backcolor .75 .75 .75 0.5  }
+      	mouseExit { setitemcolor viewEmpty backcolor  .1 .5 .75 0.5 }	  
+    }
+itemDef {
+      	name viewFull
+	type 11
+	style WINDOW_STYLE_FILLED
+      	text "View Full:"
+	cvar "ui_browserShowFull"
+      	textscale .22
+      	rect 340 110 110 18
+	textalign 1
+      	textalignx 40
+      	textaligny 14
+      	forecolor 1 1 1 1
+	backcolor .1 .5 .75 0.5
+	border 1
+	bordercolor 1 1 1 .25
+      	visible 1 
+	    action { uiScript RefreshFilter ; 
+		play "ui/assets/menu_yes.wav" }
+	mouseEnter { setitemcolor viewFull backcolor .75 .75 .75 0.5 }
+      	mouseExit { setitemcolor viewFull backcolor .1 .5 .75 0.5 }	  	  
+    }
+
+
+itemDef {
+      	name createFavorite
+      	text "Create Favorite"
+	type ITEM_TYPE_BUTTON
+      	textscale .22
+	style WINDOW_STYLE_FILLED
+      	rect 220 135 110 18
+	textalign 1
+      	textalignx 55
+      	textaligny 14
+	forecolor 1 1 1 1
+	backcolor .1 .5 .75 0.5
+	border 1
+	bordercolor 1 1 1 .25
+      	visible 1 
+      	action { play "ui/assets/menu_yes.wav" ; 
+	open createfavorite_popmenu }
+	mouseEnter { setitemcolor createFavorite backcolor .75 .75 .75 0.5 }
+      	mouseExit { setitemcolor createFavorite backcolor .1 .5 .75 0.5 } 
+    	}
+
+
+itemDef {
+      	name addFavorite
+      	text "Add Favorite"
+	type ITEM_TYPE_BUTTON
+      	textscale .22
+	style WINDOW_STYLE_FILLED
+	ownerdrawFlag UI_SHOW_NOTFAVORITESERVERS
+      	rect 340 135 110 18
+	textalign 1
+      	textalignx 55
+      	textaligny 14
+	forecolor 1 1 1 1
+	backcolor .1 .5 .75 0.5
+	border 1
+	bordercolor 1 1 1 .25
+      	visible 1 
+      	action { play "ui/assets/menu_yes.wav" ; 
+	uiScript addFavorite }
+	mouseEnter { setitemcolor addFavorite backcolor .75 .75 .75 0.5 } 
+      	mouseExit { setitemcolor addFavorite backcolor .1 .5 .75 0.5 } 	 
+    	}
+
+itemDef {
+      	name delfavorite
+      	text "Del. Favorite"
+	type ITEM_TYPE_BUTTON
+      	textscale .22
+	style WINDOW_STYLE_FILLED
+	ownerdrawFlag UI_SHOW_FAVORITESERVERS
+      	rect 340 135 110 18
+	textalign 1
+      	textalignx 55
+      	textaligny 14
+	forecolor 1 1 1 1
+	backcolor .1 .5 .75 0.5
+	border 1
+	bordercolor 1 1 1 .25
+      	visible 1 
+      	action { play "ui/assets/menu_yes.wav" ; 
+	uiScript DeleteFavorite ; uiScript UpdateFilter }
+	mouseEnter { setitemcolor delfavorite backcolor .75 .75 .75 0.5 } 
+      	mouseExit { setitemcolor delfavorite backcolor  .1 .5 .75 0.5 } 	
+    	}
+
+
+itemDef {
+      	name password
+      	text "Password"
+	type ITEM_TYPE_BUTTON
+      	textscale .22
+	style WINDOW_STYLE_FILLED
+      	rect 220 160 110 18
+	textalign 1
+      	textalignx 55
+      	textaligny 14
+	forecolor 1 1 1 1
+	backcolor .1 .5 .75 0.5
+	border 1
+	bordercolor 1 1 1 .25
+      	visible 1 
+      	action { play "ui/assets/menu_yes.wav" ; 
+	open password_popmenu }
+	mouseEnter { setitemcolor password backcolor .75 .75 .75 0.5 } 
+      	mouseExit { setitemcolor password backcolor   .1 .5 .75 0.5 } 	  	 
+    }
+itemDef {
+      	name findplayer
+      	text "Find Friend"
+	type ITEM_TYPE_BUTTON
+      	textscale .22
+	style WINDOW_STYLE_FILLED
+      	rect 340 160 110 18
+	textalign 1
+      	textalignx 55
+      	textaligny 14
+	forecolor 1 1 1 1
+	backcolor .1 .5 .75 0.5
+	border 1
+	bordercolor 1 1 1 .25
+      	visible 1 
+      	action { play "ui/assets/menu_yes.wav" ; 
+	open findplayer_popmenu }
+	mouseEnter { setitemcolor findplayer backcolor .75 .75 .75 0.5 } 
+      	mouseExit { setitemcolor findplayer backcolor  .1 .5 .75 0.5 } 	
+    	}
+
+itemDef {
+      	name refreshlist
+      	text "Refresh List"
+	type ITEM_TYPE_BUTTON
+      	textscale .22
+	style WINDOW_STYLE_FILLED
+      	rect 220 185 110 18
+	textalign 1
+      	textalignx 55
+      	textaligny 14
+	forecolor 1 1 1 1
+	backcolor .1 .5 .75 0.5
+	border 1
+	bordercolor 1 1 1 .25
+      	visible 1 
+      	action { uiScript RefreshFilter }
+	mouseEnter { setitemcolor refreshlist backcolor .75 .75 .75 0.5 } 
+      	mouseExit { setitemcolor refreshlist backcolor   .1 .5 .75 0.5 } 	  	 
+    }
+itemDef {
+      	name getservers
+      	text "Get Servers"
+	type ITEM_TYPE_BUTTON
+      	textscale .22
+	style WINDOW_STYLE_FILLED
+      	rect 340 185 110 18
+	textalign 1
+      	textalignx 55
+      	textaligny 14
+	forecolor 1 1 1 1
+	backcolor .1 .5 .75 0.5
+	border 1
+	bordercolor 1 1 1 .25
+      	visible 1 
+      	action { uiScript RefreshServers }
+	mouseEnter { setitemcolor getservers backcolor .75 .75 .75 0.5 } 
+      	mouseExit { setitemcolor getservers backcolor  .1 .5 .75 0.5 } 	
+    	}
+
+itemDef {
+      	name back_n_quit_button
+	style 1
+	text "< Back"
+	textscale .275
+	textalign ITEM_ALIGN_LEFT
+      	textalignx 12
+      	textaligny 20
+	forecolor 1 1 1 1
+	backcolor .1 .2 .6 0.5
+	border 1
+	bordercolor 1 1 1 .25
+	type ITEM_TYPE_BUTTON
+      	rect 15 430 70 30
+
+	action  { play "ui/assets/menu_no.wav" ; close joinserver ; open main ;
+			uiScript closeJoin }
+
+      	visible 1
+	}
+
+
+
+}
+
+
+}
+
+

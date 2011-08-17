@@ -1,0 +1,638 @@
+/*
+===========================================================================
+Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2009-2010 Brian Labbie and Dave Richardson.
+
+http://sourceforge.net/projects/alturt/
+
+This file is part of Alturt source code.
+
+Alturt source code is free software: you can redistribute it
+and/or modify it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the License,
+or (at your option) any later version.
+
+Alturt source code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
+===========================================================================
+*/
+
+#include "ui/menudef.h"
+
+{
+menuDef {
+ 	name "ingame_select_gear_item"
+    	visible 0
+    	fullScreen 0
+	outOfBoundsClick			
+    	rect 72 45 460 360
+	focusColor 1 0 0 1
+
+
+itemDef {
+     	name window
+	style WINDOW_STYLE_FILLED
+    	rect 0 0 460 360
+	backcolor .1 .1 .37 1
+      	visible 1 
+	border 1
+	bordercolor 1 1 1 .25
+     	decoration
+	background "ui/assets/ingame_back.tga"
+    	}
+
+
+itemDef {
+	name selectteam
+	text "select team"
+      	rect 8 8 144 16
+	type 1
+      	textalign 0	
+     	textalignx 8
+    	textaligny 14
+	textscale .3
+      	forecolor  1 1 1 1
+	visible 1
+	action { play "ui/assets/menu_yes.wav" ; 
+		 close ingame_select_gear_item ; open ingame_select_team }
+	}
+
+
+itemDef {
+     	name selectgeartitle
+	style 0
+    	rect 150 8 135 16
+	wrapped
+	text "weapons / items"
+
+	textalign 0
+	textalignx 8
+	textaligny 14
+	textscale .3
+
+	forecolor 1 1 1 1
+      	visible 1 
+     	decoration
+    	}
+
+
+itemDef {
+     	name temp
+	style 0
+    	rect 16 45 144 16
+	wrapped
+	text "Item selection"
+
+	textalign 0
+	textalignx 8
+	textaligny 14
+	textscale .25
+
+	forecolor 1 1 1 1
+      	visible 1 
+     	decoration
+    	}
+
+
+
+
+//==
+//first row
+
+itemDef {
+	name window
+	type 1
+	rect 20 60 75 50
+	style WINDOW_STYLE_FILLED
+	forecolor 1 1 1 .5
+	backcolor 0 0 0 .6
+	border 1
+	bordercolor .5 .5 .5 1
+	visible 1
+	ownerdrawParam ITEM_VEST
+     	action { uiScript "gearSetItem" ; play "sound/misc/kcaction.wav" ; 
+	close ingame_select_gear_item; 
+	open ingame_select_gear }
+	mouseEnter { setcolor backcolor .5 .5 .5 .5 }
+	mouseExit { setcolor backcolor 0 0 0 .6 }
+	onFocus	{show vest_info }
+	leaveFocus { hide vest_info }
+}
+
+
+itemDef
+{
+	name vest_model
+	type ITEM_TYPE_MODEL
+	rect 20 40 90 90
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/players/orion/vest.md3"
+	model_angle 135
+	model_fovx 100
+	model_fovy 100
+	visible MENU_TRUE
+	decoration
+}
+
+
+
+itemDef {
+	name window
+	type 1
+	rect 105 60 75 50
+	style WINDOW_STYLE_FILLED
+	forecolor 1 1 1 .5
+	backcolor 0 0 0 .6
+	border 1
+	bordercolor .5 .5 .5 1
+	visible 1
+	ownerdrawParam ITEM_HELMET
+     	action { uiScript "gearSetItem" ; play "sound/misc/kcaction.wav" ; 
+	close ingame_select_gear_item; 
+	open ingame_select_gear }
+	mouseEnter { setcolor backcolor .5 .5 .5 .5 }
+	mouseExit { setcolor backcolor 0 0 0 .6 }
+	onFocus	{show helmet_info }
+	leaveFocus { hide helmet_info }
+}
+
+
+
+
+itemDef
+{
+	name helmet_model
+	type ITEM_TYPE_MODEL
+	rect 110 40 90 90
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/players/orion/helmet.md3"
+	model_angle 135
+	model_fovx 100
+	model_fovy 100
+	visible MENU_TRUE
+	decoration
+}
+
+
+itemDef {
+	name window
+	type 1
+	rect 190 60 75 50
+	style WINDOW_STYLE_FILLED
+	forecolor 1 1 1 .5
+	backcolor 0 0 0 .6
+	border 1
+	bordercolor .5 .5 .5 1
+	visible 1
+	ownerdrawParam ITEM_SILENCER
+     	action { uiScript "gearSetItem" ; play "sound/misc/kcaction.wav" ; 
+	close ingame_select_gear_item; 
+	open ingame_select_gear }
+	mouseEnter { setcolor backcolor .5 .5 .5 .5 }
+	mouseExit { setcolor backcolor 0 0 0 .6 }
+	onFocus	{show silencer_info }
+	leaveFocus { hide silencer_info }
+}
+
+
+
+
+itemDef
+{
+	name silencer_model
+	type ITEM_TYPE_MODEL
+	rect 200 40 90 90
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/weapons2/m4/m4_silencer.md3"
+	model_angle 135
+	model_fovx 100
+	model_fovy 100
+	visible MENU_TRUE
+	decoration
+}
+
+
+itemDef {
+	name window
+	type 1
+	rect 275 60 75 50
+	style WINDOW_STYLE_FILLED
+	forecolor 1 1 1 .5
+	backcolor 0 0 0 .6
+	border 1
+	bordercolor .5 .5 .5 1
+	visible 1
+	ownerdrawParam ITEM_LASER
+     	action { uiScript "gearSetItem" ; play "sound/misc/kcaction.wav" ; 
+	close ingame_select_gear_item; 
+	open ingame_select_gear }
+	mouseEnter { setcolor backcolor .5 .5 .5 .5 }
+	mouseExit { setcolor backcolor 0 0 0 .6 }
+	onFocus	{show laser_info }
+	leaveFocus { hide laser_info }
+}
+
+itemDef
+{
+	name laser_model
+	type ITEM_TYPE_MODEL
+	rect 290 40 90 90
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/weapons2/m4/m4_laser.md3"
+	model_angle 135
+	model_fovx 100
+	model_fovy 100
+	visible MENU_TRUE
+	decoration
+}
+
+itemDef {
+	name window
+	type 1
+	rect 360 60 75 50
+	style WINDOW_STYLE_FILLED
+	forecolor 1 1 1 .5
+	backcolor 0 0 0 .6
+	border 1
+	bordercolor .5 .5 .5 1
+	visible 1
+	ownerdrawParam ITEM_MEDKIT
+     	action { uiScript "gearSetItem" ; play "sound/misc/kcaction.wav" ; 
+	close ingame_select_gear_item; 
+	open ingame_select_gear }
+	mouseEnter { setcolor backcolor .5 .5 .5 .5 }
+	mouseExit { setcolor backcolor 0 0 0 .6 }
+	onFocus	{show medkit_info }
+	leaveFocus { hide medkit_info }
+}
+
+itemDef
+{
+	name medkit_model
+	type ITEM_TYPE_MODEL
+	rect 380 40 90 90
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/players/gear/backpack.md3"
+	model_angle 135
+	model_fovx 100
+	model_fovy 100
+	visible MENU_TRUE
+	decoration
+}
+
+//==
+//second row
+itemDef {
+	name window
+	type 1
+	rect 20 120 75 50
+	style WINDOW_STYLE_FILLED
+	forecolor 1 1 1 .5
+	backcolor 0 0 0 .6
+	border 1
+	bordercolor .5 .5 .5 1
+	visible 1
+	ownerdrawParam ITEM_NVG
+     	action { uiScript "gearSetItem" ; play "sound/misc/kcaction.wav" ; 
+	close ingame_select_gear_item; 
+	open ingame_select_gear }
+	mouseEnter { setcolor backcolor .5 .5 .5 .5 }
+	mouseExit { setcolor backcolor 0 0 0 .6 }
+	onFocus	{show nvg_info }
+	leaveFocus { hide nvg_info }
+}
+
+
+itemDef
+{
+	name mvg_model
+	type ITEM_TYPE_MODEL
+	rect 20 100 90 90
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/players/orion/nvg.md3"
+	model_angle 135
+	model_fovx 100
+	model_fovy 100
+	visible MENU_TRUE
+	decoration
+}
+
+
+
+itemDef {
+	name window
+	type 1
+	rect 105 120 75 50
+	style WINDOW_STYLE_FILLED
+	forecolor 1 1 1 .5
+	backcolor 0 0 0 .6
+	border 1
+	bordercolor .5 .5 .5 1
+	visible 1
+	ownerdrawParam ITEM_AMMO
+     	action { uiScript "gearSetItem" ; play "sound/misc/kcaction.wav" ; 
+	close ingame_select_gear_item; 
+	open ingame_select_gear }
+	mouseEnter { setcolor backcolor .5 .5 .5 .5 }
+	mouseExit { setcolor backcolor 0 0 0 .6 }
+	onFocus	{show ammo_info }
+	leaveFocus { hide ammo_info }
+}
+
+
+
+
+itemDef
+{
+	name ammo_model
+	type ITEM_TYPE_MODEL
+	rect 110 100 90 90
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/weapons2/shells/s_shell.md3"
+	model_angle 135
+	model_fovx 100
+	model_fovy 100
+	visible MENU_TRUE
+	decoration
+}
+
+
+itemDef {
+	name window
+	type 1
+	rect 190 120 75 50
+	style WINDOW_STYLE_FILLED
+	forecolor 1 1 1 .5
+	backcolor 0 0 0 .6
+	border 1
+	bordercolor .5 .5 .5 1
+	visible 1
+	ownerdrawParam ITEM_NONE
+     	action { uiScript "gearSetItem" ; play "sound/misc/kcaction.wav" ; 
+	close ingame_select_gear_item; 
+	open ingame_select_gear }
+	mouseEnter { setcolor backcolor .5 .5 .5 .5 }
+	mouseExit { setcolor backcolor 0 0 0 .6 }
+	onFocus	{show item_none_info }
+	leaveFocus { hide item_none_info }
+}
+
+
+
+//Infos
+
+itemDef {
+     	name window
+	style WINDOW_STYLE_FILLED
+    	rect 0 240 460 120
+	forecolor 1 1 1 1
+	backcolor 0 0 0 .6
+      	visible 1 
+	border 1
+	bordercolor .5 .5 .5 1
+     	decoration
+    	}
+
+
+itemDef	{
+	name vest_info
+	rect 20 260 200 80
+	textscale .25    
+	textalignx 0
+	textaligny 0
+	forecolor .8 .8 .8 1
+	wrapped
+	text "Name:  Kevlar Vest\r"
+	visible 0
+	decoration
+	}
+
+itemDef
+{
+	name vest_info
+	type ITEM_TYPE_MODEL
+	rect 180 180 260 260
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/players/orion/vest.md3"
+	model_angle 90
+	model_fovx 90
+	model_fovy 90
+	model_angle 45
+	model_rotation 10
+	visible 0
+	decoration
+}
+
+itemDef	{
+	name helmet_info
+	rect 20 260 200 80
+	textscale .25    
+	textalignx 0
+	textaligny 0
+	forecolor .8 .8 .8 1
+	wrapped
+	text "Name:  Kevlar Helmet\r"
+	visible 0
+	decoration
+	}
+
+itemDef
+{
+	name helmet_info
+	type ITEM_TYPE_MODEL
+	rect 180 180 260 260
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/players/orion/helmet.md3"
+	model_angle 90
+	model_fovx 90
+	model_fovy 90
+	model_angle 45
+	model_rotation 10
+	visible 0
+	decoration
+}
+
+itemDef	{
+	name silencer_info
+	rect 20 260 200 80
+	textscale .25    
+	textalignx 0
+	textaligny 0
+	forecolor .8 .8 .8 1
+	wrapped
+	text "Name:  Silencer\r"
+	visible 0
+	decoration
+	}
+
+itemDef
+{
+	name silencer_info
+	type ITEM_TYPE_MODEL
+	rect 180 180 260 260
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/weapons2/m4/m4_silencer.md3"
+	model_angle 90
+	model_fovx 90
+	model_fovy 90
+	model_angle 45
+	model_rotation 10
+	visible 0
+	decoration
+}
+
+itemDef	{
+	name laser_info
+	rect 20 260 200 80
+	textscale .25    
+	textalignx 0
+	textaligny 0
+	forecolor .8 .8 .8 1
+	wrapped
+	text "Name:  Laser Sight\r"
+	visible 0
+	decoration
+	}
+
+itemDef
+{
+	name laser_info
+	type ITEM_TYPE_MODEL
+	rect 180 180 260 260
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/weapons2/m4/m4_laser.md3"
+	model_angle 90
+	model_fovx 90
+	model_fovy 90
+	model_angle 45
+	model_rotation 10
+	visible 0
+	decoration
+}
+
+itemDef	{
+	name medkit_info
+	rect 20 260 200 80
+	textscale .25    
+	textalignx 0
+	textaligny 0
+	forecolor .8 .8 .8 1
+	wrapped
+	text "Name:  Medkit\r"
+	visible 0
+	decoration
+	}
+
+itemDef
+{
+	name medkit_info
+	type ITEM_TYPE_MODEL
+	rect 180 180 260 260
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/players/gear/backpack.md3"
+	model_angle 90
+	model_fovx 90
+	model_fovy 90
+	model_angle 45
+	model_rotation 10
+	visible 0
+	decoration
+}
+
+itemDef	{
+	name nvg_info
+	rect 20 260 200 80
+	textscale .25    
+	textalignx 0
+	textaligny 0
+	forecolor .8 .8 .8 1
+	wrapped
+	text "Name:  Tac Goggles\r"
+	visible 0
+	decoration
+	}
+
+itemDef
+{
+	name nvg_info
+	type ITEM_TYPE_MODEL
+	rect 180 180 260 260
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/players/orion/nvg.md3"
+	model_angle 90
+	model_fovx 90
+	model_fovy 90
+	model_angle 45
+	model_rotation 10
+	visible 0
+	decoration
+}
+
+itemDef	{
+	name ammo_info
+	rect 20 260 200 80
+	textscale .25    
+	textalignx 0
+	textaligny 0
+	forecolor .8 .8 .8 1
+	wrapped
+	text "Name:  Extra Ammo\r"
+	visible 0
+	decoration
+	}
+
+itemDef
+{
+	name ammo_info
+	type ITEM_TYPE_MODEL
+	rect 180 180 260 260
+	border 0
+	bordercolor .5 .5 .5 1
+	asset_model "models/weapons2/shells/s_shell.md3"
+	model_angle 90
+	model_fovx 90
+	model_fovy 90
+	model_angle 45
+	model_rotation 10
+	visible 0
+	decoration
+}
+
+
+itemDef	{
+	name item_none_info
+	rect 20 260 200 80
+	textscale .25    
+	textalignx 0
+	textaligny 0
+	forecolor .8 .8 .8 1
+	wrapped
+	text "No Item\r"
+	visible 0
+	decoration
+	}
+
+
+
+}
+
+
+}
