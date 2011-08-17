@@ -1,22 +1,24 @@
 /*
 ===========================================================================
 Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2009-2010 Brian Labbie and Dave Richardson.
 
-This file is part of Quake III Arena source code.
+http://sourceforge.net/projects/alturt/
 
-Quake III Arena source code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License,
+This file is part of Alturt source code.
+
+Alturt source code is free software: you can redistribute it
+and/or modify it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
-Quake III Arena source code is distributed in the hope that it will be
+Alturt source code is distributed in the hope that it will be
 useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Affero General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Quake III Arena source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+You should have received a copy of the GNU Affero General Public License
+along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 #ifndef __UI_SHARED_H
@@ -28,6 +30,75 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../client/keycodes.h"
 
 #include "../../ui/menudef.h"
+
+//new Alturt constants below
+//these are in the order of the order found in the gear cvar
+//SIDEARM, PRIMARY, SECONDARY, GRENADE, ITEM1, ITEM2, ITEM3
+#define GEAR_SLOT_SIDEARM	0
+#define GEAR_SLOT_PRIMARY	1
+#define GEAR_SLOT_SECONDARY	2
+#define GEAR_SLOT_GRENADE	3
+#define GEAR_SLOT_ITEM_1	4
+#define GEAR_SLOT_ITEM_2	5
+#define GEAR_SLOT_ITEM_3	6
+#define GEAR_SLOT_MAX		7
+
+//GEAR NUMBERS FOR THE MENU
+//these are for the ui_gear* values
+//I have no idea why Urt has them as these values since they don't match up with 
+//anything else.
+#define UI_GEAR_NONE			0
+#define	UI_GEAR_BERETTA			5
+#define	UI_GEAR_DEAGLE			6
+#define	UI_GEAR_SPAS12			7
+#define	UI_GEAR_MP5K			8
+#define	UI_GEAR_UMP45			9
+#define	UI_GEAR_HK69			10
+#define	UI_GEAR_LR				11
+#define	UI_GEAR_G36				12
+#define	UI_GEAR_PSG1			13
+#define UI_GEAR_GRENADE_HE		14
+#define UI_GEAR_GRENADE_SMOKE	16
+#define	UI_GEAR_VEST			17
+#define	UI_GEAR_NVG				18
+#define	UI_GEAR_MEDKIT			19
+#define	UI_GEAR_SILENCER		20
+#define	UI_GEAR_LASER			21
+#define	UI_GEAR_HELMET			22
+#define	UI_GEAR_AMMO			23
+#define	UI_GEAR_SR8				25
+#define UI_GEAR_AK103			26
+#define UI_GEAR_NEGEV			28
+#define UI_GEAR_M4   			30
+#define UI_GEAR_MAX				31
+
+//Gear values - these are for the gear cvar
+#define GEAR_NONE			'A'
+#define GEAR_KNIFE			'E'
+#define GEAR_BERETTA		'F'
+#define GEAR_DEAGLE			'G'
+#define GEAR_SPAS12			'H'
+#define GEAR_MP5K			'I'
+#define GEAR_UMP45			'J'
+#define GEAR_HK69			'K'
+#define GEAR_LR				'L'
+#define GEAR_G36			'M'
+#define GEAR_PSG1			'N'
+#define GEAR_GRENADE_HE		'O'
+#define GEAR_GRENADE_SMOKE	'Q'
+#define GEAR_VEST			'R'
+#define GEAR_NVG			'S'
+#define GEAR_MEDKIT			'T'
+#define GEAR_SILENCER		'U'
+#define GEAR_LASER			'V'
+#define GEAR_HELMET			'W'
+#define GEAR_AMMO			'X'
+#define GEAR_SR8			'Z'
+#define GEAR_AK103			'a'
+#define GEAR_NEGEV			'c'
+#define GEAR_M4				'e'
+//new Alturt constants above
+
 
 #define MAX_MENUNAME 32
 #define MAX_ITEMTEXT 64
@@ -248,6 +319,7 @@ typedef struct itemDef_s {
 	float special;								 // used for feeder id's etc.. diff per type
   int cursorPos;                 // cursor position in characters
 	void *typeData;								 // type specific data ptr's
+	int ownerdrawParam;				//blud adding ownerdrawParam
 } itemDef_t;
 
 typedef struct {
@@ -310,6 +382,12 @@ typedef struct {
 
 } cachedAssets_t;
 
+//blud caching the gear
+typedef struct {
+	qhandle_t	gearArray[UI_GEAR_MAX];
+	qhandle_t	smokeGrenadeSkin;
+} cachedGear_t;
+
 typedef struct {
   const char *name;
   void (*handler) (itemDef_t *item, char** args);
@@ -337,6 +415,7 @@ typedef struct {
 	float (*getValue) (int ownerDraw);
 	qboolean (*ownerDrawVisible) (int flags);
   void (*runScript)(char **p);
+  void (*setWeapon)(char **p, int parameter ); //blud adding ownerdrawParam
   void (*getTeamColor)(vec4_t *color);
   void (*getCVarString)(const char *cvar, char *buffer, int bufsize);
   float (*getCVarValue)(const char *cvar);
@@ -376,6 +455,7 @@ typedef struct {
 	qboolean	debug;
 
   cachedAssets_t Assets;
+  cachedGear_t Gear; //blud caching gear
 
 	glconfig_t glconfig;
 	qhandle_t	whiteShader;
@@ -449,5 +529,7 @@ int			trap_PC_LoadSource( const char *filename );
 int			trap_PC_FreeSource( int handle );
 int			trap_PC_ReadToken( int handle, pc_token_t *pc_token );
 int			trap_PC_SourceFileAndLine( int handle, char *filename, int *line );
+
+qhandle_t		trap_R_RegisterSkin( const char *name ); //blud, I just copied this line from ui_local.h to stop the compiler warning I was getting with the in-game menu smoke grenade skin thing.
 
 #endif
