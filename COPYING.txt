@@ -1,6 +1,5 @@
-With regards to the source code in this SVN, Alturt is only the mod code portion of the game source code (currently only game and cgame). This SVN also includes the rest of the ioq3 source code for the whole game, but it is unchanged ioq3 code.
+With regards to the source code in this SVN, Alturt is only the mod code portion of the game source code (game, cgame, ui, and menu). This SVN also includes the rest of the ioq3 source code for the whole game, but it is unchanged ioq3 code.
 
 The Alturt mod code is licensed under the GNU AFFERO GENERAL PUBLIC LICENSE. This license is contained in full in the file named agpl.txt.
-
 
 Alturt also includes assets, including but not limited to: graphics, models, sounds, configs, scripts and shaders. All of these assets are also covered by the AGPLv3 license.
