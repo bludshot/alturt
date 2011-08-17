@@ -1,22 +1,24 @@
 /*
 ===========================================================================
 Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2009-2010 Brian Labbie and Dave Richardson.
 
-This file is part of Quake III Arena source code.
+http://sourceforge.net/projects/alturt/
 
-Quake III Arena source code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License,
+This file is part of Alturt source code.
+
+Alturt source code is free software: you can redistribute it
+and/or modify it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the License,
 or (at your option) any later version.
 
-Quake III Arena source code is distributed in the hope that it will be
+Alturt source code is distributed in the hope that it will be
 useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Affero General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Quake III Arena source code; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+You should have received a copy of the GNU Affero General Public License
+along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 //
@@ -67,6 +69,7 @@ static qboolean debugMode = qfalse;
 static int lastListBoxClickTime = 0;
 
 void Item_RunScript(itemDef_t *item, const char *s);
+void Item_RunExtScript(itemDef_t *item, const char *s); //blud adding ownerdrawParam
 void Item_SetupKeywordHash(void);
 void Menu_SetupKeywordHash(void);
 int BindingIDFromName(const char *name);
@@ -74,6 +77,7 @@ qboolean Item_Bind_HandleKey(itemDef_t *item, int key, qboolean down);
 itemDef_t *Menu_SetPrevCursorItem(menuDef_t *menu);
 itemDef_t *Menu_SetNextCursorItem(menuDef_t *menu);
 static qboolean Menu_OverActiveItem(menuDef_t *menu, float x, float y);
+qboolean ItemParse_ownerdrawParam( itemDef_t *item, int handle ); //blud adding ownerdrawParam
 
 #ifdef CGAME
 #define MEM_POOL_SIZE  128 * 1024
@@ -1298,6 +1302,49 @@ void Item_RunScript(itemDef_t *item, const char *s) {
 }
 
 
+//blud adding ownerdrawParam.
+//this function is straight out of nsco
+void Item_RunExtScript(itemDef_t *item, const char *s) {
+    char script[1024], *p;
+    int i;
+    qboolean bRan;
+    memset(script, 0, sizeof(script));
+    if (item && s && s[0]) {
+        Q_strcat(script, 1024, s);
+        p = script;
+        while (1) {
+            const char *command;
+            // expect command then arguments, ; ends command, NULL ends script
+            if (!String_Parse(&p, &command)) {
+                return;
+            }
+
+            if (command[0] == ';' && command[1] == '\0') {
+                continue;
+            }
+
+            bRan = qfalse;
+            for (i = 0; i < scriptCommandCount; i++) {
+                if (Q_stricmp(command, commandList[i].name) == 0) {
+                    (commandList[i].handler(item, &p));
+                    bRan = qtrue;
+                    break;
+                }
+            }
+
+            // not in our auto list, pass to handler
+            if (!bRan) {
+                DC->setWeapon (&p, item->ownerdrawParam );
+            }
+        }
+    }
+}
+
+//blud adding ownerdrawParam
+//I don't know why nsco has this here, seems like it should be in a header file...
+void UI_RunExtendedMenuScript(char **args, int parameter );
+
+
 qboolean Item_EnableShowViaCvar(itemDef_t *item, int flag) {
   char script[1024], *p;
   memset(script, 0, sizeof(script));
@@ -2431,11 +2478,36 @@ qboolean Item_HandleKey(itemDef_t *item, int key, qboolean down) {
   //return qfalse;
 }
 
+//OLD FUNCTION BEFORE ownerdrawParam. Kept it for now because I might change how I do the ownerdrawParam stuff
+//void Item_Action(itemDef_t *item) {
+//  if (item) {
+//    Item_RunScript(item, item->action);
+//  }
+//}
+
+
+
+//blud adding ownerdrawParam
+//this function is from nsco.
+//it is part of adding the extended menu script handling
+//regular Q3TA menu stuff gets handled by the old Item_RunScript
+//and itemDefs with an ownerdrawParam get handled by the new
+//Item_RunExtScript
 void Item_Action(itemDef_t *item) {
-  if (item) {
-    Item_RunScript(item, item->action);
-  }
+
+	//Com_Printf("PARAMVALUE:*%d*", item->ownerdrawParam); //blud debug
+
+	//since I can only check for 0 or not, I can't have ITEM_NONE be 0 anymore, so now it's 28
+    if (item && item->ownerdrawParam )
+    {
+        Item_RunExtScript(item, item->action );
+    }
+    else if (item) {
+        Item_RunScript(item, item->action);
+    }
 }
+
+
 
 itemDef_t *Menu_SetPrevCursorItem(menuDef_t *menu) {
   qboolean wrapped = qfalse;
@@ -3629,6 +3701,31 @@ void Item_Model_Paint(itemDef_t *item) {
 	AnglesToAxis( angles, ent.axis );
 
 	ent.hModel = item->asset;
+
+	//blud: when the itemDef that is trying to render this model is smoke_model,
+	//		use the smoke grenade skin instead of the default skin which is otherwise
+	//		automatically used.
+	if (!Q_stricmp(item->window.name, "smoke_model") || !Q_stricmp(item->window.name, "grenade_smoke_info"))
+	{
+		ent.customSkin = trap_R_RegisterSkin( "models/weapons2/grenade/grenade_smoke.skin" );
+	}
+
+	//blud NOTE: When I stop using the normal Q3TA method of displaying models
+	//in the menus, I can probably change this bit above back, and stop
+	//'redefining' that trap to stop the compiler warning I mention below
+	//since I won't need to do this anymore.
+
+	//SO, yeah um, once I do that, the only 'bad' thing
+	//is the warning from trap_R_RegisterSkin not being defined.
+	//maybe we can pre-trap (pre-register) the smoke nade skin 
+	//some place else, like where the hand skins are registered, and then we 
+	//wouldn't need to do the trap here, we would just use the skin from like cgs.media
+	//or whatever - although tbh it probably doens't have scope here ... but hey maybe
+	//there is a ui equivalent or something - yeah that's probably how, but um
+	//ANYWAYS do the main stuff I just said tomorrow.
+
+	//Com_Printf("ent.hModel: %d \n", ent.hModel); //blud debug
+
 	VectorCopy( origin, ent.origin );
 	VectorCopy( origin, ent.lightingOrigin );
 	ent.renderfx = RF_LIGHTING_ORIGIN | RF_NOSHADOW;
@@ -3843,7 +3940,13 @@ void Item_OwnerDraw_Paint(itemDef_t *item) {
 		  Com_Memcpy(color, parent->disableColor, sizeof(vec4_t));
 		}
 
-		if (item->text) {
+		//blud adding ownerdrawParam, this first if block is new, from nsco.
+		if ( item->ownerdrawParam )
+		{
+			DC->ownerDrawItem(item->window.rect.x, item->window.rect.y, item->window.rect.w, item->window.rect.h, item->textalignx, item->textaligny, item->window.ownerDraw, item->window.ownerDrawFlags, item->alignment, item->ownerdrawParam, item->textscale, color, item->window.background, item->textStyle );
+		}
+		else if (item->text) {
+		//if (item->text) {//<-old line before blud adding ownerdrawParam
 			Item_Text_Paint(item);
 				if (item->text[0]) {
 					// +8 is an offset kludge to properly align owner draw items that have text combined with them
@@ -5132,6 +5235,7 @@ keywordHash_t itemParseKeywords[] = {
 	{"hideCvar", ItemParse_hideCvar, NULL},
 	{"cinematic", ItemParse_cinematic, NULL},
 	{"doubleclick", ItemParse_doubleClick, NULL},
+	{"ownerdrawParam", ItemParse_ownerdrawParam, NULL }, //blud adding ownerdrawParam
 	{NULL, 0, NULL}
 };
 
@@ -5421,6 +5525,16 @@ qboolean MenuParse_cinematic( itemDef_t *item, int handle ) {
 		return qfalse;
 	}
 	return qtrue;
+}
+
+//blud adding ownerdrawParam
+qboolean ItemParse_ownerdrawParam( itemDef_t *item, int handle ) {
+    int i;
+    if (!PC_Int_Parse(handle, &i)) {
+        return qfalse;
+    }
+    item->ownerdrawParam = i;
+    return qtrue;
 }
 
 qboolean MenuParse_ownerdrawFlag( itemDef_t *item, int handle ) {
