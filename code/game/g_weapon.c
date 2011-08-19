@@ -962,8 +962,16 @@ void CalcMuzzlePointOrigin ( gentity_t *ent, vec3_t origin, vec3_t forward, vec3
 
 
 void Set_Mode(gentity_t *ent){
-//  G_Printf ("Set_Mode called\n");
-  switch (weapmodes_save.string[ent->client->ps.weapon] ){
+    
+  int             index;  
+  char    userinfo[MAX_INFO_STRING];
+  char                    weapmodes_save[WP_NUM_WEAPONS];//xamis
+  index = ent - g_entities;
+        
+ trap_GetUserinfo( index, userinfo, sizeof(userinfo) );
+
+ Q_strncpyz( weapmodes_save, Info_ValueForKey (userinfo, "weapmodes_save"), sizeof( weapmodes_save ) );
+  switch (weapmodes_save[ent->client->ps.weapon] ){
 
 
     case '0':
@@ -992,10 +1000,15 @@ void Set_Mode(gentity_t *ent){
   }
 }
 void Change_Mode(gentity_t *ent){
-//  int i;
- ent->client->weaponModeChar = weapmodes_save.string;
+    
+  int             index;  
+  char    userinfo[MAX_INFO_STRING];
+  char                    weapmodes_save[WP_NUM_WEAPONS];//xamis
+  index = ent - g_entities;
+        
+ trap_GetUserinfo( index, userinfo, sizeof(userinfo) );
 
- //G_Printf( "weaponModeChar: %s\n", ent->client->weaponModeChar);
+ Q_strncpyz( weapmodes_save, Info_ValueForKey (userinfo, "weapmodes_save"), sizeof( weapmodes_save ) );
 
  if (ent->client->ps.weapon == WP_KNIFE && bg_weaponlist[ent->client->ps.weapon].rounds[ent->client->ps.clientNum] <2  )
      return;
@@ -1011,14 +1024,12 @@ void Change_Mode(gentity_t *ent){
 
 
  bg_weaponlist[ ent->client->ps.weapon ].weapMode[ent->client->ps.clientNum] = ent->client->ps.stats[STAT_MODE]= ent->client->weaponMode[ ent->client->ps.weapon ];
- // G_Printf( "WeaponMode set to: %i\n", ent->client->weaponMode[ ent->client->ps.weapon ]);
-
 
  switch (ent->client->weaponMode[ ent->client->ps.weapon ]){
 
 
    case 0:
-        weapmodes_save.string[ent->client->ps.weapon]= '0';
+        weapmodes_save[ent->client->ps.weapon]= '0';
         ent->client->ps.pm_flags &= ~PMF_SINGLE_MODE;
         if(ent->client->ps.weapon==WP_KNIFE ||ent->client->ps.weapon==WP_HK69 ){
             ent->client->ps.pm_flags |= PMF_SINGLE_MODE;
@@ -1027,11 +1038,11 @@ void Change_Mode(gentity_t *ent){
         }
         break;
    case 1:
-     weapmodes_save.string[ent->client->ps.weapon]= '1';
+     weapmodes_save[ent->client->ps.weapon]= '1';
      ent->client->ps.pm_flags |= PMF_SINGLE_MODE;
      break;
     case 2:
-      weapmodes_save.string[ent->client->ps.weapon]= '2';
+      weapmodes_save[ent->client->ps.weapon]= '2';
       ent->client->ps.pm_flags &= ~PMF_SINGLE_MODE;
       if(ent->client->ps.weapon==WP_KNIFE ||ent->client->ps.weapon==WP_HK69 ){
           G_Printf("toalternate called\n");
@@ -1040,12 +1051,12 @@ void Change_Mode(gentity_t *ent){
       }
       break;
     default:
-      weapmodes_save.string[ent->client->ps.weapon]= '2';
+      weapmodes_save[ent->client->ps.weapon]= '2';
 
-      trap_Cvar_Set( "weapmodes_save", ent->client->weaponModeChar);
+
   //    return;
   }
-
+ trap_Cvar_Set( "weapmodes_save", weapmodes_save);
   if ( ent->client->weaponMode[ ent->client->ps.weapon ] == 2)
     ent->client->weaponMode[ ent->client->ps.weapon ] =-1;
 
