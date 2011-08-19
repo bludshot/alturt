@@ -515,11 +515,14 @@ void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
         }
 
         // play the normal pickup sound
+
+        if ((other->client->respawnTime +1000 <= level.time) || (g_gametype.integer == GT_FFA)){
         if (predict) {
                 G_AddPredictableEvent( other, EV_ITEM_PICKUP, ent->s.modelindex );
         } else {
                 G_AddEvent( other, EV_ITEM_PICKUP, ent->s.modelindex );
         }
+
 
         // powerup pickups are global broadcasts
         if ( ent->item->giType == IT_POWERUP || ent->item->giType == IT_TEAM) {
@@ -540,7 +543,7 @@ void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
                         te->r.singleClient = other->s.number;
                 }
         }
-
+        }
         // fire item targets
         G_UseTargets (ent, other);
 
