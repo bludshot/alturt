@@ -716,6 +716,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 				break;
 			}
 			item = &bg_itemlist[ index ];
+                                                        trap_S_StartSound (NULL, es->number, CHAN_AUTO,	trap_S_RegisterSound( item->pickup_sound, qfalse ) );
 //Disable sounds for powerup -- Xamis
 			// powerups and team items will have a separate global sound, this one
 			// will be played at prediction time
