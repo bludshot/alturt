@@ -1017,15 +1017,15 @@ gentity_t *SelectRandomTeamSpawnPoint( int teamstate, team_t utteam ) {
 
 
 		if ( SpotWouldTelefrag( spot ) ) {
-			G_Printf( S_COLOR_BLUE "WARNING: spots telefrag\n" );
+			//G_Printf( S_COLOR_BLUE "WARNING: spots telefrag\n" );
 			continue;
 		}
 
 		spots[ count ] = spot;
-		G_Printf( S_COLOR_GREEN "SPOT LOCATED\n" );
+		//G_Printf( S_COLOR_GREEN "SPOT LOCATED\n" );
 
 		if (++count == MAX_TEAM_SPAWN_POINTS){
-			G_Printf( S_COLOR_BLUE "WARNING: MAX_SPAWN_POINTS\n" );
+			//G_Printf( S_COLOR_BLUE "WARNING: MAX_SPAWN_POINTS\n" );
 			break;
 		}
 
@@ -1034,7 +1034,7 @@ gentity_t *SelectRandomTeamSpawnPoint( int teamstate, team_t utteam ) {
 	}
 
 	if ( !count ) {	// no spots that won't telefrag
-		G_Printf( S_COLOR_BLUE "WARNING: no spots that won't telefrag\n" );
+		//G_Printf( S_COLOR_BLUE "WARNING: no spots that won't telefrag\n" );
 		return  G_Find ((spot = G_Find (spot,FOFS(classname), class)), FOFS(team), teamname);
 
 
@@ -1059,7 +1059,7 @@ gentity_t *SelectCTFSpawnPoint ( team_t team, int teamstate, vec3_t origin, vec3
 
 	if (!spot) {
 		if (tries < 3 ){
-		G_Printf( S_COLOR_BLUE "WARNING: no spots SelectCTFSpawnPoint, Trying again\n"); //using SelectSpawnPoint\n" );
+		//G_Printf( S_COLOR_BLUE "WARNING: no spots SelectCTFSpawnPoint, Trying again\n"); //using SelectSpawnPoint\n" );
 		spot = SelectRandomTeamSpawnPoint( teamstate,team );// try again
 		tries++;
 		}else{
