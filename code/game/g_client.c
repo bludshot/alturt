@@ -1578,7 +1578,7 @@ void ClientSpawn(gentity_t *ent) {
                 VectorCopy( ent->client->ps.origin, ent->r.currentOrigin );
                 trap_LinkEntity( ent );
         }
-
+        Set_Mode(ent);
         // run the presend to set anything else
         ClientEndFrame( ent );
 
