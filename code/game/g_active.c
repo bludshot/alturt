@@ -528,7 +528,7 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
                         FireWeapon( ent );
                         break;
                case EV_ZOOM_RESET:
-                        trap_SendConsoleCommand( ent->client->ps.clientNum, "ut_zoomreset" );
+                        //trap_SendConsoleCommand( ent->client->ps.clientNum, "ut_zoomreset" );
                         break;
                case EV_CHANGE_WEAPON:
                     Set_Mode(ent);
@@ -754,6 +754,14 @@ void ClientThink_real( gentity_t *ent ) {
         if ( !ClientInactivityTimer( client ) ) {
                 return;
         }
+        
+        
+if ( (client->pers.cmd.forwardmove ||
+                client->pers.cmd.rightmove ||
+                client->pers.cmd.upmove ||
+                (client->pers.cmd.buttons & BUTTON_ATTACK) ) 
+                 && client->respawnTime +1000 <= level.time)
+                 client->loadoutEnabled =qfalse;
 
         // clear the rewards if time
         if ( level.time > client->rewardTime ) {

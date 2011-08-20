@@ -819,16 +819,8 @@ void ClientUserinfoChanged( int clientNum ) {
         }
 
 
-        // set model
-        //if( g_gametype.integer >= GT_TEAM ) {  //blud disabling team_model, replacing it with model and disabling headModel
-        //      Q_strncpyz( model, Info_ValueForKey (userinfo, "team_model"), sizeof( model ) );
-        //      Q_strncpyz( headModel, Info_ValueForKey (userinfo, "team_headmodel"), sizeof( headModel ) );
-        //} else {
 				//blud: I will always do this, but if it's a team GT I will just ignore model elsewhere where it actually gets set/changed
                 Q_strncpyz( model, Info_ValueForKey (userinfo, "model"), sizeof( model ) );
-
-                //Q_strncpyz( headModel, Info_ValueForKey (userinfo, "headmodel"), sizeof( headModel ) );
-        //}
 
 
         //blud adding skin cvar for non-team gametypes
@@ -839,10 +831,7 @@ void ClientUserinfoChanged( int clientNum ) {
         Q_strncpyz( skin, Info_ValueForKey (userinfo, "skin"), sizeof( skin ) );
         Q_strncpyz( gear, Info_ValueForKey (userinfo, "gear"), sizeof( gear ) );
         Q_strncpyz( weapmodes_save, Info_ValueForKey (userinfo, "weapmodes_save"), sizeof( weapmodes_save ) );
-     //   Q_strncpyz( client->weaponModeChar , weapmodes_save, sizeof( client->weaponModeChar));
-      //  client->weaponModeChar=weapmodes_save;
-       // gear = atoi(Info_ValueForKey(userinfo, "gear"));
-   //     G_Printf("client->weaponModeChar %s",client->weaponModeChar);
+
 		// bots set their team a few frames later
         if (g_gametype.integer >= GT_TEAM && g_entities[clientNum].r.svFlags & SVF_BOT) {
                 s = Info_ValueForKey( userinfo, "team" );
@@ -859,88 +848,6 @@ void ClientUserinfoChanged( int clientNum ) {
                 team = client->sess.sessionTeam;
         }
 
-		/*
-		//blud: Uh, I was trying to fix the invisible upper body problem, but actually I'm 99.9% sure
-		//that we don't need code like this in here - PLUS I'm pretty sure I used to have this code 
-		//here before too, but then I realized it was pointless and deleted it heh. I'm just
-		//leaving it here for now (commented out) until I do resolve the invisible upper body problem
-		//blud: trying to fix invisible torso,head&arms when switching teams
-		if( g_gametype.integer >= GT_TEAM )
-		{
-			if ( team == TEAM_BLUE )
-			{
-				switch (raceblue) {
-				case 0:
-					//set model to athena, skin to blue
-					Q_strncpyz( model, "athena", sizeof( model ) );
-					Q_strncpyz( skin, "blue", sizeof( skin ) );
-				case 1:
-					//set model to athena, skin to blue2
-					Q_strncpyz( model, "athena", sizeof( model ) );
-					Q_strncpyz( skin, "blue2", sizeof( skin ) );
-				case 2:
-					//set model to orion, skin to blue
-					Q_strncpyz( model, "orion", sizeof( model ) );
-					Q_strncpyz( skin, "blue", sizeof( skin ) );
-				case 3:
-					//set model to orion, skin to blue2
-					Q_strncpyz( model, "orion", sizeof( model ) );
-					Q_strncpyz( skin, "blue2", sizeof( skin ) );
-				default:
-					//set model to orion, skin to blue
-					Q_strncpyz( model, "orion", sizeof( model ) );
-					Q_strncpyz( skin, "blue", sizeof( skin ) );
-				}
-			}
-			else // team is red (or possibly spectator in which case it doesn't matter anyway)
-			{
-				switch (racered) {
-				case 0:
-					//set model to athena, skin to red
-					Q_strncpyz( model, "athena", sizeof( model ) );
-					Q_strncpyz( skin, "red", sizeof( skin ) );
-				case 1:
-					//set model to athena, skin to red2
-					Q_strncpyz( model, "athena", sizeof( model ) );
-					Q_strncpyz( skin, "red2", sizeof( skin ) );
-				case 2:
-					//set model to orion, skin to red
-					Q_strncpyz( model, "orion", sizeof( model ) );
-					Q_strncpyz( skin, "red", sizeof( skin ) );
-				case 3:
-					//set model to orion, skin to red2
-					Q_strncpyz( model, "orion", sizeof( model ) );
-					Q_strncpyz( skin, "red2", sizeof( skin ) );
-				default:
-					//set model to orion, skin to red
-					Q_strncpyz( model, "orion", sizeof( model ) );
-					Q_strncpyz( skin, "red", sizeof( skin ) );
-				}
-			}
-		}
-		*/
-
-
-/*      NOTE: all client side now
-
-        // team
-        switch( team ) {
-        case TEAM_RED:
-                ForceClientSkin(client, model, "red");
-//              ForceClientSkin(client, headModel, "red");
-                break;
-        case TEAM_BLUE:
-                ForceClientSkin(client, model, "blue");
-//              ForceClientSkin(client, headModel, "blue");
-                break;
-        }
-        // don't ever use a default skin in teamplay, it would just waste memory
-        // however bots will always join a team but they spawn in as spectator
-        if ( g_gametype.integer >= GT_TEAM && team == TEAM_SPECTATOR) {
-                ForceClientSkin(client, model, "red");
-//              ForceClientSkin(client, headModel, "red");
-        }
-*/
 
 #ifdef MISSIONPACK
         if (g_gametype.integer >= GT_TEAM) {
@@ -1002,15 +909,15 @@ void ClientUserinfoChanged( int clientNum ) {
                         client->pers.maxHealth, client->sess.wins, client->sess.losses,gear, teamTask, teamLeader,weapmodes_save);
         }
 
-        G_Printf( "client->inactivityTime = %i level.time = %i", client->inactivityTime, level.time);
+     
         
-//if ( something )
-//G_PlayerLoadout( ent );
-
         trap_SetConfigstring( CS_PLAYERS+clientNum, s );
 
         // this is not the userinfo, more like the configstring actually
         G_LogPrintf( "ClientUserinfoChanged: %i %s\n", clientNum, s );
+        
+if ( client->loadoutEnabled  )
+        G_PlayerLoadout( ent );
 }
 
 
@@ -1524,7 +1431,7 @@ void ClientSpawn(gentity_t *ent) {
         VectorCopy (playerMaxs, ent->r.maxs);
         Q_strncpyz( gear, Info_ValueForKey (userinfo, "gear"), sizeof( gear ) );
         client->ps.clientNum = index;
-
+        client->loadoutEnabled = qtrue;
 
                 /*
         --Xamis--
@@ -1762,6 +1669,7 @@ void ClientSpawn(gentity_t *ent) {
         client->inactivityTime = level.time + g_inactivity.integer * 1000;
         client->latched_buttons = 0;
 
+        
         // set default animations
         client->ps.torsoAnim = TORSO_STAND;
         client->ps.legsAnim = LEGS_IDLE;
