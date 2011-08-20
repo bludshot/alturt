@@ -51,8 +51,8 @@ void G_FixHitboxes( void ) {
         // we only want active players
         if ( client->sess.sessionTeam == TEAM_SPECTATOR ) continue;
 
-        if ( ent->r.maxs[2] == PLAYER_STANDHEIGHT ) ent->r.maxs[2] = 26;
-        if ( ent->r.maxs[2] == PLAYER_CROUCHHEIGHT ) ent->r.maxs[2] = 14.5;
+        if ( ent->r.maxs[2] == PLAYER_STANDHEIGHT ) ent->r.maxs[2] = 40;
+        if ( ent->r.maxs[2] == PLAYER_CROUCHHEIGHT ) ent->r.maxs[2] = 28.5;
 
     }
 }
@@ -74,8 +74,8 @@ void G_RestoreHitboxes( void ) {
         // we only want active players
         if ( client->sess.sessionTeam == TEAM_SPECTATOR ) continue;
 
-        if ( ent->r.maxs[2] == 26 ) ent->r.maxs[2] = PLAYER_STANDHEIGHT;
-        if ( ent->r.maxs[2] == 14.5 ) ent->r.maxs[2] = PLAYER_CROUCHHEIGHT;
+        if ( ent->r.maxs[2] == 40 ) ent->r.maxs[2] = PLAYER_STANDHEIGHT;
+        if ( ent->r.maxs[2] == 28.5 ) ent->r.maxs[2] = PLAYER_CROUCHHEIGHT;
 
     }
 }
