@@ -312,7 +312,7 @@ void Apply_Weapon_Kick ( gentity_t *ent, int weapon )
     case WP_UMP45: kickangle = .4; break;
 
     case WP_PSG1: kickangle = .2; break;
-    case WP_SR8: kickangle = 2; break;
+    case WP_SR8: kickangle = 1; break;
 
 
 

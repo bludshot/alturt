@@ -2138,7 +2138,6 @@ static void PM_Weapon( void ) {
           bg_nadeTimer.throwStrength[pm->ps->clientNum]= 80000;
 
   
-        
         //If were in the process of bandaging we can't fire  --Xamis
        if ( (pm->ps->weaponstate == WEAPON_DOWN_BANDAGING || pm->ps->weaponstate == WEAPON_DOWN_BANDAGING_OTHER) && pm->ps->weaponTime > 0 ) {
 
@@ -2179,6 +2178,8 @@ static void PM_Weapon( void ) {
         
 //If were in the process of reloading we can't fire  --Xamis
         if ( qtrue ){
+             
+
 
        if (( pm->ps->weaponstate == WEAPON_TOALTERNATE ||pm->ps->weaponstate == WEAPON_TONORMAL)&& pm->ps->weaponTime > 0)
            return;
@@ -2255,6 +2256,14 @@ static void PM_Weapon( void ) {
         if ( pm->ps->weaponTime > 0 ) {
                 return;
         }
+        
+        
+        if( pm->ps->weaponstate ==  WEAPON_FIRING2){
+               pm->ps->weaponstate = WEAPON_FIRING;
+                           PM_AddEvent( EV_ZOOM_RESET );
+                           pm->ps->weaponTime = 200;
+                           return;
+           }
 
         if ( bg_weaponlist[0].rounds[pm->ps->clientNum] <= 2
             &&  bg_weaponlist[0].rounds[pm->ps->clientNum] > 0
@@ -2286,8 +2295,9 @@ static void PM_Weapon( void ) {
           }
         }
 
+        
         if ( pm->ps->pm_flags & PMF_RELOADING ){
-            PM_AddEvent( EV_ZOOM_RESET );
+           //PM_AddEvent( EV_ZOOM_RESET );
           PM_StartWeaponAnim( WPN_BOLT);
           if ( pm->ps->weapon == WP_SR8)
             pm->ps->weaponTime = 1500;
@@ -2459,7 +2469,10 @@ static void PM_Weapon( void ) {
                           bg_weaponlist[0].numClips[pm->ps->clientNum]++; //This is a round count for spread.
                           if (pm->ps->weapon == WP_SR8 || pm->ps->weapon == WP_SPAS ){
                             pm->ps->pm_flags |= PMF_RELOADING;
-     
+                            if (pm->ps->weapon == WP_SR8){
+                            pm->ps->weaponstate =WEAPON_FIRING2;
+                            pm->ps->weaponTime = 700;//PM_WeaponTime(pm->ps->weapon );
+                            }
                           }
 
                           if ( pm->ps->pm_flags & PMF_SINGLE_MODE
