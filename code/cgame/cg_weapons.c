@@ -1540,7 +1540,7 @@ if ( weaponDown ) {
           CG_PositionEntityOnTag( &weaponModel, &gun, weapon->handsModel, "tag_weapon" );
           CG_AddWeaponWithPowerups( &weaponModel, cent->currentState.powerups );
 
-         if( 0  ){
+         if( cent->currentState.number == cg.predictedPlayerState.clientNum){
           if ( PriweaponNum != cent->currentState.weapon ){
           	memset( &PriweaponModel, 0, sizeof( PriweaponModel ) );
 	VectorCopy( parent->lightingOrigin, PriweaponModel.lightingOrigin );
@@ -2415,6 +2415,65 @@ void CG_OutOfNadesChange( centity_t *cent ) {
 
 /*
 ===============
+CG_WeaponDropped
+===============
+*/
+void CG_WeaponDropped( void ) {
+        int             original;
+
+        if ( !cg.snap ) {
+                return;
+        }
+        if ( cg.snap->ps.pm_flags & PMF_FOLLOW ) {
+                return;
+        }
+
+        cg.weaponSelectTime = cg.time;
+       // original = cg.weaponSelect;
+        CG_ZoomReset_f();
+
+        
+        	if (BG_HasWeapon( WP_M4, (int*)cg.predictedPlayerState.stats ))
+		                 original =  WP_M4;
+	else if (BG_HasWeapon( WP_LR300, (int*)cg.predictedPlayerState.stats ))
+		                 original =  WP_LR300;
+	else if (BG_HasWeapon( WP_G36, (int*)cg.predictedPlayerState.stats ))
+		                 original =  WP_G36;
+	else if (BG_HasWeapon( WP_AK103, (int*)cg.predictedPlayerState.stats ))
+		                 original =  WP_AK103;
+	else if (BG_HasWeapon( WP_HK69, (int*)cg.predictedPlayerState.stats ))
+		                 original =  WP_HK69;
+	else if (BG_HasWeapon( WP_NEGEV, (int*)cg.predictedPlayerState.stats ))
+		                 original =  WP_NEGEV;
+	else if (BG_HasWeapon( WP_PSG1, (int*)cg.predictedPlayerState.stats ))
+		                 original =  WP_PSG1;
+	else if (BG_HasWeapon( WP_SR8,(int*) cg.predictedPlayerState.stats ))
+		                 original =  WP_SR8;
+	else if (BG_HasWeapon( WP_UMP45,(int*) cg.predictedPlayerState.stats ))
+		                 original =  WP_UMP45;
+	else if (BG_HasWeapon( WP_MP5K, (int*)cg.predictedPlayerState.stats ))
+		                 original =  WP_MP5K;
+	else if (BG_HasWeapon( WP_SPAS, (int*)cg.predictedPlayerState.stats ))
+		                 original =  WP_SPAS;
+	else if (BG_HasWeapon( WP_HE, (int*)cg.predictedPlayerState.stats ))
+		                 original =  WP_HE;
+	else if (BG_HasWeapon( WP_SMOKE, (int*)cg.predictedPlayerState.stats ))
+		                 original =  WP_SMOKE;
+	else if (BG_HasWeapon( WP_HE, (int*)cg.predictedPlayerState.stats ))
+		                 original =  WP_DEAGLE;
+	else if (BG_HasWeapon( WP_SMOKE, (int*)cg.predictedPlayerState.stats ))
+		                 original =  WP_BERETTA;
+	else 
+		                 original =  WP_KNIFE;
+        
+
+                cg.weaponSelect = original;
+                        CG_Printf("cg.weaponSelect =%i\n",cg.weaponSelect );
+       // }
+}
+
+/*
+===============
 CG_NextWeapon_f
 ===============
 */
@@ -2513,12 +2572,6 @@ int CG_GetPrimary (void)
 		return WP_PSG1;
 	else if (BG_HasWeapon( WP_SR8, cg.snap->ps.stats ))
 		return WP_SR8;
-	else if (BG_HasWeapon( WP_UMP45, cg.snap->ps.stats ))
-		return WP_UMP45;
-	else if (BG_HasWeapon( WP_MP5K, cg.snap->ps.stats ))
-		return WP_MP5K;
-	else if (BG_HasWeapon( WP_SPAS, cg.snap->ps.stats ))
-		return WP_SPAS;
 	else
 		return WP_NONE;
 }
@@ -2532,11 +2585,11 @@ CG_GetWorstSecondary
 int CG_GetWorstSecondary (void)
 {
 	//return the 'worst' of the secondaries (they might be holding 2)
-	if (BG_HasWeapon( WP_SPAS, cg.snap->ps.stats ))
+	if (BG_HasWeapon( WP_SPAS, cg.predictedPlayerState.stats ))
 		return WP_SPAS;
-	else if (BG_HasWeapon( WP_MP5K, cg.snap->ps.stats ))
+	else if (BG_HasWeapon( WP_MP5K, cg.predictedPlayerState.stats ))
 		return WP_MP5K;
-	else if (BG_HasWeapon( WP_UMP45, cg.snap->ps.stats ))
+	else if (BG_HasWeapon( WP_UMP45, cg.predictedPlayerState.stats ))
 		return WP_UMP45;
 	else
 		return WP_NONE;
@@ -2551,11 +2604,11 @@ CG_GetBestSecondary
 int CG_GetBestSecondary (void)
 {
 	//return the 'best' of the secondaries (they might be holding 2)
-	if (BG_HasWeapon( WP_UMP45, cg.snap->ps.stats ))
+	if (BG_HasWeapon( WP_UMP45, cg.predictedPlayerState.stats ))
 		return WP_UMP45;
-	else if (BG_HasWeapon( WP_MP5K, cg.snap->ps.stats ))
+	else if (BG_HasWeapon( WP_MP5K, cg.predictedPlayerState.stats ))
 		return WP_MP5K;
-	else if (BG_HasWeapon( WP_SPAS, cg.snap->ps.stats ))
+	else if (BG_HasWeapon( WP_SPAS, cg.predictedPlayerState.stats ))
 		return WP_SPAS;
 	else
 		return WP_NONE;
@@ -2569,9 +2622,9 @@ CG_GetSidearm
 */
 int CG_GetSidearm (void)
 {
-	if (BG_HasWeapon( WP_DEAGLE, cg.snap->ps.stats ))
+	if (BG_HasWeapon( WP_DEAGLE, cg.predictedPlayerState.stats ))
 		return WP_DEAGLE;
-	else if (BG_HasWeapon( WP_BERETTA, cg.snap->ps.stats ))
+	else if (BG_HasWeapon( WP_BERETTA, cg.predictedPlayerState.stats ))
 		return WP_BERETTA;
 	else
 		return WP_NONE;

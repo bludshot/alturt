@@ -1843,3 +1843,4 @@ void CG_ChatPrint( const char *str,  int charWidth );
 void CG_Particle_Bleed (qhandle_t pshader, vec3_t start, vec3_t dir, int fleshEntityNum, int duration);
 void CG_PlayerBleed( int clientNum, int damage, vec3_t origin, vec3_t dir );
 void CG_CreateBleeder( vec3_t origin , int damage, int playerNum ) ;
+void CG_WeaponDropped( void );
