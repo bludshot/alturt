@@ -2500,6 +2500,9 @@ void CG_Player( centity_t *cent ) {
   VectorCopy( legs.origin, legs.lightingOrigin );
   VectorCopy( legs.origin, legs.oldorigin ); // don't positionally lerp at all
 
+        VectorScale(legs.axis[0], 1.06f, legs.axis[0]);
+        VectorScale(legs.axis[1], 1.06f, legs.axis[1]);
+        VectorScale(legs.axis[2], 1.08f, legs.axis[2]);
         
 	CG_AddRefEntityWithPowerups( &legs, &cent->currentState, ci->team );
 
@@ -2527,7 +2530,12 @@ void CG_Player( centity_t *cent ) {
 	//torso.customSkin = ci->torsoSkin;
 
 	VectorCopy( cent->lerpOrigin, torso.lightingOrigin );
+        
+        VectorScale(torso.axis[0], 1.06f, torso.axis[0]);
+        VectorScale(torso.axis[1], 1.06f, torso.axis[1]);
+        VectorScale(torso.axis[2], 1.08f, torso.axis[2]);
 
+        
 	CG_PositionRotatedEntityOnTag( &torso, &legs, ci->legsModel, "tag_torso");
 
 	torso.shadowPlane = shadowPlane;
@@ -2686,6 +2694,11 @@ void CG_Player( centity_t *cent ) {
 	if (!head.hModel) {
 		return;
 	}
+        
+        VectorScale(head.axis[0], 1.05f, head.axis[0]);
+        VectorScale(head.axis[1], 1.05f, head.axis[1]);
+        VectorScale(head.axis[2], 1.07f, head.axis[2]);
+        
 	head.customSkin = ci->headSkin;
 
 	VectorCopy( cent->lerpOrigin, head.lightingOrigin );
