@@ -387,8 +387,8 @@ void G_UpdateCvars( void ) {
 				cv->modificationCount = cv->vmCvar->modificationCount;
 
 				if ( cv->trackChange ) {
-					trap_SendServerCommand( -1, va("print \"Server: %s changed to %s\n\"",
-						cv->cvarName, cv->vmCvar->string ) );
+					//trap_SendServerCommand( -1, va("print \"Server: %s changed to %s\n\"",
+						//cv->cvarName, cv->vmCvar->string ) );
 				}
 
 				if (cv->teamShader) {

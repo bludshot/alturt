@@ -488,6 +488,7 @@ typedef enum {
         EV_NONADES,
         EV_POWERSLIDE,
         EV_CHANGE_WEAPON,
+        EV_WEAPON_DROPPED,
         EV_FIRE_WEAPON,
         EV_ZOOM_RESET,
         EV_EJECT_CASING,

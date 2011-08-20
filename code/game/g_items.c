@@ -777,9 +777,6 @@ gentity_t *LaunchWeapon( gitem_t *item, vec3_t origin, vec3_t velocity, int clip
     // clips
   dropped->count = clips;
   dropped->think = G_FreeEntity;
-  if (clips <= 0 )
-  dropped->nextthink = level.time + 0; // remove now!
-  else
   dropped->nextthink = level.time + 20000; // remove after 20 seconds
   trap_LinkEntity (dropped);
   //G_Printf("trBase[YAW] = %i, trBase[ROLL] = %i\n",(int)dropped->s.apos.trBase[YAW], (int)dropped->s.apos.trBase[ROLL] );
@@ -804,10 +801,10 @@ gentity_t *Drop_Weapon( gentity_t *ent, gitem_t *item, float angle, int clips, i
 
   AngleVectors( ent->client->ps.viewangles, forward, NULL, NULL );
   VectorScale( forward, 250, velocity );
-  velocity[2] += 200;
+  velocity[2] += 220;
 
   VectorCopy(ent->client->ps.origin,origin );
-  origin[2] += 10;
+  origin[2] += 13;
 
 
     // add this
@@ -846,6 +843,8 @@ void UT_DropWeapon ( gentity_t *ent)
     return;
   }
   item = BG_FindItemForWeapon( client->ps.weapon );
+  
+   BG_RemoveWeapon( weapon, ent->client->ps.stats );
 
   if ( BG_Grenade( weapon ) && bg_weaponlist[weapon].numClips[client->ps.clientNum] > 1 )
   {
@@ -857,7 +856,7 @@ void UT_DropWeapon ( gentity_t *ent)
     if ( BG_Grenade( weapon ) )
       bg_weaponlist[weapon].numClips[client->ps.clientNum] = 0;
   }
-  client->ps.weapon = WP_NONE;
+  //client->ps.weapon = WP_NONE;
 
   if ( weapon == bg_inventory.sort[client->ps.clientNum][PRIMARY])
     bg_inventory.sort[client->ps.clientNum][PRIMARY] = WP_NONE;
@@ -882,17 +881,14 @@ void UT_DropWeapon ( gentity_t *ent)
     break;
   }
   else if ( bg_inventory.sort[client->ps.clientNum][SECONDARY]){
-
     client->ps.weapon = bg_inventory.sort[client->ps.clientNum][SECONDARY];
     break;
   }
   else if ( bg_inventory.sort[client->ps.clientNum][SIDEARM]){
-
     client->ps.weapon = bg_inventory.sort[client->ps.clientNum][SIDEARM];
   break;
   }
   else if ( bg_inventory.sort[client->ps.clientNum][NADE]){
-
     client->ps.weapon = bg_inventory.sort[client->ps.clientNum][NADE];
     break;
   }
@@ -901,10 +897,13 @@ void UT_DropWeapon ( gentity_t *ent)
   break;
   }
   }
-  trap_SendConsoleCommand(client->ps.clientNum, va("weapon %i \n", client->ps.weapon ));
+ 
+  
+  //trap_SendConsoleCommand(client->ps.clientNum, va("weapon %i \n", client->ps.weapon ));
   ent->client->ps.weaponstate = WEAPON_READY;
 
-  BG_RemoveWeapon( weapon, ent->client->ps.stats );
+
+  G_AddEvent(ent, EV_WEAPON_DROPPED, 0);
  // UT_SpawnPowerup ( ent, PW_SILENCER);
   //SpawnSilencer(ent );
 }
