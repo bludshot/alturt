@@ -2216,6 +2216,9 @@ centity_t       *cent;
 cent = &cg_entities[cg.snap->ps.clientNum];
 zoomFov = cg_zoomFov.value;
 
+if (cg.predictedPlayerState.weaponstate != WEAPON_READY)
+    return;
+
 if (cent->currentState.weapon == WP_SR8 || cent->currentState.weapon == WP_PSG1  ){
 
 if( cent->pe.zoomLevel == 0 ){
