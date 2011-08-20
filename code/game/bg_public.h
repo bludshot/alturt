@@ -920,6 +920,7 @@ int       RoundCount( int w );
 void      BG_PackWeapon( int weapon, int stats[ ] );
 void      BG_RemoveWeapon( int weapon, int stats[ ] );
 void       BG_LastKnife(void);
+void BG_ClearWeapons( int stats[ ] );
 
 #define ARENAS_PER_TIER         4
 #define MAX_ARENAS                      1024

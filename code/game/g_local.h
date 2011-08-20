@@ -1054,3 +1054,4 @@ void G_ExplodeSmokenade( gentity_t *ent );
 void    Set_Mode(gentity_t *ent);
 void UT_DropWeapon ( gentity_t *ent);
 void UT_SelectItem ( gentity_t *ent, int itemNum); //blud I added this to fix warning, but this is xamis's function
+void G_PlayerLoadout( gentity_t *ent );
