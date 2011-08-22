@@ -88,7 +88,7 @@ along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
 #define DEFAULT_VIEWHEIGHT      38 //blud, was 26
 #define CROUCH_VIEWHEIGHT       20 //blud, was 12
 #define DEAD_VIEWHEIGHT         -16
-#define PLAYER_STANDHEIGHT		45 //blud new constant
+#define PLAYER_STANDHEIGHT		40 //blud new constant
 #define PLAYER_CROUCHHEIGHT		24 //blud new constant
 
 //
@@ -302,7 +302,8 @@ typedef enum {
         STAT_CHEST_DAMAGE,  //Xamis                        // chest damage
       //  STAT_STOMACH_DAMAGE, //Xamis                       // stomach damage
         STAT_HEAD_DAMAGE,//Xamis
-
+        //STAT_SMOKE
+                STAT_NADE_FUSE
 
 
 } statIndex_t;
@@ -967,11 +968,11 @@ void BG_ClearWeapons( int stats[ ] );
 
 
 #define ALTURT_SMOKENADETIME 120 // time the smoke nade will spawn smoke for each numbr
-#define ALTURT_SMOKEPUFF_NUMBER 100 // number of smokepuffs to spawn from serverside
-#define ALTURT_SMOKEBLEND_RANGE 96.0f // range of the blend effect clientside
+#define ALTURT_SMOKEPUFF_NUMBER 1 // number of smokepuffs to spawn from serverside
+#define ALTURT_SMOKEBLEND_RANGE 10.0f // range of the blend effect clientside
 #define ALTURT_SMOKEPUFF_TIME 5500 // duration of a single smokepuff clientside
-#define ALTURT_SMOKEPUFF_RADIUS 256.0 // radius of a single smokepuff clientside
-#define ALTURT_SMOKENADE_DISTANCE 420 // how far the smokepuffs can flow
+#define ALTURT_SMOKEPUFF_RADIUS 100.0 // radius of a single smokepuff clientside
+#define ALTURT_SMOKENADE_DISTANCE 50 // how far the smokepuffs can flow
 
 // color of the smoke
 #define ALTURT_SMOKENADE_R_DEFAULT 0.30f
