@@ -509,17 +509,14 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 
                 switch ( event ) {
               	case EV_FALL_SHORT:
-                    G_Printf("EV_FALL_SHORT");
-                                damage=15;
+                                  damage=15;
                                 G_Damage (ent, NULL, NULL, NULL, NULL, damage, 0, MOD_FALLING);
 		break;
 	case EV_FALL_MEDIUM:
-                                G_Printf("EV_FALL_MED");
                                       damage=55;    
                                       G_Damage (ent, NULL, NULL, NULL, NULL, damage, 0, MOD_FALLING);
 		break;
                 case EV_FALL_FAR:
-                                        G_Printf("EV_FALL_FAR");
                         damage=100;  
                         G_Damage (ent, NULL, NULL, NULL, NULL, damage, 0, MOD_FALLING);
                         break;
