@@ -326,7 +326,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 		hitKnife = qtrue;
 
 	// check for bounce
-	if ( !other->takedamage &&
+	if ( Q_stricmp(ent->classname, "knife") &&
 		( ent->s.eFlags & ( EF_BOUNCE | EF_BOUNCE_HALF ) ) ) {
 		G_BounceMissile( ent, trace );
 		G_AddEvent( ent, EV_GRENADE_BOUNCE, 0 );
@@ -418,7 +418,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 		ent->freeAfterEvent = qtrue;
 	// change over to a normal entity right at the point of impact
 		ent->s.eType = ET_GENERAL;
-	} else  if ( !(other->takedamage && other->client )){
+	} else  if ( !( hitKnife )){
 
 		vec3_t dir;
 		gitem_t			*item;
