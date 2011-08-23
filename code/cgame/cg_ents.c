@@ -376,7 +376,7 @@ static void CG_Missile( centity_t *cent ) {
               else if ( (32 + ((cent->currentState.frame & ALTURT_SMOKEMASK_LEFT) >> ALTURT_SMOKEMASK_SLEFT) *
                          (int)(ALTURT_SMOKEBLEND_RANGE / ALTURT_SMOKEMASK_VALUE)) >
                          ( - cg.refdef.vieworg[1] + cent->lerpOrigin[1])  )
-                cg.smokeBlendAlpha = 1.0f - distance/( ALTURT_SMOKEBLEND_RANGE * (1.0 + dummy/15.0));
+               cg.smokeBlendAlpha = 1.0f - distance/( ALTURT_SMOKEBLEND_RANGE * (1.0 + dummy/15.0));
               else if ( (32 + ((cent->currentState.frame & ALTURT_SMOKEMASK_FORWARD) >> ALTURT_SMOKEMASK_SFORWARD) *
                          (int)(ALTURT_SMOKEBLEND_RANGE / ALTURT_SMOKEMASK_VALUE)) >
                          ( cg.refdef.vieworg[0] - cent->lerpOrigin[0])  )
@@ -459,11 +459,13 @@ static void CG_Missile( centity_t *cent ) {
                                         ALTURT_SMOKEPUFF_TIME,
                                         cg.time,
                                         0,
-                                        LEF_PUFF_DONT_FADE,
+                                        LEF_PUFF_DONT_SCALE,
                                         cgs.media.smokePuffShader );
+                  
                   break;
               }
 
+                                        
               cent->trailTime = cg.time + ALTURT_SMOKENADETIME;
             }
           }
