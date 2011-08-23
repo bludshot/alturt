@@ -1865,16 +1865,16 @@ static void PM_TorsoAnimation( void ) {
                 }
                 // QUARANTINE - Weapon Animation
 // Should always draw the weapon when it is just ready
-           //     if (BG_Grenade( pm->ps->weapon && (pm->ps->pm_flags & PMF_GRENADE_ARMED))){
-          //        PM_ContinueWeaponAnim(WPN_READY_FIRE_IDLE);
-          //      }else
-           //     if ( (pm->ps->weapon == WP_KNIFE  || pm->ps->weapon == WP_HK69) && pm->ps->stats[STAT_MODE] ){
-           //         PM_ContinueWeaponAnim( WPN_IDLE_ALT );
-         //       }else
-         //       PM_ContinueWeaponAnim( WPN_IDLE );
+           //    if (BG_Grenade( pm->ps->weapon && (pm->ps->pm_flags & PMF_GRENADE_ARMED))){
+            //     PM_ContinueWeaponAnim(WPN_READY_FIRE_IDLE);
+           //     }else
+                if ( (pm->ps->weapon == WP_KNIFE ) && pm->ps->stats[STAT_MODE] ){
+                    PM_ContinueWeaponAnim( WPN_IDLE_ALT );
+                }//else
+               // PM_ContinueWeaponAnim( WPN_IDLE );
 
 
-         //       return;
+                return;
         }
 }
 
@@ -2176,10 +2176,10 @@ static void PM_Weapon( void ) {
 
 
 
-        //if ( pm->ps->weaponstate == WEAPON_READY_FIRE_ALT && pm->ps->weaponTime > 0 ) {
+        if ( pm->ps->weaponstate == WEAPON_READY_FIRE_ALT && pm->ps->weaponTime > 0 ) {
 
-          //      return;
-        //}
+                return;
+        }
 
         
       if (pm->ps->weapon == WP_KNIFE && ( pm->ps->weaponstate == WEAPON_TOALTERNATE ||pm->ps->weaponstate == WEAPON_TONORMAL)&& pm->ps->weaponTime <= 0)
@@ -2201,10 +2201,12 @@ static void PM_Weapon( void ) {
         }
         
           if ( pm->ps->weaponstate ==WEAPON_READY_FIRE_IDLE_ALT&& pm->ps->weaponTime <= 0 ) {
-              if(pm->ps->weapon==WP_KNIFE && pm->ps->stats[STAT_MODE]  && pm->ps->pm_flags & PMF_GRENADE_ARMED)
+              if(pm->ps->weapon==WP_KNIFE ){
              PM_ContinueWeaponAnim(WEAPON_IDLE_ALT);
-              else
+              }
+              else{
               PM_StartWeaponAnim(WPN_READY_FIRE_IDLE);    
+              }
           }
             
 /*
@@ -2217,7 +2219,6 @@ static void PM_Weapon( void ) {
           pm->ps->weaponstate = WEAPON_RELOADING;
           if ( pm->ps->weapon == WP_NEGEV || pm->ps->weapon == WP_SPAS ){
             PM_StartWeaponAnim( WPN_RELOAD_START );
-            Com_Printf("PM_StartWeaponAnim( WPN_RELOAD_START );\n");
           }
         }
         
@@ -2352,7 +2353,6 @@ static void PM_Weapon( void ) {
           }
         }
 
-     
         
         
         if ( pm->ps->pm_flags & PMF_RELOADING ){
@@ -2403,11 +2403,8 @@ static void PM_Weapon( void ) {
                 if ( (pm->ps->weapon == WP_KNIFE || pm->ps->weapon == WP_HK69)&& pm->ps->stats[STAT_MODE] ){
 
                     PM_StartWeaponAnim( WPN_IDLE_ALT );
-                    //Com_Printf("PM_StartWeaponAnim( WPN_IDLE_ALT );\n");
                 }else
                 PM_StartWeaponAnim( WPN_IDLE );
-                //Com_Printf("PM_StartWeaponAnim( WPN_IDLE );\n");
-
                 return;
         }
 
@@ -2433,18 +2430,15 @@ static void PM_Weapon( void ) {
             pm->ps->pm_flags &= ~PMF_GRENADE_ARMED;
             return;
               
-          }else          
-          {
+          }else          {
                 pm->ps->weaponTime = 0;
 
                 pm->ps->weaponstate = WEAPON_READY;
 
                 if (( pm->ps->weapon == WP_KNIFE || pm->ps->weapon == WP_HK69 )&& pm->ps->stats[STAT_MODE] ){
                     PM_StartWeaponAnim( WPN_IDLE_ALT );
-                    //Com_Printf("PM_StartWeaponAnim( WPN_IDLE_ALT );\n");
                 }else
                 PM_StartWeaponAnim( WPN_IDLE );
-               // Com_Printf("PM_StartWeaponAnim( WPN_IDLE );\n");
 
         // remove flag
                 if ( pm->ps->pm_flags & PMF_SINGLE_SHOT ){
@@ -2483,6 +2477,7 @@ static void PM_Weapon( void ) {
                                 // check for out of ammo
         if ( (pm->ps->stats[STAT_ROUNDS] == 0 && !BG_Grenade(pm->ps->weapon))
             || (pm->ps->stats[STAT_CLIPS] == 0 && BG_Grenade(pm->ps->weapon) )) {
+            
           PM_AddEvent( EV_NOAMMO );
           pm->ps->weaponTime = 550;
           pm->ps->weaponstate = WEAPON_READY;
@@ -2511,6 +2506,8 @@ static void PM_Weapon( void ) {
         if (pm->ps->weapon == WP_KNIFE && pm->ps->stats[STAT_MODE] && !(pm->ps->pm_flags & PMF_GRENADE_ARMED)){
               pm->ps->weaponstate =WEAPON_READY_FIRE_IDLE_ALT ;
               pm->ps->pm_flags |= PMF_GRENADE_ARMED;
+              //PM_StartWeaponAnim( WPN_READY_FIRE_ALT );
+              pm->ps->weaponTime = 800; 
               return;
             }
 
