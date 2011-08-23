@@ -1695,13 +1695,13 @@ footstep = qfalse;
                 if ( !( pm->cmd.buttons & BUTTON_WALKING ) ) {
                         bobmove = 0.4f; // faster speeds bob faster
                         if ( pm->ps->pm_flags & PMF_BACKWARDS_RUN ) {
-                              if ( pm->ps->stats[STAT_LEG_DAMAGE]  ) {
+                              if ( pm->ps->stats[STAT_DMG_LOC] & ( 1 << LEG_DAMAGE )  ) {
                                 PM_ContinueLegsAnim( LEGS_BACKLIMP );
                                 }else
                                 PM_ContinueLegsAnim( LEGS_BACK );
                         }
                         else {
-                              if ( pm->ps->stats[STAT_LEG_DAMAGE]  ) {
+                              if ( pm->ps->stats[STAT_DMG_LOC] & ( 1 << LEG_DAMAGE )  ) {
                                 PM_ContinueLegsAnim( LEGS_LIMP );
                                 }else
                                 PM_ContinueLegsAnim( LEGS_RUN );
@@ -1710,12 +1710,12 @@ footstep = qfalse;
                 } else {
                         bobmove = 0.3f; // walking bobs slow
                         if ( pm->ps->pm_flags & PMF_BACKWARDS_RUN ) {
-                             if ( pm->ps->stats[STAT_LEG_DAMAGE]  ) {
+                             if ( pm->ps->stats[STAT_DMG_LOC] & ( 1 << LEG_DAMAGE )  ) {
                                 PM_ContinueLegsAnim( LEGS_BACKLIMP );
                                 }else
                                 PM_ContinueLegsAnim( LEGS_BACKWALK );
                         }
-                        else if ( pm->ps->stats[STAT_LEG_DAMAGE]  ) {
+                        else if ( pm->ps->stats[STAT_DMG_LOC] & ( 1 << LEG_DAMAGE )  ) {
                         PM_ContinueLegsAnim( LEGS_LIMP );
                         } else{
                                 PM_ContinueLegsAnim( LEGS_WALK );
@@ -2150,10 +2150,7 @@ static void PM_Weapon( void ) {
         
                if ( pm->ps->weaponstate == WEAPON_DOWN_BANDAGING && pm->ps->weaponTime <= 0 ) {
                    pm->ps->pm_flags &=  ~ PMF_BLEEDING;
-                   pm->ps->stats[STAT_LEG_DAMAGE]=0;
-                   pm->ps->stats[STAT_CHEST_DAMAGE] =  0;
-                   pm->ps->stats[STAT_ARM_DAMAGE] = 0;
-                   pm->ps->stats[STAT_HEAD_DAMAGE] = 0;
+                    pm->ps->stats[STAT_DMG_LOC] =0;
                    pm->ps->weaponstate = WEAPON_READY;
         }
         
@@ -2865,7 +2862,7 @@ void PmoveSingle (pmove_t *pmove) {
           //Com_Printf("PMF_BLEEDING TRUE\n");  
         }
         
-        if (pm->cmd.buttons & BUTTON_HEAL &&  pm->ps->pm_flags & PMF_BLEEDING){
+        if (pm->cmd.buttons & BUTTON_HEAL &&  (pm->ps->pm_flags & PMF_BLEEDING || pm->ps->stats[STAT_DMG_LOC])){
              pm->ps->weaponstate = WEAPON_START_BANDAGING;
              pm->cmd.buttons &= ~BUTTON_HEAL;
         }

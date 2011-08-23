@@ -1134,16 +1134,16 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
         take = damage;
         if ( mod == MOD_FALLING ) {
         // add damage to both legs...
-          targ->client->ps.stats[STAT_LEG_DAMAGE] += take;
+          targ->client->ps.stats[STAT_DMG_LOC] |= ( 1 << LEG_DAMAGE );
            targ->client->ps.pm_flags |= PMF_BLEEDING;
         // remove stamina
           dummy = take*2;
           if (targ->client->ps.stats[STAT_STAMINA] < dummy) {
             dummy -= targ->client->ps.stats[STAT_STAMINA];
             targ->client->ps.stats[STAT_STAMINA] = 0;
-            targ->client->ps.stats[STAT_LEG_DAMAGE] += dummy*0.5;
-            targ->client->ps.stats[STAT_CHEST_DAMAGE] += dummy*0.4;
-            targ->client->ps.stats[STAT_HEAD_DAMAGE] += dummy*0.1;
+            targ->client->ps.stats[STAT_DMG_LOC] |= ( 1 << LEG_DAMAGE );
+            targ->client->ps.stats[STAT_DMG_LOC] |= ( 1 << CHEST_DAMAGE );
+            targ->client->ps.stats[STAT_DMG_LOC] |= ( 1 << ARM_DAMAGE );
             take += dummy;
           } else {
             targ->client->ps.stats[STAT_STAMINA] -= dummy;
@@ -1179,15 +1179,16 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
                      //     spray_blood = qtrue;
                           take *= 2;
                          // armorhit = 2;
-                          targ->client->ps.stats[STAT_HEAD_DAMAGE] += take*0.8;
-                          targ->client->ps.stats[STAT_ARM_DAMAGE] += take*0.2;
+            targ->client->ps.stats[STAT_DMG_LOC] |= ( 1 << HEAD_DAMAGE );
+            targ->client->ps.stats[STAT_DMG_LOC] |= ( 1 << CHEST_DAMAGE );
+            targ->client->ps.stats[STAT_DMG_LOC] |= ( 1 << ARM_DAMAGE );
                         } else if (HitLocation == LOC_HEAD) {
                          // spray_blood = qtrue;
                           if (HasPowerup( targ, PW_HELMET )&& attacker->client->ps.weapon != WP_SR8 ) take *= 1;
                           else take *= 2;
                         //  armorhit = 2;
-                          targ->client->ps.stats[STAT_HEAD_DAMAGE] += take*0.8;
-                          targ->client->ps.stats[STAT_ARM_DAMAGE] += take*0.2;
+            targ->client->ps.stats[STAT_DMG_LOC] |= ( 1 << HEAD_DAMAGE );
+            targ->client->ps.stats[STAT_DMG_LOC] |= ( 1 << ARM_DAMAGE );
                         } else {
                 // we traced chest, back, stomach, arms or legs. We assume there is
                 // no partial cover. damage will be distributed to the damage areas.
@@ -1197,10 +1198,10 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
  //                         spray_blood = qtrue;
                           if ( (random() < 0.4) || HasPowerup(targ, PW_VEST) ) bleeding = qfalse;
                           else bleeding = qtrue;
-                          targ->client->ps.stats[STAT_CHEST_DAMAGE] += take*0.45;
-                          targ->client->ps.stats[STAT_LEG_DAMAGE] += take*0.2;
-                          targ->client->ps.stats[STAT_ARM_DAMAGE] += take*0.1;
-                          targ->client->ps.stats[STAT_HEAD_DAMAGE] += take*0.1;
+            targ->client->ps.stats[STAT_DMG_LOC] |= ( 1 << LEG_DAMAGE );
+            targ->client->ps.stats[STAT_DMG_LOC] |= ( 1 << CHEST_DAMAGE );
+            targ->client->ps.stats[STAT_DMG_LOC] |= ( 1 << ARM_DAMAGE );
+            targ->client->ps.stats[STAT_DMG_LOC] |= ( 1 << HEAD_DAMAGE );
                         }
 
             // here goes the calculation for bullets / melee
@@ -1214,7 +1215,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
                             if(! (dflags & DAMAGE_RADIUS) )
                               G_Printf(NULL, S_COLOR_RED"%ss face was blown away by %s!\n", targ->client->pers.netname, attacker->client->pers.netname);
                           }
-                          targ->client->ps.stats[STAT_HEAD_DAMAGE] += take;
+            targ->client->ps.stats[STAT_DMG_LOC] |= ( 1 << HEAD_DAMAGE );
                           break;
                         case LOC_HEAD:
                           if (HasPowerup(targ, PW_HELMET && attacker->client->ps.weapon != WP_SR8)) take *= 4;
@@ -1225,47 +1226,47 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
                             if(! (dflags & DAMAGE_RADIUS) )
                               PrintMsg(NULL, S_COLOR_RED"%ss head was blown away by %s!\n", targ->client->pers.netname, attacker->client->pers.netname);
                           }
-                          targ->client->ps.stats[STAT_HEAD_DAMAGE] += take;
+            targ->client->ps.stats[STAT_DMG_LOC] |= ( 1 << HEAD_DAMAGE );
                           break;
                         case LOC_CHEST:
                           take *= 2.5;
                           if ( HasPowerup(targ, PW_VEST) ) bleeding = qfalse;
                           else bleeding = qtrue;
-                          targ->client->ps.stats[STAT_CHEST_DAMAGE] += take;
+            targ->client->ps.stats[STAT_DMG_LOC] |= ( 1 << CHEST_DAMAGE );
                           break;
                         case LOC_BACK:
                           take *= 2.0;
                           if (  HasPowerup(targ, PW_VEST) ) bleeding = qfalse;
                           else bleeding = qtrue;
-                          targ->client->ps.stats[STAT_CHEST_DAMAGE] += take;
+            targ->client->ps.stats[STAT_DMG_LOC] |= ( 1 << CHEST_DAMAGE );
                           break;
                         case LOC_STOMACH:
                           take *= 2.5;
                           if ( HasPowerup(targ, PW_VEST) ) bleeding = qfalse;
                           else bleeding = qtrue;
-                          targ->client->ps.stats[STAT_CHEST_DAMAGE] += take;
+            targ->client->ps.stats[STAT_DMG_LOC] |= ( 1 << CHEST_DAMAGE );
                           break;
                         case LOC_RIGHTARM:
                           take *= 1.63;
                           if ( random() < 0.6 ) bleeding = qfalse;
                           else bleeding = qtrue;
-                          targ->client->ps.stats[STAT_ARM_DAMAGE] += take;
+            targ->client->ps.stats[STAT_DMG_LOC] |= ( 1 << ARM_DAMAGE );
                           break;
                         case LOC_LEFTARM:
                           take *= 1.63;
                           if ( random() < 0.6 ) bleeding = qfalse;
                           else bleeding = qtrue;
-                          targ->client->ps.stats[STAT_ARM_DAMAGE] += take;
+            targ->client->ps.stats[STAT_DMG_LOC] |= ( 1 << ARM_DAMAGE );
                           break;
                         case LOC_RIGHTLEG:
                           take *= 1.75;
                          bleeding = qtrue;
-                          targ->client->ps.stats[STAT_LEG_DAMAGE] += take;
+            targ->client->ps.stats[STAT_DMG_LOC] |= ( 1 << LEG_DAMAGE );
                           break;
                         case LOC_LEFTLEG:
                           take *= 1.75;
                           bleeding = qtrue;
-                          targ->client->ps.stats[STAT_LEG_DAMAGE] += take;
+            targ->client->ps.stats[STAT_DMG_LOC] |= ( 1 << LEG_DAMAGE );
                           break;
                       }
                       
@@ -1279,10 +1280,10 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
                              else {
                                dummy -= targ->client->ps.stats[STAT_STAMINA];
                                targ->client->ps.stats[STAT_STAMINA] = 0;
-                               targ->client->ps.stats[STAT_HEAD_DAMAGE] += dummy*0.2;
-                               targ->client->ps.stats[STAT_CHEST_DAMAGE] += dummy*0.3;
-                               targ->client->ps.stats[STAT_ARM_DAMAGE] += dummy*0.2;
-                               targ->client->ps.stats[STAT_LEG_DAMAGE] += dummy*0.2;
+            targ->client->ps.stats[STAT_DMG_LOC] |= ( 1 << LEG_DAMAGE );
+            targ->client->ps.stats[STAT_DMG_LOC] |= ( 1 << CHEST_DAMAGE );
+            targ->client->ps.stats[STAT_DMG_LOC] |= ( 1 << ARM_DAMAGE );
+            targ->client->ps.stats[STAT_DMG_LOC] |= ( 1 << HEAD_DAMAGE );
                                take += dummy;
                              }
                            }

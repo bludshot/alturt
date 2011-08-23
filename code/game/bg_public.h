@@ -297,13 +297,14 @@ typedef enum {
         STAT_XYSPEED,//Xamis
 
 
-        STAT_ARM_DAMAGE,   //Xamis                         // arm damage
-        STAT_LEG_DAMAGE,  //Xamis                          // player walks slower when he got some legdamage,
-        STAT_CHEST_DAMAGE,  //Xamis                        // chest damage
+      //  STAT_ARM_DAMAGE,   //Xamis                         // arm damage
+      //  STAT_LEG_DAMAGE,  //Xamis                          // player walks slower when he got some legdamage,
+      //  STAT_CHEST_DAMAGE,  //Xamis                        // chest damage
       //  STAT_STOMACH_DAMAGE, //Xamis                       // stomach damage
-        STAT_HEAD_DAMAGE,//Xamis
+      //  STAT_HEAD_DAMAGE,//Xamis
         //STAT_SMOKE
-                STAT_NADE_FUSE
+                STAT_NADE_FUSE,
+                STAT_DMG_LOC
 
 
 } statIndex_t;
@@ -425,6 +426,18 @@ typedef enum {
 
  WP_NUM_WEAPONS
 } weapon_t;
+
+
+typedef enum {
+    
+NO_DAMAGE,
+ARM_DAMAGE,
+LEG_DAMAGE,
+CHEST_DAMAGE,
+HEAD_DAMAGE
+        
+} location_t;
+
 
 typedef enum {
 
