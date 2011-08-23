@@ -2471,7 +2471,7 @@ void CG_WeaponDropped( void ) {
         
 
                 cg.weaponSelect = original;
-                        CG_Printf("cg.weaponSelect =%i\n",cg.weaponSelect );
+                      //  CG_Printf("cg.weaponSelect =%i\n",cg.weaponSelect );
        // }
 }
 
