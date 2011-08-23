@@ -771,8 +771,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
           case EV_NONADES:
             DEBUGNAME("EV_NONADES");
             if ( es->number == cg.snap->ps.clientNum ) {
-
-              //CG_OutOfNadesChange(cent);
+                                     CG_WeaponDropped();
             }
             break;
         case EV_POWERSLIDE:
