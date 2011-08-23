@@ -1179,7 +1179,7 @@ void CG_DrawStatusHud( void )
                                            trap_R_SetColor( NULL );
                                          }
 
-                                    if(  cg.snap->ps.stats[STAT_ARM_DAMAGE]){
+                                    if(  cg.snap->ps.stats[STAT_DMG_LOC] & ( 1 << ARM_DAMAGE ) ){
                                          
                                            vec4_t hColor3;
                                            hColor3[0] = 0.4f;
@@ -1190,7 +1190,7 @@ void CG_DrawStatusHud( void )
                                          CG_DrawPic( base_x , base_y , 40,86, damage_arms );
 
                                       }     
-                                     if(  cg.snap->ps.stats[STAT_LEG_DAMAGE]){
+                                     if(  cg.snap->ps.stats[STAT_DMG_LOC] & ( 1 << LEG_DAMAGE ) ){
                                          
                                            vec4_t hColor3;
                                            hColor3[0] = 0.4f;
@@ -1201,7 +1201,7 @@ void CG_DrawStatusHud( void )
                                          CG_DrawPic( base_x , base_y , 40,86, damage_legs );
 
                                       }  
-                                    if(  cg.snap->ps.stats[STAT_HEAD_DAMAGE]){
+                                    if(  cg.snap->ps.stats[STAT_DMG_LOC] & ( 1 << HEAD_DAMAGE ) ){
                                          
                                            vec4_t hColor3;
                                            hColor3[0] = 0.4f;
@@ -1212,7 +1212,7 @@ void CG_DrawStatusHud( void )
                                          CG_DrawPic( base_x , base_y , 40,86, damage_head );
 
                                       }     
-                                     if(  cg.snap->ps.stats[STAT_CHEST_DAMAGE]){
+                                     if(  cg.snap->ps.stats[STAT_DMG_LOC] & ( 1 << CHEST_DAMAGE ) ){
                                          
                                            vec4_t hColor3;
                                            hColor3[0] = 0.4f;
