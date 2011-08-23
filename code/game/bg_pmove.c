@@ -535,7 +535,7 @@ static qboolean PM_CheckJump( void )
   
   
   
-  if (pm->ps->pm_flags & PMF_BLEEDING )
+  if (pm->ps->pm_flags & PMF_BLEEDING ||  pm->ps->stats[STAT_HEALTH] < 15)
 VectorMA( pm->ps->velocity, JUMP_VELOCITY *0.5,
             normal, pm->ps->velocity );
   else

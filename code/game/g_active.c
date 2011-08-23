@@ -816,10 +816,15 @@ if ( (client->pers.cmd.forwardmove ||
            //         client->ps.stats[STAT_STAMINA],ucmd->buttons & BUTTON_SPRINTING, (int)xyspeed
            //       );
         
-        if (client->ps.pm_flags & PMF_BLEEDING ){
+        if (client->ps.pm_flags & PMF_BLEEDING  || client->ps.stats[STAT_HEALTH] < 15 ){
             client->ps.speed *= 0.5;
             
+        }else   if ( client->ps.stats[STAT_DMG_LOC] ){
+            client->ps.speed *= 0.7;
+            
         }
+        
+        
 
                         // -- Xamis   Crude attempt at powerslide
       if( client->ps.pm_flags & PMF_DUCKED
