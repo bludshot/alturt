@@ -1709,6 +1709,8 @@ void ClientCommand( int clientNum ) {
                 UT_DropWeapon ( ent);
         else if (Q_stricmp (cmd, "next_item") == 0)
           UT_SelectItem ( ent, 1 );
+        else if (Q_stricmp (cmd, "ut_itemdrop") == 0)
+                UT_DropItem ( ent);
         else
                 trap_SendServerCommand( clientNum, va("print \"unknown cmd %s\n\"", cmd ) );
 }
