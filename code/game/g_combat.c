@@ -283,9 +283,9 @@ void TossClientItems( gentity_t *self ) {
         int                     weapon1;
         int                     weapon2;
         int                     weapon3;
-	//float		angle;
+	float		angle;
 	int			i;
-	//gentity_t	*drop;
+	gentity_t	*drop;
         int ammo = 0;
 
 	//drop the weapon if not a gauntlet or machinegun
@@ -346,8 +346,8 @@ void TossClientItems( gentity_t *self ) {
      //   G_Printf("%i rounds of ammo dropped\n", ammo);
 		//blud note: I commented out unused vars for this block at top of function.
 	// drop all the powerups if not in teamplay
-        /*
-	if ( g_gametype.integer != GT_TEAM ) {
+       
+	//if ( g_gametype.integer != GT_TEAM ) {
 		angle = 45;
 		for ( i = 1 ; i < PW_NUM_POWERUPS ; i++ ) {
 			if ( self->client->ps.powerups[ i ] > level.time ) {
@@ -364,8 +364,8 @@ void TossClientItems( gentity_t *self ) {
 				angle += 45;
 			}
 		}
-        }
-        */
+     //   }
+        
         for ( i = 0; i < PW_NUM_POWERUPS; i++){
         self->client->ps.powerups[ i ] = 0;
 
