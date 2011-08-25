@@ -811,7 +811,22 @@ gentity_t *Drop_Weapon( gentity_t *ent, gitem_t *item, float angle, int clips, i
   return LaunchWeapon( item, origin, velocity, clips, x, y  );
 }
 
+void UT_DropItem ( gentity_t *ent)
+{
+  gclient_t   *client;
+  gitem_t             *item;
 
+
+  client = ent->client;
+  
+  if ( ent->client->ps.pm_flags & PMF_FOLLOW )
+    return;
+
+  if (client->ps.weaponstate != WEAPON_READY)
+    return;
+
+  
+}
 /*
 ================
 Drop_Weapon
