@@ -2416,13 +2416,16 @@ void CG_OutOfNadesChange( centity_t *cent ) {
 }
 
 
+
 /*
 ===============
 CG_WeaponDropped
+Called to force a weapon switch when you drop your current weapon
+Xamis
 ===============
 */
 void CG_WeaponDropped( void ) {
-        int             original;
+        int             i;
 
         if ( !cg.snap ) {
                 return;
@@ -2432,47 +2435,17 @@ void CG_WeaponDropped( void ) {
         }
 
         cg.weaponSelectTime = cg.time;
-       // original = cg.weaponSelect;
+
         CG_ZoomReset_f();
 
-        
-        	if (BG_HasWeapon( WP_M4, (int*)cg.predictedPlayerState.stats ))
-		                 original =  WP_M4;
-	else if (BG_HasWeapon( WP_LR300, (int*)cg.predictedPlayerState.stats ))
-		                 original =  WP_LR300;
-	else if (BG_HasWeapon( WP_G36, (int*)cg.predictedPlayerState.stats ))
-		                 original =  WP_G36;
-	else if (BG_HasWeapon( WP_AK103, (int*)cg.predictedPlayerState.stats ))
-		                 original =  WP_AK103;
-	else if (BG_HasWeapon( WP_HK69, (int*)cg.predictedPlayerState.stats ))
-		                 original =  WP_HK69;
-	else if (BG_HasWeapon( WP_NEGEV, (int*)cg.predictedPlayerState.stats ))
-		                 original =  WP_NEGEV;
-	else if (BG_HasWeapon( WP_PSG1, (int*)cg.predictedPlayerState.stats ))
-		                 original =  WP_PSG1;
-	else if (BG_HasWeapon( WP_SR8,(int*) cg.predictedPlayerState.stats ))
-		                 original =  WP_SR8;
-	else if (BG_HasWeapon( WP_UMP45,(int*) cg.predictedPlayerState.stats ))
-		                 original =  WP_UMP45;
-	else if (BG_HasWeapon( WP_MP5K, (int*)cg.predictedPlayerState.stats ))
-		                 original =  WP_MP5K;
-	else if (BG_HasWeapon( WP_SPAS, (int*)cg.predictedPlayerState.stats ))
-		                 original =  WP_SPAS;
-	else if (BG_HasWeapon( WP_HE, (int*)cg.predictedPlayerState.stats ))
-		                 original =  WP_HE;
-	else if (BG_HasWeapon( WP_SMOKE, (int*)cg.predictedPlayerState.stats ))
-		                 original =  WP_SMOKE;
-	else if (BG_HasWeapon( WP_HE, (int*)cg.predictedPlayerState.stats ))
-		                 original =  WP_DEAGLE;
-	else if (BG_HasWeapon( WP_SMOKE, (int*)cg.predictedPlayerState.stats ))
-		                 original =  WP_BERETTA;
-	else 
-		                 original =  WP_KNIFE;
-        
+for( i = WP_NUM_WEAPONS-1; i > WP_NONE; i--){
 
-                cg.weaponSelect = original;
-                      //  CG_Printf("cg.weaponSelect =%i\n",cg.weaponSelect );
-       // }
+               if (BG_HasWeapon( i, (int*)cg.predictedPlayerState.stats )){
+                                cg.weaponSelect =  i;
+                         break;
+              }
+        }
+
 }
 
 /*
