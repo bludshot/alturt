@@ -347,7 +347,7 @@ void TossClientItems( gentity_t *self ) {
 		//blud note: I commented out unused vars for this block at top of function.
 	// drop all the powerups if not in teamplay
        
-	//if ( g_gametype.integer != GT_TEAM ) {
+	if ( g_gametype.integer != GT_TEAM ) {
 		angle = 45;
 		for ( i = 1 ; i < PW_NUM_POWERUPS ; i++ ) {
 			if ( self->client->ps.powerups[ i ] > level.time ) {
@@ -364,7 +364,7 @@ void TossClientItems( gentity_t *self ) {
 				angle += 45;
 			}
 		}
-     //   }
+        }
         
         for ( i = 0; i < PW_NUM_POWERUPS; i++){
         self->client->ps.powerups[ i ] = 0;
