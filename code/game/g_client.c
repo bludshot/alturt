@@ -1116,7 +1116,7 @@ void G_PlayerLoadout( gentity_t *ent ){
                 bg_inventory.sort[ent->client->ps.clientNum][SIDEARM] = WP_DEAGLE;
         }else{
           BG_PackWeapon(  WP_NONE , ent->client->ps.stats );
-          bg_inventory.sort[ent->client->ps.clientNum][SIDEARM]= WP_NONE;
+          bg_inventory.sort[ent->client->ps.clientNum][SIDEARM]= WP_DEAGLE;
 
         }
         switch ( gear[1] ) {
@@ -1184,16 +1184,18 @@ void G_PlayerLoadout( gentity_t *ent ){
                         bg_weaponlist[WP_NEGEV].rounds[ ent->client->ps.clientNum]=RoundCount(WP_NEGEV);
                         bg_inventory.sort[ent->client->ps.clientNum][PRIMARY]= WP_NEGEV;
                         break;
-          case 'e':
-            BG_PackWeapon(  WP_M4 , ent->client->ps.stats );
-            client->ps.ammo[WP_M4] = 90; //for bots
-            bg_weaponlist[WP_M4].numClips[ent->client->ps.clientNum] = 3;
-            bg_weaponlist[WP_M4].rounds[ ent->client->ps.clientNum]=RoundCount(WP_M4);
-            bg_inventory.sort[ent->client->ps.clientNum][PRIMARY]= WP_M4;
-            break;
+				case 'e':
+					BG_PackWeapon(  WP_M4 , ent->client->ps.stats );
+					client->ps.ammo[WP_M4] = 90; //for bots
+					bg_weaponlist[WP_M4].numClips[ent->client->ps.clientNum] = 3;
+					bg_weaponlist[WP_M4].rounds[ ent->client->ps.clientNum]=RoundCount(WP_M4);
+					bg_inventory.sort[ent->client->ps.clientNum][PRIMARY]= WP_M4;
+					break;
                 default:
                   BG_PackWeapon(  WP_NONE , ent->client->ps.stats );
-                        bg_inventory.sort[ent->client->ps.clientNum][PRIMARY]=WP_NONE;
+                        bg_inventory.sort[ent->client->ps.clientNum][PRIMARY]=WP_LR300;
+						//gear cvar had problem that we had to fix = true (then at the bottom of this all we would change the client cvar value to reflect our default changes?
+						//can we somehow change their gear value on the client to be this, or is that not even a useful idea?
         }
 
 
