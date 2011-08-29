@@ -1272,7 +1272,7 @@ void G_PlayerLoadout( gentity_t *ent ){
                   client->ps.weapon = bg_inventory.sort[ent->client->ps.clientNum][MELEE];
     
                 
-                  G_AddEvent(ent, EV_WEAPON_DROPPED, 0);
+                  //G_AddEvent(ent, EV_WEAPON_DROPPED, 0);
     
 }
 
