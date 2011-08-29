@@ -1194,14 +1194,14 @@ void Blocked_Door( gentity_t *ent, gentity_t *other ) {
 		G_FreeEntity( other );
 		return;
 	}
-
+/*
 	if ( ent->damage ) {
 		G_Damage( other, ent, ent, NULL, NULL, ent->damage, 0, MOD_CRUSH );
 	}
 	if ( ent->spawnflags & 4 ) {
 		return;		// crushers don't reverse
 	}
-
+*/
 	// reverse direction
 	Use_BinaryMover( ent, ent, other );
 }
@@ -1212,26 +1212,26 @@ Touch_DoorTriggerSpectator
 ================
 */
 static void Touch_DoorTriggerSpectator( gentity_t *ent, gentity_t *other, trace_t *trace ) {
-	int i, axis;
-	vec3_t origin, dir, angles;
+	int axis;
+	float doorMin, doorMax;
+	vec3_t origin;
 
 	axis = ent->count;
-	VectorClear(dir);
-	if (fabs(other->s.origin[axis] - ent->r.absmax[axis]) <
-		fabs(other->s.origin[axis] - ent->r.absmin[axis])) {
-		origin[axis] = ent->r.absmin[axis] - 10;
-		dir[axis] = -1;
+	// the constants below relate to constants in Think_SpawnNewDoorTrigger()
+	doorMin = ent->r.absmin[axis] + 100;
+	doorMax = ent->r.absmax[axis] - 100;
+
+	VectorCopy(other->client->ps.origin, origin);
+
+	if (origin[axis] < doorMin || origin[axis] > doorMax) return;
+
+	if (fabs(origin[axis] - doorMax) < fabs(origin[axis] - doorMin)) {
+		origin[axis] = doorMin - 10;
+	} else {
+		origin[axis] = doorMax + 10;
 	}
-	else {
-		origin[axis] = ent->r.absmax[axis] + 10;
-		dir[axis] = 1;
-	}
-	for (i = 0; i < 3; i++) {
-		if (i == axis) continue;
-		origin[i] = (ent->r.absmin[i] + ent->r.absmax[i]) * 0.5;
-	}
-	vectoangles(dir, angles);
-	TeleportPlayer(other, origin, angles );
+
+	TeleportPlayer(other, origin, tv(10000000.0, 0, 0));
 }
 
 /*
@@ -1267,6 +1267,16 @@ Touch_DoorTrigger
 */
 void Touch_DoorTrigger( gentity_t *ent, gentity_t *other, trace_t *trace )
 {
+
+    if ( other->client && other->client->sess.sessionTeam == TEAM_SPECTATOR ) {
+        // if the door is not open and not opening
+        if (( ent->parent->moverState != MOVER_1TO2 &&
+            ent->parent->moverState != MOVER_POS2) ||
+	( ent->parent->moverState != ROTATOR_1TO2 &&
+                ent->parent->moverState != ROTATOR_POS2 )){
+            Touch_DoorTriggerSpectator( ent, other, trace );
+        }
+    }
 
 	if( !other->client )
 		return;
