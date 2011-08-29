@@ -606,11 +606,10 @@ void UT_SelectItem( gentity_t *ent, int dir ){
     ent->client->ps.stats[STAT_SELECTED_ITEM]++;
 
     if ( ent->client->ps.stats[STAT_SELECTED_ITEM] == PW_NUM_POWERUPS ) {
-          //  CG_Printf("ps->stats[STAT_SELECTED_ITEM] == PW_NUM_POWERUP\n");
+
       ent->client->ps.stats[STAT_SELECTED_ITEM] = 1;
     }
     if ( ent->client->ps.powerups[ ent->client->ps.stats[STAT_SELECTED_ITEM] ] ) {
-           // CG_Printf("ps->stats[STAT_SELECTED_ITEM]= %i\n",
            //           ps->stats[STAT_SELECTED_ITEM]);
       break;
     }
@@ -957,7 +956,7 @@ gentity_t *LaunchItem( gitem_t *item, vec3_t origin, vec3_t velocity ) {
         VectorCopy( velocity, dropped->s.pos.trDelta );
 
 
-       // dropped->s.eFlags |= EF_BOUNCE_HALF;
+      //  dropped->s.eFlags |= EF_BOUNCE_HALF;
 #ifdef MISSIONPACK
         if ((g_gametype.integer == GT_CTF || g_gametype.integer == GT_BOMB)                     && item->giType == IT_TEAM) { // Special case for CTF flags
 #else
@@ -976,7 +975,7 @@ gentity_t *LaunchItem( gitem_t *item, vec3_t origin, vec3_t velocity ) {
 	if(  FL_THROWN_ITEM) {
 		dropped->clipmask = MASK_SHOT;
 		dropped->s.pos.trTime = level.time - 50;	// move a bit on the very first frame
-		VectorScale( velocity, 200, dropped->s.pos.trDelta ); // 700
+		VectorScale( velocity, 100, dropped->s.pos.trDelta ); // 700
 		SnapVector( dropped->s.pos.trDelta );		// save net bandwidth
 		dropped->physicsBounce= 0.2f;
 	}
@@ -1003,8 +1002,8 @@ gentity_t *Drop_Item( gentity_t *ent, gitem_t *item, float angle ) {
         angles[PITCH] = 0;      // always forward
 
         AngleVectors( angles, velocity, NULL, NULL );
-        VectorScale( velocity, 150, velocity );
-        velocity[2] += 200 + crandom() * 50;
+        VectorScale( velocity, 10, velocity );
+        velocity[2] += 10 + crandom() * 2;
 
       /*  for(i=0; i < 3; i++ )
           if (bg_inventory.item[ent->client->ps.clientNum][i] = item->giTag && item->giType == IT_POWERUP){
