@@ -207,10 +207,10 @@ void CG_Respawn( void ) {
 
         // display weapons available
         cg.weaponSelectTime = cg.time;
-
+        CG_ZoomReset_f();
         // select the weapon the server says we are using
         cg.weaponSelect = cg.snap->ps.weapon;
-        CG_ZoomReset_f();
+
 }
 
 extern char *eventnames[];
