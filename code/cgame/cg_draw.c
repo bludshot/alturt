@@ -764,7 +764,7 @@ static void CG_DrawStatusBar( void ) {
         //weapon mode
        // value = ps->stats[STAT_MODE];
         mode = weapmodes_save.string[cg.predictedPlayerState.weapon];
-        CG_Printf("weapmodes_save.string[cg.predictedPlayerState.weapon] is %c\n",weapmodes_save.string[cg.predictedPlayerState.weapon]);
+        //CG_Printf("weapmodes_save.string[cg.predictedPlayerState.weapon] is %c\n",weapmodes_save.string[cg.predictedPlayerState.weapon]);
         //These weapons do not have modes, don't draw a mode
         if (!( cg.predictedPlayerState.weapon == WP_HE
                ||cg.predictedPlayerState.weapon == WP_SMOKE
