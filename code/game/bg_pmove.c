@@ -1807,11 +1807,11 @@ static void PM_BeginWeaponChange( int weapon ) {
                 return;
         }
 
-        PM_AddEvent( EV_CHANGE_WEAPON );
+       // PM_AddEvent( EV_CHANGE_WEAPON );
         pm->ps->weaponstate = WEAPON_DROPPING;
-        pm->ps->weaponTime +=200;
+        pm->ps->weaponTime +=300;
         PM_StartTorsoAnim( TORSO_DROP );
-        pm->ps->torsoTimer +=400;
+        pm->ps->torsoTimer +=300;
 }
 
 
@@ -1841,8 +1841,8 @@ static void PM_FinishWeaponChange( void ) {
         pm->ps->weapon = weapon;
         pm->ps->weaponstate = WEAPON_RAISING;        
        //PM_StartWeaponAnim(WPN_DRAW);
-        pm->ps->weaponTime +=200;
-        pm->ps->torsoTimer +=400;
+        //pm->ps->weaponTime +=300;
+        //pm->ps->torsoTimer +=300;
         PM_StartTorsoAnim( TORSO_RAISE );
         PM_AddEvent( EV_CHANGE_WEAPON );
 }
@@ -2319,14 +2319,20 @@ static void PM_Weapon( void ) {
             &&  bg_weaponlist[0].rounds[pm->ps->clientNum] > 0
             && !( pm->ps->pm_flags & PMF_SINGLE_SHOT )
             &&  bg_weaponlist[pm->ps->weapon].rounds[pm->ps->clientNum] >0){
+            if(  pm->ps->weapon ==WP_UMP45 && bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] == 0 )
+                pm->ps->weaponTime = 45;
+            else
           pm->ps->weaponTime = PM_WeaponTime(pm->ps->weapon );
           PM_AddEvent( EV_FIRE_WEAPON );
           PM_StartWeaponAnim( WPN_FIRE );
           pm->ps->weaponstate = WEAPON_FIRING;
           bg_weaponlist[0].rounds[pm->ps->clientNum]++; //Round count for burst mode.
           bg_weaponlist[0].numClips[pm->ps->clientNum]++; //Round count for spread.
-          if( bg_weaponlist[0].rounds[pm->ps->clientNum] == 3)
+          if( bg_weaponlist[0].rounds[pm->ps->clientNum] == 3){
             pm->ps->pm_flags |= PMF_SINGLE_SHOT;
+            if(  pm->ps->weapon ==WP_UMP45 && bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] == 0 )
+                pm->ps->weaponTime = 205;
+          }
           return;
             }
         
@@ -2524,12 +2530,13 @@ static void PM_Weapon( void ) {
          }else  PM_StartWeaponAnim( WPN_FIRE );
 
 
-          if( bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] == 0  &&  pm->ps->weapon != WP_SPAS  &&  pm->ps->weapon != WP_NEGEV )
+          if( bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] == 0  &&  pm->ps->weapon != WP_SPAS  &&  pm->ps->weapon != WP_NEGEV ){
           bg_weaponlist[0].rounds[pm->ps->clientNum]++;
+            if ( pm->ps->weapon == WP_UMP45  )
+              pm->ps->weaponTime = 45;
+          }
                           pm->ps->weaponstate = WEAPON_FIRING;
-			  if ( pm->ps->weapon == WP_UMP45 && bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] == 0  )
-   			   pm->ps->weaponTime = 65;
-			  else
+	  if ( !(pm->ps->weapon == WP_UMP45 && bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] == 0) )
                           pm->ps->weaponTime = PM_WeaponTime(pm->ps->weapon );
                           PM_AddEvent( EV_FIRE_WEAPON );
                           bg_weaponlist[0].numClips[pm->ps->clientNum]++; //This is a round count for spread.
