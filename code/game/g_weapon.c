@@ -214,7 +214,7 @@ void CheckMed( gentity_t *ent ) {
             traceEnt->health+=5;
             traceEnt->client->ps.pm_flags &=  ~ PMF_BLEEDING;
             ent->client->ps.weaponstate = WEAPON_START_BANDAGING_OTHER;
-           ent->client->ps.stats[STAT_DMG_LOC] = 0;
+            ent->client->ps.stats[STAT_DMG_LOC] = 0;
         }
 
 
@@ -338,11 +338,19 @@ void Bullet_Fire (gentity_t *ent, float spread, int damage ) {
         gentity_t       *tent;
         gentity_t       *traceEnt;
         int                     i, passent, spreadAdjustment;
-        spread += BG_CalcSpread(ent->client->ps) + ((bg_weaponlist[0].numClips[ent->client->ps.clientNum]*20));
-        damage *= s_quadFactor;
-       // G_Printf ("spread = %f\n xyspeed = %f", spread, BG_CalcSpread(ent->client->ps) );
-           
-       Apply_Weapon_Kick( ent, ent->s.weapon );
+        
+        if (ent->s.weapon == WP_UMP45 && bg_weaponlist[ ent->s.weapon ].weapMode[ent->client->ps.clientNum] == 0 ){
+        spread = 0;
+        if(bg_weaponlist[0].numClips[ent->client->ps.clientNum] == 3)
+            Apply_Weapon_Kick( ent, ent->s.weapon );
+        }  else {
+        spread += BG_CalcSpread(ent->client->ps) + ((bg_weaponlist[0].numClips[ent->client->ps.clientNum]*10));
+         Apply_Weapon_Kick( ent, ent->s.weapon );
+        }
+        
+
+         damage *= s_quadFactor;       
+              // G_Printf ("spread = %f\n xyspeed = %f", spread, BG_CalcSpread(ent->client->ps) );
         
       if( ent->client->ps.powerups[ PW_LASERSIGHT ] ){
         spreadAdjustment = 8;
@@ -964,13 +972,12 @@ void Set_Mode(gentity_t *ent){
   char    userinfo[MAX_INFO_STRING];
   char                    weapmodes_save[WP_NUM_WEAPONS];//xamis
   index = ent - g_entities;
-        
- trap_GetUserinfo( index, userinfo, sizeof(userinfo) );
+
+  trap_GetUserinfo( index, userinfo, sizeof(userinfo) );
 
  Q_strncpyz( weapmodes_save, Info_ValueForKey (userinfo, "weapmodes_save"), sizeof( weapmodes_save ) );
-  switch (weapmodes_save[ent->client->ps.weapon] ){
-
-
+ 
+   switch (weapmodes_save[ent->client->ps.weapon] ){
     case '0':
   bg_weaponlist[ ent->client->ps.weapon ].weapMode[ent->client->ps.clientNum]
       = ent->client->ps.stats[STAT_MODE]
@@ -979,13 +986,18 @@ void Set_Mode(gentity_t *ent){
       ent->client->ps.pm_flags &= ~PMF_SINGLE_MODE;
   break;
     case '1':
+         if ( ent->client->ps.weapon == WP_MP5K || ent->client->ps.weapon == WP_UMP45 ){
+      bg_weaponlist[ ent->client->ps.weapon ].weapMode[ent->client->ps.clientNum]
+          = ent->client->ps.stats[STAT_MODE]
+          = ent->client->weaponMode[ ent->client->ps.weapon ]
+          = 2;
+         }else{
       bg_weaponlist[ ent->client->ps.weapon ].weapMode[ent->client->ps.clientNum]
           = ent->client->ps.stats[STAT_MODE]
           = ent->client->weaponMode[ ent->client->ps.weapon ]
           = 1;
       ent->client->ps.pm_flags |= PMF_SINGLE_MODE;
-      if ( ent->client->ps.weapon == WP_MP5K || ent->client->ps.weapon == WP_UMP45 )
-        Change_Mode(ent);
+         }
       break;
     case '2':
       bg_weaponlist[ ent->client->ps.weapon ].weapMode[ent->client->ps.clientNum]
@@ -996,13 +1008,14 @@ void Set_Mode(gentity_t *ent){
       break;
   }
 }
+
 void Change_Mode(gentity_t *ent){
-    
+
   int             index;  
   char    userinfo[MAX_INFO_STRING];
   char                    weapmodes_save[WP_NUM_WEAPONS];//xamis
   index = ent - g_entities;
-        
+
  trap_GetUserinfo( index, userinfo, sizeof(userinfo) );
 
  Q_strncpyz( weapmodes_save, Info_ValueForKey (userinfo, "weapmodes_save"), sizeof( weapmodes_save ) );
@@ -1030,19 +1043,22 @@ void Change_Mode(gentity_t *ent){
         ent->client->ps.pm_flags &= ~PMF_SINGLE_MODE;
         if(ent->client->ps.weapon==WP_KNIFE ||ent->client->ps.weapon==WP_HK69 ){
             ent->client->ps.pm_flags |= PMF_SINGLE_MODE;
-                      G_Printf("tonormal called\n");
         ent->client->ps.weaponstate = WEAPON_TONORMAL;
         }
         break;
    case 1:
-     weapmodes_save[ent->client->ps.weapon]= '1';
+        if ( ent->client->ps.weapon == WP_MP5K || ent->client->ps.weapon == WP_UMP45 ){
+     weapmodes_save[ent->client->ps.weapon]= '2';
+        }else{
+      weapmodes_save[ent->client->ps.weapon]= '1';
      ent->client->ps.pm_flags |= PMF_SINGLE_MODE;
+        }
      break;
     case 2:
       weapmodes_save[ent->client->ps.weapon]= '2';
       ent->client->ps.pm_flags &= ~PMF_SINGLE_MODE;
       if(ent->client->ps.weapon==WP_KNIFE ||ent->client->ps.weapon==WP_HK69 ){
-          G_Printf("toalternate called\n");
+
       ent->client->ps.pm_flags |= PMF_SINGLE_MODE;
       ent->client->ps.weaponstate = WEAPON_TOALTERNATE;
       }
@@ -1050,9 +1066,9 @@ void Change_Mode(gentity_t *ent){
     default:
       weapmodes_save[ent->client->ps.weapon]= '2';
 
-
-  //    return;
   }
+
+         
  trap_Cvar_Set( "weapmodes_save", weapmodes_save);
   if ( ent->client->weaponMode[ ent->client->ps.weapon ] == 2)
     ent->client->weaponMode[ ent->client->ps.weapon ] =-1;
@@ -1075,7 +1091,7 @@ void Cmd_Reload( gentity_t *ent )       {
 
   if (BG_Grenade(ent->client->ps.weapon))
     return;
-   trap_SendConsoleCommand( ent->client->ps.clientNum, "ut_zoomreset" );
+  G_AddEvent(ent,EV_ZOOM_RESET,0);
   //if (ent->client->ps.ammo[ent->client->ps.weapon] == 0 || ent->client->ps.weapon == WP_KNIFE ) return;
   if ( bg_weaponlist[ent->client->ps.weapon].numClips[ent->client->ps.clientNum] == 0 || ent->client->ps.weapon == WP_KNIFE ) return;
   if (ent->client->ps.weapon == WP_SPAS && bg_weaponlist[ent->client->ps.weapon].rounds[ent->client->ps.clientNum] > 7 ){
