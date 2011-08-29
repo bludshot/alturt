@@ -617,6 +617,7 @@ static void CG_DrawStatusBar( void ) {
 	centity_t	*cent;
 	playerState_t	*ps;
 	int			value;
+        char    mode;
 	vec3_t		angles;
         char *w;
         gitem_t                 *item;
@@ -761,7 +762,9 @@ static void CG_DrawStatusBar( void ) {
 
 
         //weapon mode
-        value = ps->stats[STAT_MODE];
+       // value = ps->stats[STAT_MODE];
+        mode = weapmodes_save.string[cg.predictedPlayerState.weapon];
+        CG_Printf("weapmodes_save.string[cg.predictedPlayerState.weapon] is %c\n",weapmodes_save.string[cg.predictedPlayerState.weapon]);
         //These weapons do not have modes, don't draw a mode
         if (!( cg.predictedPlayerState.weapon == WP_HE
                ||cg.predictedPlayerState.weapon == WP_SMOKE
@@ -773,7 +776,7 @@ static void CG_DrawStatusBar( void ) {
           char *s;
 		  s = "Default"; //added by blud to stop possibly uninitialized warning.
 
-          if ( value == 0 ){
+          if ( mode == '0' ){
 	    if (cg.predictedPlayerState.weapon == WP_UMP45)
 	    s = "Spam";
 	    else if (cg.predictedPlayerState.weapon == WP_KNIFE)
@@ -783,11 +786,11 @@ static void CG_DrawStatusBar( void ) {
                     else
             s = "Burst";
           }
-          if ( value == 1 ){
+          if ( mode == '1' ){
 
                     s = "Semi Automatic";
           }
-          if ( value == 2 ){
+          if ( mode =='2' ){
                 if (cg.predictedPlayerState.weapon == WP_KNIFE)
                     s = "Throw";
                 else  if (cg.predictedPlayerState.weapon == WP_HK69)
@@ -2520,11 +2523,11 @@ static void CG_DrawCenterString( void ) {
 void CG_ChatPrint( const char *str,  int charWidth ) {
 	char	*s;
 
+
 	Q_strncpyz( cg.chatPrint, str, sizeof(cg.chatPrint) );
 
 	cg.chatPrintTime = cg.time;
 	cg.chatPrintCharWidth = charWidth;
-
 	// count the number of lines for centering
 	cg.chatPrintLines = 1;
 	s = cg.chatPrint;
@@ -2583,6 +2586,7 @@ static void CG_DrawChatString( void ) {
 		}
 		start++;
 	}
+
 
 	trap_R_SetColor( NULL );
 }
