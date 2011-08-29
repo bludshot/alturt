@@ -525,7 +525,6 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
                         FireWeapon( ent );
                         break;
                case EV_ZOOM_RESET:
-                        //trap_SendConsoleCommand( ent->client->ps.clientNum, "ut_zoomreset" );
                         break;
                case EV_CHANGE_WEAPON:
                     Set_Mode(ent);
