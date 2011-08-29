@@ -355,13 +355,15 @@ void TossClientItems( gentity_t *self ) {
 				if ( !item ) {
 					continue;
 				}
-				drop = Drop_Item( self, item, angle );
+                                if( i == PW_REDFLAG|| i == PW_BLUEFLAG){
+				drop = Drop_Item( self, item, random()*360 );
 				// decide how many seconds it has left
 				drop->count = ( self->client->ps.powerups[ i ] - level.time ) / 1000;
 				if ( drop->count < 1 ) {
 					drop->count = 1;
 				}
 				angle += 45;
+                                                                }
 			}
 		}
         }
@@ -1135,7 +1137,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
         if ( mod == MOD_FALLING ) {
         // add damage to both legs...
           targ->client->ps.stats[STAT_DMG_LOC] |= ( 1 << LEG_DAMAGE );
-           targ->client->ps.pm_flags |= PMF_BLEEDING;
         // remove stamina
           dummy = take*2;
           if (targ->client->ps.stats[STAT_STAMINA] < dummy) {
