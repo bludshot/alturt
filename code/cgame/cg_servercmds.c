@@ -1029,8 +1029,8 @@ static void CG_ServerCommand( void ) {
 			Q_strncpyz( text, CG_Argv(1), MAX_SAY_TEXT );
 
 			CG_RemoveChatEscapeChar( text );
-			//CG_Printf( "%s\n", text );
-                                                      CG_ChatPrint( text, 6 ) ;              
+			CG_Printf( "%s\n", text );
+                                                     CG_ChatPrint( text, 6 ) ;              
 		}
 		return;
 	}
@@ -1041,7 +1041,7 @@ static void CG_ServerCommand( void ) {
                                      
 		CG_RemoveChatEscapeChar( text );
 		CG_AddToTeamChat( text );
-		//CG_Printf( "%s\n", text );
+		CG_Printf( "%s\n", text );
                                     CG_ChatPrint( text, 6 ) ;    
 
 		return;
