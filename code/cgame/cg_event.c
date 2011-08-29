@@ -771,7 +771,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
           case EV_NONADES:
             DEBUGNAME("EV_NONADES");
             if ( es->number == cg.snap->ps.clientNum ) {
-                                     CG_WeaponDropped();
+                          CG_WeaponDropped();
             }
             break;
         case EV_POWERSLIDE:
@@ -781,18 +781,20 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
           
 	case EV_CHANGE_WEAPON:
 		DEBUGNAME("EV_CHANGE_WEAPON");
-		//trap_S_StartSound (NULL, es->number, CHAN_AUTO, cgs.media.selectSound );
+		trap_S_StartSound (NULL, es->number, CHAN_AUTO, cgs.media.selectSound );
 		break;
                 	case EV_WEAPON_DROPPED:
 		DEBUGNAME("EV_WEAPON_DROPPED");
+                                     if ( clientNum == cg.predictedPlayerState.clientNum ) {
                                      CG_WeaponDropped();
+                                     }
 		break;       
 	case EV_FIRE_WEAPON:
 		DEBUGNAME("EV_FIRE_WEAPON");
 		CG_FireWeapon( cent );
 		break;
                case EV_ZOOM_RESET:
-                        trap_SendConsoleCommand(  "ut_zoomreset" );
+                        CG_ZoomReset_f();
                         break;
 
         case EV_EJECT_CASING:
