@@ -1082,198 +1082,81 @@ void ClientBegin( int clientNum ) {
 
 
 void G_PlayerLoadout( gentity_t *ent ){
-    
-        int             index;
-        int             i;
-         gclient_t       *client;
-        char    userinfo[MAX_INFO_STRING];
-        char    gear[MAX_QPATH];
-
-        index = ent - g_entities;
-                trap_GetUserinfo( index, userinfo, sizeof(userinfo) );
-        client = ent->client;
-        Q_strncpyz( gear, Info_ValueForKey (userinfo, "gear"), sizeof( gear ) );
-        client->ps.clientNum = index;
-        
-        
-        BG_ClearWeapons( ent->client->ps.stats );
-        
-        
-            BG_PackWeapon( WP_KNIFE , ent->client->ps.stats );
-        bg_weaponlist[WP_KNIFE].rounds[ ent->client->ps.clientNum]= 5;
-        bg_weaponlist[WP_KNIFE].numClips[ ent->client->ps.clientNum] = 0;
-        bg_inventory.sort[ent->client->ps.clientNum][MELEE] = WP_KNIFE;
-        
-        if( gear[0] == 'F'  ){
-                BG_PackWeapon( WP_BERETTA , ent->client->ps.stats );
-                bg_weaponlist[WP_BERETTA].rounds[ ent->client->ps.clientNum] = RoundCount(WP_BERETTA);
-                bg_weaponlist[WP_BERETTA].numClips[ent->client->ps.clientNum] = 3;
-                bg_inventory.sort[ent->client->ps.clientNum][SIDEARM] = WP_BERETTA;
-        }else if( gear[0] == 'G'  ){
-                BG_PackWeapon( WP_DEAGLE , ent->client->ps.stats );
-                bg_weaponlist[WP_DEAGLE].rounds[ ent->client->ps.clientNum]= RoundCount(WP_DEAGLE);
-                bg_weaponlist[WP_DEAGLE].numClips[ent->client->ps.clientNum] = 3;
-                bg_inventory.sort[ent->client->ps.clientNum][SIDEARM] = WP_DEAGLE;
-        }else{
-          BG_PackWeapon(  WP_NONE , ent->client->ps.stats );
-          bg_inventory.sort[ent->client->ps.clientNum][SIDEARM]= WP_DEAGLE;
-
-        }
-        switch ( gear[1] ) {
-                case 'A':
-                        bg_inventory.sort[ent->client->ps.clientNum][PRIMARY]= WP_NONE;
-                        break;
-                case 'H':
-                        BG_PackWeapon(  WP_SPAS , ent->client->ps.stats );
-                        bg_weaponlist[WP_SPAS].numClips[ent->client->ps.clientNum] = 16;
-                        bg_weaponlist[WP_SPAS].rounds[ ent->client->ps.clientNum]= 8;
-                        bg_inventory.sort[ent->client->ps.clientNum][PRIMARY]= WP_SPAS;
-                        break;
-                case 'I':
-                        BG_PackWeapon(  WP_MP5K , ent->client->ps.stats );
-                        bg_weaponlist[WP_MP5K].numClips[ent->client->ps.clientNum] = 3;
-                        bg_weaponlist[WP_MP5K].rounds[ ent->client->ps.clientNum]=RoundCount(WP_MP5K);
-                        bg_inventory.sort[ent->client->ps.clientNum][PRIMARY]= WP_MP5K;
-                        break;
-                case 'J':
-                        BG_PackWeapon(  WP_UMP45 , ent->client->ps.stats );
-                        bg_weaponlist[WP_UMP45].numClips[ent->client->ps.clientNum] = 3;
-                        bg_weaponlist[WP_UMP45].rounds[ ent->client->ps.clientNum]=RoundCount(WP_UMP45);
-                        bg_inventory.sort[ent->client->ps.clientNum][PRIMARY]= WP_UMP45;
-                        break;
-                case 'K':
-                  BG_PackWeapon(  WP_HK69 , ent->client->ps.stats );
-                  bg_weaponlist[WP_HK69].numClips[ent->client->ps.clientNum] = 5;
-                        bg_weaponlist[WP_HK69].rounds[ ent->client->ps.clientNum]=RoundCount(WP_HK69);
-                        bg_inventory.sort[ent->client->ps.clientNum][PRIMARY]= WP_HK69;
-                        break;
-                case 'L':
-                  BG_PackWeapon(  WP_LR300 , ent->client->ps.stats );
-                        bg_weaponlist[WP_LR300].numClips[ent->client->ps.clientNum] = 3;
-                        bg_weaponlist[WP_LR300].rounds[ ent->client->ps.clientNum]=RoundCount(WP_LR300);
-                        bg_inventory.sort[ent->client->ps.clientNum][PRIMARY]= WP_LR300;
-                        break;
-                case 'M':
-                  BG_PackWeapon(  WP_G36 , ent->client->ps.stats );
-                  bg_weaponlist[WP_G36].numClips[ent->client->ps.clientNum] = 3;
-                        bg_weaponlist[WP_G36].rounds[ ent->client->ps.clientNum]=RoundCount(WP_G36);
-                        bg_inventory.sort[ent->client->ps.clientNum][PRIMARY]= WP_G36;
-                        break;
-                case 'N':
-                  BG_PackWeapon(  WP_PSG1 , ent->client->ps.stats );
-                  bg_weaponlist[WP_PSG1].numClips[ent->client->ps.clientNum] = 3;
-                        bg_weaponlist[WP_PSG1].rounds[ ent->client->ps.clientNum]=RoundCount(WP_PSG1);
-                        bg_inventory.sort[ent->client->ps.clientNum][PRIMARY]= WP_PSG1;
-                        break;
-                case 'Z':
-                  BG_PackWeapon(  WP_SR8 , ent->client->ps.stats );
-                  bg_weaponlist[WP_SR8].numClips[ent->client->ps.clientNum] = 3;
-                        bg_weaponlist[WP_SR8].rounds[ ent->client->ps.clientNum]=RoundCount(WP_SR8);
-                        bg_inventory.sort[ent->client->ps.clientNum][PRIMARY]= WP_SR8;
-                        break;
-                case 'a':
-                  BG_PackWeapon(  WP_AK103 , ent->client->ps.stats );
-                  bg_weaponlist[WP_AK103].numClips[ent->client->ps.clientNum] = 3;
-                        bg_weaponlist[WP_AK103].rounds[ ent->client->ps.clientNum]=RoundCount(WP_AK103);
-                        bg_inventory.sort[ent->client->ps.clientNum][PRIMARY]= WP_AK103;
-                        break;
-                case 'c':
-                  BG_PackWeapon(  WP_NEGEV , ent->client->ps.stats );
-                        bg_weaponlist[WP_NEGEV].rounds[client->ps.clientNum] = RoundCount(WP_NEGEV);
-                        bg_weaponlist[WP_NEGEV].numClips[ent->client->ps.clientNum] = 1;
-                        bg_weaponlist[WP_NEGEV].rounds[ ent->client->ps.clientNum]=RoundCount(WP_NEGEV);
-                        bg_inventory.sort[ent->client->ps.clientNum][PRIMARY]= WP_NEGEV;
-                        break;
-				case 'e':
-					BG_PackWeapon(  WP_M4 , ent->client->ps.stats );
-					client->ps.ammo[WP_M4] = 90; //for bots
-					bg_weaponlist[WP_M4].numClips[ent->client->ps.clientNum] = 3;
-					bg_weaponlist[WP_M4].rounds[ ent->client->ps.clientNum]=RoundCount(WP_M4);
-					bg_inventory.sort[ent->client->ps.clientNum][PRIMARY]= WP_M4;
-					break;
-                default:
-                  BG_PackWeapon(  WP_NONE , ent->client->ps.stats );
-                        bg_inventory.sort[ent->client->ps.clientNum][PRIMARY]=WP_LR300;
-						//gear cvar had problem that we had to fix = true (then at the bottom of this all we would change the client cvar value to reflect our default changes?
-						//can we somehow change their gear value on the client to be this, or is that not even a useful idea?
-        }
+	int			index;
+	int			i;
+	gclient_t	*client;
+	char		userinfo[MAX_INFO_STRING];
+	char		gear[MAX_QPATH];
+	int			inventoryItemSlot = 0;
+	int			WPPWnum;
 
 
-	if (gear[1] == 'c' || gear[1] == gear[2] ){
-		bg_inventory.sort[ent->client->ps.clientNum][SECONDARY]= WP_NONE;
-	}else{
-        switch ( gear[2] ) {
-                case 'A':
-                  bg_inventory.sort[ent->client->ps.clientNum][SECONDARY]= WP_NONE;
-                  break;
-                case 'H':
-                  BG_PackWeapon(  WP_SPAS , ent->client->ps.stats );
-                  bg_weaponlist[WP_SPAS].numClips[ent->client->ps.clientNum] = 16;
-                        bg_weaponlist[WP_SPAS].rounds[ ent->client->ps.clientNum]=8;
-                        bg_inventory.sort[ent->client->ps.clientNum][SECONDARY]=WP_SPAS;
-                        break;
-                case 'I':
-                        BG_PackWeapon(  WP_MP5K , ent->client->ps.stats );
-                        bg_weaponlist[WP_MP5K].numClips[ent->client->ps.clientNum] = 3;
-                        bg_weaponlist[WP_MP5K].rounds[ ent->client->ps.clientNum]=RoundCount(WP_MP5K);
-                        bg_inventory.sort[ent->client->ps.clientNum][SECONDARY]=WP_MP5K;
-                        break;
-                case 'J':
-                        BG_PackWeapon(  WP_UMP45 , ent->client->ps.stats );
-                        bg_weaponlist[WP_UMP45].numClips[ent->client->ps.clientNum] = 3;
-                        bg_weaponlist[WP_UMP45].rounds[ ent->client->ps.clientNum]=RoundCount(WP_UMP45);
-                        bg_inventory.sort[ent->client->ps.clientNum][SECONDARY]=WP_UMP45;
-                        break;
-                default:
-                        BG_PackWeapon(  WP_NONE , ent->client->ps.stats );
-                        bg_inventory.sort[ent->client->ps.clientNum][SECONDARY]=  WP_NONE;
+	//get the client number and the value of their gear cvar
 
-        		}
+	index = ent - g_entities;
+	trap_GetUserinfo( index, userinfo, sizeof(userinfo) );
+	client = ent->client;
+	Q_strncpyz( gear, Info_ValueForKey (userinfo, "gear"), sizeof( gear ) );
+	client->ps.clientNum = index;
+
+	BG_ClearWeapons( ent->client->ps.stats );
+
+	//knife isn't part of gear, you just always get it
+	BG_PackWeapon( WP_KNIFE , ent->client->ps.stats );
+	bg_weaponlist[WP_KNIFE].rounds[ ent->client->ps.clientNum]= RoundCount(WP_KNIFE);
+	bg_weaponlist[WP_KNIFE].numClips[ ent->client->ps.clientNum] = ClipCount(WP_KNIFE);
+	bg_inventory.sort[ent->client->ps.clientNum][MELEE] = WP_KNIFE;
+
+	//Give them all their weapons
+	for( i = GEAR_SLOT_SIDEARM; i <= GEAR_SLOT_GRENADE; i++ )
+	{
+		WPPWnum = GearToWPPW(gear[i]);
+
+		if (!isGoodItem(WPPWnum, gear[GEAR_SLOT_PRIMARY], i))
+		{
+			WPPWnum = getDefaultItem(i);
+		}
+
+		BG_PackWeapon( WPPWnum , ent->client->ps.stats );
+		bg_weaponlist[WPPWnum].rounds[ ent->client->ps.clientNum]= RoundCount(WPPWnum);
+		bg_weaponlist[WPPWnum].numClips[ent->client->ps.clientNum] = ClipCount(WPPWnum);
+		bg_inventory.sort[ent->client->ps.clientNum][i+1] = WPPWnum; //the g weapon slot numbers are 1 lower than the gear slot numbers. Maybe we should change MELEE to -1 sometime...
 	}
 
-        if( gear[3] == 'O'  ){
-        BG_PackWeapon( WP_HE , ent->client->ps.stats );
-        bg_weaponlist[WP_HE].rounds[ent->client->ps.clientNum] = 0;
-        bg_weaponlist[WP_HE].numClips[ ent->client->ps.clientNum]=RoundCount(WP_HE);
-        bg_inventory.sort[ent->client->ps.clientNum][NADE]= WP_HE;
 
-        }else if( gear[3] == 'Q'  ){
-          BG_PackWeapon( WP_SMOKE , ent->client->ps.stats );
-          bg_weaponlist[WP_SMOKE].numClips[ ent->client->ps.clientNum]=RoundCount(WP_HE);
-          bg_weaponlist[WP_SMOKE].rounds[ent->client->ps.clientNum] = 0;
-          bg_inventory.sort[ent->client->ps.clientNum][NADE]= WP_SMOKE;
+	//G_Printf("gear string 4:%c 5:%c 6:%c\n", gear.string[4],gear.string[5],gear.string[6]); //xamis debug
 
-        }else {
-          client->pers.inventory[NADE]= WP_NONE;
-          bg_inventory.sort[ent->client->ps.clientNum][NADE]= WP_NONE;
-
-        }
-     //   G_Printf("gear string 4:%c 5:%c 6:%c\n", gear.string[4],gear.string[5],gear.string[6]);
-        for( i = 0; i < 3; i++ ){
-          if( gear[i+4] == 'V'  )
-            bg_inventory.item[ent->client->ps.clientNum][i] = PW_LASERSIGHT;
-          if( gear[i+4] == 'W'  )
-            bg_inventory.item[ent->client->ps.clientNum][i] = PW_HELMET;
-          if( gear[i+4] == 'R'  )
-            bg_inventory.item[ent->client->ps.clientNum][i] = PW_VEST;
-          if( gear[i+4] == 'U'  )
-            bg_inventory.item[ent->client->ps.clientNum][i] = PW_SILENCER;
-
-        }
+	//Items
+	//This is still basic, and allows too much. Fix it after we finish adding all the items to the game
+	for( i = GEAR_SLOT_ITEM_1; i < GEAR_SLOT_MAX; i++ )
+	{
+		if( gear[i] == GEAR_LASER  )
+			bg_inventory.item[ent->client->ps.clientNum][inventoryItemSlot] = PW_LASERSIGHT;
+		if( gear[i] == GEAR_HELMET  )
+			bg_inventory.item[ent->client->ps.clientNum][inventoryItemSlot] = PW_HELMET;
+		if( gear[i] == GEAR_VEST  )
+			bg_inventory.item[ent->client->ps.clientNum][inventoryItemSlot] = PW_VEST;
+		if( gear[i] == GEAR_SILENCER  )
+			bg_inventory.item[ent->client->ps.clientNum][inventoryItemSlot] = PW_SILENCER;
+	
+		inventoryItemSlot++;
+	}
         
-        
-               if ( bg_inventory.sort[ent->client->ps.clientNum][PRIMARY])
-                  client->ps.weapon = bg_inventory.sort[ent->client->ps.clientNum][PRIMARY];
-                else if ( bg_inventory.sort[ent->client->ps.clientNum][SECONDARY])
-                  client->ps.weapon = bg_inventory.sort[ent->client->ps.clientNum][SECONDARY];
-                else if ( bg_inventory.sort[ent->client->ps.clientNum][SIDEARM])
-                  client->ps.weapon = bg_inventory.sort[ent->client->ps.clientNum][SIDEARM];
-                else
-                  client->ps.weapon = bg_inventory.sort[ent->client->ps.clientNum][MELEE];
-    
-                
-                  //G_AddEvent(ent, EV_WEAPON_DROPPED, 0);
-    
+	//I'm wondering if right here I should set the client's gear cvar if it was invalid at all?
+	//I know I don't really need to, but I think I want to?...
+
+	//Switch the player's gun to the best one they have
+	if ( bg_inventory.sort[ent->client->ps.clientNum][PRIMARY])
+		client->ps.weapon = bg_inventory.sort[ent->client->ps.clientNum][PRIMARY];
+	else if ( bg_inventory.sort[ent->client->ps.clientNum][SECONDARY])
+		client->ps.weapon = bg_inventory.sort[ent->client->ps.clientNum][SECONDARY];
+	else if ( bg_inventory.sort[ent->client->ps.clientNum][SIDEARM])
+		client->ps.weapon = bg_inventory.sort[ent->client->ps.clientNum][SIDEARM];
+	else
+		client->ps.weapon = bg_inventory.sort[ent->client->ps.clientNum][MELEE];
+
+	//G_AddEvent(ent, EV_WEAPON_DROPPED, 0);
+
 }
 
 
