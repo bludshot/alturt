@@ -2931,14 +2931,14 @@ void PmoveSingle (pmove_t *pmove) {
                 pm->cmd.upmove = 0;
         }
 
-        if ( pm->ps->pm_type == PM_SPECTATOR ) {
-                PM_CheckDuck ();
-                PM_FlyMove ();
-                PM_DropTimers ();
-                return;
-        }
+   //     if ( pm->ps->pm_type == PM_SPECTATOR ) {
+   //             PM_CheckDuck ();
+   //             PM_FlyMove ();
+   //             PM_DropTimers ();
+  //              return;
+   //     }
 
-        if ( pm->ps->pm_type == PM_NOCLIP ) {
+        if ( pm->ps->pm_type == PM_SPECTATOR || pm->ps->pm_type == PM_NOCLIP ) {
                 PM_NoclipMove ();
                 PM_DropTimers ();
                 return;
