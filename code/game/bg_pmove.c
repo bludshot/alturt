@@ -1882,50 +1882,6 @@ static void PM_TorsoAnimation( void ) {
 
 /*
 ==================
-  RoundCount for Cmd_Reload --Xamis
-==================
-*/
-
-int RoundCount( int w )        {
-        //How much each clip holds
-  switch ( w ){
-    case WP_M4:
-    case WP_MP5K:
-    case WP_UMP45:
-    case WP_AK103:
-    case WP_G36:
-    case WP_LR300:
-      return 30;
-      break;
-    case WP_SPAS:
-    case WP_KNIFE:
-      return 5;
-      break;
-    case WP_NEGEV:
-      return 80;
-      break;
-    case WP_SR8:
-      return 5;
-      break;
-    case WP_PSG1:
-      return 10;
-      break;
-    case WP_HK69:
-      return 1;
-      break;
-    case WP_BERETTA:
-      return 15;
-      break;
-    case WP_DEAGLE:
-      return 7;
-      break;
-    default:
-      return 2;
-  }
-
-}
-/*
-==================
   ReloadTime for Cmd_Reload  --Xamis
 ==================
 */
@@ -2087,7 +2043,6 @@ static int PM_WeaponTime( int weapon )
                         break;
         }return addTime;
 }
-
 
 
 void BG_LastKnife(void){
