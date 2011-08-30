@@ -1245,6 +1245,77 @@ static qboolean CG_CalcMuzzlePoint( int entityNum, vec3_t muzzle ) {
 
 }
 
+void CG_RenderLaser(centity_t *cent){
+
+        vec3_t forward;
+        trace_t		trace;
+        vec3_t		muzzlePoint, endPoint;
+        refEntity_t		beam;
+        qhandle_t laserBeam;
+        int	rf;
+        int anim;
+                    
+                    
+        memset( &beam, 0, sizeof( beam ) );
+        anim = cent->currentState.legsAnim & ~ANIM_TOGGLEBIT;
+        rf = 0;
+
+        VectorCopy ( cent->lerpOrigin,muzzlePoint );
+
+            if ( anim == LEGS_WALKCR  || anim == LEGS_BACKCR || anim == LEGS_IDLECR )
+               muzzlePoint[2] += CROUCH_VIEWHEIGHT +1;
+            else
+                muzzlePoint[2] += DEFAULT_VIEWHEIGHT +1;
+
+
+        AngleVectors( cent->currentState.apos.trBase , forward, NULL, NULL );
+
+
+        VectorMA( cent->lerpOrigin, 8192*16, forward, endPoint );
+
+        { 
+            if ( anim == LEGS_WALKCR  || anim == LEGS_BACKCR || anim == LEGS_IDLECR )
+                endPoint[2] += CROUCH_VIEWHEIGHT +1;
+            else
+                endPoint[2] += DEFAULT_VIEWHEIGHT +1;
+        }
+
+        endPoint[0] +=1.6;
+        laserBeam = trap_R_RegisterShader( "laserShader" );
+        // see if it hit a wall
+        CG_Trace( &trace, muzzlePoint, vec3_origin, vec3_origin, endPoint,
+                  cent->currentState.number, MASK_SHOT );
+
+        VectorCopy( trace.endpos , endPoint );
+
+        if (! (CG_PointContents( muzzlePoint, cent->currentState.number ) & CONTENTS_SOLID) &&
+                !trace.startsolid )
+        {
+
+            // add the impact flare if it hit something
+            if ( trace.fraction < 1.0 ) {
+
+                beam.customShader = cgs.media.laserShader;
+                beam.reType = RT_SPRITE;
+                beam.radius = 1;
+
+                beam.renderfx = rf;
+                VectorMA( trace.endpos, -1.4, forward, beam.origin );
+                 trap_R_AddRefEntityToScene( &beam );
+         
+      //  CG_Printf( "len is %f\n",len );
+
+
+            }
+        }
+            
+            
+            
+            
+} 
+
+
+
 
 /*
 =============
@@ -1603,6 +1674,8 @@ if ( weaponDown ) {
                 CG_AddWeaponWithPowerups( &silencer, cent->currentState.powerups );
         }else weapon->flashSound[0] = weapon->normalSound[0];
 
+       if(lasersight) CG_RenderLaser(cent);
+        
         if ( ps && weapon->laserModel && weaponNum != WP_KNIFE && weaponNum != WP_HK69
              && weaponNum != WP_SPAS && weaponNum != WP_HE && weaponNum != WP_SR8
              && weaponNum != WP_G36 && weaponNum != WP_PSG1 && weaponNum != WP_NEGEV 
@@ -1616,77 +1689,8 @@ if ( weaponDown ) {
                 laser.hModel = weapon->laserModel;
                  if ( weaponNum != WP_AK103)
                 CG_PositionEntityOnTag( &laser, &gun, weapon->holdsModel , "tag_laser" );
-            
-  {
-        vec3_t forward2;
-        trace_t		trace2;
-        vec3_t		muzzlePoint2, endPoint2;
-        refEntity_t		beam2;
-        qhandle_t laserBeam2;
-        int	rf;
-        int anim;
-                    
-                    
-        memset( &beam2, 0, sizeof( beam2 ) );
-        anim = cent->currentState.legsAnim & ~ANIM_TOGGLEBIT;
-        rf = 0;
 
-        VectorCopy ( ps->origin,muzzlePoint2 );
-
-            if ( anim == LEGS_WALKCR  || anim == LEGS_BACKCR || anim == LEGS_IDLECR )
-               muzzlePoint2[2] += CROUCH_VIEWHEIGHT +1;
-            else
-                muzzlePoint2[2] += DEFAULT_VIEWHEIGHT +1;
-
-
-        AngleVectors( cent->currentState.apos.trBase , forward2, NULL, NULL );
-
-
-        VectorMA( ps->origin , 8192*16, forward2, endPoint2 );
-
-        { 
-            if ( anim == LEGS_WALKCR  || anim == LEGS_BACKCR || anim == LEGS_IDLECR )
-                endPoint2[2] += CROUCH_VIEWHEIGHT +1;
-            else
-                endPoint2[2] += DEFAULT_VIEWHEIGHT +1;
-        }
-
-        endPoint2[0] +=1.6;
-        laserBeam2 = trap_R_RegisterShader( "laserShader" );
-        // see if it hit a wall
-        CG_Trace( &trace2, muzzlePoint2, vec3_origin, vec3_origin, endPoint2,
-                  cent->currentState.number, MASK_SHOT );
-
-        VectorCopy( trace2.endpos , endPoint2 );
-
-        if (! (CG_PointContents( muzzlePoint2, cent->currentState.number ) & CONTENTS_SOLID) &&
-                !trace2.startsolid )
-        {
-
-            // add the impact flare if it hit something
-            if ( trace2.fraction < 1.0 ) {
-
-                beam2.customShader = cgs.media.laserShader;
-                beam2.reType = RT_SPRITE;
-                beam2.radius = 1;
-
-                beam2.renderfx = rf;
-                VectorMA( trace2.endpos, -1.4, forward2, beam2.origin );
-                 trap_R_AddRefEntityToScene( &beam2 );
-         
-      //  CG_Printf( "len is %f\n",len );
-
-
-            }
-        }
-            
-            
-            
-            
-    } 
-        
-
-                CG_AddWeaponWithPowerups( &laser, cent->currentState.powerups );
+               CG_AddWeaponWithPowerups( &laser, cent->currentState.powerups );
         }
 
   if( ps){
@@ -2003,8 +2007,7 @@ if ( weaponDown ) {
                 }
         }
         }
-
-        
+       
 }
 
 /*
