@@ -356,9 +356,9 @@ qboolean G_MoverPush( gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **
 		}
 
 		// the move was blocked an entity
-		if ( pusher->damage ) {
-			G_Damage( check, pusher, pusher, NULL, NULL, pusher->damage, 0, MOD_CRUSH );
-		}
+		//if ( pusher->damage ) {
+		//	G_Damage( check, pusher, pusher, NULL, NULL, pusher->damage, 0, MOD_CRUSH );
+		//}
 		// bobbing entities are instant-kill and never get blocked
 		if ( pusher->s.pos.trType == TR_SINE || pusher->s.apos.trType == TR_SINE ) {
 			G_Damage( check, pusher, pusher, NULL, NULL, 99999, 0, MOD_CRUSH );
@@ -752,6 +752,7 @@ Use_BinaryMover
 void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
 	int		total;
 	int		partial;
+        
 	if( ent->trigger_only){
 		//G_Printf( "Use_BinaryMover ent->trigger_only\n" );
 	}
@@ -1212,26 +1213,26 @@ Touch_DoorTriggerSpectator
 ================
 */
 static void Touch_DoorTriggerSpectator( gentity_t *ent, gentity_t *other, trace_t *trace ) {
-	int axis;
-	float doorMin, doorMax;
-	vec3_t origin;
+	int i, axis;
+	vec3_t origin, dir, angles;
 
 	axis = ent->count;
-	// the constants below relate to constants in Think_SpawnNewDoorTrigger()
-	doorMin = ent->r.absmin[axis] + 100;
-	doorMax = ent->r.absmax[axis] - 100;
-
-	VectorCopy(other->client->ps.origin, origin);
-
-	if (origin[axis] < doorMin || origin[axis] > doorMax) return;
-
-	if (fabs(origin[axis] - doorMax) < fabs(origin[axis] - doorMin)) {
-		origin[axis] = doorMin - 10;
-	} else {
-		origin[axis] = doorMax + 10;
+	VectorClear(dir);
+	if (fabs(other->s.origin[axis] - ent->r.absmax[axis]) <
+		fabs(other->s.origin[axis] - ent->r.absmin[axis])) {
+		origin[axis] = ent->r.absmin[axis] - 100;
+		dir[axis] = -1;
 	}
-
-	TeleportPlayer(other, origin, tv(10000000.0, 0, 0));
+	else {
+		origin[axis] = ent->r.absmax[axis] + 100;
+		dir[axis] = 1;
+	}
+	for (i = 0; i < 3; i++) {
+		if (i == axis) continue;
+		origin[i] = (ent->r.absmin[i] + ent->r.absmax[i]) * 0.5;
+	}
+	vectoangles(dir, angles);
+	TeleportPlayer(other, origin, angles );
 }
 
 /*
@@ -1276,6 +1277,7 @@ void Touch_DoorTrigger( gentity_t *ent, gentity_t *other, trace_t *trace )
                 ent->parent->moverState != ROTATOR_POS2 )){
             Touch_DoorTriggerSpectator( ent, other, trace );
         }
+        
     }
 
 	if( !other->client )
@@ -1526,7 +1528,7 @@ void SP_func_door (gentity_t *ent) {
 	G_SpawnFloat( "lip", "8", &lip );
 
 	// default damage of 2 points
-	G_SpawnInt( "dmg", "2", &ent->damage );
+	G_SpawnInt( "dmg", "0", &ent->damage );
 
 	// first position at start
 	VectorCopy( ent->s.origin, ent->pos1 );
@@ -1682,7 +1684,7 @@ void SP_func_plat (gentity_t *ent) {
 	VectorClear (ent->s.angles);
 
 	G_SpawnFloat( "speed", "200", &ent->speed );
-	G_SpawnInt( "dmg", "2", &ent->damage );
+	G_SpawnInt( "dmg", "0", &ent->damage );
 	G_SpawnFloat( "wait", "1", &ent->wait );
 	G_SpawnFloat( "lip", "8", &lip );
 
@@ -2076,7 +2078,7 @@ void SP_func_rotating (gentity_t *ent) {
 	}
 
 	if (!ent->damage) {
-		ent->damage = 2;
+		ent->damage = 0;
 	}
 
 	trap_SetBrushModel( ent, ent->model );
