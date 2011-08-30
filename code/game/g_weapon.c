@@ -965,6 +965,323 @@ void CalcMuzzlePointOrigin ( gentity_t *ent, vec3_t origin, vec3_t forward, vec3
         SnapVector( muzzlePoint );
 }
 
+int getDefaultItem(int slot)
+{
+	int defaultItem;
+
+	switch (slot)
+	{
+		case GEAR_SLOT_SIDEARM:
+			defaultItem = WP_DEAGLE;
+			break;
+		case GEAR_SLOT_PRIMARY:
+			defaultItem = WP_LR300;
+			break;
+		case GEAR_SLOT_SECONDARY:
+			defaultItem = WP_NONE;
+			break;
+		case GEAR_SLOT_GRENADE:
+			defaultItem = WP_NONE;
+			break;
+		case GEAR_SLOT_ITEM_1:
+			defaultItem = PW_VEST;
+			break;
+		case GEAR_SLOT_ITEM_2:
+			defaultItem = WP_NONE;
+			break;
+		case GEAR_SLOT_ITEM_3:
+			defaultItem = WP_NONE;
+			break;
+		default:
+			defaultItem = WP_NONE;
+			break;
+	}
+
+	return defaultItem;
+}
+
+qboolean isGoodItem(int itemNum, char primaryWeapon, int slot)
+{
+	qboolean returnValue;
+
+	switch (slot)
+	{
+		case GEAR_SLOT_SIDEARM:
+			returnValue = isSidearm(itemNum);
+			break;
+		case GEAR_SLOT_PRIMARY:
+			returnValue = isPrimary(itemNum);
+			break;
+		case GEAR_SLOT_SECONDARY:
+			returnValue = isSecondary(itemNum) && primaryWeapon != GEAR_NEGEV && GearToWPPW(primaryWeapon) != itemNum;
+			break;
+		case GEAR_SLOT_GRENADE:
+			returnValue = isGrenade(itemNum);
+			break;
+		case GEAR_SLOT_ITEM_1:
+			returnValue = isItem(itemNum); //this item stuff is not fully completed yet
+			break;
+		case GEAR_SLOT_ITEM_2:
+			returnValue = isItem(itemNum);
+			break;
+		case GEAR_SLOT_ITEM_3:
+			returnValue = isItem(itemNum);
+			break;
+		default:
+			returnValue = qfalse;
+			break;
+	}
+
+	return returnValue;
+}
+
+qboolean isSidearm(int w)
+{
+	return (w == WP_BERETTA || w == WP_DEAGLE);
+}
+
+qboolean isPrimary(int w)
+{
+	return (w == WP_MP5K	||
+			w == WP_SPAS	||
+			w == WP_UMP45	||
+			w == WP_M4		||
+			w == WP_LR300	||
+			w == WP_G36		||
+			w == WP_AK103	||
+			w == WP_HK69	||
+			w == WP_NEGEV	||
+			w == WP_PSG1	||
+			w == WP_SR8 );
+}
+
+qboolean isSecondary(int w)
+{
+	return (w == WP_MP5K || w == WP_SPAS || w == WP_UMP45);
+}
+
+qboolean isGrenade(int w)
+{
+	return (w == WP_HE || w == WP_SMOKE);
+}
+
+qboolean isItem(int i)
+{
+	return (i == PW_VEST		||
+			i == PW_HELMET		||
+			i == PW_SILENCER	||
+			i == PW_LASERSIGHT	||
+			i == PW_AMMO		||
+			i == PW_NVG	);
+}
+
+
+//blud: Converts gear cvar slot char values to WP or PW numbers
+int GearToWPPW(char itemChar)
+{
+	int WPPWnum;
+
+	switch (itemChar)
+	{
+		case GEAR_NONE:
+			WPPWnum = WP_NONE;
+			break;
+		case GEAR_BERETTA:
+			WPPWnum = WP_BERETTA;
+			break;
+		case GEAR_DEAGLE:
+			WPPWnum = WP_DEAGLE;
+			break;
+		case GEAR_SPAS12:
+			WPPWnum = WP_SPAS;
+			break;
+		case GEAR_MP5K:
+			WPPWnum = WP_MP5K;
+			break;
+		case GEAR_UMP45:
+			WPPWnum = WP_UMP45;
+			break;
+		case GEAR_HK69:
+			WPPWnum = WP_HK69;
+			break;
+		case GEAR_LR:
+			WPPWnum = WP_LR300;
+			break;
+		case GEAR_G36:
+			WPPWnum = WP_G36;
+			break;
+		case GEAR_PSG1:
+			WPPWnum = WP_PSG1;
+			break;
+		case GEAR_GRENADE_HE:
+			WPPWnum = WP_HE;
+			break;
+		case GEAR_GRENADE_SMOKE:
+			WPPWnum = WP_SMOKE;
+			break;
+		case GEAR_VEST:
+			WPPWnum = PW_VEST;
+			break;
+		case GEAR_NVG:
+			WPPWnum = PW_NVG;
+			break;
+		case GEAR_MEDKIT:
+			WPPWnum = PW_NONE; //temp since we haven't added medkits yet
+			break;
+		case GEAR_SILENCER:
+			WPPWnum = PW_SILENCER;
+			break;
+		case GEAR_LASER:
+			WPPWnum = PW_LASERSIGHT;
+			break;
+		case GEAR_HELMET:
+			WPPWnum = PW_HELMET;
+			break;
+		case GEAR_AMMO:
+			WPPWnum = PW_AMMO;
+			break;
+		case GEAR_SR8:
+			WPPWnum = WP_SR8;
+			break;
+		case GEAR_AK103:
+			WPPWnum = WP_AK103;
+			break;
+		case GEAR_NEGEV:
+			WPPWnum = WP_NEGEV;
+			break;
+		case GEAR_M4:
+			WPPWnum = WP_M4;
+			break;
+		default:
+			//should never happen. Just going to set it to none
+			WPPWnum = WP_NONE;
+			break;
+	}
+
+	return WPPWnum;
+
+}
+
+/*
+==================
+ClipCount
+
+returns # of clips for weapon w
+(actually magazines not clips :p )
+==================
+*/
+int ClipCount( int w ) {
+	int numClips;
+
+	//I think we should move all the properties for the weapons to constants in one place?
+	//(and then use those constants here instead of hardcoded numbers)
+
+	switch (w)
+	{
+		case WP_KNIFE:
+			numClips = 0;
+			break;
+		case WP_BERETTA:
+		case WP_DEAGLE:
+			numClips = 3;
+			break;
+		case WP_MP5K:
+		case WP_UMP45:
+			numClips = 3;
+			break;
+		case WP_SPAS:
+			numClips = 16;
+			break;
+		case WP_M4:
+		case WP_LR300:
+		case WP_G36:
+		case WP_AK103:
+			numClips = 3;
+			break;
+		case WP_PSG1:
+			numClips = 3;
+			break;
+		case WP_SR8:
+			numClips = 3;
+			break;
+		case WP_NEGEV:
+			numClips = 1;
+			break;
+		case WP_HK69:
+			numClips = 5;
+			break;
+		case WP_HE:
+		case WP_SMOKE:
+			numClips = 2;
+			break;
+		default:
+			numClips = 1;
+			break;
+	}
+
+	return numClips;
+}
+
+
+/*
+==================
+RoundCount
+
+returns # of rounds per clip for weapon w
+==================
+*/
+int RoundCount( int w )
+{
+	int numRounds;
+
+	switch ( w )
+	{
+		case WP_KNIFE:
+			numRounds = 5;
+			break;
+		case WP_BERETTA:
+			numRounds = 15;
+			break;
+		case WP_DEAGLE:
+			numRounds = 7;
+			break;
+		case WP_MP5K:
+		case WP_UMP45:
+			numRounds = 30;
+			break;
+		case WP_SPAS:
+			numRounds = 8;
+			break;
+		case WP_M4:
+		case WP_LR300:
+		case WP_G36:
+		case WP_AK103:
+			numRounds = 30;
+			break;
+		case WP_PSG1:
+			numRounds = 10;
+			break;
+		case WP_SR8:
+			numRounds = 5;
+			break;
+		case WP_NEGEV:
+			numRounds = 80;
+			break;
+		case WP_HK69:
+			numRounds = 1;
+			break;
+		case WP_HE:
+		case WP_SMOKE:
+			numRounds = 0;
+			break;
+		default:
+			numRounds = 2;
+			break;
+	}
+
+	return numRounds;
+}
+
 
 void Set_Mode(gentity_t *ent){
     
