@@ -930,10 +930,9 @@ qboolean  BG_PlayerInSmoke ( int stats[]);
 
 void      BG_GetClientNormal( const playerState_t *ps, vec3_t normal );
 int       BG_CalcSpread( playerState_t ps );
-int       RoundCount( int w );
 void      BG_PackWeapon( int weapon, int stats[ ] );
 void      BG_RemoveWeapon( int weapon, int stats[ ] );
-void       BG_LastKnife(void);
+void	BG_LastKnife(void);
 void BG_ClearWeapons( int stats[ ] );
 
 #define ARENAS_PER_TIER         4
@@ -1020,3 +1019,40 @@ void BG_ClearWeapons( int stats[ ] );
 #define STAT_MAX_HEALTH 100
 
 #define STAT_MAX_STAMINA 900
+
+
+//Gear values - these are for the gear cvar
+#define GEAR_NONE			'A'
+#define GEAR_KNIFE			'E'
+#define GEAR_BERETTA		'F'
+#define GEAR_DEAGLE			'G'
+#define GEAR_SPAS12			'H'
+#define GEAR_MP5K			'I'
+#define GEAR_UMP45			'J'
+#define GEAR_HK69			'K'
+#define GEAR_LR				'L'
+#define GEAR_G36			'M'
+#define GEAR_PSG1			'N'
+#define GEAR_GRENADE_HE		'O'
+#define GEAR_GRENADE_SMOKE	'Q'
+#define GEAR_VEST			'R'
+#define GEAR_NVG			'S'
+#define GEAR_MEDKIT			'T'
+#define GEAR_SILENCER		'U'
+#define GEAR_LASER			'V'
+#define GEAR_HELMET			'W'
+#define GEAR_AMMO			'X'
+#define GEAR_SR8			'Z'
+#define GEAR_AK103			'a'
+#define GEAR_NEGEV			'c'
+#define GEAR_M4				'e'
+
+
+#define GEAR_SLOT_SIDEARM	0
+#define GEAR_SLOT_PRIMARY	1
+#define GEAR_SLOT_SECONDARY	2
+#define GEAR_SLOT_GRENADE	3
+#define GEAR_SLOT_ITEM_1	4
+#define GEAR_SLOT_ITEM_2	5
+#define GEAR_SLOT_ITEM_3	6
+#define GEAR_SLOT_MAX		7
