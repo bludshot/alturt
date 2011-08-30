@@ -34,14 +34,15 @@ along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
 //new Alturt constants below
 //these are in the order of the order found in the gear cvar
 //SIDEARM, PRIMARY, SECONDARY, GRENADE, ITEM1, ITEM2, ITEM3
-#define GEAR_SLOT_SIDEARM	0
+/*#define GEAR_SLOT_SIDEARM	0
 #define GEAR_SLOT_PRIMARY	1
 #define GEAR_SLOT_SECONDARY	2
 #define GEAR_SLOT_GRENADE	3
 #define GEAR_SLOT_ITEM_1	4
 #define GEAR_SLOT_ITEM_2	5
 #define GEAR_SLOT_ITEM_3	6
-#define GEAR_SLOT_MAX		7
+#define GEAR_SLOT_MAX		7*/
+//temporarily commenting this out because I gett bg_public.h is also accessible to ui?
 
 //GEAR NUMBERS FOR THE MENU
 //these are for the ui_gear* values
@@ -73,7 +74,7 @@ along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
 #define UI_GEAR_MAX				31
 
 //Gear values - these are for the gear cvar
-#define GEAR_NONE			'A'
+/*#define GEAR_NONE			'A'
 #define GEAR_KNIFE			'E'
 #define GEAR_BERETTA		'F'
 #define GEAR_DEAGLE			'G'
@@ -96,7 +97,8 @@ along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
 #define GEAR_SR8			'Z'
 #define GEAR_AK103			'a'
 #define GEAR_NEGEV			'c'
-#define GEAR_M4				'e'
+#define GEAR_M4				'e'*/
+//temporarily commenting this out because I gett bg_public.h is also accessible to ui?
 //new Alturt constants above
 
 
