@@ -462,8 +462,8 @@ static consoleCommand_t	commands[] = {
 	{ "viewpos", CG_Viewpos_f },
 	{ "+scores", CG_ScoresDown_f },
 	{ "-scores", CG_ScoresUp_f },
-	{ "+zoom", CG_ZoomIn_f },//changed to point to alturt zoom function --Xamis
-	{ "-zoom", CG_ZoomReset_f },//changed to point to alturt zoom function
+	//{ "+zoom", CG_ZoomIn_f },//changed to point to alturt zoom function --Xamis
+	//{ "-zoom", CG_ZoomReset_f },//changed to point to alturt zoom function
 	{ "sizeup", CG_SizeUp_f },
 	{ "sizedown", CG_SizeDown_f },
 	{ "weapnext", CG_NextWeapon_f },
