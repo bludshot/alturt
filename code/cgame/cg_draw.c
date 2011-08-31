@@ -2610,15 +2610,28 @@ static void CG_DrawCrosshair(void)
 {
 	float		w, h;
 	qhandle_t	hShader;
-	float		f;
+	float		f; 
 	float		x, y;
 	int			ca;
-
+                  int                               anim;
+                   centity_t                    *cent;
+                   
+                   cent = &cg_entities[cg.snap->ps.clientNum];
+                  anim = cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT;
+                  
 	if ( !cg_drawCrosshair.integer ) {
 		return;
-	}
-
+	}           
+                  
+                 if ( anim == BOTH_CLIMB ||  anim == BOTH_CLIMB_IDLE || anim == TORSO_BANDAGE ){
+		return;
+                  } 
+                  
 	if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR) {
+		return;
+	}
+        
+        	if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR) {
 		return;
 	}
 
