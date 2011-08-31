@@ -1854,6 +1854,11 @@ BG_HasWeapon
 
 qboolean BG_HasWeapon( int weapon, int stats[ ] )
 {
+	if (weapon == WP_NONE)
+	{
+		//you can't actually "have" WP_NONE
+		return qfalse;
+	}
 
     if (weapon < MAX_WEAPONS ){
      // Com_Printf( "weapon = %i (unsigned int)stats[STAT_WEAPONS] & (1 << weapon) = %i\n", weapon,  (unsigned int)stats[STAT_WEAPONS] & (1 << weapon));
