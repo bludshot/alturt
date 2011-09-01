@@ -421,10 +421,29 @@ void CG_DrawFlagModel( float x, float y, float w, float h, int team, qboolean fo
 	}
 }
 
+/*
+=================
+CG_DrawNightVision
+
+Draws the night vision goggle overlay
+=================
+*/
+void CG_DrawNightVision(void) {
+
+	//don't draw it if they are spectator or 3rd person
+    if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR || cg.renderingThirdPerson )
+	{
+        return;
+    }
+
+	CG_DrawPic( 0, 0, 640, 480, cgs.media.nvgStaticShader );
+}
+
+
 
 /*
 =================
-CG_DrawSniperRifle
+CG_DrawSniperScope
  * Draws the sniper scope overlay and ring
  * Xamis
 =================
@@ -3287,7 +3306,6 @@ CG_Draw2D
 */
 static void CG_Draw2D(stereoFrame_t stereoFrame)
 {
-    
 	if(stereoFrame == STEREO_CENTER){
             if ((cg.snap->ps.weapon == WP_SR8 || cg.snap->ps.weapon == WP_PSG1 || cg.snap->ps.weapon == WP_G36 )&& cg.zoomed){
                    CG_DrawSniperScope();
@@ -3296,7 +3314,15 @@ static void CG_Draw2D(stereoFrame_t stereoFrame)
              if (!(cg.snap->ps.weapon == WP_SR8 || cg.snap->ps.weapon == WP_PSG1 )){
                 CG_DrawCrosshair();     
              }
-                                                                        }
+	
+		//check if they have the NVG powerup
+		if( cg.snap->ps.powerups[ PW_NVG ] )
+		{
+			CG_DrawNightVision();
+		}
+	}
+
+
 #ifdef MISSIONPACK
 	if (cgs.orderPending && cg.time > cgs.orderTime) {
 		CG_CheckOrderPending();
