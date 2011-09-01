@@ -389,6 +389,9 @@ typedef struct {
 	qhandle_t		headModel;
 	qhandle_t		headSkin;
 
+		qhandle_t               nvgModel;
+        qhandle_t               nvgSkin;
+
         qhandle_t               helmetModel;
         qhandle_t               helmetSkin;
 
@@ -849,7 +852,8 @@ typedef struct {
                   qhandle_t       laserShader;   //Xamis lasersight
                   qhandle_t       scopeShader;   
                   qhandle_t       scopeRingShader;   
-                  qhandle_t       scopeRingGeneric;   
+                  qhandle_t       scopeRingGeneric; 
+				  qhandle_t nvgStaticShader;
 	qhandle_t	lagometerShader;
 	qhandle_t	backTileShader;
 	qhandle_t	noammoShader;
