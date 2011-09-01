@@ -1138,6 +1138,8 @@ void G_PlayerLoadout( gentity_t *ent ){
 			bg_inventory.item[ent->client->ps.clientNum][inventoryItemSlot] = PW_VEST;
 		if( gear[i] == GEAR_SILENCER  )
 			bg_inventory.item[ent->client->ps.clientNum][inventoryItemSlot] = PW_SILENCER;
+		if( gear[i] == GEAR_NVG  )
+			bg_inventory.item[ent->client->ps.clientNum][inventoryItemSlot] = PW_NVG;
 	
 		inventoryItemSlot++;
 	}
