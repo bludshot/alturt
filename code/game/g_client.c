@@ -916,8 +916,8 @@ void ClientUserinfoChanged( int clientNum ) {
         // this is not the userinfo, more like the configstring actually
         G_LogPrintf( "ClientUserinfoChanged: %i %s\n", clientNum, s );
         
-if ( client->loadoutEnabled  )
-        G_PlayerLoadout( ent );
+//if ( client->loadoutEnabled  )
+    //    G_PlayerLoadout( ent );
 }
 
 
@@ -1295,7 +1295,7 @@ void ClientSpawn(gentity_t *ent) {
         VectorCopy (playerMaxs, ent->r.maxs);
         Q_strncpyz( gear, Info_ValueForKey (userinfo, "gear"), sizeof( gear ) );
         client->ps.clientNum = index;
-        client->loadoutEnabled = qtrue;
+       // client->loadoutEnabled = qtrue;
 
 	//Load all values for player loadout and add it to inventory --Xamis
  	G_PlayerLoadout( ent );
@@ -1305,7 +1305,8 @@ void ClientSpawn(gentity_t *ent) {
         // health will count down towards max_health
         ent->health = client->ps.stats[STAT_HEALTH]= STAT_MAX_HEALTH;// removed + 25 Xamis
         ent->stamina = client->ps.stats[STAT_STAMINA] = STAT_MAX_STAMINA;
-
+          bg_weaponlist[0].rounds[client->ps.clientNum]=0; //Round count for burst mode.
+          bg_weaponlist[0].numClips[client->ps.clientNum]=0; //Round count for spread.
 
         G_SetOrigin( ent, spawn_origin );
         VectorCopy( spawn_origin, client->ps.origin );
