@@ -569,6 +569,21 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
           }
         }
 
+
+        Com_sprintf( filename, sizeof( filename ), "models/players/%s/nvg.md3", modelName );
+        ci->nvgModel = trap_R_RegisterModel( filename );
+        if ( !ci->nvgModel ) {
+          CG_Printf("!ci->nvgModel\n");
+		  //what is this line, it cannot be right. I just copied this whole block from above
+          Com_sprintf( filename, sizeof( filename ), "models/players/characters/%s/nvg.md3", modelName );
+          ci->nvgModel = trap_R_RegisterModel( filename );
+          if ( !ci->nvgModel ) {
+            Com_Printf( "Failed to load model file %s\n", filename );
+            return qfalse;
+          }
+        }
+
+
 	// if any skins failed to load, return failure
 	if ( !CG_RegisterClientSkin( ci, teamName, modelName, skinName, modelName, skinName ) ) {
 		if ( teamName && *teamName) {
@@ -761,6 +776,8 @@ static void CG_CopyClientInfoModel( clientInfo_t *from, clientInfo_t *to ) {
 	to->modelIcon = from->modelIcon;
         to->helmetModel = from->helmetModel;
         to->helmetSkin = from->helmetSkin;
+		to->nvgModel = from->nvgModel;
+        to->nvgSkin = from->nvgSkin;
 
 
 	to->newAnims = from->newAnims;
@@ -2375,6 +2392,7 @@ void CG_Player( centity_t *cent ) {
 	refEntity_t		torso;
 	refEntity_t		head;
                   refEntity_t                   helmet;
+				  refEntity_t					nvg;
                   int                                clientNum;
 	int		renderfx;
 	qboolean		shadow;
@@ -2396,7 +2414,8 @@ void CG_Player( centity_t *cent ) {
         
         qboolean                vestOn;
         qboolean                helmetOn;
-        vestOn = helmetOn = qfalse;
+		qboolean				nvgOn;
+        vestOn = helmetOn = nvgOn = qfalse;
 
 
 	// the client number is stored in clientNum.  It can't be derived
@@ -2442,6 +2461,7 @@ void CG_Player( centity_t *cent ) {
 	memset( &torso, 0, sizeof(torso) );
 	memset( &head, 0, sizeof(head) );
         memset( &helmet, 0, sizeof(helmet) );
+		memset( &nvg, 0, sizeof(nvg) );
 
 
   //rotate lerpAngles to floor
@@ -2729,6 +2749,24 @@ void CG_Player( centity_t *cent ) {
 
         CG_AddRefEntityWithPowerups( &helmet, &cent->currentState, ci->team );
         }
+
+
+	//blud copying the helmet stuff above for nvg
+	if ( cent->currentState.powerups & ( 1 << PW_NVG ) ){ //using ammo for powerup/item storage
+		nvgOn = qtrue;
+	}
+	if ( nvgOn ){
+
+		VectorCopy( cent->lerpOrigin, nvg.lightingOrigin );
+
+		CG_PositionEntityOnTag( &nvg, &head, ci->headModel, "tag_head");
+		nvg.hModel = ci->nvgModel;
+		nvg.shadowPlane = shadowPlane;
+		nvg.renderfx = renderfx;
+
+		CG_AddRefEntityWithPowerups( &nvg, &cent->currentState, ci->team );
+	}
+
 
 
 
