@@ -1378,7 +1378,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	//int i;
 	qboolean lasersight;
 	qboolean silenced;
-	qboolean vestOn;
+	qboolean vestOn;	//needed for different torso weapon tag location
  	qboolean        weaponDown;
                   int            anim;
 
