@@ -1178,6 +1178,9 @@ int ClipCount( int w ) {
 
 	switch (w)
 	{
+		case WP_NONE:
+                        numClips = 0;
+                        break;
 		case WP_KNIFE:
 			numClips = 0;
 			break;
@@ -1236,6 +1239,9 @@ int RoundCount( int w )
 
 	switch ( w )
 	{
+		case WP_NONE:
+                        numRounds = 0;
+                        break;
 		case WP_KNIFE:
 			numRounds = 5;
 			break;
