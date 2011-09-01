@@ -772,23 +772,6 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
  },
 
-
-/*QUAKED weapon_grapplinghook (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
-*/
-//      {
-//              "weapon_grapplinghook",
-//              "sound/misc/w_pkup.wav",
-//        { "models/weapons2/grapple/grapple.md3",
-//              NULL, NULL, NULL},
-/* icon */      //      "icons/iconw_grapple",
-/* pickup *///  "Grappling Hook",
-//              0,
-//              IT_WEAPON,
-//              WP_GRAPPLING_HOOK,
-/* precache */// "",
-/* sounds */// ""
-//      },
-
         //
         // AMMO ITEMS
         //
@@ -844,51 +827,10 @@ gitem_t bg_itemlist[] =
         //Equipment Items
         //
 
- /*QUAKED ut_item_silencer (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)  27
- -------- KEYS --------
+/*QUAKED ut_item_medkit (.3 .3 1) (-16 -16 -16) (16 16 16)  27
  gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
  -------- SPAWNFLAGS --------
  spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
- */
-
-/*QUAKED ut_item_nvg (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)
- -------- KEYS --------
- gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
- -------- SPAWNFLAGS --------
- spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
-*/
-
-/*QUAKED ut_item_vest (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)
- -------- KEYS --------
- gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
- -------- SPAWNFLAGS --------
- spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
-*/
-
-/*QUAKED ut_item_laser (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)  28
- -------- KEYS --------
- gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
- -------- SPAWNFLAGS --------
- spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
-*/
-
-/*QUAKED ut_item_medkit (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)
- gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
- -------- SPAWNFLAGS --------
- spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
-*/
-
-/*QUAKED ut_item_helmet (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)  29
- -------- KEYS --------
- gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
- -------- SPAWNFLAGS --------
- spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
-*/
-        //
-        // HOLDABLE ITEMS
-        //
-
-/*QUAKED holdable_medkit (.3 .3 1) (-16 -16 -16) (16 16 16) suspended   31
 */
         {
                 "holdable_medkit",
@@ -906,12 +848,12 @@ gitem_t bg_itemlist[] =
 /* sounds */ "sound/items/use_medkit.wav"
         },
 
-        //
-        // POWERUP ITEMS
-        //
-
-        /*QUAKED item_quad (.3 .3 1) (-16 -16 -16) (16 16 16) suspended   32
-        */
+/*QUAKED ut_item_vest (.3 .3 1) (-16 -16 -16) (16 16 16)  28
+ -------- KEYS --------
+ gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
+ -------- SPAWNFLAGS --------
+ spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
+*/
         {
           "ut_item_vest",
           "sound/misc/w_pkup.wav",
@@ -927,7 +869,11 @@ gitem_t bg_itemlist[] =
 /* sounds */ "sound/items/damage2.wav sound/items/damage3.wav"
         },
 
-/*QUAKED item_enviro (.3 .3 1) (-16 -16 -16) (16 16 16) suspended   33
+/*QUAKED ut_item_helmet (.3 .3 1) (-16 -16 -16) (16 16 16)  29
+ -------- KEYS --------
+ gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
+ -------- SPAWNFLAGS --------
+ spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
 */
         {
           "ut_item_helmet",
@@ -943,7 +889,11 @@ gitem_t bg_itemlist[] =
 /* sounds */ "sound/items/airout.wav sound/items/protect3.wav"
         },
 
-/*QUAKED item_haste (.3 .3 1) (-16 -16 -16) (16 16 16) suspended   34
+/*QUAKED ut_item_laser (.3 .3 1) (-16 -16 -16) (16 16 16)  30
+ -------- KEYS --------
+ gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
+ -------- SPAWNFLAGS --------
+ spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
 */
         {
           "ut_item_laser",
@@ -959,7 +909,11 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
         },
 
-/*QUAKED item_invis (.3 .3 1) (-16 -16 -16) (16 16 16) suspended   35
+/*QUAKED ut_item_silencer (.3 .3 1) (-16 -16 -16) (16 16 16)  31
+-------- KEYS --------
+gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
+-------- SPAWNFLAGS --------
+spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
 */
         {
           "ut_item_silencer",
@@ -975,7 +929,11 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
         },
 
-/*QUAKED item_regen (.3 .3 1) (-16 -16 -16) (16 16 16) suspended   36
+/*QUAKED ut_item_ammo (.3 .3 1) (-16 -16 -16) (16 16 16)  32
+-------- KEYS --------
+gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
+-------- SPAWNFLAGS --------
+spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
 */
         {
           "item_regen",
@@ -992,16 +950,19 @@ gitem_t bg_itemlist[] =
 /* sounds */ "sound/items/regen.wav"
         },
 
-/*QUAKED item_flight (.3 .3 1) (-16 -16 -16) (16 16 16) suspended   37
+/*QUAKED ut_item_nvg (0.3 0.9 0.4)(-5 -5 -5) (5 5 5)  33
+ -------- KEYS --------
+ gametype : Specifies gametypes for the weapon to be in in. If this key is not used, the weapon will be in all gametypes. List types in this format: 01234
+ -------- SPAWNFLAGS --------
+ spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
 */
         {
-          "item_flight",
+          "ut_item_nvg",
           "sound/items/flight.wav",
-          { "models/powerups/instant/flight.md3",
-          "models/powerups/instant/flight_ring.md3",
-          NULL, NULL },
-/* icon */              "icons/flight",
-/* pickup */    "nvg",
+          { "models/players/orion/nvg.md3",
+          NULL, NULL, NULL },
+/* icon */              "icons/items/nvg",
+/* pickup */    "Noob Goggles",
                 60,
                 IT_POWERUP,
                 PW_NVG,
@@ -1009,9 +970,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ "sound/items/flight.wav"
         },
 
-
-
-/*QUAKED team_CTF_redflag (1 0 0) (-16 -16 -16) (16 16 16)   38
+/*QUAKED team_CTF_redflag (1 0 0) (-16 -16 -16) (16 16 16)   34
 Only in CTF games
 */
         {
@@ -1028,7 +987,7 @@ Only in CTF games
 /* sounds */ ""
         },
 
-/*QUAKED team_CTF_blueflag (0 0 1) (-16 -16 -16) (16 16 16)   39
+/*QUAKED team_CTF_blueflag (0 0 1) (-16 -16 -16) (16 16 16)   35
 Only in CTF games
 */
         {
