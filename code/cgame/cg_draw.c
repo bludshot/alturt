@@ -3331,7 +3331,7 @@ static void CG_Draw2D(stereoFrame_t stereoFrame)
              }
 	
 		//check if they have the NVG powerup
-		if( cg.snap->ps.powerups[ PW_NVG ]&& !( cg.ItemToggleState & ( 1 << PW_NVG ))  )
+		if( cg.snap->ps.powerups[ PW_NVG ]&& ( cg.ItemToggleState & ~( 1 << PW_NVG ))  )
 		{
 			CG_DrawNightVision();
 		}
