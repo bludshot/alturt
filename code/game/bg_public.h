@@ -388,6 +388,7 @@ typedef enum {
         PW_LASERSIGHT,
         PW_AMMO,
         PW_NVG,
+		PW_MEDKIT,
 
         PW_NUM_POWERUPS
 
