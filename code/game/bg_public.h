@@ -296,16 +296,9 @@ typedef enum {
         STAT_SELECTED_ITEM,//Xamis
         STAT_XYSPEED,//Xamis
 
-
-      //  STAT_ARM_DAMAGE,   //Xamis                         // arm damage
-      //  STAT_LEG_DAMAGE,  //Xamis                          // player walks slower when he got some legdamage,
-      //  STAT_CHEST_DAMAGE,  //Xamis                        // chest damage
-      //  STAT_STOMACH_DAMAGE, //Xamis                       // stomach damage
-      //  STAT_HEAD_DAMAGE,//Xamis
-        //STAT_SMOKE
-                STAT_NADE_FUSE,
-                STAT_DMG_LOC
-
+          STAT_NADE_FUSE,
+          STAT_DMG_LOC,
+//          STAT_SHIT,  // Status Holder for Item Toggle --Xamis
 
 } statIndex_t;
 
