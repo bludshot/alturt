@@ -392,6 +392,9 @@ typedef struct {
 		qhandle_t               nvgModel;
         qhandle_t               nvgSkin;
 
+		qhandle_t               medkitModel;
+        qhandle_t               medkitSkin;
+
         qhandle_t               helmetModel;
         qhandle_t               helmetSkin;
 
