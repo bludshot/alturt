@@ -600,8 +600,8 @@ void UT_SelectItem( gentity_t *ent, int dir ){
   int original, i;
 
   original = ent->client->ps.stats[STAT_SELECTED_ITEM];
-
-  for ( i = 1 ; i < PW_NUM_POWERUPS ; i++ ) {
+if(dir){ 
+ for ( i = 1 ; i < PW_NUM_POWERUPS ; i++ ) {
 
     ent->client->ps.stats[STAT_SELECTED_ITEM]++;
 
@@ -616,6 +616,22 @@ void UT_SelectItem( gentity_t *ent, int dir ){
 
 
   }
+}else{
+
+
+for ( i = PW_NUM_POWERUPS-1 ; i > PW_NONE ; i-- ) {
+
+    ent->client->ps.stats[STAT_SELECTED_ITEM]--;
+
+    if ( ent->client->ps.stats[STAT_SELECTED_ITEM] == PW_NONE ) {
+
+      ent->client->ps.stats[STAT_SELECTED_ITEM] = PW_NUM_POWERUPS-1;
+    }
+    if ( ent->client->ps.powerups[ ent->client->ps.stats[STAT_SELECTED_ITEM] ] ) {
+      break;
+    }
+  }
+}
   if ( i == PW_NUM_POWERUPS ) {
     ent->client->ps.stats[STAT_SELECTED_ITEM] = original;
   }

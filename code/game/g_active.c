@@ -541,7 +541,6 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
                       //if(ent->health ==1 )
                        //   player_die (ent, attacker, attacker, 20, MOD_BLED);
                     break;
-
                 case EV_USE_ITEM1:              // teleporter
                         // drop flags in CTF
                         item = NULL;
