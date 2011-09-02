@@ -1417,7 +1417,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
                   } else
                       weaponDown=qfalse;
         
-	if ( powerups & ( 1 << PW_SILENCER )&& ( cg.ItemToggleState & ~( 1 << PW_SILENCER )) )
+	if ( powerups & ( 1 << PW_SILENCER )&& !( cg.ItemToggleState & ( 1 << PW_SILENCER )) )
 		silenced = qtrue;
 
 	if ( powerups & ( 1 << PW_LASERSIGHT ) )
@@ -1679,7 +1679,7 @@ if ( weaponDown ) {
        if ( weapon->laserModel && weaponNum != WP_KNIFE && weaponNum != WP_HK69
              && weaponNum != WP_SPAS && weaponNum != WP_HE && weaponNum != WP_SR8
              && weaponNum != WP_G36 && weaponNum != WP_PSG1 && weaponNum != WP_NEGEV 
-            && weaponNum != WP_SMOKE && lasersight && !weaponDown &&  ( cg.ItemToggleState & ~( 1 << PW_LASERSIGHT ))) 
+            && weaponNum != WP_SMOKE && lasersight && !weaponDown &&  !( cg.ItemToggleState & ( 1 << PW_LASERSIGHT ))) 
                 CG_RenderLaser(cent);
         
         if ( ps && weapon->laserModel && weaponNum != WP_KNIFE && weaponNum != WP_HK69
@@ -2158,7 +2158,7 @@ void CG_ToggleItem_f( void ) {
       ps = &cg.snap->ps;
       //CG_AddEvent(EV_TOGGLEITEM);
  //ItemToggleState
-if ( (cg.ItemToggleState & ~( 1 << ps->stats[STAT_SELECTED_ITEM] ))){
+if ( !(cg.ItemToggleState & ( 1 << ps->stats[STAT_SELECTED_ITEM] ))){
 cg.ItemToggleState |= ( 1 << ps->stats[STAT_SELECTED_ITEM] );//item on
 }else{
 cg.ItemToggleState &= ~( 1 << ps->stats[STAT_SELECTED_ITEM] );//item off
