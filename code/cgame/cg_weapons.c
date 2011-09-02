@@ -1611,6 +1611,8 @@ if ( weaponDown ) {
           CG_PositionEntityOnTag( &weaponModel, &gun, weapon->handsModel, "tag_weapon" );
           CG_AddWeaponWithPowerups( &weaponModel, cent->currentState.powerups );
 
+
+		  //Putting weaposn on the player's back or holster (weapons they are not currently using)
          if( cent->currentState.number == cg.predictedPlayerState.clientNum){
           if ( PriweaponNum != cent->currentState.weapon ){
           	memset( &PriweaponModel, 0, sizeof( PriweaponModel ) );
