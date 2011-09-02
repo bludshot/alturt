@@ -748,7 +748,7 @@ typedef struct {
 
 
 	//Xamis Inventory selection
-
+	int		ItemToggleState;
 
         vec3_t        lastVangles;                        // view smoothage
         smooth_t      sList[ MAXSMOOTHS ];                // WW smoothing
@@ -857,6 +857,8 @@ typedef struct {
                   qhandle_t       scopeRingShader;   
                   qhandle_t       scopeRingGeneric; 
 				  qhandle_t nvgStaticShader;
+                   qhandle_t       nvgShader;                                  
+                   qhandle_t       nvgScopeShader;
 	qhandle_t	lagometerShader;
 	qhandle_t	backTileShader;
 	qhandle_t	noammoShader;
@@ -1516,6 +1518,7 @@ void CG_Weapon_f( void );
 
 void CG_ZoomIn_f (void);
 void CG_NextItem_f (void);
+void CG_PrevItem_f (void);
 void CG_DrawItemSelect( void );
 
 void CG_RegisterWeapon( int weaponNum );
@@ -1851,3 +1854,4 @@ void CG_Particle_Bleed (qhandle_t pshader, vec3_t start, vec3_t dir, int fleshEn
 void CG_PlayerBleed( int clientNum, int damage, vec3_t origin, vec3_t dir );
 void CG_CreateBleeder( vec3_t origin , int damage, int playerNum ) ;
 void CG_WeaponDropped( void );
+void CG_ToggleItem_f( void );

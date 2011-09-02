@@ -721,7 +721,8 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			// powerups and team items will have a separate global sound, this one
 			// will be played at prediction time
 			if ( item->giType == IT_POWERUP || item->giType == IT_TEAM) {
-				//trap_S_StartSound (NULL, es->number, CHAN_AUTO, cgs.media.n_healthSound );
+
+					//trap_S_StartSound (NULL, es->number, CHAN_AUTO, cgs.media.n_healthSound );
                         } else {
 				trap_S_StartSound (NULL, es->number, CHAN_AUTO, trap_S_RegisterSound( item->pickup_sound, qfalse ) );
 			}
@@ -745,6 +746,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 				break;
 			}
 			item = &bg_itemlist[ index ];
+
 			// powerup pickups are global
 			if( item->pickup_sound ) {
 				trap_S_StartSound (NULL, cg.snap->ps.clientNum, CHAN_AUTO, trap_S_RegisterSound( item->pickup_sound, qfalse ) );

@@ -473,11 +473,13 @@ static consoleCommand_t	commands[] = {
         { "ut_zoomin", CG_ZoomIn_f },
         { "ut_zoomreset", CG_ZoomReset_f },
         { "ut_itemnext", CG_NextItem_f },
+        { "ut_itemprev", CG_PrevItem_f },
 	{ "tell_target", CG_TellTarget_f },
 	{ "tell_attacker", CG_TellAttacker_f },
 	{ "vtell_target", CG_VoiceTellTarget_f },
 	{ "vtell_attacker", CG_VoiceTellAttacker_f },
 	{ "tcmd", CG_TargetCommand_f },
+                   { "ut_itemuse", CG_ToggleItem_f },
 #ifdef MISSIONPACK
 	{ "loadhud", CG_LoadHud_f },
 	{ "nextTeamMember", CG_NextTeamMember_f },

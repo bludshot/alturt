@@ -917,6 +917,8 @@ static void CG_RegisterGraphics( void ) {
                   cgs.media.scopeRingGeneric = trap_R_RegisterShader( "gfx/crosshairs/scopes/generic" );  //Xamis scope
 				  
 				  cgs.media.nvgStaticShader = trap_R_RegisterShader( "nvgStatic" );  //blud nvg
+                                                                           cgs.media.nvgScopeShader = trap_R_RegisterShader( "nvgScope2" );  //blud nvg
+                                                                            cgs.media.nvgShader = trap_R_RegisterShader( "nvgBright" );  //blud nvg
 
 				  
         CG_LoadingBarUpdate(10);

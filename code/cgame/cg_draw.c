@@ -429,14 +429,29 @@ Draws the night vision goggle overlay
 =================
 */
 void CG_DrawNightVision(void) {
-
+  float       hcolor[4];
 	//don't draw it if they are spectator or 3rd person
     if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR || cg.renderingThirdPerson )
 	{
         return;
     }
 
-	CG_DrawPic( 0, 0, 640, 480, cgs.media.nvgStaticShader );
+  
+  hcolor[0] = 0.8f;
+  hcolor[1] = 0;
+  hcolor[2] = 0.8f;
+  hcolor[3] = 0.5f;
+  
+
+              
+                 CG_DrawPic( 0, 0, 640, 480, cgs.media.nvgStaticShader );
+                 CG_FillRect( 0,0,SCREEN_WIDTH,SCREEN_HEIGHT, hcolor);
+                 CG_DrawPic( 0, 0, 640, 480, cgs.media.nvgStaticShader );
+        	CG_DrawPic( 0, 0, 640, 480, cgs.media.nvgScopeShader );
+                  trap_R_SetColor( NULL );
+
+
+               //	CG_DrawPic( 0, 0, 640, 480, cgs.media.nvgShader );
 }
 
 
@@ -3316,7 +3331,7 @@ static void CG_Draw2D(stereoFrame_t stereoFrame)
              }
 	
 		//check if they have the NVG powerup
-		if( cg.snap->ps.powerups[ PW_NVG ] )
+		if( cg.snap->ps.powerups[ PW_NVG ]&& !( cg.ItemToggleState & ( 1 << PW_NVG ))  )
 		{
 			CG_DrawNightVision();
 		}
