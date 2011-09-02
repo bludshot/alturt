@@ -833,17 +833,17 @@ gitem_t bg_itemlist[] =
  spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
 */
         {
-                "holdable_medkit",
-                "sound/items/holdable.wav",
+                "ut_item_medkit",
+                "sound/misc/w_pkup.wav",
         {
-                "models/powerups/holdable/medkit.md3",
-                "models/powerups/holdable/medkit_sphere.md3",
+                "models/players/gear/backpack.md3",
+                NULL,
                 NULL, NULL},
-/* icon */              "icons/medkit",
+/* icon */              "icons/items/medkit",
 /* pickup */    "Medkit",
                 60,
-                IT_HOLDABLE,
-                HI_MEDKIT,
+                IT_POWERUP,
+                PW_MEDKIT,
 /* precache */ "",
 /* sounds */ "sound/items/use_medkit.wav"
         },
@@ -936,7 +936,7 @@ gametype : Specifies gametypes for the weapon to be in in. If this key is not us
 spawnflags : set to 1 to make suspended so the item will spawn where it was placed in map and won't drop to the floor. (default 0)
 */
         {
-          "item_regen",
+          "ut_item_ammo",
           "sound/items/regeneration.wav",
           { "models/powerups/instant/regen.md3",
           "models/powerups/instant/regen_ring.md3",
