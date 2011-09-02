@@ -1118,6 +1118,8 @@ void G_PlayerLoadout( gentity_t *ent ){
 			bg_inventory.item[ent->client->ps.clientNum][inventoryItemSlot] = PW_SILENCER;
 		if( gear[i] == GEAR_NVG  )
 			bg_inventory.item[ent->client->ps.clientNum][inventoryItemSlot] = PW_NVG;
+		if( gear[i] == GEAR_MEDKIT  )
+			bg_inventory.item[ent->client->ps.clientNum][inventoryItemSlot] = PW_MEDKIT;
 		if( gear[i] == GEAR_AMMO  ) {
 			bg_inventory.item[ent->client->ps.clientNum][inventoryItemSlot] = PW_AMMO;
 			extraAmmoMultiplier = 2; }
