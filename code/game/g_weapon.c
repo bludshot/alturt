@@ -1072,7 +1072,8 @@ qboolean isItem(int i)
 			i == PW_SILENCER	||
 			i == PW_LASERSIGHT	||
 			i == PW_AMMO		||
-			i == PW_NVG	);
+			i == PW_NVG			||
+			i == PW_MEDKIT );
 }
 
 
@@ -1126,7 +1127,7 @@ int GearToWPPW(char itemChar)
 			WPPWnum = PW_NVG;
 			break;
 		case GEAR_MEDKIT:
-			WPPWnum = PW_NONE; //temp since we haven't added medkits yet
+			WPPWnum = PW_MEDKIT;
 			break;
 		case GEAR_SILENCER:
 			WPPWnum = PW_SILENCER;
