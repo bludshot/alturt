@@ -583,6 +583,19 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
           }
         }
 
+        Com_sprintf( filename, sizeof( filename ), "models/players/gear/backpack.md3", modelName );
+        ci->medkitModel = trap_R_RegisterModel( filename );
+        if ( !ci->medkitModel ) {
+          CG_Printf("!ci->medkitModel\n");
+		  //what is this line, it cannot be right. I just copied this whole block from above
+          Com_sprintf( filename, sizeof( filename ), "models/players/characters/%s/backpack.md3", modelName );
+          ci->medkitModel = trap_R_RegisterModel( filename );
+          if ( !ci->medkitModel ) {
+            Com_Printf( "Failed to load model file %s\n", filename );
+            return qfalse;
+          }
+        }
+
 
 	// if any skins failed to load, return failure
 	if ( !CG_RegisterClientSkin( ci, teamName, modelName, skinName, modelName, skinName ) ) {
@@ -778,6 +791,8 @@ static void CG_CopyClientInfoModel( clientInfo_t *from, clientInfo_t *to ) {
         to->helmetSkin = from->helmetSkin;
 		to->nvgModel = from->nvgModel;
         to->nvgSkin = from->nvgSkin;
+		to->medkitModel = from->medkitModel;
+        to->medkitSkin = from->medkitSkin;
 
 
 	to->newAnims = from->newAnims;
@@ -2393,6 +2408,7 @@ void CG_Player( centity_t *cent ) {
 	refEntity_t		head;
                   refEntity_t                   helmet;
 				  refEntity_t					nvg;
+				  refEntity_t					medkit;
                   int                                clientNum;
 	int		renderfx;
 	qboolean		shadow;
@@ -2415,7 +2431,8 @@ void CG_Player( centity_t *cent ) {
         qboolean                vestOn;
         qboolean                helmetOn;
 		qboolean				nvgOn;
-        vestOn = helmetOn = nvgOn = qfalse;
+		qboolean				medkitOn;
+        vestOn = helmetOn = nvgOn = medkitOn = qfalse;
 
 
 	// the client number is stored in clientNum.  It can't be derived
@@ -2462,6 +2479,7 @@ void CG_Player( centity_t *cent ) {
 	memset( &head, 0, sizeof(head) );
         memset( &helmet, 0, sizeof(helmet) );
 		memset( &nvg, 0, sizeof(nvg) );
+		memset( &medkit, 0, sizeof(medkit) );
 
 
   //rotate lerpAngles to floor
@@ -2723,6 +2741,7 @@ void CG_Player( centity_t *cent ) {
 
 	VectorCopy( cent->lerpOrigin, head.lightingOrigin );
 
+	//blud: Just noticed this part below seems backwards... what's up with that?
 	if (vestOn) //blud fixing torso
 		CG_PositionRotatedEntityOnTag( &head, &torso, ci->torsoModel, "tag_head");
 	else
@@ -2752,7 +2771,7 @@ void CG_Player( centity_t *cent ) {
 
 
 	//blud copying the helmet stuff above for nvg
-	if ( cent->currentState.powerups & ( 1 << PW_NVG ) ){ //using ammo for powerup/item storage
+	if ( cent->currentState.powerups & ( 1 << PW_NVG ) ){
 		nvgOn = qtrue;
 	}
 	if ( nvgOn ){
@@ -2766,6 +2785,29 @@ void CG_Player( centity_t *cent ) {
 
 		CG_AddRefEntityWithPowerups( &nvg, &cent->currentState, ci->team );
 	}
+
+	
+	//blud copying the helmet stuff above for medkit
+	if ( cent->currentState.powerups & ( 1 << PW_MEDKIT ) ){
+		medkitOn = qtrue;
+	}
+	if ( medkitOn ){
+
+		VectorCopy( cent->lerpOrigin, medkit.lightingOrigin );
+
+		if (vestOn)
+			CG_PositionEntityOnTag( &medkit, &torso, ci->torsoModel, "tag_back");
+		else
+			CG_PositionEntityOnTag( &medkit, &torso, ci->vestModel, "tag_back");
+
+
+		medkit.hModel = ci->medkitModel;
+		medkit.shadowPlane = shadowPlane;
+		medkit.renderfx = renderfx;
+
+		CG_AddRefEntityWithPowerups( &medkit, &cent->currentState, ci->team );
+	}
+
 
 
 
