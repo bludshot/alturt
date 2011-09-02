@@ -1089,6 +1089,9 @@ void G_PlayerLoadout( gentity_t *ent ){
 	char		gear[MAX_QPATH];
 	int			inventoryItemSlot = 0;
 	int			WPPWnum;
+	int			extraAmmoMultiplier;
+
+	extraAmmoMultiplier = 1;
 
 
 	//get the client number and the value of their gear cvar
@@ -1100,6 +1103,27 @@ void G_PlayerLoadout( gentity_t *ent ){
 	client->ps.clientNum = index;
 
 	BG_ClearWeapons( ent->client->ps.stats );
+
+	//Items - give items before weapons since pw_ammo affects number of clips
+	//This is still basic, and allows too much. Fix it after we finish adding all the items to the game
+	for( i = GEAR_SLOT_ITEM_1; i < GEAR_SLOT_MAX; i++ )
+	{
+		if( gear[i] == GEAR_LASER  )
+			bg_inventory.item[ent->client->ps.clientNum][inventoryItemSlot] = PW_LASERSIGHT;
+		if( gear[i] == GEAR_HELMET  )
+			bg_inventory.item[ent->client->ps.clientNum][inventoryItemSlot] = PW_HELMET;
+		if( gear[i] == GEAR_VEST  )
+			bg_inventory.item[ent->client->ps.clientNum][inventoryItemSlot] = PW_VEST;
+		if( gear[i] == GEAR_SILENCER  )
+			bg_inventory.item[ent->client->ps.clientNum][inventoryItemSlot] = PW_SILENCER;
+		if( gear[i] == GEAR_NVG  )
+			bg_inventory.item[ent->client->ps.clientNum][inventoryItemSlot] = PW_NVG;
+		if( gear[i] == GEAR_AMMO  ) {
+			bg_inventory.item[ent->client->ps.clientNum][inventoryItemSlot] = PW_AMMO;
+			extraAmmoMultiplier = 2; }
+	
+		inventoryItemSlot++;
+	}
 
 	//knife isn't part of gear, you just always get it
 	BG_PackWeapon( WP_KNIFE , ent->client->ps.stats );
@@ -1119,31 +1143,13 @@ void G_PlayerLoadout( gentity_t *ent ){
 
 		BG_PackWeapon( WPPWnum , ent->client->ps.stats );
 		bg_weaponlist[WPPWnum].rounds[ ent->client->ps.clientNum]= RoundCount(WPPWnum);
-		bg_weaponlist[WPPWnum].numClips[ent->client->ps.clientNum] = ClipCount(WPPWnum);
+		bg_weaponlist[WPPWnum].numClips[ent->client->ps.clientNum] = ClipCount(WPPWnum) * extraAmmoMultiplier;
 		bg_inventory.sort[ent->client->ps.clientNum][i+1] = WPPWnum; //the g weapon slot numbers are 1 lower than the gear slot numbers. Maybe we should change MELEE to -1 sometime...
 	}
 
 
 	//G_Printf("gear string 4:%c 5:%c 6:%c\n", gear.string[4],gear.string[5],gear.string[6]); //xamis debug
 
-	//Items
-	//This is still basic, and allows too much. Fix it after we finish adding all the items to the game
-	for( i = GEAR_SLOT_ITEM_1; i < GEAR_SLOT_MAX; i++ )
-	{
-		if( gear[i] == GEAR_LASER  )
-			bg_inventory.item[ent->client->ps.clientNum][inventoryItemSlot] = PW_LASERSIGHT;
-		if( gear[i] == GEAR_HELMET  )
-			bg_inventory.item[ent->client->ps.clientNum][inventoryItemSlot] = PW_HELMET;
-		if( gear[i] == GEAR_VEST  )
-			bg_inventory.item[ent->client->ps.clientNum][inventoryItemSlot] = PW_VEST;
-		if( gear[i] == GEAR_SILENCER  )
-			bg_inventory.item[ent->client->ps.clientNum][inventoryItemSlot] = PW_SILENCER;
-		if( gear[i] == GEAR_NVG  )
-			bg_inventory.item[ent->client->ps.clientNum][inventoryItemSlot] = PW_NVG;
-	
-		inventoryItemSlot++;
-	}
-        
 	//I'm wondering if right here I should set the client's gear cvar if it was invalid at all?
 	//I know I don't really need to, but I think I want to?...
 
