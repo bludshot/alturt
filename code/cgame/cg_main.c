@@ -918,7 +918,8 @@ static void CG_RegisterGraphics( void ) {
 				  
 				  cgs.media.nvgStaticShader = trap_R_RegisterShader( "nvgStatic" );  //blud nvg
                                                                            cgs.media.nvgScopeShader = trap_R_RegisterShader( "nvgScope2" );  //blud nvg
-                                                                            cgs.media.nvgShader = trap_R_RegisterShader( "nvgBright" );  //blud nvg
+                                                                            cgs.media.nvgShader = trap_R_RegisterShader( "nvgBrightA" );  //blud nvg
+                                                                            cgs.media.nvgShader2 = trap_R_RegisterShader( "nvgBrightB" );  //blud nvg
 
 				  
         CG_LoadingBarUpdate(10);
