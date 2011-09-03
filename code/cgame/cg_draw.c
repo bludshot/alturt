@@ -2857,11 +2857,11 @@ static void CG_DrawCrosshairNames( void ) {
 	}
 
 	name = cgs.clientinfo[ cg.crosshairClientNum ].name;
-#ifdef MISSIONPACK
-	color[3] *= 0.5f;
-	w = CG_Text_Width(name, 0.3f, 0);
-	CG_Text_Paint( 320 - w / 2, 190, 0.3f, color, name, 0, 0, ITEM_TEXTSTYLE_SHADOWED);
-#else
+//#ifdef MISSIONPACK
+//	color[3] *= 0.5f;
+//	w = CG_Text_Width(name, 0.3f, 0);
+//	CG_Text_Paint( 320 - w / 2, 190, 0.3f, color, name, 0, 0, ITEM_TEXTSTYLE_SHADOWED);
+//#else
 
                          teamstat = va("Health: %i ", 	cgs.clientinfo[ cg.crosshairClientNum ].health);
         //team info Xamis
@@ -2872,7 +2872,7 @@ static void CG_DrawCrosshairNames( void ) {
                 	w = CG_DrawStrlen( name ) * BIGCHAR_WIDTH;
 	CG_DrawBigString( 320 - w / 2, 170, name, color[3] * 0.5f );
  }
-#endif
+//#endif
 	trap_R_SetColor( NULL );
 }
 
