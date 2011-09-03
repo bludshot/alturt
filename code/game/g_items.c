@@ -829,7 +829,7 @@ gentity_t *Drop_Weapon( gentity_t *ent, gitem_t *item, float angle, int clips, i
 void UT_DropItem ( gentity_t *ent)
 {
   gclient_t   *client;
-  gitem_t             *item;
+  //gitem_t             *item;
 
 
   client = ent->client;
