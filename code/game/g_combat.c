@@ -1447,7 +1447,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		}
 
 		if ( targ->health <= 0 ) {
-			if ( client )
+			if ( targ->client )
 				targ->flags |= FL_NO_KNOCKBACK;
 
 			if (targ->health < -999)
