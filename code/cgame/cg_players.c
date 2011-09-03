@@ -2345,7 +2345,15 @@ Also called by CG_Missile for quad rockets, but nobody can tell...
 */
 void CG_AddRefEntityWithPowerups( refEntity_t *ent, entityState_t *state, int team ) {
 
-			trap_R_AddRefEntityToScene( ent );
+        if( cg.snap->ps.powerups[ PW_NVG ]&& !( cg.ItemToggleState[cg.predictedPlayerState.clientNum] & ( 1 << PW_NVG ))  )
+    {
+        ent->customShader = cgs.media.nvgShader; // TG Shader
+        trap_R_AddRefEntityToScene( ent );
+        //return; // don't add any other shader
+    }
+
+    ent->customShader = 0;
+    trap_R_AddRefEntityToScene( ent );
 
 }
 
@@ -2784,6 +2792,8 @@ void CG_Player( centity_t *cent ) {
 		nvg.renderfx = renderfx;
 
 		CG_AddRefEntityWithPowerups( &nvg, &cent->currentState, ci->team );
+                
+
 	}
 
 	
