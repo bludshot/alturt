@@ -748,7 +748,7 @@ typedef struct {
 
 
 	//Xamis Inventory selection
-	int		ItemToggleState;
+	int		ItemToggleState[MAX_CLIENTS];
 
         vec3_t        lastVangles;                        // view smoothage
         smooth_t      sList[ MAXSMOOTHS ];                // WW smoothing
@@ -1855,3 +1855,4 @@ void CG_PlayerBleed( int clientNum, int damage, vec3_t origin, vec3_t dir );
 void CG_CreateBleeder( vec3_t origin , int damage, int playerNum ) ;
 void CG_WeaponDropped( void );
 void CG_ToggleItem_f( void );
+void CG_RenderLaser(centity_t *cent);

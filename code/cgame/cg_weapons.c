@@ -1260,6 +1260,7 @@ void CG_RenderLaser(centity_t *cent){
         anim = cent->currentState.legsAnim & ~ANIM_TOGGLEBIT;
         rf = 0;
 
+
         VectorCopy ( cent->lerpOrigin,muzzlePoint );
 
             if ( anim == LEGS_WALKCR  || anim == LEGS_BACKCR || anim == LEGS_IDLECR )
@@ -1301,6 +1302,12 @@ void CG_RenderLaser(centity_t *cent){
 
                 beam.renderfx = rf;
                 VectorMA( trace.endpos, -1.4, forward, beam.origin );
+                       
+                
+      if (cent->currentState.number != cg.predictedPlayerState.clientNum){
+                  if ( !( cg.ItemToggleState[cent->currentState.number] & ( 1 << PW_LASERSIGHT ))) 
+                         trap_R_AddRefEntityToScene( &beam );
+        }else   if ( !( cg.ItemToggleState[cg.predictedPlayerState.clientNum] & ( 1 << PW_LASERSIGHT ))) 
                  trap_R_AddRefEntityToScene( &beam );
          
       //  CG_Printf( "len is %f\n",len );
@@ -1417,7 +1424,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
                   } else
                       weaponDown=qfalse;
         
-	if ( powerups & ( 1 << PW_SILENCER )&& !( cg.ItemToggleState & ( 1 << PW_SILENCER )) )
+	if ( powerups & ( 1 << PW_SILENCER )&& !( cg.ItemToggleState[cg.predictedPlayerState.clientNum] & ( 1 << PW_SILENCER )) )
 		silenced = qtrue;
 
 	if ( powerups & ( 1 << PW_LASERSIGHT ) )
@@ -1674,13 +1681,16 @@ if ( weaponDown ) {
 
 
                 CG_AddWeaponWithPowerups( &silencer, cent->currentState.powerups );
+                
         }else weapon->flashSound[0] = weapon->normalSound[0];
-
+       // CG_Printf("cg.ItemToggleState[%i] is %i\n",cg.predictedPlayerState.clientNum, cg.ItemToggleState[cg.predictedPlayerState.clientNum] & ( 1 << PW_LASERSIGHT ));
        if ( weapon->laserModel && weaponNum != WP_KNIFE && weaponNum != WP_HK69
              && weaponNum != WP_SPAS && weaponNum != WP_HE && weaponNum != WP_SR8
              && weaponNum != WP_G36 && weaponNum != WP_PSG1 && weaponNum != WP_NEGEV 
-            && weaponNum != WP_SMOKE && lasersight && !weaponDown &&  !( cg.ItemToggleState & ( 1 << PW_LASERSIGHT ))) 
-                CG_RenderLaser(cent);
+            && weaponNum != WP_SMOKE && lasersight && !weaponDown ) 
+               CG_RenderLaser(cent);
+        
+        
         
         if ( ps && weapon->laserModel && weaponNum != WP_KNIFE && weaponNum != WP_HK69
              && weaponNum != WP_SPAS && weaponNum != WP_HE && weaponNum != WP_SR8
@@ -2154,22 +2164,30 @@ void CG_AddViewWeapon( playerState_t *ps ) {
 
 void CG_ToggleItem_f( void ) {
       
+    int i;
       centity_t       *cent;
       playerState_t   *ps;
       ps = &cg.snap->ps;
       cent = &cg.predictedPlayerEntity;
       
-      if (cent->currentState.number != cg.predictedPlayerState.clientNum){
+      
+      if (cg.snap->ps.clientNum != cg.predictedPlayerState.clientNum){
           return;
       }
+      
+      CG_Printf("cg.predictedPlayerState.clientNum is %i and cg.snap->ps.clientNum is %i\n",   cg.predictedPlayerState.clientNum, cg.snap->ps.clientNum );
       //CG_AddEvent(EV_TOGGLEITEM);
  //ItemToggleState
-if ( !(cg.ItemToggleState & ( 1 << ps->stats[STAT_SELECTED_ITEM] ))){
-cg.ItemToggleState |= ( 1 << ps->stats[STAT_SELECTED_ITEM] );//item on
+if ( !(cg.ItemToggleState[cg.predictedPlayerState.clientNum] & ( 1 << ps->stats[STAT_SELECTED_ITEM] ))){
+cg.ItemToggleState[cg.predictedPlayerState.clientNum] |= ( 1 << ps->stats[STAT_SELECTED_ITEM] );//item on
 }else{
-cg.ItemToggleState &= ~( 1 << ps->stats[STAT_SELECTED_ITEM] );//item off
+cg.ItemToggleState[cg.predictedPlayerState.clientNum] &= ~( 1 << ps->stats[STAT_SELECTED_ITEM] );//item off
 }
-
+      for(i=0; i< 2; i++){
+          CG_Printf("cg.ItemToggleState[%i] is %i\n", i ,cg.ItemToggleState[i] & ( 1 << ps->stats[STAT_SELECTED_ITEM] ));
+          
+      }
+          
 
 }
 void CG_DrawItemSelect( void ) {

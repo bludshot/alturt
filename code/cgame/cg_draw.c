@@ -810,7 +810,7 @@ static void CG_DrawStatusBar( void ) {
           char *s;
 		  s = "Default"; //added by blud to stop possibly uninitialized warning.
 
-          if ( mode == '0' ){
+          if ( mode == 0 ){
 	    if (cg.predictedPlayerState.weapon == WP_UMP45)
 	    s = "Spam";
 	    else if (cg.predictedPlayerState.weapon == WP_KNIFE)
@@ -820,11 +820,11 @@ static void CG_DrawStatusBar( void ) {
                     else
             s = "Burst";
           }
-          if ( mode == '1' ){
+          if ( mode == 1 ){
 
                     s = "Semi Automatic";
           }
-          if ( mode =='2' ){
+          if ( mode ==2 ){
                 if (cg.predictedPlayerState.weapon == WP_KNIFE)
                     s = "Throw";
                 else  if (cg.predictedPlayerState.weapon == WP_HK69)
@@ -3321,6 +3321,9 @@ CG_Draw2D
 */
 static void CG_Draw2D(stereoFrame_t stereoFrame)
 {
+    centity_t	*cent;
+    cent = &cg_entities[cg.snap->ps.clientNum];
+    
 	if(stereoFrame == STEREO_CENTER){
             if ((cg.snap->ps.weapon == WP_SR8 || cg.snap->ps.weapon == WP_PSG1 || cg.snap->ps.weapon == WP_G36 )&& cg.zoomed){
                    CG_DrawSniperScope();
@@ -3331,12 +3334,11 @@ static void CG_Draw2D(stereoFrame_t stereoFrame)
              }
 	
 		//check if they have the NVG powerup
-		if( cg.snap->ps.powerups[ PW_NVG ]&& !( cg.ItemToggleState & ( 1 << PW_NVG ))  )
+		if( cg.snap->ps.powerups[ PW_NVG ]&& !( cg.ItemToggleState[cg.predictedPlayerState.clientNum] & ( 1 << PW_NVG ))  )
 		{
 			CG_DrawNightVision();
 		}
 	}
-
 
 #ifdef MISSIONPACK
 	if (cgs.orderPending && cg.time > cgs.orderTime) {
