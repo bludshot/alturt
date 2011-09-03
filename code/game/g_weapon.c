@@ -1412,6 +1412,9 @@ void Cmd_Reload( gentity_t *ent )       {
 
   amt = RoundCount(ent->client->ps.weapon);
   ammotoadd = amt;
+  
+  if (bg_weaponlist[ent->client->ps.weapon].rounds[ent->client->ps.clientNum]  == amt)
+      return;
 
   if (BG_Grenade(ent->client->ps.weapon))
     return;
