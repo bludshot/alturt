@@ -1281,7 +1281,7 @@ void CG_RenderLaser(centity_t *cent){
                 endPoint[2] += DEFAULT_VIEWHEIGHT +1;
         }
 
-        endPoint[0] +=1.6;
+
         laserBeam = trap_R_RegisterShader( "laserShader" );
         // see if it hit a wall
         CG_Trace( &trace, muzzlePoint, vec3_origin, vec3_origin, endPoint,

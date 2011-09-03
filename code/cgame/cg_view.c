@@ -478,8 +478,8 @@ static int CG_CalcFov( void ) {
 	int		contents;
 	float	fov_x, fov_y;
 	float	zoomFov;
-	float	f;
-	int		inwater;
+                  int		inwater;
+                  float	f =0;
 
 	if ( cg.predictedPlayerState.pm_type == PM_INTERMISSION ) {
 		// if in intermission, use a fixed value
