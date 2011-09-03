@@ -1613,7 +1613,7 @@ if ( weaponDown ) {
 
 
 		  //Putting weaposn on the player's back or holster (weapons they are not currently using)
-         if( cent->currentState.number == cg.predictedPlayerState.clientNum){
+         if( cent->currentState.number == cg.predictedPlayerState.clientNum && cg.predictedPlayerState.stats[STAT_HEALTH] > 0){
           if ( PriweaponNum != cent->currentState.weapon ){
           	memset( &PriweaponModel, 0, sizeof( PriweaponModel ) );
 	VectorCopy( parent->lightingOrigin, PriweaponModel.lightingOrigin );
@@ -1999,8 +1999,8 @@ if ( weaponDown ) {
 
 
 
-        if ( ps || cg.renderingThirdPerson ||
-                cent->currentState.number != cg.predictedPlayerState.clientNum ) {
+    //    if ( ps || cg.renderingThirdPerson ||
+     //           cent->currentState.number != cg.predictedPlayerState.clientNum ) {
                 // add lightning bolt
                 //CG_LightningBolt( nonPredictedCent, flash.origin );
 
@@ -2011,7 +2011,7 @@ if ( weaponDown ) {
                         trap_R_AddLightToScene( flash.origin, 300 + (rand()&31), weapon->flashDlightColor[0],
                                 weapon->flashDlightColor[1], weapon->flashDlightColor[2] );
                 }
-        }
+      //  }
         }
        
 }
@@ -2154,8 +2154,14 @@ void CG_AddViewWeapon( playerState_t *ps ) {
 
 void CG_ToggleItem_f( void ) {
       
+      centity_t       *cent;
       playerState_t   *ps;
       ps = &cg.snap->ps;
+      cent = &cg.predictedPlayerEntity;
+      
+      if (cent->currentState.number != cg.predictedPlayerState.clientNum){
+          return;
+      }
       //CG_AddEvent(EV_TOGGLEITEM);
  //ItemToggleState
 if ( !(cg.ItemToggleState & ( 1 << ps->stats[STAT_SELECTED_ITEM] ))){
@@ -2430,10 +2436,7 @@ void CG_OutOfNadesChange( centity_t *cent ) {
   entityState_t *ent;
   ent = &cent->currentState;
   cg.weaponSelectTime = cg.time;
- // if (!( BG_Grenade(ent->weapon)) ) {
- //  return;
- // }
-  for ( i = MAX_WEAPONS-1 ; i > 0 ; i-- ) {
+  for ( i = WP_NUM_WEAPONS-3 ; i > 0 ; i-- ) {
     if ( CG_WeaponSelectable( i )) {
       cg.weaponSelect = i;
       break;
