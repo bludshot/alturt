@@ -1225,7 +1225,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
                             headblown = qtrue;
                             take = 999;
                             if(! (dflags & DAMAGE_RADIUS) )
-                              PrintMsg(NULL, S_COLOR_RED"%ss head was blown away by %s!\n", targ->client->pers.netname, attacker->client->pers.netname);
+                              PrintMsg(NULL, S_COLOR_RED"%ss took a shot in the head from %s!\n", targ->client->pers.netname, attacker->client->pers.netname);
                           }
             targ->client->ps.stats[STAT_DMG_LOC] |= ( 1 << HEAD_DAMAGE );
                           break;
