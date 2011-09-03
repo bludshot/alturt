@@ -437,21 +437,24 @@ void CG_DrawNightVision(void) {
     }
 
   
-  hcolor[0] = 0.8f;
-  hcolor[1] = 0;
-  hcolor[2] = 0.8f;
+  hcolor[0] = 0;
+  hcolor[1] = 1;
+  hcolor[2] = 0;
   hcolor[3] = 0.5f;
   
 
-              
-                 CG_DrawPic( 0, 0, 640, 480, cgs.media.nvgStaticShader );
+
+               //  CG_DrawPic( 0, 0, 640, 480, cgs.media.nvgStaticShader );
+
                  CG_FillRect( 0,0,SCREEN_WIDTH,SCREEN_HEIGHT, hcolor);
-                 CG_DrawPic( 0, 0, 640, 480, cgs.media.nvgStaticShader );
-        	CG_DrawPic( 0, 0, 640, 480, cgs.media.nvgScopeShader );
+                  trap_R_SetColor( g_color_table[ColorIndex(COLOR_BLACK)] );
+          //       CG_DrawPic( 0, 0, 640, 480, cgs.media.nvgStaticShader );
                   trap_R_SetColor( NULL );
+        	CG_DrawPic( 0, 0, 640, 480, cgs.media.nvgScopeShader );
 
 
-               //	CG_DrawPic( 0, 0, 640, 480, cgs.media.nvgShader );
+
+
 }
 
 
