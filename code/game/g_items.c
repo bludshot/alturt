@@ -991,7 +991,7 @@ gentity_t *LaunchItem( gitem_t *item, vec3_t origin, vec3_t velocity ) {
 	if(  FL_THROWN_ITEM) {
 		dropped->clipmask = MASK_SHOT;
 		dropped->s.pos.trTime = level.time - 50;	// move a bit on the very first frame
-		VectorScale( velocity, 100, dropped->s.pos.trDelta ); // 700
+		VectorScale( velocity, 60, dropped->s.pos.trDelta ); // 700
 		SnapVector( dropped->s.pos.trDelta );		// save net bandwidth
 		dropped->physicsBounce= 0.2f;
 	}
@@ -1018,8 +1018,8 @@ gentity_t *Drop_Item( gentity_t *ent, gitem_t *item, float angle ) {
         angles[PITCH] = 0;      // always forward
 
         AngleVectors( angles, velocity, NULL, NULL );
-        VectorScale( velocity, 10, velocity );
-        velocity[2] += 10 + crandom() * 2;
+        VectorScale( velocity, 4, velocity );
+        velocity[2] += 3 + crandom() * 2;
 
       /*  for(i=0; i < 3; i++ )
           if (bg_inventory.item[ent->client->ps.clientNum][i] = item->giTag && item->giType == IT_POWERUP){
