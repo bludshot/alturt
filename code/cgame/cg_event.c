@@ -772,8 +772,8 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 
           case EV_NONADES:
             DEBUGNAME("EV_NONADES");
-            if ( es->number == cg.snap->ps.clientNum ) {
-                          CG_WeaponDropped();
+         if ( clientNum == cg.predictedPlayerState.clientNum ) {
+                          CG_OutOfNadesChange( cent ); 
             }
             break;
         case EV_POWERSLIDE:
