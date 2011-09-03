@@ -857,7 +857,8 @@ typedef struct {
                   qhandle_t       scopeRingShader;   
                   qhandle_t       scopeRingGeneric; 
 				  qhandle_t nvgStaticShader;
-                   qhandle_t       nvgShader;                                  
+                   qhandle_t       nvgShader;             
+                    qhandle_t       nvgShader2;                     
                    qhandle_t       nvgScopeShader;
 	qhandle_t	lagometerShader;
 	qhandle_t	backTileShader;
