@@ -217,7 +217,7 @@ void Add_Ammo (gentity_t *ent, int weapon, int count)
   int rounds;
   if ( BG_Grenade(weapon) ){
     bg_weaponlist[weapon].numClips[ent->client->ps.clientNum] += count;
-  }else if ( weapon == WP_KNIFE ){
+  }else if ( weapon == WP_KNIFE &&  bg_weaponlist[weapon].rounds[ent->client->ps.clientNum] <6){
     bg_weaponlist[weapon].rounds[ent->client->ps.clientNum] += count;
   }else{
     clips = count / RoundCount(weapon);

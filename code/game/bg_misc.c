@@ -1152,10 +1152,7 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
           if( ps->weaponTime > 0)
             return qfalse;
           if (item->giTag == WP_KNIFE){
-              if (  bg_weaponlist[item->giTag].rounds[ ps->clientNum] < 5 ){
-                    return qtrue;
-           }else
-           return qfalse;
+           return qtrue;
 }
             if ( BG_Sidearm( item->giTag )  ){
                 if (bg_inventory.sort[ps->clientNum][SIDEARM] == item->giTag)                                                    
