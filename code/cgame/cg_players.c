@@ -2149,7 +2149,7 @@ static void CG_PlayerSprites( centity_t *cent ) {
 	}
 
 	if ( cent->currentState.eFlags & EF_TALK ) {
-		CG_PlayerFloatSprite( cent, cgs.media.balloonShader );
+		//CG_PlayerFloatSprite( cent, cgs.media.balloonShader );
 		return;
 	}
 
@@ -2334,7 +2334,6 @@ static void CG_PlayerSplash( centity_t *cent ) {
 }
 
 
-
 /*
 ===============
 CG_AddRefEntityWithPowerups
@@ -2345,10 +2344,11 @@ Also called by CG_Missile for quad rockets, but nobody can tell...
 */
 void CG_AddRefEntityWithPowerups( refEntity_t *ent, entityState_t *state, int team ) {
 
-        if( cg.snap->ps.powerups[ PW_NVG ]&& !( cg.ItemToggleState[cg.predictedPlayerState.clientNum] & ( 1 << PW_NVG ))  )
+        if( cg.snap->ps.powerups[ PW_NVG ]&& !( cg.ItemToggleState[cg.predictedPlayerState.clientNum] & ( 1 << PW_NVG ))  && !cg.renderingThirdPerson)
     {
         ent->customShader = cgs.media.nvgShader; // TG Shader
         trap_R_AddRefEntityToScene( ent );
+
         //return; // don't add any other shader
     }
 
@@ -2832,7 +2832,6 @@ void CG_Player( centity_t *cent ) {
 
 
 
-
 	//
 	// add the gun / barrel / flash
 	//
@@ -2840,6 +2839,7 @@ void CG_Player( centity_t *cent ) {
 
 	// add powerups floating behind the player
 	CG_PlayerPowerups( cent, &torso );
+
 }
 
 
