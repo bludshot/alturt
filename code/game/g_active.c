@@ -501,9 +501,6 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 
         client = ent->client;
         ucmd = &ent->client->pers.cmd;
-        if ( oldEventSequence < client->ps.eventSequence - MAX_PS_EVENTS ) {
-                oldEventSequence = client->ps.eventSequence - MAX_PS_EVENTS;
-        }
         for ( i = oldEventSequence ; i < client->ps.eventSequence ; i++ ) {
                 event = client->ps.events[ i & (MAX_PS_EVENTS-1) ];
 
@@ -535,11 +532,12 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
                     break;
                     
                   case EV_BLEED:
-                      //attacker->client->ps.clientNum = ent->client->ps.persistant[PERS_ATTACKER];
                       if(  ucmd->serverTime   % 20 == 0 )
                       ent->health--;
-                      //if(ent->health ==1 )
-                       //   player_die (ent, attacker, attacker, 20, MOD_BLED);
+                      if(ent->health <=1 ){
+                          ent->client->ps.stats[STAT_HEALTH] = ent->health = -999;
+                          player_die (ent, attacker, attacker, 100000, MOD_BLED);
+                      }
                     break;
                 case EV_USE_ITEM1:              // teleporter
                         // drop flags in CTF
