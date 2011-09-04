@@ -1620,7 +1620,7 @@ if ( weaponDown ) {
 
 
 		  //Putting weaposn on the player's back or holster (weapons they are not currently using)
-         if( cent->currentState.number == cg.predictedPlayerState.clientNum && cg.predictedPlayerState.stats[STAT_HEALTH] > 0){
+         if( cent->currentState.number == cg.predictedPlayerState.clientNum && cg.snap->ps.stats[STAT_HEALTH] >0 ){
           if ( PriweaponNum != cent->currentState.weapon ){
           	memset( &PriweaponModel, 0, sizeof( PriweaponModel ) );
 	VectorCopy( parent->lightingOrigin, PriweaponModel.lightingOrigin );
