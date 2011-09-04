@@ -125,6 +125,7 @@ void weapon_knife_fire (gentity_t *ent) {
 
 	VectorAdd( m->s.pos.trDelta, ent->client->ps.velocity, m->s.pos.trDelta );	// "real" physics
 }
+
 /*
 ===============
 CheckGauntletAttack
@@ -137,13 +138,23 @@ qboolean CheckGauntletAttack( gentity_t *ent ) {
         gentity_t       *traceEnt;
         int                     damage;
         int		weaponstate = ent->client->ps.weaponstate;
+        int			weapontime = ent->client->ps.weaponTime;
         // set aiming directions
+        
+        
+                G_Printf("weapontime is %i\n",weapontime);
+        
+      if ( weaponstate != WEAPON_FIRING && !(ent->client->pers.cmd.buttons & BUTTON_ATTACK))
+         return qfalse;
+        
+                if( weapontime ){
+
+    
         AngleVectors (ent->client->ps.viewangles, forward, right, up);
-        if ( weaponstate == WEAPON_FIRING ){
         CalcMuzzlePoint ( ent, forward, right, up, muzzle );
 
-        VectorMA (muzzle, 32, forward, end);
-        }
+        VectorMA (muzzle, 15, forward, end);
+
        G_FixHitboxes();
         trap_Trace (&tr, muzzle, NULL, NULL, end, ent->s.number, MASK_SHOT);
        G_RestoreHitboxes();
@@ -173,7 +184,10 @@ qboolean CheckGauntletAttack( gentity_t *ent ) {
                 damage, 0, MOD_GAUNTLET );
 
         return qtrue;
+                }else return qfalse;
 }
+
+
 
 /*
 ===============
@@ -897,6 +911,48 @@ void Weapon_LightningFire( gentity_t *ent ) {
 }
 
 
+void Weapon_KnifeSlash( gentity_t *ent ) {
+        trace_t         tr;
+        vec3_t          end;
+
+        gentity_t       *traceEnt, *tent;
+        int                     damage, i, passent;
+
+        damage = 25 * s_quadFactor;
+
+        passent = ent->s.number;
+        for (i = 0; i < 10; i++) {
+                VectorMA( muzzle, 40, forward, end );
+
+                trap_Trace( &tr, muzzle, NULL, NULL, end, passent, MASK_SHOT );
+
+                if ( tr.entityNum == ENTITYNUM_NONE ) {
+                        return;
+                }
+
+                traceEnt = &g_entities[ tr.entityNum ];
+
+                if ( traceEnt->takedamage) {
+                                G_Damage( traceEnt, ent, ent, forward, tr.endpos,
+                                        damage, 0, MOD_KNIFE);
+                }
+
+                if ( traceEnt->takedamage && traceEnt->client ) {
+                        tent = G_TempEntity( tr.endpos, EV_MISSILE_HIT );
+                        tent->s.otherEntityNum = traceEnt->s.number;
+                        tent->s.eventParm = DirToByte( tr.plane.normal );
+                        tent->s.weapon = ent->s.weapon;
+                        if( LogAccuracyHit( traceEnt, ent ) ) {
+                                ent->client->accuracy_hits++;
+                        }
+                } else if ( !( tr.surfaceFlags & SURF_NOIMPACT ) ) {
+                        tent = G_TempEntity( tr.endpos, EV_MISSILE_MISS );
+                        tent->s.eventParm = DirToByte( tr.plane.normal );
+                }
+
+                break;
+        }
+}
 
 //======================================================================
 
@@ -1501,7 +1557,8 @@ void FireWeapon( gentity_t *ent ) {
                 //
                  }
                 }else
-                    CheckGauntletAttack( ent);
+                    Weapon_KnifeSlash( ent  );
+         
                 break;
                 case WP_SPAS:
                         weapon_supershotgun_fire( ent );
@@ -1547,6 +1604,7 @@ void FireWeapon( gentity_t *ent ) {
                         break;
                 case WP_SMOKE:
                         weapon_smoke_throw( ent );
+                        break;
         default:
 // FIXME                G_Error( "Bad ent->s.weapon" );
                 break;
