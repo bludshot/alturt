@@ -150,6 +150,9 @@ static void CG_Obituary( entityState_t *ent ) {
 	case MOD_TRIGGER_HURT:
 		message = "was in the wrong place";
 		break;
+                 	case MOD_BLED:
+		message = "bled to death";
+                                    break;
 	default:
 		message = NULL;
 		break;
@@ -301,10 +304,7 @@ static void CG_Obituary( entityState_t *ent ) {
 			message = "was blasted by";
 			message2 = "'s BFG";
 			break;
-                                   	case MOD_BLED:
-			message = "Bled to death from";
-			message2 = "'s attacks";
-                                                        break;
+
 #ifdef MISSIONPACK
 		case MOD_NAIL:
 			message = "was nailed by";
