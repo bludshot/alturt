@@ -127,6 +127,10 @@ qboolean	G_TryPushingEntity( gentity_t *check, gentity_t *pusher, vec3_t move, v
 	vec3_t		org, org2, move2;
 	gentity_t	*block;
 
+        
+        
+        G_Printf("G_TryPushingEntity\n");
+        
 	// EF_MOVER_STOP will just stop when contacting another entity
 	// instead of pushing it, but entities can still ride on top of it
 	if ( ( pusher->s.eFlags & EF_MOVER_STOP ) &&
@@ -380,10 +384,10 @@ qboolean G_MoverPush( gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **
 				VectorCopy (p->origin, p->ent->client->ps.origin);
 			}
 			trap_LinkEntity (p->ent);
-		}
+		}        G_Printf("G_MoverPush  qfalse\n");
 		return qfalse;
 	}
-
+        G_Printf("G_MoverPush qtrue\n");
 	return qtrue;
 }
 
@@ -413,8 +417,20 @@ void G_MoverTeam( gentity_t *ent ) {
 		BG_EvaluateTrajectory( &part->s.pos, level.time, origin );
 		BG_EvaluateTrajectory( &part->s.apos, level.time, angles );
 		VectorSubtract( origin, part->r.currentOrigin, move );
-		VectorSubtract( angles, part->r.currentAngles, amove );
+		VectorSubtract( angles, part->r.currentAngles, amove );                 
 		if ( !G_MoverPush( part, move, amove, &obstacle ) ) {
+                                                if ( part->moverState == MOVER_POS1 ) {
+                                                MatchTeam( part, MOVER_2TO1, level.time );
+                                                }else
+                                                if ( part->moverState == MOVER_POS2 ) {
+                                                MatchTeam( part, MOVER_1TO2, level.time );
+                                                }else
+                                                if ( part->moverState == ROTATOR_POS1 ) {
+                                                MatchTeam( part,  ROTATOR_2TO1, level.time );
+                                                }else
+                                                if ( part->moverState ==  ROTATOR_POS2 ) {
+                                                MatchTeam( part,  ROTATOR_1TO2, level.time );
+                                                }else
 			break;	// move was blocked
 		}
 	}
@@ -705,7 +721,7 @@ void Reached_BinaryMover( gentity_t *ent ) {
 			     trap_AdjustAreaPortalState( ent, qfalse );
 			    }
 			  } else if ( ent->moverState == ROTATOR_1TO2 ||
-			   ent->moverState == ROTATOR_STOP_1TO2 ) {
+			   ent->moverState == ROTATOR_STOP_1TO2) {
 		// reached pos2
 		SetMoverState( ent, ROTATOR_POS2, level.time );
 
@@ -725,8 +741,8 @@ void Reached_BinaryMover( gentity_t *ent ) {
 			ent->activator = ent;
 		}
 		G_UseTargets( ent, ent->activator );
-	} else if ( ent->moverState == ROTATOR_2TO1||
-			   ent->moverState == ROTATOR_STOP_2TO1  ) {
+	} else if ( ent->moverState == ROTATOR_2TO1 ||
+			   ent->moverState == ROTATOR_STOP_2TO1) {
 		// reached pos1
 		SetMoverState( ent, ROTATOR_POS1, level.time );
 
@@ -766,9 +782,7 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
 	ent->activator = activator;
 if(!(ent->trigger_only)){
 	if ( ent->moverState == MOVER_STOP_1TO2 ||
-	    ent->moverState == MOVER_STOP_2TO1 ||
-	    ent->moverState == ROTATOR_STOP_1TO2 || 
-                      ent->moverState == ROTATOR_STOP_2TO1  ) {
+	    ent->moverState == MOVER_STOP_2TO1 ) {
         // start moving 50 msec later, becase if this was player
         // triggered, level.time hasn't been advanced yet
 		//G_Printf( "Use_BinaryMover moverState == MOVER_STOP_1TO2 || moverState == MOVER_STOP_2TO1\n");
@@ -781,19 +795,19 @@ if(!(ent->trigger_only)){
 		}
 
 
-		    if ( ent->moverState == MOVER_POS1 ) {
-			//G_Printf( "Use_BinaryMover moverState == MOVER_POS1\n");
+    if ( ent->moverState == MOVER_POS1 ) {
+        //G_Printf( "Use_BinaryMover moverState == MOVER_POS1\n");
         // start moving 50 msec later, becase if this was player
         // triggered, level.time hasn't been advanced yet
-			    MatchTeam( ent, MOVER_1TO2, level.time + 50 );
+	    MatchTeam( ent, MOVER_1TO2, level.time + 50 );
 		//G_Printf( "Use_BinaryMover MatchTeam MOVER_1TO2 called\n");
         // starting sound
-			    if ( ent->sound1to2 ) {
-					    G_AddEvent( ent, EV_GENERAL_SOUND, ent->sound1to2 );
-			    }
+	    if ( ent->sound1to2 ) {
+	    G_AddEvent( ent, EV_GENERAL_SOUND, ent->sound1to2 );
+	    }
 
         // looping sound
-			    ent->s.loopSound = ent->soundLoop;
+	    ent->s.loopSound = ent->soundLoop;
 
         // open areaportal
 			    if ( ent->teammaster == ent || !ent->teammaster ) {
@@ -873,17 +887,14 @@ if(!(ent->trigger_only)){
 		    }
 	if ( ent->moverState == ROTATOR_POS1 ) {
 
-                        //     if(    ( ent->activator->client->ps.origin[1]   < ent->r.absmax[1]  && ent->activator->client->ps.origin[1] > ent->r.absmin[1]) 
-                       //  ){
-                     
-	//	VectorNegate ( ent->movedir, ent->movedir );
-                     //   	VectorMA ( ent->pos1, ent->distance, ent->movedir, ent->pos2 );
-
-              //   }
-
+                             if(    ( ent->activator->client->ps.origin[1]   < ent->r.absmax[1]  && ent->activator->client->ps.origin[1] > ent->r.absmin[1]) ||
+                                  ( ent->activator->client->ps.origin[0]   < ent->r.absmax[0]  && ent->activator->client->ps.origin[0] > ent->r.absmin[0]) 
+                         ){
+		VectorNegate ( ent->movedir, ent->movedir );
+                       	VectorMA ( ent->pos1, ent->distance, ent->movedir, ent->pos2 );
+                           }
 
 
-      //      client->ps.origin
 		// start moving 50 msec later, becase if this was player
 		// triggered, level.time hasn't been advanced yet
 		MatchTeam( ent, ROTATOR_1TO2, level.time + 50 );
@@ -905,25 +916,25 @@ if(!(ent->trigger_only)){
 
 	// if all the way up, just delay before coming down
 if( ent->moverState == ROTATOR_POS2 && ent->wait > 0 ) {
-					//G_Printf( "Use_BinaryMover moverState == MOVER_POS2 && ent->wait > 0\n");
+         //G_Printf( "Use_BinaryMover moverState == MOVER_POS2 && ent->wait > 0\n");
         // start moving 50 msec later, becase if this was player
         // triggered, level.time hasn't been advanced yet
-			    MatchTeam( ent, ROTATOR_2TO1, level.time + 50 );
-					//G_Printf( "Use_BinaryMover MOVER_2TO1 MatchTeam called\n");
-        // starting sound
-			    if ( ent->sound2to1 ) {
-					    G_AddEvent( ent, EV_GENERAL_SOUND, ent->sound2to1 );
-			    }
+	    MatchTeam( ent, ROTATOR_2TO1, level.time + 50 );
+//G_Printf( "Use_BinaryMover MOVER_2TO1 MatchTeam called\n");
+// starting sound
+	    if ( ent->sound2to1 ) {
+	    G_AddEvent( ent, EV_GENERAL_SOUND, ent->sound2to1 );
+		    }
 
         // looping sound
-			    ent->s.loopSound = ent->soundLoop;
+	    ent->s.loopSound = ent->soundLoop;
 
         // open areaportal
-			    if ( ent->teammaster == ent || !ent->teammaster ) {
-				    trap_AdjustAreaPortalState( ent, qtrue );
-			    }
-			    return;
-		    } 
+	    if ( ent->teammaster == ent || !ent->teammaster ) {
+	    trap_AdjustAreaPortalState( ent, qtrue );
+	    }
+	    return;
+	    } 
 
 	// only partway down before reversing
 	if ( ent->moverState == ROTATOR_2TO1 ) {
@@ -1174,17 +1185,28 @@ Blocked_Door
 ================
 */
 void Blocked_Door( gentity_t *ent, gentity_t *other ) {
+    
+    G_Printf("Blocked_Door\n");
 
-	if ( ent->moverState == MOVER_1TO2 )
-		ent->moverState = MOVER_STOP_1TO2;
-	else if ( ent->moverState == MOVER_2TO1 )
-		ent->moverState = MOVER_STOP_2TO1;
-
-	if ( ent->moverState == ROTATOR_1TO2 )
-		ent->moverState = ROTATOR_STOP_1TO2;
+	if ( ent->moverState == MOVER_1TO2 ){
+            		ent->moverState = MOVER_STOP_1TO2;
+        }else if ( ent->moverState == MOVER_2TO1 ){
+            		ent->moverState = MOVER_STOP_2TO1;
+                                 //  SetMoverState( ent, MOVER_POS2, level.time );
+        }else  if ( ent->moverState == MOVER_STOP_1TO2 ){
+            		SetMoverState( ent, MOVER_POS1, level.time );
+        }else if ( ent->moverState == MOVER_STOP_2TO1 ){
+            		SetMoverState( ent, MOVER_POS2, level.time );
+        }if ( ent->moverState == ROTATOR_1TO2 ){
+                        ent->moverState = ROTATOR_STOP_1TO2;
+                  }
 	else if ( ent->moverState == ROTATOR_2TO1 )
 		ent->moverState = ROTATOR_STOP_2TO1;
 	// remove anything other than a client
+        
+        
+        
+        
 	if ( !other->client ) {
 		// except CTF flags!!!!
 		if( other->s.eType == ET_ITEM && other->item->giType == IT_TEAM ) {
@@ -1242,20 +1264,27 @@ Reset a door in the beginning of a round.
 */
 void Door_ResetState( gentity_t *door )
 {
-	if ( door->moverState == MOVER_POS2 ) {
+	if ( door->moverState == MOVER_POS2 || door->moverState == ROTATOR_POS2) {
 		Use_BinaryMover2(door, door, door );
-	} else if ( door->moverState == MOVER_POS1 ) {
+	} else if ( door->moverState == MOVER_POS1 || door->moverState == ROTATOR_POS1 ) {
         // closed do nothing
 	} else if ( door->moverState == MOVER_STOP_1TO2 ||
-			   door->moverState == MOVER_STOP_2TO1 )
-			   {
+	   door->moverState == MOVER_STOP_2TO1 )
+	   {
         // we're moving from closed to open but stopped
-				   if ( door->moverState == MOVER_STOP_1TO2 )
-					   door->moverState = MOVER_STOP_2TO1; // so set state to open->close
-
+	   if ( door->moverState == MOVER_STOP_1TO2 )
+	   door->moverState = MOVER_STOP_2TO1; // so set state to open->close
         // close door
-				   Use_BinaryMover( door, door, door );
-			   }
+	   Use_BinaryMover( door, door, door );
+	   }else if ( door->moverState == ROTATOR_STOP_1TO2 ||
+	   door->moverState == ROTATOR_STOP_2TO1 )
+	   {
+        // we're moving from closed to open but stopped
+	   if ( door->moverState == ROTATOR_STOP_1TO2 )
+	   door->moverState = ROTATOR_STOP_2TO1; // so set state to open->close
+        // close door
+	   Use_BinaryMover( door, door, door );
+	   }
 
 }
 
@@ -1268,7 +1297,7 @@ Touch_DoorTrigger
 */
 void Touch_DoorTrigger( gentity_t *ent, gentity_t *other, trace_t *trace )
 {
-//added code to deal with specators
+
 
 	if( !other->client )
 		return;
@@ -1278,15 +1307,17 @@ void Touch_DoorTrigger( gentity_t *ent, gentity_t *other, trace_t *trace )
 	if ( !(other->client->buttons & BUTTON_USE ) )
 		return;
 	 if ( ent->parent->moverState == MOVER_POS2 ) {
+                 G_Printf("ent->parent->moverState == MOVER_POS2\n");
 		Use_BinaryMover2( ent->parent, ent, other );
 	} else if ( ent->parent->moverState == MOVER_POS1 ) {
+                             G_Printf("ent->parent->moverState == MOVER_POS1\n");
 		Use_BinaryMover( ent->parent, ent, other );
 	} else if ( ent->parent->moverState == MOVER_STOP_1TO2 || ent->parent->moverState == MOVER_STOP_2TO1 ) {
+                                         G_Printf("ent->parent->moverState == MOVER_STOP_1TO2 || ent->parent->moverState == MOVER_STOP_2TO1\n");
 		Use_BinaryMover( ent->parent, ent, other );
-
-
-	}else if ( ent->parent->moverState != MOVER_1TO2 &&
+	}else  if ( ent->parent->moverState != MOVER_1TO2 &&
 		ent->parent->moverState != ROTATOR_1TO2 ) {
+                                                     G_Printf("ent->parent->moverState != MOVER__1TO2 && ent->parent->moverState != ROTATOR_1TO2\n");
 		Use_BinaryMover( ent->parent, ent, other );
 	}
 
