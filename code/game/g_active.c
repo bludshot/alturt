@@ -496,7 +496,7 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
         vec3_t  origin, angles;
 //      qboolean        fired;
         gitem_t *item;
-        gentity_t *drop, *attacker;
+        gentity_t *drop;
         usercmd_t       *ucmd;
 
         client = ent->client;
@@ -536,7 +536,7 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
                       ent->health--;
                       if(ent->health <=1 ){
                           ent->client->ps.stats[STAT_HEALTH] = ent->health = -999;
-                          player_die (ent, attacker, attacker, 100000, MOD_BLED);
+                          player_die (ent, NULL, NULL, 100000, MOD_BLED);
                       }
                     break;
                 case EV_USE_ITEM1:              // teleporter
@@ -855,10 +855,10 @@ if ( (client->pers.cmd.forwardmove ||
 
         // check for the hit-scan gauntlet, don't let the action
         // go through as an attack unless it actually hits something
-        if ( client->ps.weapon == WP_KNIFE && !( ucmd->buttons & BUTTON_TALK ) &&
-                ( ucmd->buttons & BUTTON_ATTACK ) && client->ps.weaponTime <= 0 ) {
-          pm.gauntletHit = CheckGauntletAttack( ent);
-        }
+        //if ( client->ps.weapon == WP_KNIFE && !( ucmd->buttons & BUTTON_TALK ) &&
+        //        ( ucmd->buttons & BUTTON_ATTACK ) && client->ps.weaponTime <= 0 ) {
+      //    pm.gauntletHit = CheckGauntletAttack( ent);
+      //  }
         CheckMed( ent);
         if ( ent->flags & FL_FORCE_GESTURE ) {
                 ent->flags &= ~FL_FORCE_GESTURE;
