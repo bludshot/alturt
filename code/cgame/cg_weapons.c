@@ -1122,7 +1122,7 @@ static void CG_LightningBolt( centity_t *cent, vec3_t origin ) {
 CG_AddWeaponWithPowerups
 ========================
 */
-static void CG_AddWeaponWithPowerups( refEntity_t *gun, int powerups ) {
+void CG_AddWeaponWithPowerups( refEntity_t *gun, int powerups ) {
         // add powerup effects
 
 
@@ -1366,18 +1366,9 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	refEntity_t     vshell;
 	refEntity_t     vgrenade;
 	refEntity_t     weaponModel;
-        	refEntity_t     PriweaponModel;
-                  refEntity_t     SecweaponModel;
-                  refEntity_t     SidweaponModel;
 	vec3_t          angles;
 	weapon_t        weaponNum;
-                  weapon_t        PriweaponNum;
-                  weapon_t        SecweaponNum;
-                  weapon_t        SidweaponNum;
 	weaponInfo_t    *weapon;
-                  weaponInfo_t    *weapon1;
-                  weaponInfo_t    *weapon2;
-                  weaponInfo_t    *weapon3;
 	centity_t       *nonPredictedCent;
 	orientation_t   lerped;
 	int             powerups;
@@ -1394,21 +1385,10 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	powerups = cent->currentState.powerups;
 
 	weaponNum = cent->currentState.weapon;
-        
-                  SidweaponNum = CG_GetSidearm();
-                  PriweaponNum = CG_GetPrimary();
-                  SecweaponNum = CG_GetWorstSecondary();
 
-                  
-	CG_RegisterWeapon( weaponNum );
-        	CG_RegisterWeapon( PriweaponNum );
-                	CG_RegisterWeapon( SecweaponNum );
-                  CG_RegisterWeapon( SidweaponNum );
-                  
+	CG_RegisterWeapon( weaponNum );              
 	weapon = &cg_weapons[weaponNum];
- 	weapon1 = &cg_weapons[PriweaponNum];
-        	weapon2 = &cg_weapons[SecweaponNum];
-                	weapon3 = &cg_weapons[SidweaponNum];
+
                         
 	ci = &cgs.clientinfo[cent->currentState.clientNum];
 
@@ -1620,35 +1600,7 @@ if ( weaponDown ) {
 
 
 		  //Putting weaposn on the player's back or holster (weapons they are not currently using)
-         if( cent->currentState.number == cg.predictedPlayerState.clientNum && cg.snap->ps.stats[STAT_HEALTH] >0 ){
-          if ( PriweaponNum != cent->currentState.weapon ){
-          	memset( &PriweaponModel, 0, sizeof( PriweaponModel ) );
-	VectorCopy( parent->lightingOrigin, PriweaponModel.lightingOrigin );
-	PriweaponModel.shadowPlane = parent->shadowPlane;
-	PriweaponModel.renderfx = parent->renderfx;
-                  PriweaponModel.hModel = weapon1->weaponModel;
-                CG_PositionEntityOnTag( &PriweaponModel, parent, parent->hModel, "tag_primary" );
-                CG_AddWeaponWithPowerups( &PriweaponModel, cent->currentState.powerups );
-          }
-          if ( SecweaponNum != cent->currentState.weapon ){
-          	memset( &SecweaponModel, 0, sizeof( SecweaponModel ) );
-	VectorCopy( parent->lightingOrigin, SecweaponModel.lightingOrigin );
-	SecweaponModel.shadowPlane = parent->shadowPlane;
-	SecweaponModel.renderfx = parent->renderfx;
-                 SecweaponModel.hModel = weapon2->weaponModel;
-                CG_PositionEntityOnTag( &SecweaponModel, parent, parent->hModel, "tag_secondar" );
-                CG_AddWeaponWithPowerups( &SecweaponModel, cent->currentState.powerups );
-          }
-          if ( SidweaponNum != cent->currentState.weapon ){
-          	memset( &SidweaponModel, 0, sizeof( SidweaponModel ) );
-	VectorCopy( parent->lightingOrigin, SidweaponModel.lightingOrigin );
-	SidweaponModel.shadowPlane = parent->shadowPlane;
-	SidweaponModel.renderfx = parent->renderfx;
-                  SidweaponModel.hModel = weapon3->weaponModel;
-                CG_PositionEntityOnTag( &SidweaponModel, parent, parent->hModel, "tag_sidearm" );
-                CG_AddWeaponWithPowerups( &SidweaponModel, cent->currentState.powerups );
-          }
-        }
+
         }
 
         if ( ps ) {

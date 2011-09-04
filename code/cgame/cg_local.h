@@ -1857,3 +1857,4 @@ void CG_CreateBleeder( vec3_t origin , int damage, int playerNum ) ;
 void CG_WeaponDropped( void );
 void CG_ToggleItem_f( void );
 void CG_RenderLaser(centity_t *cent);
+void CG_AddWeaponWithPowerups( refEntity_t *gun, int powerups ) ;

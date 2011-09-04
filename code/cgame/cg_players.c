@@ -2415,13 +2415,23 @@ void CG_Player( centity_t *cent ) {
 	refEntity_t		torso;
 	refEntity_t		head;
                   refEntity_t                   helmet;
-				  refEntity_t					nvg;
-				  refEntity_t					medkit;
+	refEntity_t		nvg;
+	refEntity_t		medkit;
                   int                                clientNum;
 	int		renderfx;
 	qboolean		shadow;
 	float		shadowPlane;
-
+	weapon_t        weaponNum;
+                  weapon_t        PriweaponNum;
+                  weapon_t        SecweaponNum;
+                  weapon_t        SidweaponNum;
+	weaponInfo_t    *weapon;
+                  weaponInfo_t    *weapon1;
+                  weaponInfo_t    *weapon2;
+                  weaponInfo_t    *weapon3;
+        	refEntity_t     PriweaponModel;
+                  refEntity_t     SecweaponModel;
+                  refEntity_t     SidweaponModel;
 
                  vec3_t			 angles; 
 
@@ -2441,7 +2451,24 @@ void CG_Player( centity_t *cent ) {
 		qboolean				nvgOn;
 		qboolean				medkitOn;
         vestOn = helmetOn = nvgOn = medkitOn = qfalse;
+        
+	weaponNum = cent->currentState.weapon;
+        
+                  SidweaponNum = CG_GetSidearm();
+                  PriweaponNum = CG_GetPrimary();
+                  SecweaponNum = CG_GetWorstSecondary();
 
+                  
+	CG_RegisterWeapon( weaponNum );
+        	CG_RegisterWeapon( PriweaponNum );
+                	CG_RegisterWeapon( SecweaponNum );
+                  CG_RegisterWeapon( SidweaponNum );
+                  
+	weapon = &cg_weapons[weaponNum];
+ 	weapon1 = &cg_weapons[PriweaponNum];
+        	weapon2 = &cg_weapons[SecweaponNum];
+                	weapon3 = &cg_weapons[SidweaponNum];
+  
 
 	// the client number is stored in clientNum.  It can't be derived
 	// from the entity number, because a single client may have
@@ -2821,7 +2848,35 @@ void CG_Player( centity_t *cent ) {
 
 
 
-
+         if( cent->currentState.number == cg.predictedPlayerState.clientNum && cg.snap->ps.stats[STAT_HEALTH] >0 ){
+          if ( PriweaponNum != cent->currentState.weapon ){
+          	memset( &PriweaponModel, 0, sizeof( PriweaponModel ) );
+	VectorCopy( torso.lightingOrigin, PriweaponModel.lightingOrigin );
+	PriweaponModel.shadowPlane = torso.shadowPlane;
+	PriweaponModel.renderfx = torso.renderfx;
+                  PriweaponModel.hModel = weapon1->weaponModel;
+                CG_PositionEntityOnTag( &PriweaponModel, &torso, torso.hModel, "tag_primary" );
+                CG_AddWeaponWithPowerups( &PriweaponModel, cent->currentState.powerups );
+          }
+          if ( SecweaponNum != cent->currentState.weapon ){
+          	memset( &SecweaponModel, 0, sizeof( SecweaponModel ) );
+	VectorCopy( torso.lightingOrigin, SecweaponModel.lightingOrigin );
+	SecweaponModel.shadowPlane = torso.shadowPlane;
+	SecweaponModel.renderfx = torso.renderfx;
+                 SecweaponModel.hModel = weapon2->weaponModel;
+                CG_PositionEntityOnTag( &SecweaponModel,  &torso, torso.hModel, "tag_secondar" );
+                CG_AddWeaponWithPowerups( &SecweaponModel, cent->currentState.powerups );
+          }
+          if ( SidweaponNum != cent->currentState.weapon ){
+          	memset( &SidweaponModel, 0, sizeof( SidweaponModel ) );
+	VectorCopy( legs.lightingOrigin, SidweaponModel.lightingOrigin );
+	SidweaponModel.shadowPlane = legs.shadowPlane;
+	SidweaponModel.renderfx = legs.renderfx;
+                  SidweaponModel.hModel = weapon3->weaponModel;
+                CG_PositionEntityOnTag( &SidweaponModel, &legs, legs.hModel, "tag_sidearm" );
+                CG_AddWeaponWithPowerups( &SidweaponModel, cent->currentState.powerups );
+          }
+        }
 
 #ifdef MISSIONPACK
 	CG_BreathPuffs(cent, &head);
