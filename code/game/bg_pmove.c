@@ -836,6 +836,7 @@ PM_FlyMove
 Only with the flight powerup
 ===================
 */
+/* //No longer used in Alturt
 static void PM_FlyMove( void ) {
         int             i;
         vec3_t  wishvel;
@@ -869,6 +870,7 @@ static void PM_FlyMove( void ) {
         PM_StepSlideMove( qfalse );
 //        PM_StepSlideMove( qfalse, qfalse );
 }
+*/
 
 
 /*
