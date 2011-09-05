@@ -51,7 +51,7 @@ void multi_trigger( gentity_t *ent, gentity_t *activator ) {
 	}
 
         if ( ent->active ) {
-          G_Printf( "trigger active\n");      // can't retrigger until the wait is over
+    //      G_Printf( "trigger active\n");      // can't retrigger until the wait is over
           ent->wait++;
         }
 
