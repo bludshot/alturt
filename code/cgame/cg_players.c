@@ -583,7 +583,7 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
           }
         }
 
-        Com_sprintf( filename, sizeof( filename ), "models/players/gear/backpack.md3", modelName );
+        Com_sprintf( filename, sizeof( filename ), "models/players/gear/backpack.md3");
         ci->medkitModel = trap_R_RegisterModel( filename );
         if ( !ci->medkitModel ) {
           CG_Printf("!ci->medkitModel\n");
