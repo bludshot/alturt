@@ -129,7 +129,7 @@ qboolean	G_TryPushingEntity( gentity_t *check, gentity_t *pusher, vec3_t move, v
 
         
         
-        G_Printf("G_TryPushingEntity\n");
+        //G_Printf("G_TryPushingEntity\n");
         
 	// EF_MOVER_STOP will just stop when contacting another entity
 	// instead of pushing it, but entities can still ride on top of it
@@ -384,10 +384,10 @@ qboolean G_MoverPush( gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **
 				VectorCopy (p->origin, p->ent->client->ps.origin);
 			}
 			trap_LinkEntity (p->ent);
-		}        G_Printf("G_MoverPush  qfalse\n");
+		}        //G_Printf("G_MoverPush  qfalse\n");
 		return qfalse;
 	}
-        G_Printf("G_MoverPush qtrue\n");
+        //G_Printf("G_MoverPush qtrue\n");
 	return qtrue;
 }
 
