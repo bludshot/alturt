@@ -2782,8 +2782,7 @@ void CG_WeapToggle_f( void ) {
 				else if (cent->currentState.weapon == WP_HE)
 				{
 					//give them Smoke
-					//blud temp disable smoke for alpha 0.01
-					//cg.weaponSelect = WP_SMOKE;
+					cg.weaponSelect = WP_SMOKE;
 				}
 				else if (cent->currentState.weapon == WP_SMOKE)
 				{
@@ -2794,8 +2793,7 @@ void CG_WeapToggle_f( void ) {
 			else if (BG_HasWeapon(WP_SMOKE, (int*)cg.snap->ps.stats))
 			{
 				//give smoke
-				//blud temp disable smoke for alpha 0.01
-				//cg.weaponSelect = WP_SMOKE;
+				cg.weaponSelect = WP_SMOKE;
 			}
 			else if (BG_HasWeapon(WP_HE, (int*)cg.snap->ps.stats))
 			{
@@ -2956,8 +2954,7 @@ void CG_WeapToggle_f( void ) {
 				//but if we have Smoke, overwrite None with Smoke
 				if (BG_HasWeapon(WP_SMOKE, (int*)cg.snap->ps.stats))
 				{
-					//blud temp disable smoke for alpha 0.01
-					//WP = WP_SMOKE;
+					WP = WP_SMOKE;
 				}
 				//but if we have HE, overwrite Smoke with HE
 				if (BG_HasWeapon(WP_HE, (int*)cg.snap->ps.stats))
@@ -3006,8 +3003,7 @@ void CG_WeapToggle_f( void ) {
 				//but if we have Smoke, overwrite None with Smoke
 				if (BG_HasWeapon(WP_SMOKE, (int*)cg.snap->ps.stats))
 				{
-					//blud temp disable smoke for alpha 0.01
-					//WP = WP_SMOKE;
+					WP = WP_SMOKE;
 				}
 				//but if we have HE, overwrite Smoke with HE
 				if (BG_HasWeapon(WP_HE, (int*)cg.snap->ps.stats))
@@ -3058,8 +3054,7 @@ void CG_WeapToggle_f( void ) {
 					//but if we have Smoke, overwrite None with Smoke
 					if (BG_HasWeapon(WP_SMOKE, (int*)cg.snap->ps.stats))
 					{
-						//blud temp disable smoke for alpha 0.01
-						//WP = WP_SMOKE;
+						WP = WP_SMOKE;
 					}
 					//but if we have HE, overwrite Smoke with HE
 					if (BG_HasWeapon(WP_HE, (int*)cg.snap->ps.stats))
@@ -3110,10 +3105,6 @@ void CG_Weapon_f( void ) {
 
         num = atoi( CG_Argv( 1 ) );
 		
-		//blud temp disable smoke for alpha 0.01
-		if (num == 16)
-			return;
-
      //   if ( num < 1 || num > MAX_WEAPONS-1 ) {
       //          return;
       //  }
