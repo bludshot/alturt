@@ -122,6 +122,8 @@ field_t fields[] = {
 	{"only", FOFS(only), F_LSTRING},//Xamis
 	{"CloseWhenIdle", FOFS(CloseWhenIdle), F_INT},//Xamis
 	{"trigger_only", FOFS(trigger_only), F_INT},//Xamis
+        	{"gametype", FOFS(gametype), F_INT},//Xamis
+        	{"group", FOFS(group), F_INT},//Xamis       
 	{NULL}
 };
 
@@ -218,6 +220,7 @@ spawn_t	spawns[] = {
 	{"func_button", SP_func_button},
 	{"func_door", SP_func_door},
 	{"func_rotating_door", SP_func_rotating_door},
+        	{"ut_mrsentry", SP_Spawnsentry},
 	{"func_static", SP_func_static},
 	{"func_rotating", SP_func_rotating},
 	{"func_bobbing", SP_func_bobbing},
