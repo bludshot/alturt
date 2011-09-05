@@ -1010,12 +1010,11 @@ gentity_t *SelectRandomTeamSpawnPoint( int teamstate, team_t utteam ) {
 	spot = NULL;
 
 	while (qtrue) {
-		(spot = G_Find ((spot = G_Find (spot,FOFS(classname), class)), FOFS(team), teamname));// != NULL
+		(spot = G_Find (spot, FOFS(team), teamname));// != NULL
 
-
-
-
-
+                                       if(  strcmp(spot->classname, class))
+                                           continue;
+                
 		if ( SpotWouldTelefrag( spot ) ) {
 			//G_Printf( S_COLOR_BLUE "WARNING: spots telefrag\n" );
 			continue;
@@ -1035,9 +1034,9 @@ gentity_t *SelectRandomTeamSpawnPoint( int teamstate, team_t utteam ) {
 
 	if ( !count ) {	// no spots that won't telefrag
 		//G_Printf( S_COLOR_BLUE "WARNING: no spots that won't telefrag\n" );
-		return  G_Find ((spot = G_Find (spot,FOFS(classname), class)), FOFS(team), teamname);
-
-
+		//return  G_Find ((spot = G_Find (spot,FOFS(classname), class)), FOFS(team), teamname);
+                                        SelectRandomTeamSpawnPoint( teamstate,  utteam );
+			return NULL;
 	}
 
 	selection = rand() % count;
@@ -1058,7 +1057,7 @@ gentity_t *SelectCTFSpawnPoint ( team_t team, int teamstate, vec3_t origin, vec3
 	spot = SelectRandomTeamSpawnPoint ( teamstate, team );
 
 	if (!spot) {
-		if (tries < 3 ){
+		if (tries < 8 ){
 		//G_Printf( S_COLOR_BLUE "WARNING: no spots SelectCTFSpawnPoint, Trying again\n"); //using SelectSpawnPoint\n" );
 		spot = SelectRandomTeamSpawnPoint( teamstate,team );// try again
 		tries++;
@@ -1068,7 +1067,7 @@ gentity_t *SelectCTFSpawnPoint ( team_t team, int teamstate, vec3_t origin, vec3
 	}
 
 	VectorCopy (spot->s.origin, origin);
-	origin[2] += 9;
+	origin[2] += 12;
 	VectorCopy (spot->s.angles, angles);
 
 	return spot;
