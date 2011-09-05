@@ -1232,6 +1232,7 @@ void Blocked_Door( gentity_t *ent, gentity_t *other ) {
 /*
 ================
 Touch_DoorTriggerSpectator
+blud: Note, we don't use this right now but we're planning to in future with our 4 spectating modes.
 ================
 */
 static void Touch_DoorTriggerSpectator( gentity_t *ent, gentity_t *other, trace_t *trace ) {
