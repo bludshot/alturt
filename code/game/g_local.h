@@ -165,6 +165,8 @@ struct gentity_s {
 	int			stamina; //Xamis
 	int			CloseWhenIdle;//Xamis
 	int			trigger_only; //Xamis
+	int			gametype; //Xamis
+	int			group; //Xamis
         float                     slidedistance;
 
 
@@ -197,10 +199,10 @@ struct gentity_s {
 	// timing variables
 	float		wait;
 	float		random;
-        qboolean        active;
+                  qboolean        active;
 	gitem_t		*item;			// for bonus items
-
-
+                   vec3_t          turloc;
+                   vec3_t          centerpoint;
 
 };
 
@@ -594,7 +596,7 @@ gentity_t *throw_grenade (gentity_t *self, vec3_t start, vec3_t aimdir); //Xamis
 gentity_t *throw_smoke (gentity_t *self, vec3_t start, vec3_t aimdir);//Xamis
 gentity_t *fire_knife (gentity_t *self, vec3_t start, vec3_t dir, int speed); //xamis
 
-
+gentity_t *fire_sentry( gentity_t *self, vec3_t start, vec3_t dir );
 #ifdef MISSIONPACK
 gentity_t *fire_nail( gentity_t *self, vec3_t start, vec3_t forward, vec3_t right, vec3_t up );
 gentity_t *fire_prox( gentity_t *self, vec3_t start, vec3_t aimdir );
@@ -1066,4 +1068,5 @@ void UT_DropWeapon ( gentity_t *ent);
 void UT_SelectItem ( gentity_t *ent, int itemNum); //blud I added this to fix warning, but this is xamis's function
 void G_PlayerLoadout( gentity_t *ent );
 void UT_DropItem ( gentity_t *ent);
+void SP_Spawnsentry( gentity_t *ent );
 
