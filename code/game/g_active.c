@@ -492,7 +492,7 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
         int             event;
         gclient_t *client;
         int             damage;
-        vec3_t  dir;
+ //       vec3_t  dir; //not used?
         vec3_t  origin, angles;
 //      qboolean        fired;
         gitem_t *item;
