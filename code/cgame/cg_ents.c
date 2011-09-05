@@ -321,8 +321,8 @@ CG_Missile
 ===============
 */
 static void CG_Missile( centity_t *cent ) {
-        refEntity_t                     ent;
-        entityState_t           *s1;
+		refEntity_t                     ent;
+		entityState_t           *s1;
         const weaponInfo_t              *weapon;
 //      int     col;
 
@@ -419,7 +419,8 @@ static void CG_Missile( centity_t *cent ) {
               VectorCopy(cent->lerpOrigin, orig);
               orig[2] += 4.0;
 
-              switch ( cgs.clientinfo[ cent->currentState.clientNum ].team  ) {
+			  //ent->client->sess.sessionTeam <- supposed to be able to get team from this, but we don't currently pass ent to this function...
+              switch ( TEAM_FREE ) { //disabling colored smoke for now
                 case TEAM_RED:
                   smoke = CG_SmokePuff( orig,
                                         up,
