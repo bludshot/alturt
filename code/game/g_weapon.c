@@ -1864,4 +1864,209 @@ void G_StartKamikaze( gentity_t *ent ) {
 #endif
 
 
+/*
+=======================
+sentry code. for spawning and seting the spawn location of sentrys
+=======================
+*/
+#define RANGE 500
+#define HARC 90  // left/right fire arc
+#define DARC 45 // how far the gun will depress
+#define UARC 45 // how far the gun will elevate
 
+
+qboolean checktarget(gentity_t *firer,gentity_t *target){
+vec3_t          distance,forward;
+trace_t         trace;
+int             angle;
+
+/*
+returns qfalse if the target is not valid. returns qtrue if it is
+*/
+
+if( target->client->sess.sessionTeam == TEAM_RED ){
+    target->team ="red";
+}
+if( target->client->sess.sessionTeam == TEAM_BLUE ){
+    target->team ="blue";
+}
+
+if (!target) // Do we have a target?
+        return qfalse;
+if (!target->inuse) // Does the target still exist?
+        return qfalse;
+if (target==firer) // is the target us?
+        return qfalse;
+if (!(strcmp(firer->team, target->team )))
+     return qfalse;
+if(!target->client) // is the target a bot or player?
+        return qfalse;
+if (target==firer->parent) // is the target the person that created the turret?
+        return qfalse;
+if (OnSameTeam(firer->parent, target)) // is the target one of us?
+        return qfalse;
+
+if (target->health<0) // is the target still alive?
+        return qfalse;
+
+VectorSubtract(target->r.currentOrigin,firer->r.currentOrigin,distance);
+if (VectorLength(distance)>RANGE) // is the target within range?
+        return qfalse;
+
+trap_Trace (&trace, firer->s.pos.trBase, NULL, NULL, target->s.pos.trBase, firer->s.number, MASK_SHOT );
+if ( trace.contents & CONTENTS_SOLID ) // can we see the target?
+        return qfalse;
+/*
+The last two checks are done last as they require more processing power than the others.
+this order is just better from a proccesing load perspective
+*/
+
+        vectoangles (distance,distance);
+        VectorSubtract(firer->centerpoint,distance,distance);
+        angle=abs((int)distance[1]);
+        while (angle>=360)
+        {
+        angle-=360;
+        }
+        if ((angle>=HARC) && (angle<=(360-HARC)))
+                return qfalse;
+        angle=abs((int)distance[0]);
+        while (angle>=360)
+        {
+        angle-=360;
+        }
+        if ((angle>UARC) && (angle<(360-DARC)))
+                return qfalse;
+
+return qtrue;
+}
+
+
+void sentry_findenemy( gentity_t *ent){
+        gentity_t *target;
+
+        target = g_entities;
+
+        for (; target < &g_entities[level.num_entities]; target++)
+        {
+                if(!checktarget(ent,target))
+                        continue;
+                ent->enemy=target;
+                return;
+        }
+
+        ent->enemy=NULL;
+}
+
+
+void sentry_trackenemy( gentity_t *ent){
+
+vec3_t dir;
+VectorSubtract(ent->enemy->r.currentOrigin,ent->r.currentOrigin,dir);
+VectorNormalize(dir);
+VectorCopy(dir,ent->turloc);
+vectoangles(dir,dir);
+VectorCopy( dir,ent->s.apos.trBase );
+trap_LinkEntity (ent);
+
+}
+
+void sentry_fireonenemy( gentity_t *ent){
+
+fire_sentry( ent->parent, ent->r.currentOrigin, ent->turloc );
+G_AddEvent( ent, EV_FIRE_WEAPON, 0 );
+ent->count=level.time+200;
+}
+
+
+void sentry_think( gentity_t *ent){
+
+ent->nextthink=level.time+10;
+
+
+
+if (!checktarget(ent,ent->enemy))
+        sentry_findenemy(ent);
+if(!ent->enemy)
+        return;
+
+sentry_trackenemy(ent);
+if (ent->count<level.time)
+        sentry_fireonenemy(ent);
+}
+
+
+/*QUAKED ut_mrsentry (1 .5 0) (-16 -16 -24) (16 16 32)
+Spawn location for the CTF Spawn Room Sentry Cannon.
+
+-------- KEYS --------
+team : Team that Mr. Sentry belongs to. Will eliminate opposing team members within range (SEE NOTES). ("red" or "blue")
+angle : Inital and idle angle for the sentry. Generally point this at or near the Spawn Room doors for highest effectiveness.
+gametype : gametypes to have Mr. Sentry appear in, list types in this format: 01234
+
+-------- NOTES --------
+Mr. Sentry is designed to be used in conjunction with CTF Spawn Rooms (see the Notes on the func_door entity) to prevent enemy team players from surviving if they enter the opposing team's spawn room. Even though the properly set up doors will generally prevent this, Mr. Sentry also has one other function. It will kill any Flag Carrier that enters it's range no matter what team that player is on. This will prevent players from grabbing the flag and retreating the the complete safety of their Spawn Room and waiting out the rest of the map time with the flag.
+
+For the anti-flag-camp feature to work properly, the entire spawn room must be enclosed with a 'nodrop' (a brush with the 'nodrop' texture on all sides). If this brush (or group of brushes) isn't placed, then Mr. Sentry will kill the Flag Carrier, and the flag will remain at that location, which is bad.
+*/
+
+void createsentrygun(gentity_t *ent){
+        gentity_t *sentry;      // The object to hold the sentrys details.
+
+        int                     num;
+        int                     touch[MAX_GENTITIES];
+
+// code to check there is noone within the base before making it solid
+        vec3_t          mins, maxs;
+
+      //  VectorAdd( ent->r.currentOrigin, ent->r.mins, mins );
+     //   VectorAdd( ent->r.currentOrigin, ent->r.maxs, maxs );
+        num = trap_EntitiesInBox( mins, maxs, touch, MAX_GENTITIES );
+        if (num>1)  //something other than the sentry exists here
+        {
+        ent->nextthink=level.time+1000;
+        return;
+        }
+// end of checking code.
+
+        ent->clipmask = CONTENTS_SOLID | CONTENTS_PLAYERCLIP;
+        ent->r.contents = CONTENTS_SOLID;
+        ent->s.pos.trType = TR_STATIONARY;
+        sentry=G_Spawn();
+        sentry->team=ent->team;
+        sentry->eventTime=200;
+        sentry->s.weapon=WP_SR8;
+        sentry->classname="ut_mrsentry";     
+        sentry->s.modelindex = G_ModelIndex("models/mrsentry/mrsentrybarrel.md3");
+        sentry->model = "models/mrsentry/mrsentrybarrel.md3";
+        sentry->s.modelindex2 = G_ModelIndex("models/mrsentry/mrsentrybarrel.md3");
+        sentry->think=sentry_think;
+        sentry->nextthink=level.time+100;
+        G_SetOrigin( sentry, ent->r.currentOrigin );
+        VectorCopy(ent->s.apos.trBase,sentry->s.apos.trBase);
+        VectorCopy(sentry->s.apos.trBase,sentry->centerpoint);
+        trap_LinkEntity (sentry);
+        
+        
+}
+
+
+
+void SP_Spawnsentry( gentity_t *ent ){
+gentity_t       *base;
+
+
+
+        base=G_Spawn();
+        base->team=ent->team;
+        base->angle = ent->angle;
+        base->s.modelindex = G_ModelIndex("models/mrsentry/mrsentrybase.md3");
+        base->model = "models/mrsentry/mrsentrybase.md3";
+        base->s.modelindex2 = G_ModelIndex("models/mrsentry/mrsentrybase.md3");
+        G_SetOrigin( base, ent->r.currentOrigin ); // sets where the sentry is
+        base->s.apos.trBase[1] = ent->s.angles[1];
+        base->think=createsentrygun;
+        base->nextthink=level.time+5000;
+        trap_LinkEntity (base);
+
+}
