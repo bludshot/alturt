@@ -1087,9 +1087,10 @@ void G_PlayerLoadout( gentity_t *ent ){
 	gclient_t	*client;
 	char		userinfo[MAX_INFO_STRING];
 	char		gear[MAX_QPATH];
-	int			inventoryItemSlot = 0;
+	int			inventoryItemSlot;
 	int			WPPWnum;
 	int			extraAmmoMultiplier;
+	int			len;
 
 	extraAmmoMultiplier = 1;
 
@@ -1104,26 +1105,44 @@ void G_PlayerLoadout( gentity_t *ent ){
 
 	BG_ClearWeapons( ent->client->ps.stats );
 
-	//Items - give items before weapons since pw_ammo affects number of clips
-	//This is still basic, and allows too much. Fix it after we finish adding all the items to the game
-	for( i = GEAR_SLOT_ITEM_1; i < GEAR_SLOT_MAX; i++ )
+	//Make sure gear string is the correct length so that later we aren't trying to read chars that aren't even there.
+	len = strlen(gear);
+
+	if (len < GEAR_SLOT_MAX)
 	{
-		if( gear[i] == GEAR_LASER  )
-			bg_inventory.item[ent->client->ps.clientNum][inventoryItemSlot] = PW_LASERSIGHT;
-		if( gear[i] == GEAR_HELMET  )
-			bg_inventory.item[ent->client->ps.clientNum][inventoryItemSlot] = PW_HELMET;
-		if( gear[i] == GEAR_VEST  )
-			bg_inventory.item[ent->client->ps.clientNum][inventoryItemSlot] = PW_VEST;
-		if( gear[i] == GEAR_SILENCER  )
-			bg_inventory.item[ent->client->ps.clientNum][inventoryItemSlot] = PW_SILENCER;
-		if( gear[i] == GEAR_NVG  )
-			bg_inventory.item[ent->client->ps.clientNum][inventoryItemSlot] = PW_NVG;
-		if( gear[i] == GEAR_MEDKIT  )
-			bg_inventory.item[ent->client->ps.clientNum][inventoryItemSlot] = PW_MEDKIT;
-		if( gear[i] == GEAR_AMMO  ) {
-			bg_inventory.item[ent->client->ps.clientNum][inventoryItemSlot] = PW_AMMO;
-			extraAmmoMultiplier = 2; }
-	
+		//append characters onto the gear cvar to make it the right length
+		for (i = len; i < GEAR_SLOT_MAX; i++)
+		{
+			gear[i] = GEAR_NONE;
+		}
+
+		gear[GEAR_SLOT_MAX] = '\0';
+	}
+	else if (len > GEAR_SLOT_MAX)
+	{
+		//truncate the gear cvar
+		gear[GEAR_SLOT_MAX] = '\0';
+	}
+
+	//Items - give items before weapons since pw_ammo affects number of clips
+	inventoryItemSlot = 0;
+	for( i = GEAR_SLOT_ITEM_1; i < GEAR_SLOT_MAX; i++ ) 
+	{
+		WPPWnum = GearToWPPW(gear[i]);
+
+		if (!isGoodItem(WPPWnum, gear[GEAR_SLOT_PRIMARY], gear[GEAR_SLOT_SECONDARY], gear[GEAR_SLOT_GRENADE], i))
+		{
+			bg_inventory.item[ent->client->ps.clientNum][inventoryItemSlot] = getDefaultItem(i);
+		}
+		else
+		{
+			bg_inventory.item[ent->client->ps.clientNum][inventoryItemSlot] = WPPWnum;
+			if (WPPWnum == PW_AMMO )
+			{
+				extraAmmoMultiplier = 2;
+			}
+		}
+
 		inventoryItemSlot++;
 	}
 
@@ -1138,7 +1157,7 @@ void G_PlayerLoadout( gentity_t *ent ){
 	{
 		WPPWnum = GearToWPPW(gear[i]);
 
-		if (!isGoodItem(WPPWnum, gear[GEAR_SLOT_PRIMARY], i))
+		if (!isGoodItem(WPPWnum, gear[GEAR_SLOT_PRIMARY], gear[GEAR_SLOT_SECONDARY], gear[GEAR_SLOT_GRENADE], i))
 		{
 			WPPWnum = getDefaultItem(i);
 		}
