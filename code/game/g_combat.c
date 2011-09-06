@@ -701,6 +701,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	int			killer;
 	int			i;
 	char		*killerName, *obit;
+        vec3_t                          tmpOrigin;
 
 	if ( self->client->ps.pm_type == PM_DEAD ) {
 		return;
@@ -826,11 +827,14 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
  */
 
 	// if client is in a nodrop area, don't drop anything (but return CTF flags!)
-	contents = trap_PointContents( self->r.currentOrigin, -1 );
+                   VectorCopy(  self->r.currentOrigin, tmpOrigin);
+                   tmpOrigin[2]-=25;
+	contents = trap_PointContents( tmpOrigin, -1 );
 	if ( !( contents & CONTENTS_NODROP )) {
 		TossClientItems( self );
 	}
 	else {
+                                     G_Printf("CONTENTS_NODROP\n ");
 		if ( self->client->ps.powerups[PW_NEUTRALFLAG] ) {		// only happens in One Flag CTF
 			Team_ReturnFlag( TEAM_FREE );
 		}
