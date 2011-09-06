@@ -857,7 +857,7 @@ gentity_t *fire_sentry( gentity_t *self, vec3_t start, vec3_t dir ) {
 	VectorNormalize (dir);
 
 	bolt = G_Spawn();
-	bolt->classname = "grenade";
+	bolt->classname = "rocket";
 	bolt->nextthink = level.time + 10000;
 	bolt->think = G_ExplodeMissile;
 	bolt->s.eType = ET_MISSILE;
@@ -865,7 +865,9 @@ gentity_t *fire_sentry( gentity_t *self, vec3_t start, vec3_t dir ) {
 	bolt->s.weapon = WP_M4;
 	bolt->r.ownerNum = self->s.number;
 	bolt->parent = self;
-	bolt->damage = 20;
+	bolt->damage = 100;
+	bolt->splashDamage = 100;
+	bolt->splashRadius = 120;
 	bolt->clipmask = MASK_SHOT;
 	bolt->target_ent = NULL;
 
