@@ -501,6 +501,9 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 
         client = ent->client;
         ucmd = &ent->client->pers.cmd;
+ if ( oldEventSequence < client->ps.eventSequence - MAX_PS_EVENTS ) { 	
+       oldEventSequence = client->ps.eventSequence - MAX_PS_EVENTS; 	 
+	         }
         for ( i = oldEventSequence ; i < client->ps.eventSequence ; i++ ) {
                 event = client->ps.events[ i & (MAX_PS_EVENTS-1) ];
 
