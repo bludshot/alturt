@@ -1876,7 +1876,7 @@ sentry code. for spawning and seting the spawn location of sentrys
 
 
 qboolean checktarget(gentity_t *firer,gentity_t *target){
-vec3_t          distance,forward;
+vec3_t          distance;
 trace_t         trace;
 int             angle;
 
@@ -1897,7 +1897,8 @@ if (!target->inuse) // Does the target still exist?
         return qfalse;
 if (target==firer) // is the target us?
         return qfalse;
-if (!(strcmp(firer->team, target->team )))
+if( !(target->s.powerups & PW_REDFLAG || target->s.powerups & PW_BLUEFLAG ))
+if (!(strcmp(firer->team, target->team ))) //are we on the same team?
      return qfalse;
 if(!target->client) // is the target a bot or player?
         return qfalse;
@@ -1975,15 +1976,13 @@ void sentry_fireonenemy( gentity_t *ent){
 
 fire_sentry( ent->parent, ent->r.currentOrigin, ent->turloc );
 G_AddEvent( ent, EV_FIRE_WEAPON, 0 );
-ent->count=level.time+200;
+ent->count=level.time+200; //time between shots
 }
 
 
 void sentry_think( gentity_t *ent){
 
 ent->nextthink=level.time+10;
-
-
 
 if (!checktarget(ent,ent->enemy))
         sentry_findenemy(ent);
@@ -2013,29 +2012,14 @@ For the anti-flag-camp feature to work properly, the entire spawn room must be e
 void createsentrygun(gentity_t *ent){
         gentity_t *sentry;      // The object to hold the sentrys details.
 
-        int                     num;
-        int                     touch[MAX_GENTITIES];
-
-// code to check there is noone within the base before making it solid
-        vec3_t          mins, maxs;
-
-      //  VectorAdd( ent->r.currentOrigin, ent->r.mins, mins );
-     //   VectorAdd( ent->r.currentOrigin, ent->r.maxs, maxs );
-        num = trap_EntitiesInBox( mins, maxs, touch, MAX_GENTITIES );
-        if (num>1)  //something other than the sentry exists here
-        {
-        ent->nextthink=level.time+1000;
-        return;
-        }
-// end of checking code.
 
         ent->clipmask = CONTENTS_SOLID | CONTENTS_PLAYERCLIP;
         ent->r.contents = CONTENTS_SOLID;
         ent->s.pos.trType = TR_STATIONARY;
         sentry=G_Spawn();
-        sentry->team=ent->team;
+        sentry->team=ent->team; //set team to either red of blue
         sentry->eventTime=200;
-        sentry->s.weapon=WP_SR8;
+        sentry->s.weapon=WP_SR8;//just set weapon for sound 
         sentry->classname="ut_mrsentry";     
         sentry->s.modelindex = G_ModelIndex("models/mrsentry/mrsentrybarrel.md3");
         sentry->model = "models/mrsentry/mrsentrybarrel.md3";
@@ -2043,7 +2027,7 @@ void createsentrygun(gentity_t *ent){
         sentry->think=sentry_think;
         sentry->nextthink=level.time+100;
         G_SetOrigin( sentry, ent->r.currentOrigin );
-        VectorCopy(ent->s.apos.trBase,sentry->s.apos.trBase);
+        VectorCopy(ent->s.angles,sentry->s.apos.trBase);//set starting and idle angle from mapobject
         VectorCopy(sentry->s.apos.trBase,sentry->centerpoint);
         trap_LinkEntity (sentry);
         
@@ -2058,15 +2042,18 @@ gentity_t       *base;
 
 
         base=G_Spawn();
-        base->team=ent->team;
-        base->angle = ent->angle;
+        base->team=ent->team; //set team to either red of blue, pulled from mapobject
         base->s.modelindex = G_ModelIndex("models/mrsentry/mrsentrybase.md3");
         base->model = "models/mrsentry/mrsentrybase.md3";
         base->s.modelindex2 = G_ModelIndex("models/mrsentry/mrsentrybase.md3");
         G_SetOrigin( base, ent->r.currentOrigin ); // sets where the sentry is
-        base->s.apos.trBase[1] = ent->s.angles[1];
-        base->think=createsentrygun;
-        base->nextthink=level.time+5000;
-        trap_LinkEntity (base);
+        base->s.apos.trBase[1] = ent->s.angles[1];//set starting and idle angle from mapobject
+      //  base->think=createsentrygun;
+   //     base->nextthink=level.time+1000;
+  //      base->think=sentry_think;
+  //      base->nextthink=level.time+100;
 
+        trap_LinkEntity (base);
+        createsentrygun( ent);
 }
+
