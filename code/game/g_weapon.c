@@ -1080,11 +1080,11 @@ qboolean isGoodItem(int itemNum, char primaryWeapon, char secondaryWeapon, char 
 			break;
 		case GEAR_SLOT_ITEM_2:
 			//has to be a valid item and they cannot have more than one of secondary and grenade
-			returnValue = isItem(itemNum) && (!isSecondary(GearToWPPW(secondaryWeapon)) || !isSecondary(GearToWPPW(secondaryWeapon)));
+			returnValue = isItem(itemNum) && (!isSecondary(GearToWPPW(secondaryWeapon)) || !isSecondary(GearToWPPW(grenade)));
 			break;
 		case GEAR_SLOT_ITEM_3:
 			//has to be a valid item and they cannot have any secondary or grenade
-			returnValue = isItem(itemNum) && !isSecondary(GearToWPPW(secondaryWeapon)) && !isSecondary(GearToWPPW(secondaryWeapon));
+			returnValue = isItem(itemNum) && !isSecondary(GearToWPPW(secondaryWeapon)) && !isSecondary(GearToWPPW(grenade));
 			break;
 		default:
 			returnValue = qfalse;
