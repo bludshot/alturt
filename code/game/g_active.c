@@ -450,10 +450,6 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
                                 ent->health--;
                         }
 
-                // count down armor when over max
-//                if ( client->ps.stats[STAT_ARMOR] > STAT_MAX_HEALTH ) {
- //                       client->ps.stats[STAT_ARMOR]--;
- //               }
         }
 
 }
@@ -492,9 +488,7 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
         int             event;
         gclient_t *client;
         int             damage;
- //       vec3_t  dir; //not used?
         vec3_t  origin, angles;
-//      qboolean        fired;
         gitem_t *item;
         gentity_t *drop;
         usercmd_t       *ucmd;
@@ -780,12 +774,6 @@ if ( (client->pers.cmd.forwardmove ||
         xyspeed = sqrt( client->ps.velocity[0] * client->ps.velocity[0]
             +  client->ps.velocity[1] * client->ps.velocity[1] );
 
-    /*
-        G_Printf("bg_inventory.item[ent->client->ps.clientNum][0] = %i\n",
-                  bg_inventory.item[ent->client->ps.clientNum][0]);
-        G_Printf("ent->client->ps.powerups[ bg_inventory.item[ent->client->ps.clientNum][0]] = %i\n",
-                 ent->client->ps.powerups[ bg_inventory.item[ent->client->ps.clientNum][0]]);
-        */
         for( i = 0; i < 3; i++){
         if( bg_inventory.item[ent->client->ps.clientNum][i] && !(ent->client->ps.powerups[ bg_inventory.item[ent->client->ps.clientNum][i]] )){
 
@@ -800,7 +788,6 @@ if ( (client->pers.cmd.forwardmove ||
                 // -- Xamis
         if( ucmd->buttons & BUTTON_WALKING || client->ps.pm_flags & PMF_DUCKED ){
           //if walking/ducking do nothing!
-         // G_Printf( "ucmd->buttons & BUTTON_WALKING || client->ps.pm_flags & PMF_DUCKED\n");
 
         }else if  ( client->ps.stats[STAT_STAMINA] > 0 && ucmd->buttons & BUTTON_SPRINTING && (int)xyspeed > 5 && !(client->ps.pm_flags & PMF_BLEEDING) ) {
                         if (ucmd->rightmove == 0 && ucmd->forwardmove > 0 && client->ps.pm_flags & PMF_ONGROUND ) //blud disabling sprint for all other than forward movement only
@@ -811,9 +798,6 @@ if ( (client->pers.cmd.forwardmove ||
                       //  G_Printf( "sprint activated");
                 //if (ent->stamina <= STAT_MAX_STAMINA *.2 ) {(G_AddEvent( ent, EV_PANTING, 0 );} //todo
         }
-        //  G_Printf( "client->ps.stats[STAT_STAMINA] = %i ucmd->buttons & BUTTON_SPRINTING = %i xyspeed = %i\n",
-           //         client->ps.stats[STAT_STAMINA],ucmd->buttons & BUTTON_SPRINTING, (int)xyspeed
-           //       );
         
         if (client->ps.pm_flags & PMF_BLEEDING  || client->ps.stats[STAT_HEALTH] < 15 ){
             client->ps.speed *= 0.5;
@@ -856,12 +840,7 @@ if ( (client->pers.cmd.forwardmove ||
 
         memset (&pm, 0, sizeof(pm));
 
-        // check for the hit-scan gauntlet, don't let the action
-        // go through as an attack unless it actually hits something
-        //if ( client->ps.weapon == WP_KNIFE && !( ucmd->buttons & BUTTON_TALK ) &&
-        //        ( ucmd->buttons & BUTTON_ATTACK ) && client->ps.weaponTime <= 0 ) {
-      //    pm.gauntletHit = CheckGauntletAttack( ent);
-      //  }
+        // check for the bandaging others
         CheckMed( ent);
         if ( ent->flags & FL_FORCE_GESTURE ) {
                 ent->flags &= ~FL_FORCE_GESTURE;
