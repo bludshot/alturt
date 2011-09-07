@@ -467,16 +467,21 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 	trap_LinkEntity( ent );
 }
 
+
+
 /*
 ================
 G_RunMissile
 ================
 */
+
 void G_RunMissile( gentity_t *ent ) {
 	vec3_t		origin;
 	trace_t		tr;
 	int			passent;
-
+	gentity_t	*traceEnt;
+                  int count = 0;
+        
 	// get current position
 	BG_EvaluateTrajectory( &ent->s.pos, level.time, origin );
 
@@ -489,9 +494,22 @@ void G_RunMissile( gentity_t *ent ) {
 		// ignore interactions with the missile owner
 		passent = ent->r.ownerNum;
 	}
+        
+        do {
 	// trace a line from the previous position to the current position
 	trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin, passent, ent->clipmask );
-
+	traceEnt = &g_entities[ tr.entityNum ];
+        
+        
+        if  ( !strcmp(traceEnt->classname, "func_breakable" )){
+        G_Damage (traceEnt, ent, ent, NULL, tr.endpos, 100, 0, MOD_KNIFE);
+        trap_UnlinkEntity( traceEnt );
+        count=1;
+        }else
+            
+         count =0;
+        
+        } while ( count );
 	if ( tr.startsolid || tr.allsolid ) {
 		// make sure the tr.entityNum is set to the entity we're stuck in
 		trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, ent->r.currentOrigin, passent, ent->clipmask );
@@ -501,6 +519,7 @@ void G_RunMissile( gentity_t *ent ) {
 		VectorCopy( tr.endpos, ent->r.currentOrigin );
 	}
 
+    
 	trap_LinkEntity( ent );
 
 	if ( tr.fraction != 1 ) {
@@ -521,6 +540,8 @@ void G_RunMissile( gentity_t *ent ) {
 
 	// check think function after bouncing
 	G_RunThink( ent );
+        
+
 }
 
 /*
@@ -682,7 +703,6 @@ fire_smoke
 gentity_t *throw_smoke (gentity_t *self, vec3_t start, vec3_t dir) {
   gentity_t   *bolt;
 
-
   VectorNormalize (dir);
 
   bolt = G_Spawn();
@@ -712,6 +732,15 @@ gentity_t *throw_smoke (gentity_t *self, vec3_t start, vec3_t dir) {
   SnapVector( bolt->s.pos.trDelta );                  // save net bandwidth
 
   VectorCopy (start, bolt->r.currentOrigin);
+
+
+if( self->client->sess.sessionTeam == TEAM_RED ){
+      bolt->team ="red";
+}
+if( self->client->sess.sessionTeam == TEAM_BLUE ){
+    bolt->team ="blue";
+}
+
 
   return bolt;
 }
