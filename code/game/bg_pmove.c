@@ -1867,7 +1867,7 @@ static void PM_TorsoAnimation( void ) {
                 }
                 // QUARANTINE - Weapon Animation
 // Should always draw the weapon when it is just ready
-               if (BG_Grenade( pm->ps->weapon )){
+               if (BG_Grenade( pm->ps->weapon )|| pm->ps->weapon == WP_HK69){
             //     PM_ContinueWeaponAnim(WPN_READY_FIRE_IDLE);
                    return;
                 }else
