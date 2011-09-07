@@ -494,20 +494,19 @@ void G_RunMissile( gentity_t *ent ) {
 		// ignore interactions with the missile owner
 		passent = ent->r.ownerNum;
 	}
-        
-        do {
+        //Loop through in case out missile encounters a func_breakable (glass)
+        do  {
 	// trace a line from the previous position to the current position
 	trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin, passent, ent->clipmask );
-	traceEnt = &g_entities[ tr.entityNum ];
+	traceEnt = &g_entities[ tr.entityNum ];//the entity that resides at the end of our trace
         
-        
+        //check to see it a func_breakable ended our trace, if so destroy it.
         if  ( !strcmp(traceEnt->classname, "func_breakable" )){
-        G_Damage (traceEnt, ent, ent, NULL, tr.endpos, 100, 0, MOD_KNIFE);
-        trap_UnlinkEntity( traceEnt );
-        count=1;
+        G_Damage (traceEnt, ent, ent, NULL, tr.endpos, 1000, 0, MOD_KNIFE);
+        trap_UnlinkEntity( traceEnt );//unlink the func_breakable so our trace will continue past it next loop iteration
+        count=1; // cause another pass throuhg the loop
         }else
-            
-         count =0;
+        count =0;// no func_breakable entities this pass, don't trace again
         
         } while ( count );
 	if ( tr.startsolid || tr.allsolid ) {
