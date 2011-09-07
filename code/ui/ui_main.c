@@ -291,6 +291,7 @@ void AssetCache( void ) {
 
 	//special case custom skins for weapons that re-use models of other weapons but with a different skin (currently only the smoke grenades)
 	uiInfo.uiDC.Gear.smokeGrenadeSkin = trap_R_RegisterSkin( "models/weapons2/grenade/grenade_smoke.skin" );
+	uiInfo.uiDC.Gear.uiVestSkin = trap_R_RegisterSkin( "models/players/gear/vest.skin" );
 }
 
 void _UI_DrawSides(float x, float y, float w, float h, float size) {
@@ -1322,6 +1323,8 @@ static qboolean q3Model = qfalse;
 //Draws a model in an ownerdraw itemDef
 //blud: new UI function that I'm using for dynamically displaying
 //the gear models on the root in-game weapon selection menu
+//NOTE: Later we should make this more robust by adding several new parameters to our menu system so we can actually put them as parameters
+//		in the itemDefs
 static void UI_DrawGearModel(rectDef_t *rect, int special, int yawAngle, qboolean rotate) {
 	int			gear;
 	refdef_t	refdef;
@@ -1396,6 +1399,12 @@ static void UI_DrawGearModel(rectDef_t *rect, int special, int yawAngle, qboolea
 		gearModel.customSkin = uiInfo.uiDC.Gear.smokeGrenadeSkin;
 	}
 
+	//fix kevlar skin
+	if (gear == UI_GEAR_VEST)
+	{
+		gearModel.customSkin = uiInfo.uiDC.Gear.uiVestSkin;
+	}
+
 	AnglesToAxis( angles, gearModel.axis );
 	VectorCopy( origin, gearModel.origin );
 
@@ -1405,8 +1414,32 @@ static void UI_DrawGearModel(rectDef_t *rect, int special, int yawAngle, qboolea
 
 	AxisClear( refdef.viewaxis );
 
-	refdef.fov_x = 30;
-	refdef.fov_y = 30;
+	//see NOTE at top of function about how we'll replace this uglyness some day
+	if (gear == UI_GEAR_GRENADE_SMOKE || gear == UI_GEAR_GRENADE_HE)
+	{
+		refdef.fov_x = 10;
+		refdef.fov_y = 10;
+	}
+	else if (gear == UI_GEAR_BERETTA || gear == UI_GEAR_DEAGLE)
+	{
+		refdef.fov_x = 15;
+		refdef.fov_y = 15;
+	}
+	else if (gear == UI_GEAR_NVG) 
+	{
+		refdef.fov_x = 10;
+		refdef.fov_y = 10;
+	}
+	else if (gear == UI_GEAR_AMMO)
+	{
+		refdef.fov_x = 8;
+		refdef.fov_y = 8;
+	}
+	else
+	{
+		refdef.fov_x = 30;
+		refdef.fov_y = 30;
+	}
 
 	refdef.x = x;
 	refdef.y = y;
