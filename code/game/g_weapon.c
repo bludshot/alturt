@@ -341,6 +341,14 @@ void Apply_Weapon_Kick ( gentity_t *ent, int weapon )
 
 
 
+/*
+======================================================================
+
+Bullet_Fire
+
+======================================================================
+*/
+
 void Bullet_Fire (gentity_t *ent, float spread, int damage ) {
         trace_t         tr;
         vec3_t          end;
@@ -351,8 +359,12 @@ void Bullet_Fire (gentity_t *ent, float spread, int damage ) {
         int                     j, passent, spreadAdjustment;
         gentity_t       *unlinkedEntity[3];
         int                     count =0, unlinked =0;
+
+	//No spread in spam mode!
         if (ent->s.weapon == WP_UMP45 && bg_weaponlist[ ent->s.weapon ].weapMode[ent->client->ps.clientNum] == 0 ){
         spread = 0;
+
+	//only apply weapon kick on the last round of spam mode
         if(bg_weaponlist[0].numClips[ent->client->ps.clientNum] == 3)
             Apply_Weapon_Kick( ent, ent->s.weapon );
         }  else {
@@ -384,7 +396,7 @@ void Bullet_Fire (gentity_t *ent, float spread, int damage ) {
         muzzle[2] += ent->client->ps.viewheight;
   
         passent = ent->s.number;
-             
+	//start a loop through the trace section of code to deal with breakable entities             
         do {  
             
                 G_FixHitboxes();
@@ -392,19 +404,21 @@ void Bullet_Fire (gentity_t *ent, float spread, int damage ) {
                 G_RestoreHitboxes();
                 traceEnt = &g_entities[ tr.entityNum ];
                 
+	//check to see if the trace encounterd a "func_breakable" do damage to it
        if  ( !strcmp(traceEnt->classname, "func_breakable") ){
-           if(!(count)){
+           if(!(count)){ //is this the first time through?
                                 G_Damage( traceEnt, ent, ent, forward, tr.endpos,
                                         damage, 0, MOD_MACHINEGUN);
-        trap_UnlinkEntity( traceEnt );
-        unlinkedEntity[unlinked] = traceEnt;
+        trap_UnlinkEntity( traceEnt ); //unlink entity to on the next pass through the loop our trace will continue past it.
+        unlinkedEntity[unlinked] = traceEnt; //so we can relink out func_breakable entity
         unlinked++;
-        count=1;
+        count=1; //cause another pass through the loop, because we encountered a func_breakable entity
           }
         }else            
-         count =0;
+         count =0; //dont make another pass, because we didn't encounter a func_breakable
         } while ( count );
                 
+	//relink any func_breakable entities
         for ( j= 0 ; j < unlinked ; j++ ) {
                 trap_LinkEntity( unlinkedEntity[j] );
         }
