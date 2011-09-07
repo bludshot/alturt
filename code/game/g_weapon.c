@@ -344,15 +344,13 @@ void Apply_Weapon_Kick ( gentity_t *ent, int weapon )
 void Bullet_Fire (gentity_t *ent, float spread, int damage ) {
         trace_t         tr;
         vec3_t          end;
-#ifdef MISSIONPACK
-        vec3_t          impactpoint, bouncedir;
-#endif
         float           r;
         float           u;
         gentity_t       *tent;
         gentity_t       *traceEnt;
-        int                     i, passent, spreadAdjustment;
-        
+        int                     j, passent, spreadAdjustment;
+        gentity_t       *unlinkedEntity[3];
+        int                     count =0, unlinked =0;
         if (ent->s.weapon == WP_UMP45 && bg_weaponlist[ ent->s.weapon ].weapMode[ent->client->ps.clientNum] == 0 ){
         spread = 0;
         if(bg_weaponlist[0].numClips[ent->client->ps.clientNum] == 3)
@@ -384,20 +382,38 @@ void Bullet_Fire (gentity_t *ent, float spread, int damage ) {
 
         VectorCopy( ent->client->ps.origin, muzzle );
         muzzle[2] += ent->client->ps.viewheight;
-
- 
-
-    
+  
         passent = ent->s.number;
-        for (i = 0; i < 10; i++) {
-                       G_FixHitboxes();
+             
+        do {  
+            
+                G_FixHitboxes();
                 trap_Trace (&tr, muzzle, NULL, NULL, end, passent, MASK_SHOT);
                 G_RestoreHitboxes();
-                if ( tr.surfaceFlags & SURF_NOIMPACT ) {
+                traceEnt = &g_entities[ tr.entityNum ];
+                
+       if  ( !strcmp(traceEnt->classname, "func_breakable") ){
+           if(!(count)){
+                                G_Damage( traceEnt, ent, ent, forward, tr.endpos,
+                                        damage, 0, MOD_MACHINEGUN);
+        trap_UnlinkEntity( traceEnt );
+        unlinkedEntity[unlinked] = traceEnt;
+        unlinked++;
+        count=1;
+          }
+        }else            
+         count =0;
+        } while ( count );
+                
+        for ( j= 0 ; j < unlinked ; j++ ) {
+                trap_LinkEntity( unlinkedEntity[j] );
+        }
+        
+        if ( tr.surfaceFlags & SURF_NOIMPACT ) {
                         return;
                 }
 
-                traceEnt = &g_entities[ tr.entityNum ];
+
 
 
                 // snap the endpos to integers, but nudged towards the line
@@ -417,30 +433,11 @@ void Bullet_Fire (gentity_t *ent, float spread, int damage ) {
                 tent->s.otherEntityNum = ent->s.number;
 
                 if ( traceEnt->takedamage) {
-#ifdef MISSIONPACK
-                        if ( traceEnt->client && traceEnt->client->invulnerabilityTime > level.time ) {
-                                if (G_InvulnerabilityEffect( traceEnt, forward, tr.endpos, impactpoint, bouncedir )) {
-                                        G_BounceProjectile( muzzle, impactpoint, bouncedir, end );
-                                        VectorCopy( impactpoint, muzzle );
-                                        // the player can hit him/herself with the bounced rail
-                                        passent = ENTITYNUM_NONE;
-                                }
-                                else {
-                                        VectorCopy( tr.endpos, muzzle );
-                                        passent = traceEnt->s.number;
-                                }
-                                continue;
-                        }
-                        else {
-#endif
                                 G_Damage( traceEnt, ent, ent, forward, tr.endpos,
                                         damage, 0, MOD_MACHINEGUN);
-#ifdef MISSIONPACK
-                        }
-#endif
                 }
-                break;
-        }
+                //break;
+       // }
 }
 
 
