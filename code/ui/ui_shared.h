@@ -388,6 +388,7 @@ typedef struct {
 typedef struct {
 	qhandle_t	gearArray[UI_GEAR_MAX];
 	qhandle_t	smokeGrenadeSkin;
+	qhandle_t	uiVestSkin;
 } cachedGear_t;
 
 typedef struct {
