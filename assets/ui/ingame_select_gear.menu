@@ -249,7 +249,7 @@ itemDef	{
 	ownerdraw UI_GEARMODEL
 	special GEAR_ITEM_1
 	//hijacking textstyle to use for model angle
-	textstyle 45
+	textstyle 135
 	rect 130 180 100 90
 	forecolor .5 0 0 1
 	border 1
@@ -281,7 +281,7 @@ itemDef	{
 	ownerdraw UI_GEARMODEL
 	special GEAR_ITEM_2
 	//hijacking textstyle to use for model angle
-	textstyle 45
+	textstyle 135
 	rect 240 180 100 90
 	forecolor .5 0 0 1
 	border 1
@@ -327,7 +327,7 @@ itemDef	{
 	ownerdraw UI_GEARMODEL
 	special GEAR_ITEM_3
 	//hijacking textstyle to use for model angle
-	textstyle 45
+	textstyle 135
 	rect 350 180 100 90
 	forecolor .5 0 0 1
 	border 1
