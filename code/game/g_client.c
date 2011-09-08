@@ -1105,6 +1105,16 @@ void G_PlayerLoadout( gentity_t *ent ){
 
 	BG_ClearWeapons( ent->client->ps.stats );
 
+        
+        if( ent->r.svFlags & SVF_BOT){
+            gear[0] ='G';
+            gear[1] ='L';
+                    gear[2] ='I';
+                    gear[3] ='A';
+                    gear[4] ='R';
+                    gear[5] ='W';
+                gear[6] ='A';                    
+        }
 	//Make sure gear string is the correct length so that later we aren't trying to read chars that aren't even there.
 	len = strlen(gear);
 
@@ -1507,4 +1517,84 @@ void ClientDisconnect( int clientNum ) {
         }
 }
 
+
+
+#define rndnum(y,z) ((random()*((z)-((y)+1)))+(y))
+
+qboolean randomPlayers[MAX_CLIENTS];
+
+gentity_t *G_RandomPlayer( int ignoreClientNum, team_t team ) {
+    int         i;
+    int currvip = -1;
+
+    // look for players which have a clientnumber bigger than the ignoreclientnum
+    for ( i = ignoreClientNum+1 ; i < level.maxclients ; i++ ) {
+
+        if ( level.clients[i].pers.connected != CON_CONNECTED ) continue;
+        if ( level.clients[i].sess.sessionTeam != team ) continue;
+        if ( level.clients[i].sess.waiting ) continue;
+//        if ( level.clients[i].pers.lockedPlayer > 0 ) continue;
+
+        currvip = i;
+
+        break;
+
+    }
+
+    // look for players which have a clientnumber smaller than the ignoreclientnum
+    if ( currvip < 0 ) for ( i = 0 ; i <= ignoreClientNum ; i++ ) {
+            if ( level.clients[i].pers.connected != CON_CONNECTED ) continue;
+            if ( level.clients[i].sess.sessionTeam != team ) continue;
+            if ( level.clients[i].sess.waiting ) continue;
+  //          if ( level.clients[i].pers.lockedPlayer > 0 ) continue;
+
+            currvip = i;
+
+            break;
+        }
+
+    // return our new VIP if we have it
+    if ( currvip >= 0 ) return &g_entities[ level.clients[currvip].ps.clientNum ];
+
+    // if we have not found a new VIP, return the old one
+    if (ignoreClientNum >= 0 && ignoreClientNum < level.maxclients)
+        return &g_entities[ level.clients[ignoreClientNum].ps.clientNum ];
+    else
+        return NULL;
+}
+
+//gentity_t *G_RandomPlayer( int ignoreClientNum, team_t team );
+
+static int lastbmbplayer = -1;
+
+void G_GiveBombToTeam( team_t team ) {
+    gentity_t *bmbplayer;
+
+//    if ( g_overrideGoals.integer )
+//        return qtrue;
+
+    if ( team != TEAM_RED ) {
+        G_Error("G_GiveBombsToTeam. Unallowed team.\n");
+    }
+
+    if (level.bombs[team] <= 0) return;// qtrue;
+
+    bmbplayer = G_RandomPlayer(lastbmbplayer, team);
+
+    if ( bmbplayer) {
+        // give the player the bomb
+        BG_PackWeapon( WP_BOMB, bmbplayer->client->ps.stats );
+        // notify everyone via radio message about the bomb
+        //NS_BotRadioMsg( bmbplayer, "bgot" );
+        // remember this player
+        lastbmbplayer = bmbplayer->s.clientNum;
+
+        G_LogPrintf("[%i] \"%s\" has the bomb\n",
+                    bmbplayer->s.clientNum, bmbplayer->client->pers.netname);
+    }// else {
+     //   return qfalse;
+   // }
+
+  //  return qtrue;
+}
 
