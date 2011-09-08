@@ -120,6 +120,11 @@ void SP_func_breakable( gentity_t *ent ) {
 	 trap_LinkEntity (ent);
  }
 
+void SP_func_bombsite( gentity_t *ent ) {
+    
+	G_FreeEntity( ent );
+ }
+
 /*
  =================
  G_BreakGlass
