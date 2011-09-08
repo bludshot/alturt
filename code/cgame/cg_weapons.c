@@ -765,7 +765,33 @@ void CG_RegisterWeapon( int weaponNum ) {
         COM_StripExtension(path, path, sizeof(path));
         strcat( path, "_view_bullet.md3" );
         weaponInfo->vbulletModel = trap_R_RegisterModel( path );
+        
+        strcpy( path, item->world_model[0] );
+        COM_StripExtension(path, path, sizeof(path));
+        strcat( path, "_view_button.md3" );
+        weaponInfo->vbuttonModel = trap_R_RegisterModel( path );
 
+        strcpy( path, item->world_model[0] );
+        COM_StripExtension(path, path, sizeof(path));
+        strcat( path, "_view_clip1.md3" );
+        weaponInfo->vclip1Model = trap_R_RegisterModel( path );
+        
+        strcpy( path, item->world_model[0] );
+        COM_StripExtension(path, path, sizeof(path));
+        strcat( path, "_view_clip2.md3" );
+        weaponInfo->vclip2Model = trap_R_RegisterModel( path );        
+        
+       strcpy( path, item->world_model[0] );
+        COM_StripExtension(path, path, sizeof(path));
+        strcat( path, "_view_knob1.md3" );
+        weaponInfo->vknob1Model = trap_R_RegisterModel( path );
+        
+        strcpy( path, item->world_model[0] );
+        COM_StripExtension(path, path, sizeof(path));
+        strcat( path, "_view_knob2.md3" );
+        weaponInfo->vknob2Model = trap_R_RegisterModel( path );
+        
+        
         weaponInfo->vs_shellModel = trap_R_RegisterModel( "models/weapons2/shells/s_shell.md3" );
 
         weaponInfo->handsModel = trap_R_RegisterModel( "models/weapons2/handskins/hands.md3" );
@@ -893,6 +919,9 @@ void CG_RegisterWeapon( int weaponNum ) {
                 weaponInfo->wiTrailTime = 2000;
                 weaponInfo->trailRadius = 232;
                 MAKERGB( weaponInfo->flashDlightColor, 1, 0.70f, 0 );
+                break;
+      case WP_BOMB:
+                MAKERGB( weaponInfo->flashDlightColor, 0.6f, 0.6f, 1.0f );
                 break;
                
 
@@ -1345,6 +1374,11 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	refEntity_t     vtrigger;
 	refEntity_t     vbolt;
 	refEntity_t     vclip;
+        	refEntity_t     vclip1;
+                	refEntity_t     vclip2;
+                  refEntity_t     vknob1;
+                  refEntity_t     vknob2;
+                  refEntity_t     vbutton;
 	refEntity_t     vcliprel;
 	refEntity_t     vejector;
 	refEntity_t     vflap;
@@ -1824,7 +1858,57 @@ if ( weaponDown ) {
             CG_PositionEntityOnTag( &vbox, &gun, weapon->holdsModel , "tag_box" );
             CG_AddWeaponWithPowerups( &vbox, cent->currentState.powerups );
           }
+           if ( weapon->vbuttonModel) {
+            memset( &vbutton, 0, sizeof( vbutton ) );
+            VectorCopy( parent->lightingOrigin, vbutton.lightingOrigin );
+            vbutton.shadowPlane = parent->shadowPlane;
+            vbutton.renderfx = parent->renderfx;
+            vbutton.hModel = weapon->vbuttonModel;
+            CG_PositionEntityOnTag( &vbutton, &gun, weapon->holdsModel , "tag_button" );
+            CG_AddWeaponWithPowerups( &vbutton, cent->currentState.powerups );
+          }
+        
+                   if ( weapon->vclip1Model) {
+            memset( &vclip1, 0, sizeof( vclip1 ) );
+            VectorCopy( parent->lightingOrigin, vclip1.lightingOrigin );
+            vclip1.shadowPlane = parent->shadowPlane;
+            vclip1.renderfx = parent->renderfx;
+            vclip1.hModel = weapon->vclip1Model;
+            CG_PositionEntityOnTag( &vclip1, &gun, weapon->holdsModel , "tag_clip1" );
+            CG_AddWeaponWithPowerups( &vclip1, cent->currentState.powerups );
+          }
+        
+          if ( weapon->vclip2Model) {
+            memset( &vclip2, 0, sizeof( vclip2 ) );
+            VectorCopy( parent->lightingOrigin, vclip2.lightingOrigin );
+            vclip2.shadowPlane = parent->shadowPlane;
+            vclip2.renderfx = parent->renderfx;
+            vclip2.hModel = weapon->vclip2Model;
+            CG_PositionEntityOnTag( &vclip2, &gun, weapon->holdsModel , "tag_clip2" );
+            CG_AddWeaponWithPowerups( &vclip2, cent->currentState.powerups );
+          }
 
+          if ( weapon->vknob1Model) {
+            memset( &vknob1, 0, sizeof( vknob1 ) );
+            VectorCopy( parent->lightingOrigin, vknob1.lightingOrigin );
+            vknob1.shadowPlane = parent->shadowPlane;
+            vknob1.renderfx = parent->renderfx;
+            vknob1.hModel = weapon->vknob1Model;
+            CG_PositionEntityOnTag( &vknob1, &gun, weapon->holdsModel , "tag_knob1" );
+            CG_AddWeaponWithPowerups( &vknob1, cent->currentState.powerups );
+          }
+        
+                           if ( weapon->vknob2Model) {
+            memset( &vknob2, 0, sizeof( vknob2 ) );
+            VectorCopy( parent->lightingOrigin, vknob2.lightingOrigin );
+            vknob2.shadowPlane = parent->shadowPlane;
+            vknob2.renderfx = parent->renderfx;
+            vknob2.hModel = weapon->vknob2Model;
+            CG_PositionEntityOnTag( &vknob2, &gun, weapon->holdsModel , "tag_knob2" );
+            CG_AddWeaponWithPowerups( &vknob2, cent->currentState.powerups );
+          }
+        
+        
           if ( weaponNum == WP_NEGEV) {
             memset( &vbullet, 0, sizeof( vbullet ) );
 
