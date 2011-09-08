@@ -354,7 +354,7 @@ void Bullet_Fire (gentity_t *ent, float spread, int damage ) {
         vec3_t          end;
         float           r;
         float           u;
-        gentity_t       *tent;
+        gentity_t       *tent,*tent2;
         gentity_t       *traceEnt;
         int                     j, passent, spreadAdjustment;
         gentity_t       *unlinkedEntity[3];
@@ -409,6 +409,11 @@ void Bullet_Fire (gentity_t *ent, float spread, int damage ) {
            if(!(count)){ //is this the first time through?
                                 G_Damage( traceEnt, ent, ent, forward, tr.endpos,
                                         damage, 0, MOD_MACHINEGUN);
+			if(traceEnt->health){
+                        tent2 = G_TempEntity( tr.endpos, EV_BULLET_HIT_GLASS );
+                        tent2->s.eventParm = DirToByte( tr.plane.normal );
+			tent2->s.otherEntityNum = ent->s.number;
+			}
         trap_UnlinkEntity( traceEnt ); //unlink entity to on the next pass through the loop our trace will continue past it.
         unlinkedEntity[unlinked] = traceEnt; //so we can relink out func_breakable entity
         unlinked++;
@@ -471,22 +476,50 @@ SHOTGUN
 
 qboolean ShotgunPellet( vec3_t start, vec3_t end, gentity_t *ent ) {
         trace_t         tr;
-        int                     damage, i, passent;
-        gentity_t       *traceEnt;
+        int                     j, damage, i, passent;
+        gentity_t       *traceEnt, *tent2;
 #ifdef MISSIONPACK
         vec3_t          impactpoint, bouncedir;
 #endif
         vec3_t          tr_start, tr_end;
-
+        gentity_t       *unlinkedEntity[3];
+        int                     count =0, unlinked =0;
         passent = ent->s.number;
         VectorCopy( start, tr_start );
         VectorCopy( end, tr_end );
+
+
+        damage = DEFAULT_SHOTGUN_DAMAGE * s_quadFactor;
         for (i = 0; i < 10; i++) {
+
+ do {
                        G_FixHitboxes();
                 trap_Trace (&tr, tr_start, NULL, NULL, tr_end, passent, MASK_SHOT);
                 G_RestoreHitboxes();
                 
                 traceEnt = &g_entities[ tr.entityNum ];
+     if  ( !strcmp(traceEnt->classname, "func_breakable") ){
+           if(!(count)){ //is this the first time through?
+                                G_Damage( traceEnt, ent, ent, forward, tr.endpos,
+                                        damage, 0, MOD_MACHINEGUN);
+                        if(traceEnt->health){
+                        tent2 = G_TempEntity( tr.endpos, EV_BULLET_HIT_GLASS );
+                        tent2->s.eventParm = DirToByte( tr.plane.normal );
+                        tent2->s.otherEntityNum = ent->s.number;
+                        }
+        trap_UnlinkEntity( traceEnt ); //unlink entity to on the next pass through the loop our trace will continue past it.
+        unlinkedEntity[unlinked] = traceEnt; //so we can relink out func_breakable entity
+        unlinked++;
+        count=1; //cause another pass through the loop, because we encountered a func_breakable entity
+          }
+        }else
+         count =0; //dont make another pass, because we didn't encounter a func_breakable
+        } while ( count );
+
+        //relink any func_breakable entities
+        for ( j= 0 ; j < unlinked ; j++ ) {
+                trap_LinkEntity( unlinkedEntity[j] );
+        }
 
                 // send bullet impact
                 if (  tr.surfaceFlags & SURF_NOIMPACT ) {
@@ -494,7 +527,6 @@ qboolean ShotgunPellet( vec3_t start, vec3_t end, gentity_t *ent ) {
                 }
 
                 if ( traceEnt->takedamage) {
-                        damage = DEFAULT_SHOTGUN_DAMAGE * s_quadFactor;
 #ifdef MISSIONPACK
                         if ( traceEnt->client && traceEnt->client->invulnerabilityTime > level.time ) {
                                 if (G_InvulnerabilityEffect( traceEnt, forward, tr.endpos, impactpoint, bouncedir )) {
