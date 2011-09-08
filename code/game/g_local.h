@@ -34,7 +34,7 @@ along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
 //blud note: original code was:
 //#define	GAMEVERSION	BASEGAME
 //but again this doesn't suit alt urt, so:
-#define	GAMEVERSION	"Alturt alpha 0.01"	//change this for real releases to show proper version number
+#define	GAMEVERSION	"Alturt alpha 0.02"	//change this for real releases to show proper version number
 
 #define BODY_QUEUE_SIZE		8
 
