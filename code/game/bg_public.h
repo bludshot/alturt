@@ -413,7 +413,7 @@ typedef enum {
 
  WP_HE, //15
  WP_SMOKE, //16
-
+WP_BOMB, //17
 
  WP_NUM_WEAPONS
 } weapon_t;
@@ -528,6 +528,7 @@ typedef enum {
 
         EV_BULLET_HIT_FLESH,
         EV_BULLET_HIT_WALL,
+	EV_BULLET_HIT_GLASS,
 
         EV_MISSILE_HIT,
         EV_MISSILE_MISS,
