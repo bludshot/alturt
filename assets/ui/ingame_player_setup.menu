@@ -32,6 +32,9 @@ menuDef {
 	outOfBoundsClick			
     	rect 72 45 460 360
 	focusColor 1 0 0 1
+	onEsc 	{ close ingame_player_setup }
+	onOpen  { uiScript update "ui_GetName" }
+	onClose { uiScript update "ui_SetName" }
 
 
 itemDef {
