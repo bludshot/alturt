@@ -218,7 +218,7 @@ menuDef {
 
 	itemDef {
 		name copyright2
-		text "Alturt Copyright (C) 2009-2010 Brian Labbie and Dave Richardson"
+		text "Alturt Copyright (C) 2009-2011 Brian Labbie and Dave Richardson"
 		style 0
 		type ITEM_TYPE_TEXT
 		textstyle 0
