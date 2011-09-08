@@ -1,7 +1,7 @@
 /*
 ===========================================================================
 Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2009-2010 Brian Labbie and Dave Richardson.
+Copyright (C) 2009-2011 Brian Labbie and Dave Richardson.
 
 http://sourceforge.net/projects/alturt/
  
