@@ -73,35 +73,6 @@ along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
 #define UI_GEAR_M4   			30
 #define UI_GEAR_MAX				31
 
-//Gear values - these are for the gear cvar
-/*#define GEAR_NONE			'A'
-#define GEAR_KNIFE			'E'
-#define GEAR_BERETTA		'F'
-#define GEAR_DEAGLE			'G'
-#define GEAR_SPAS12			'H'
-#define GEAR_MP5K			'I'
-#define GEAR_UMP45			'J'
-#define GEAR_HK69			'K'
-#define GEAR_LR				'L'
-#define GEAR_G36			'M'
-#define GEAR_PSG1			'N'
-#define GEAR_GRENADE_HE		'O'
-#define GEAR_GRENADE_SMOKE	'Q'
-#define GEAR_VEST			'R'
-#define GEAR_NVG			'S'
-#define GEAR_MEDKIT			'T'
-#define GEAR_SILENCER		'U'
-#define GEAR_LASER			'V'
-#define GEAR_HELMET			'W'
-#define GEAR_AMMO			'X'
-#define GEAR_SR8			'Z'
-#define GEAR_AK103			'a'
-#define GEAR_NEGEV			'c'
-#define GEAR_M4				'e'*/
-//temporarily commenting this out because I gett bg_public.h is also accessible to ui?
-//new Alturt constants above
-
-
 #define MAX_MENUNAME 32
 #define MAX_ITEMTEXT 64
 #define MAX_ITEMACTION 64
