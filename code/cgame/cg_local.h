@@ -447,7 +447,11 @@ typedef struct weaponInfo_s {
         qhandle_t               vhandleModel;
         qhandle_t               vejectModel;
         qhandle_t               vs_shellModel;
-
+        qhandle_t               vbuttonModel;
+        qhandle_t               vclip1Model;
+        qhandle_t               vclip2Model;       
+        qhandle_t               vknob1Model;
+        qhandle_t               vknob2Model;
 
      //   qhandle_t               vhandleModel;
         qhandle_t               vflap1Model;
