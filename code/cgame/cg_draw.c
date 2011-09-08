@@ -738,6 +738,7 @@ static void CG_DrawStatusBar( void ) {
 			trap_R_SetColor( colors[color] );
                        // CG_DrawChar(100, 430, 20,20, "x");
                        // CG_DrawBigStringColor( 0, 430, "X", colors[color] );
+                        if( cent->currentState.weapon != WP_BOMB )
                         CG_DrawStringExt( 616, 456, va("x%i", value), colors[color], qfalse, qtrue, 8, 14, 0 ); //Number of clips   --Xamis
 
                      //   if ( cg.predictedPlayerState.weapon == WP_SPAS ){
@@ -809,6 +810,7 @@ static void CG_DrawStatusBar( void ) {
 	       ||cg.predictedPlayerState.weapon == WP_NEGEV
 	       ||cg.predictedPlayerState.weapon == WP_SR8
 	       ||cg.predictedPlayerState.weapon == WP_PSG1 
+                || cg.predictedPlayerState.weapon == WP_BOMB
                || BG_Sidearm(cg.predictedPlayerState.weapon))){
           char *s;
 		  s = "Default"; //added by blud to stop possibly uninitialized warning.
@@ -855,7 +857,7 @@ static void CG_DrawStatusBar( void ) {
 // ammo in gun
         //
         value = ps->stats[STAT_ROUNDS];
-        if (value > -1  && !( cg.predictedPlayerState.weapon == WP_HE ||cg.predictedPlayerState.weapon == WP_SMOKE  )) {
+        if (value > -1  && !( cg.predictedPlayerState.weapon == WP_HE ||cg.predictedPlayerState.weapon == WP_SMOKE ||cg.predictedPlayerState.weapon == WP_BOMB )) {
         //Draw the Text
           trap_R_SetColor( colors[0] );
           CG_DrawStringExt( 595-( 14 * CG_DrawStrlen(va("%i",value) ) ), 454, va("%i",value), colorBlack, qfalse, qtrue, 14, 23, 0 );
