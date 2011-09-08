@@ -164,6 +164,14 @@ wpinfo_t bg_weaponlist[] ={
     "models/weapons2/grenade/"
 
   },
+    { //WP_BOMB,
+    "icons/ammo/bomb",
+    {0}, //weapMode
+    {0},                // numClips ammo that fits in the weapon
+    {0},             // rounds
+    "models/weapons2/bombbag/"
+
+  },
   { //WP_NUM_WEAPONS,
     "",
     {0}, //weapMode
@@ -771,7 +779,21 @@ gitem_t bg_itemlist[] =
 /* precache */ "",
 /* sounds */ ""
  },
-
+ 
+ 
+ {
+         "ut_weapon_bomb",
+  "sound/misc/w_pkup.wav",
+  { "models/weapons2/bombbag/bombbag.md3",
+  NULL, NULL, NULL},
+/* icon */              "icons/weapons/bomb",
+/* pickup */    "Bomb",
+                0,
+  IT_WEAPON,
+  WP_BOMB,
+/* precache */ "",
+/* sounds */ ""
+ },
         //
         // AMMO ITEMS
         //
