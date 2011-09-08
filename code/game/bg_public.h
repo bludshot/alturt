@@ -27,25 +27,22 @@ along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
 // because games can change separately from the main system version, we need a
 // second version that must match between game and cgame
 
-//note from blud: the original code (in this io code) is:
+//the original io code was:
 //#define       GAME_VERSION    BASEGAME
-//So I guess it pulls the value of the constant BASEGAME which is set someplace else
-//but why would we want to do that? That seems like something you'd want to do for
-//when making a full game and have your mod be like the same folder as your base game
-//so it's not what we want to do in alturt. Instead we do:
-#define GAME_VERSION            "alturt-alpha0001"
+//but that is only for full standalone games, not mods.
+#define GAME_VERSION "alturt-alpha0002"
 //version plan is: alturt-alpha0001, alturt-alpha0002, etc, alturt-beta001, alturt-beta002, etc,
 //alturt-01, (alturt-011), alturt-02, etc, alturt-09, alturt-10, alturt-11, etc.
-//ie: you need the leading 0 so that version 1 and version 10 can be differentiated.
+//ie: you need the leading 0 so that version 1 and version 10 can be differentiated. <- durr, why did I think we needed to go past 9? lol. Too late now.
 
-#define XAMISDB //blud: I moved this from q_shared.h
+#define XAMISDB
 
 //blud: defining new Alturt buttons and re-defining old q3 buttons to new values
 //for Alturt. (note: the old q3 buttons are defined in qcommon/q_shared.h, but 
 //everywhere in cgame and game that q_shared.h is included, bg_public.h is included 
 //after it so these defines will override the old ones) [and we're supposed to do this
 //here, not in qcommon/q_shared.h since that's not part of the mod code, it's part of 
-//the engine code basically.
+//the engine code.
 #define BUTTON_WP_MODE		8
 #define BUTTON_RELOAD		32
 #define BUTTON_USE			128
