@@ -143,6 +143,7 @@ void SP_info_thirdplace(gentity_t *ent);
 void SP_info_podium(gentity_t *ent);
 
 void SP_func_breakable (gentity_t *ent); //Xamis
+void SP_func_bombsite( gentity_t *ent); //Xamis
 void SP_func_wall (gentity_t *ent); //Xamis
 void SP_func_plat (gentity_t *ent);
 void SP_func_static (gentity_t *ent);
@@ -216,6 +217,7 @@ spawn_t	spawns[] = {
 
  	{"func_breakable", SP_func_breakable},
 	{"func_wall", SP_func_wall}, //xamis
+ 	{" info_ut_bombsite", SP_func_bombsite}, //xamis       info_ut_bombsite
 	{"func_plat", SP_func_plat},
 	{"func_button", SP_func_button},
 	{"func_door", SP_func_door},
