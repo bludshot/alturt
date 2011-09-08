@@ -475,6 +475,27 @@ typedef struct {
 #ifdef MISSIONPACK
 	int			portalSequence;
 #endif
+
+    int                 roundstartTime;
+    int                 num_objectives[TEAM_NUM_TEAMS];
+    int                 done_objectives[TEAM_NUM_TEAMS];
+    int                 bombs[TEAM_NUM_TEAMS];
+    qboolean    vip[TEAM_NUM_TEAMS];
+    int                 vipTime;
+    int                 winTime;
+    int                 fields[TEAM_NUM_TEAMS];
+    int                 xpTime;
+    char                lastmap[MAX_QPATH];
+    char                nextmap[TEAM_NUM_TEAMS][MAX_QPATH];
+    int                 looseCount; // how often the team lost
+//    team_t              lastLooser;         // which team lost
+    int                 drawWinner;
+
+    int                 breathsnd_male;
+    int                 breathsnd_female;
+    int                 breathsnd_injured;
+
+
 } level_locals_t;
 
 
@@ -1069,4 +1090,5 @@ void UT_SelectItem ( gentity_t *ent, int itemNum); //blud I added this to fix wa
 void G_PlayerLoadout( gentity_t *ent );
 void UT_DropItem ( gentity_t *ent);
 void SP_Spawnsentry( gentity_t *ent );
+void G_GiveBombToTeam( team_t team ) ;
 
