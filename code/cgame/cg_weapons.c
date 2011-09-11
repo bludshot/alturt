@@ -1655,6 +1655,7 @@ if ( weaponDown ) {
              && weaponNum != WP_HK69 && weaponNum != WP_SPAS
              && weaponNum != WP_HE && weaponNum != WP_SR8
              && weaponNum != WP_SMOKE
+             && weaponNum != WP_BOMB
              && silenced) {
 
                 memset( &silencer, 0, sizeof( silencer ) );
@@ -1681,7 +1682,7 @@ if ( weaponDown ) {
         if ( ps && weapon->laserModel && weaponNum != WP_KNIFE && weaponNum != WP_HK69
              && weaponNum != WP_SPAS && weaponNum != WP_HE && weaponNum != WP_SR8
              && weaponNum != WP_G36 && weaponNum != WP_PSG1 && weaponNum != WP_NEGEV 
-		&& weaponNum != WP_SMOKE && lasersight) {
+		&& weaponNum != WP_BOMB && weaponNum != WP_SMOKE && lasersight) {
             
 
                 memset( &laser, 0, sizeof( laser ) );
