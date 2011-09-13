@@ -1412,7 +1412,9 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	qboolean silenced;
 	qboolean vestOn;	//needed for different torso weapon tag location
  	qboolean        weaponDown;
-                  int            anim;
+        int            anim;
+
+
 
 	vestOn = lasersight = silenced = qfalse;
 
@@ -1486,13 +1488,14 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	weaponModel.renderfx = parent->renderfx;
 
 
-	if(!ps)
+
+	if(!ps )
 	{
                                     weapon->handsModel = trap_R_RegisterModel( "models/weapons2/handskins/hands.md3" );
 		gun.hModel = weapon->handsModel;
 	}
 
-	if(ps)
+	if(ps )
 	{
 		gun.hModel = weapon->holdsModel;
 
@@ -2016,6 +2019,7 @@ if ( weaponDown ) {
 
         // add the flash
           if ( cg.time - cent->muzzleFlashTime > MUZZLE_FLASH_TIME && !cent->pe.railgunFlash
+	       && weaponNum != WP_BOMB
                && weaponNum != WP_KNIFE
                &&!(BG_Grenade(weaponNum))
              ) {
@@ -2037,7 +2041,7 @@ if ( weaponDown ) {
         angles[ROLL] = crandom() * 10;
         AnglesToAxis( angles, flash.axis );
 
-        if (!silenced && weaponNum != WP_KNIFE &&!(BG_Grenade(weaponNum))){
+        if (!silenced && weaponNum != WP_KNIFE &&!(BG_Grenade(weaponNum)) && weaponNum != WP_BOMB){
         if (ps )
           CG_PositionRotatedEntityOnTag( &flash, &gun, weapon->holdsModel, "tag_flash");
         else
@@ -2192,6 +2196,8 @@ void CG_AddViewWeapon( playerState_t *ps ) {
 			hand.oldframe = CG_MapTorsoToWeaponFrame( ci, cent->pe.torso.oldFrame );
 			hand.backlerp = cent->pe.torso.backlerp;
 		}
+
+
         weapon->handsModel = trap_R_RegisterModel( "models/weapons2/shotgun/shotgun_hand.md3" );
         hand.hModel = weapon->handsModel;
         hand.renderfx = RF_DEPTHHACK | RF_FIRST_PERSON | RF_MINLIGHT;
