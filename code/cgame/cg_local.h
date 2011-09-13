@@ -1101,6 +1101,7 @@ typedef struct {
 	sfxHandle_t	count1Sound;
 	sfxHandle_t	countFightSound;
 	sfxHandle_t	countPrepareSound;
+	sfxHandle_t                 roundDrawSound;
 
 #ifdef MISSIONPACK
 	// new stuff
@@ -1223,6 +1224,13 @@ typedef struct {
 
 	// media
 	cgMedia_t		media;
+
+    int                         levelRoundStartTime;    // from Configstrings
+    int                         levelServerTime;
+    int                         levelVipStartTime;
+    int                         levelAssaultStartTime[4];
+    int                         levelBombStartTime;
+
 
 } cgs_t;
 

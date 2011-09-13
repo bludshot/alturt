@@ -339,7 +339,12 @@ static void CG_ConfigStringModified( void ) {
 		if ( str[0] != '*' ) {	// player specific sounds don't register here
 			cgs.gameSounds[ num-CS_SOUNDS] = trap_S_RegisterSound( str, qfalse );
 		}
-	} else if ( num >= CS_PLAYERS && num < CS_PLAYERS+MAX_CLIENTS ) {
+	} else  if ( num == CS_ROUND_START_TIME ) {
+        cgs.levelRoundStartTime = atoi( str );
+    } else if ( num == CS_VIP_START_TIME ) {
+        cgs.levelVipStartTime = atoi( str );
+    }
+    else if ( num >= CS_PLAYERS && num < CS_PLAYERS+MAX_CLIENTS ) {
 		CG_NewClientInfo( num - CS_PLAYERS );
 		CG_BuildSpectatorString();
 	} else if ( num == CS_FLAGSTATUS ) {
@@ -1095,6 +1100,23 @@ static void CG_ServerCommand( void ) {
 
 		return;
 	}
+
+    if (!strcmp(cmd, "roundst") ) { // remove marks / brass
+        int i;
+
+
+        // reset some values on every round restart here.
+        //cg.roundStarted = qtrue; // so the marks will be removed
+        //cg.roundlimitWarnings = 0;
+
+        if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_RED ||
+                cg.snap->ps.persistant[PERS_TEAM] == TEAM_BLUE )
+            trap_SendConsoleCommand( "vstr entry_startround" );
+        // reset blocked entities
+       // memset( &cg.noMarkEntities,0,sizeof(cg.noMarkEntities) );
+        return;
+    }
+
 
 	// loaddeferred can be both a servercmd and a consolecmd
 	if ( !strcmp( cmd, "loaddefered" ) ) {	// FIXME: spelled wrong, but not changing for demo

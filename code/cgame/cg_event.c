@@ -988,6 +988,10 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		CG_ShotgunFire( es );
 		break;
 
+        case EV_GAMESTATE:
+    		trap_Cvar_Set("ui_gamestate", va("%i", es->eventParm));
+        	break;
+
 	case EV_GENERAL_SOUND:
 		DEBUGNAME("EV_GENERAL_SOUND");
 		if ( cgs.gameSounds[ es->eventParm ] ) {
@@ -1012,6 +1016,10 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		{
 			DEBUGNAME("EV_GLOBAL_TEAM_SOUND");
 			switch( es->eventParm ) {
+			            case GTS_DRAW_ROUND:
+                			CG_AddBufferedSound( cgs.media.roundDrawSound );
+               				 break;
+
 				case GTS_RED_CAPTURE: // CTF: red team captured the blue flag, 1FCTF: red team captured the neutral flag
 					if ( cgs.clientinfo[cg.clientNum].team == TEAM_RED )
 						CG_AddBufferedSound( cgs.media.captureYourTeamSound );

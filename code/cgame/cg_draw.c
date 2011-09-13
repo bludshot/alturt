@@ -3223,9 +3223,10 @@ static void CG_DrawWarmup( void ) {
 			s = "Team Deathmatch";
 		} else if ( cgs.gametype == GT_CTF ) {
 			s = "Capture the Flag";
+                        	} else if ( cgs.gametype == GT_BOMB ) {
+			s = "Bomb";
 #ifdef MISSIONPACK
-		} else if ( cgs.gametype == GT_BOMB ) {
-			s = "One Flag CTF";
+
 		} else if ( cgs.gametype == GT_BOMB ) {
 			s = "Overload";
 		} else if ( cgs.gametype == GT_BOMB ) {

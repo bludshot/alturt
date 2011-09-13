@@ -601,6 +601,9 @@ static void CG_RegisterSounds( void ) {
 			cgs.media.enemyTookYourFlagSound = trap_S_RegisterSound( "sound/ctf/stolen.wav", qtrue );
 			cgs.media.yourTeamTookEnemyFlagSound = trap_S_RegisterSound( "sound/teamplay/voc_team_flag.wav", qtrue );
 		}
+                                  if ( cgs.gametype == GT_TEAMSV || cg_buildScript.integer ) {
+                                  cgs.media.roundDrawSound= trap_S_RegisterSound( "sound/misc/draw.wav", qtrue );
+                                  }
 
 #ifdef MISSIONPACK
 		if ( cgs.gametype == GT_BOMB || cg_buildScript.integer ) {

@@ -2153,10 +2153,10 @@ static void CG_PlayerSprites( centity_t *cent ) {
 		return;
 	}
 
-	if ( cent->currentState.eFlags & EF_AWARD_IMPRESSIVE ) {
-		CG_PlayerFloatSprite( cent, cgs.media.medalImpressive );
-		return;
-	}
+//	if ( cent->currentState.eFlags & EF_AWARD_IMPRESSIVE ) {
+//		CG_PlayerFloatSprite( cent, cgs.media.medalImpressive );
+//		return;
+//	}
 
 	if ( cent->currentState.eFlags & EF_AWARD_EXCELLENT ) {
 		CG_PlayerFloatSprite( cent, cgs.media.medalExcellent );
