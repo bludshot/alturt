@@ -1127,11 +1127,17 @@ void G_PlayerLoadout( gentity_t *ent ){
         
         if( ent->r.svFlags & SVF_BOT){
             int i = random()*8;
-            char tmpgear[8]={'e','c','a','Z','N','M','N','L' };
+	    int j = random()*3;
+	    int k = random()*2;
+	    char tmpgear[2] = {'F','G'};
+            char tmpgear1[8]={'e','c','a','Z','N','M','N','L' };
+	    char tmpgear2[3]={ 'H', 'I', 'J'};	    
+
+
             
-            gear[0] ='G';
-            gear[1] =tmpgear[i ];
-            gear[2] ='I';
+            gear[0] =tmpgear[k];
+            gear[1] =tmpgear1[i];
+            gear[2] =tmpgear2[j];
             gear[3] ='A';
             gear[4] ='R';
             gear[5] ='W';
