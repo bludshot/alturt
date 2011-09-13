@@ -187,38 +187,38 @@ int CheckLocationDamage ( gentity_t *targ, vec3_t point, int mod) {
   else if (impactRotation < 360)
     inback = 3;
 
-  if (/*g_debugDamage.integer ==*/ 1) G_Printf("Bulletheight: %f || Clientheight: %f || mod: %i\n", bulletHeight, clientHeight, mod);
+  if (/*g_debugDamage.integer ==*/ 0) G_Printf("Bulletheight: %f || Clientheight: %f || mod: %i\n", bulletHeight, clientHeight, mod);
 
     // The upper body never changes height, just distance from the feet
   if ( (bulletHeight > clientHeight - headMod) ) {
-    /*if (g_debugDamage.integer == 1)*/ G_Printf("Headshot\n");
+    /*if (g_debugDamage.integer == 1)G_Printf("Headshot\n");*/ 
     return LOC_HEAD;
   } else if ( (bulletHeight > clientHeight - headMod ) && (inback == 0) ) {
-/*    if (g_debugDamage.integer == 1) */G_Printf("Faceshot\n");
+/*    if (g_debugDamage.integer == 1) G_Printf("Faceshot\n");*/
     return  LOC_FACE;
   } else if ( (bulletHeight > clientHeight ) ) {
-/*    if (g_debugDamage.integer == 1) */G_Printf("Headshot\n");
+/*    if (g_debugDamage.integer == 1) G_Printf("Headshot\n");*/
     return LOC_HEAD;
   } else if ( (bulletHeight > clientHeight - stomachMod) && (inback == 0) ) {
-/*    if (g_debugDamage.integer == 1) */G_Printf("Chestshot\n");
+/*    if (g_debugDamage.integer == 1) G_Printf("Chestshot\n");*/
     return LOC_CHEST;
   } else if ( (bulletHeight > clientHeight - stomachMod) && (inback == 2) ) {
-/*    if (g_debugDamage.integer == 1) */G_Printf("Rightarmshot\n");
+/*    if (g_debugDamage.integer == 1) G_Printf("Rightarmshot\n");*/
     return LOC_RIGHTARM;
   } else if ( (bulletHeight > clientHeight - stomachMod) && (inback == 3) ) {
-/*    if (g_debugDamage.integer == 1) */G_Printf("Leftarmshot\n");
+/*    if (g_debugDamage.integer == 1) G_Printf("Leftarmshot\n");*/
     return LOC_LEFTARM;
   } else if ( (bulletHeight > clientHeight - chestMod) && (inback == 1) ) {
-/*    if (g_debugDamage.integer == 1) */G_Printf("Backshot\n");
+/*    if (g_debugDamage.integer == 1) G_Printf("Backshot\n");*/
     return LOC_BACK;
   } else if ( (bulletHeight > clientHeight - chestMod) ) {
-/*    if (g_debugDamage.integer == 1)*/ G_Printf("Stomachshot\n");
+/*    if (g_debugDamage.integer == 1)G_Printf("Stomachshot\n");*/ 
     return LOC_STOMACH;
   } else if ( inback == 2 || inback == 0) {
-/*    if (g_debugDamage.integer == 1) */G_Printf("Rightlegshot\n");
+/*    if (g_debugDamage.integer == 1) G_Printf("Rightlegshot\n");*/
     return LOC_RIGHTLEG;
   } else {
-/*    if (g_debugDamage.integer == 1) */G_Printf("Leftlegshot\n");
+/*    if (g_debugDamage.integer == 1) G_Printf("Leftlegshot\n");*/
     return LOC_LEFTLEG;
   }
 
@@ -780,7 +780,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 				attacker->client->ps.persistant[PERS_GAUNTLET_FRAG_COUNT]++;
 
 				// add the sprite over the player's head
-				attacker->client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
+				attacker->client->ps.eFlags &= ~( EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
 				attacker->client->ps.eFlags |= EF_AWARD_GAUNTLET;
 				attacker->client->rewardTime = level.time + REWARD_SPRITE_TIME;
 
@@ -795,7 +795,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 				attacker->client->ps.persistant[PERS_EXCELLENT_COUNT]++;
 
 				// add the sprite over the player's head
-				attacker->client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
+				attacker->client->ps.eFlags &= ~(EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
 				attacker->client->ps.eFlags |= EF_AWARD_EXCELLENT;
 				attacker->client->rewardTime = level.time + REWARD_SPRITE_TIME;
 			}
@@ -1119,6 +1119,8 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	if (!targ->takedamage) {
           return;
 	}
+    if ( GameState == STATE_OPEN && (g_gametype.integer == GT_BOMB|| g_gametype.integer == GT_TEAMSV )&& targ->client )
+          return;
 
 	// the intermission has allready been qualified for, so don't
 	// allow any extra scoring
@@ -1171,9 +1173,9 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
                         through_vest = 0;
 
         // get the hit location
-                      G_Printf("getting Hitlocation\n");
+                    //  G_Printf("getting Hitlocation\n");
                       HitLocation = CheckLocationDamage( targ,point, mod );
-                      G_Printf("got Hitlocation: %i\n", HitLocation);
+                   //   G_Printf("got Hitlocation: %i\n", HitLocation);
 
         // if nothing was hit, return
                      if (HitLocation == LOC_NULL ) return;
@@ -1402,8 +1404,8 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	asave = CheckArmor (targ, take, dflags);
 	take -= asave;
 
-		G_Printf( "%i: client:%i health:%i damage:%i armor:%i\n", level.time, targ->s.number,
-			targ->health, take, asave );
+		//G_Printf( "%i: client:%i health:%i damage:%i armor:%i\n", level.time, targ->s.number,
+		//	targ->health, take, asave );
 
 	// add to the damage inflicted on a player this frame
 	// the total will be turned into screen blends and view angle kicks

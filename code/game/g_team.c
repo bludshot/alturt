@@ -25,6 +25,8 @@ along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "g_local.h"
 
+int lastbombclient[TEAM_NUM_TEAMS];
+int     lastvip[TEAM_NUM_TEAMS];
 
 typedef struct teamgame_s {
 	float			last_flag_capture;
@@ -310,9 +312,9 @@ void Team_FragBonuses(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker
 		enemy_flag_pw = PW_REDFLAG;
 	}
 
-	if (g_gametype.integer == GT_BOMB) {
-		enemy_flag_pw = PW_NEUTRALFLAG;
-	}
+	//if (g_gametype.integer == GT_BOMB) {
+	//	enemy_flag_pw = PW_NEUTRALFLAG;
+//	}
 
 	// did the attacker frag the flag carrier?
 	tokens = 0;
@@ -369,7 +371,7 @@ void Team_FragBonuses(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker
 		attacker->client->ps.persistant[PERS_DEFEND_COUNT]++;
 		team = attacker->client->sess.sessionTeam;
 		// add the sprite over the player's head
-		attacker->client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
+		attacker->client->ps.eFlags &= ~( EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
 		attacker->client->ps.eFlags |= EF_AWARD_DEFEND;
 		attacker->client->rewardTime = level.time + REWARD_SPRITE_TIME;
 
@@ -387,7 +389,7 @@ void Team_FragBonuses(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker
 		attacker->client->ps.persistant[PERS_DEFEND_COUNT]++;
 		team = attacker->client->sess.sessionTeam;
 		// add the sprite over the player's head
-		attacker->client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
+		attacker->client->ps.eFlags &= ~(EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
 		attacker->client->ps.eFlags |= EF_AWARD_DEFEND;
 		attacker->client->rewardTime = level.time + REWARD_SPRITE_TIME;
 
@@ -465,7 +467,7 @@ void Team_FragBonuses(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker
 
 		attacker->client->ps.persistant[PERS_DEFEND_COUNT]++;
 		// add the sprite over the player's head
-		attacker->client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
+		attacker->client->ps.eFlags &= ~(EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
 		attacker->client->ps.eFlags |= EF_AWARD_DEFEND;
 		attacker->client->rewardTime = level.time + REWARD_SPRITE_TIME;
 
@@ -486,7 +488,7 @@ void Team_FragBonuses(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker
 
 			attacker->client->ps.persistant[PERS_DEFEND_COUNT]++;
 			// add the sprite over the player's head
-			attacker->client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
+			attacker->client->ps.eFlags &= ~( EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
 			attacker->client->ps.eFlags |= EF_AWARD_DEFEND;
 			attacker->client->rewardTime = level.time + REWARD_SPRITE_TIME;
 
@@ -760,7 +762,7 @@ int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, int team ) {
 
 	other->client->pers.teamState.captures++;
 	// add the sprite over the player's head
-	other->client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
+	other->client->ps.eFlags &= ~( EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
 	other->client->ps.eFlags |= EF_AWARD_CAP;
 	other->client->rewardTime = level.time + REWARD_SPRITE_TIME;
 	other->client->ps.persistant[PERS_CAPTURES]++;
@@ -793,7 +795,7 @@ int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, int team ) {
 
 				player->client->ps.persistant[PERS_ASSIST_COUNT]++;
 				// add the sprite over the player's head
-				player->client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
+				player->client->ps.eFlags &= ~(EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
 				player->client->ps.eFlags |= EF_AWARD_ASSIST;
 				player->client->rewardTime = level.time + REWARD_SPRITE_TIME;
 
@@ -803,7 +805,7 @@ int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, int team ) {
 				other->client->pers.teamState.assists++;
 				player->client->ps.persistant[PERS_ASSIST_COUNT]++;
 				// add the sprite over the player's head
-				player->client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
+				player->client->ps.eFlags &= ~( EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
 				player->client->ps.eFlags |= EF_AWARD_ASSIST;
 				player->client->rewardTime = level.time + REWARD_SPRITE_TIME;
 			}
@@ -819,21 +821,6 @@ int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, int team ) {
 int Team_TouchEnemyFlag( gentity_t *ent, gentity_t *other, int team ) {
 	gclient_t *cl = other->client;
 
-#ifdef MISSIONPACK
-	if( g_gametype.integer == GT_BOMB ) {
-		PrintMsg (NULL, "%s" S_COLOR_WHITE " got the flag!\n", other->client->pers.netname );
-
-		cl->ps.powerups[PW_NEUTRALFLAG] = INT_MAX; // flags never expire
-
-		if( team == TEAM_RED ) {
-			Team_SetFlagStatus( TEAM_FREE, FLAG_TAKEN_RED );
-		}
-		else {
-			Team_SetFlagStatus( TEAM_FREE, FLAG_TAKEN_BLUE );
-		}
-	}
-	else{
-#endif
 		PrintMsg (NULL, "%s" S_COLOR_WHITE " got the %s flag!\n",
 			other->client->pers.netname, TeamName(team));
 
@@ -843,9 +830,6 @@ int Team_TouchEnemyFlag( gentity_t *ent, gentity_t *other, int team ) {
 			cl->ps.powerups[PW_BLUEFLAG] = INT_MAX; // flags never expire
 
 		Team_SetFlagStatus( team, FLAG_TAKEN );
-#ifdef MISSIONPACK
-	}
-#endif
 
 	AddScore(other, ent->r.currentOrigin, CTF_FLAG_BONUS);
 	cl->pers.teamState.flagsince = level.time;
@@ -858,22 +842,6 @@ int Pickup_Team( gentity_t *ent, gentity_t *other ) {
 	int team;
 	gclient_t *cl = other->client;
 
-#ifdef MISSIONPACK
-	if( g_gametype.integer == GT_BOMB ) {
-		// there are no team items that can be picked up in obelisk
-		G_FreeEntity( ent );
-		return 0;
-	}
-
-	if( g_gametype.integer == GT_BOMB ) {
-		// the only team items that can be picked up in harvester are the cubes
-		if( ent->spawnflags != cl->sess.sessionTeam ) {
-			cl->ps.generic1 += 1;
-		}
-		G_FreeEntity( ent );
-		return 0;
-	}
-#endif
 	// figure out what team this flag is
 	if( strcmp(ent->classname, "team_CTF_redflag") == 0 ) {
 		team = TEAM_RED;
@@ -1272,7 +1240,7 @@ static void ObeliskDie( gentity_t *self, gentity_t *inflictor, gentity_t *attack
 	AddScore(attacker, self->r.currentOrigin, CTF_CAPTURE_BONUS);
 
 	// add the sprite over the player's head
-	attacker->client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
+	attacker->client->ps.eFlags &= ~( EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
 	attacker->client->ps.eFlags |= EF_AWARD_CAP;
 	attacker->client->rewardTime = level.time + REWARD_SPRITE_TIME;
 	attacker->client->ps.persistant[PERS_CAPTURES]++;
@@ -1307,7 +1275,7 @@ static void ObeliskTouch( gentity_t *self, gentity_t *other, trace_t *trace ) {
 	AddScore(other, self->r.currentOrigin, CTF_CAPTURE_BONUS*tokens);
 
 	// add the sprite over the player's head
-	other->client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
+	other->client->ps.eFlags &= ~( EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
 	other->client->ps.eFlags |= EF_AWARD_CAP;
 	other->client->rewardTime = level.time + REWARD_SPRITE_TIME;
 	other->client->ps.persistant[PERS_CAPTURES] += tokens;
@@ -1508,3 +1476,538 @@ qboolean CheckObeliskAttack( gentity_t *obelisk, gentity_t *attacker ) {
 	return qfalse;
 }
 #endif
+
+
+void G_EndTimer ( void )
+{
+    // send the config string to the clients
+    trap_SetConfigstring( CS_ROUND_START_TIME, "0" );
+    trap_SetConfigstring( CS_VIP_START_TIME, "0" );
+    trap_SetConfigstring( CS_BOMB_START_TIME, "0" );
+
+}
+
+
+
+
+int AliveTeamCount( int ignoreClientNum, team_t team ) {
+    int         i;
+    int         count = 0;
+
+    for ( i = 0 ; i < level.maxclients ; i++ ) {
+        if ( i == ignoreClientNum ) {
+            continue;
+        }
+        if ( level.clients[i].pers.connected == CON_DISCONNECTED ) {
+            continue;
+        }
+        if ( g_gametype.integer == GT_BOMB && level.clients[i].pers.connected != CON_CONNECTED )
+            continue;
+
+
+	if( level.clients[i].ps.stats[STAT_HEALTH] <= 0) //How can we call the function AliveTeamCount if we don't check this? --Xamis
+	    continue;
+
+        if ( level.clients[i].sess.sessionTeam == team && level.clients[i].sess.waiting == qfalse ) {
+            count++;
+        }
+
+    }
+
+    return count;
+}
+
+
+void G_EndRound ( void )
+{
+    if (level.warmupTime != -1)
+        return;
+
+    // the round has just been won
+    if ( AliveTeamCount( -1, TEAM_RED ) > 0 && AliveTeamCount( -1, TEAM_BLUE ) > 0)
+        G_WonRound(TEAM_FREE);
+    else if (AliveTeamCount( -1, TEAM_RED ) > 0)
+        G_WonRound(TEAM_RED);
+    else if (AliveTeamCount( -1, TEAM_BLUE ) > 0)
+        G_WonRound(TEAM_BLUE);
+    else
+        G_WonRound(TEAM_FREE); // draw again
+
+    level.done_objectives[TEAM_RED] = level.done_objectives[TEAM_BLUE] = 0;
+
+    // buffer time until the next round starts
+    level.warmupTime = -3;
+    level.winTime = level.time +  ONE_SECOND; // 1 second till next match
+    level.roundstartTime = 0;
+
+
+   // assault_field_stopall( );
+
+
+}
+
+void G_WonRound ( team_t team )
+{
+    LTS_Rounds++;
+
+    G_SetGameState( STATE_OVER );
+
+    if (team != TEAM_RED && team != TEAM_BLUE)
+    {
+        gentity_t       *te;
+
+        te = G_TempEntity(vec3_origin, EV_GLOBAL_TEAM_SOUND );
+        te->r.svFlags |= SVF_BROADCAST;
+        te->s.eventParm = GTS_DRAW_ROUND;
+
+        trap_SendServerCommand( -1, "cp \"DRAW!\n\"" );
+
+        G_LogPrintf( "DRAW.\n" );
+        return;
+    }
+    AddTeamScore( vec3_origin, team, 1 );
+
+    trap_SendServerCommand( -1, va("cp \"The %s won the round.\n\"", TeamName( team ) ) );
+    G_LogPrintf( "ROUND: %s won.\n", TeamName( team ) );
+
+    // otherteam is still the looser
+    if ( level.lastLoser == OtherTeam( team ) )
+        level.loseCount++;
+    else if ( level.lastLoser != OtherTeam( team ) )
+    {
+        level.loseCount = 1;
+        level.lastLoser = OtherTeam( team );
+    }
+
+    //CalculateRanks();
+}
+
+
+void G_EndRoundForTeam ( int team )
+{
+    if (level.warmupTime != -1)
+        return;
+
+    level.done_objectives[TEAM_RED] = level.done_objectives[TEAM_BLUE] = 0;
+
+
+    // buffer time until the next round starts
+    level.warmupTime = -3;
+    level.winTime = level.time + ( 10 * ONE_SECOND ); // 10 seconds till next match
+    level.roundstartTime = 0;
+
+    //assault_field_stopall( );
+
+    // the round has just been won by a team
+    G_WonRound( team );  // give points & stuff
+
+    // send the config string to the clients
+    trap_SetConfigstring( CS_ROUND_START_TIME, "0" );
+    trap_SetConfigstring( CS_VIP_START_TIME, "0" );
+    trap_SetConfigstring( CS_BOMB_START_TIME, "0" );
+
+    G_EndTimer();
+}
+
+
+
+
+void G_SetGameState(int state) {
+    int i;
+
+    if (state != STATE_OPEN &&
+            state != STATE_LOCKED &&
+            state != STATE_OVER) return;
+
+    if (state == GameState) return;
+
+    GameState = state;
+
+    for ( i = 0 ; i < level.maxclients ; i++ ) {
+        if ( level.clients[i].pers.connected == CON_DISCONNECTED ) continue;
+        if ( g_gametype.integer == GT_BOMB && level.clients[i].pers.connected != CON_CONNECTED ) continue;
+        G_AddEvent(&g_entities[level.clients[i].ps.clientNum], EV_GAMESTATE, state);
+    }
+
+}
+
+qboolean G_BombPlanted ( team_t team )
+{
+    int                 i;
+    gentity_t   *ent;
+
+    ent = &g_entities[0];
+
+    for (i=0 ; i<level.num_entities ; i++, ent++)
+    {
+        if ( !ent->inuse ) {
+            continue;
+        }
+        if (!ent || !ent->classname)
+            continue;
+
+        // found roundholder? for whatever it called.
+    //    if (!Q_stricmp("endround_holder", ent->classname ) )
+     //       return qtrue;
+        // find c4
+        if (!Q_stricmp("bomb_placed", ent->classname))
+            // if entity still has got time left
+           // if ( ent->team == team )
+                return qtrue; // don't end round
+    }
+    // return
+    return qfalse;
+
+}
+
+#define MAX_VIP_SPAWN_POINTS    4
+gentity_t *SelectRandomVipSpawnPoint( void ) {
+    gentity_t   *spot;
+    int                 count;
+    int                 selection;
+    gentity_t   *spots[MAX_VIP_SPAWN_POINTS];
+    char            *teamname;
+    char            *class = "info_ut_spawn";
+
+    count = 0;
+    spot = NULL;
+    teamname = "red";
+
+    while ((spot = G_Find (spot, FOFS(team), teamname)) != NULL) {
+
+        if(  strcmp(spot->classname, class ))
+            continue;
+
+        if ( SpotWouldTelefrag( spot ) ) {
+            continue;
+        }
+        spots[ count ] = spot;
+        count++;
+    }
+
+    if ( !count ) {     // no spots that won't telefrag
+        return G_Find( NULL, FOFS(classname), "ut_info_spawn");
+    }
+
+    selection = rand() % count;
+    return spots[ selection ];
+}
+
+
+
+void G_DoVipStuff(int team, gentity_t *player)
+{
+    gentity_t   *vip;
+   // gitem_t             *sec;
+    gentity_t   *spot;
+    //int                 _wp = WP_DEAGLE;
+   // int                 _close = WP_KNIFE;
+
+    if ( player == NULL ) {
+        // we need to do this for both seals and tanogs.
+        if ( TeamCount( -1, team ) <= 1 )
+            vip = G_RandomPlayer( -1, team );
+        else
+            vip = G_RandomPlayer( lastvip[team], team );
+    }
+    else
+        vip = player;
+
+
+    if ( !vip )
+    {
+
+        if (team == TEAM_RED) G_EndRoundForTeam(TEAM_BLUE);
+        else if (team == TEAM_BLUE) G_EndRoundForTeam(TEAM_RED);
+        else G_EndRound();
+
+        return;
+    }
+
+    vip->client->ut.is_vip = qtrue;
+    lastvip[team] = vip->s.clientNum;
+
+    // remove ammo & powerups
+    //memset( vip->client->ps.powerups, 0, sizeof(vip->client->ps.powerups) );
+    //memset( vip->client->ps.ammo, 0, sizeof(vip->client->ps.ammo) );
+
+    //vip->client->ps.stats[STAT_WEAPONS] = 0;
+    //vip->client->ps.stats[STAT_WEAPONS_EXT] = 0;
+
+    vip->health = 100;
+
+
+    // set new weapons
+    //if ( vip->client->sess.sessionTeam == TEAM_BLUE ) {
+    //    _wp = WP_DEAGLE;
+    //    _close = WP_KNIFE;
+    //}
+
+    //BG_PackWeapon( _wp, vip->client->ps.stats );
+
+    //sec = BG_FindItemForWeapon( _wp );
+
+    //vip->client->ps.ammo[sec->giAmmoTag] = 6;
+    //vip->client->ps.weapon = _wp;
+    //vip->client->ps.eFlags |= EF_VIP;
+
+    //vip->s.weapon = _wp;
+   // spot = NULL;//SelectRandomSpawnPoint();
+    //spot = SelectRandomVipSpawnPoint();
+	spot = SelectRandomTeamSpawnPoint( 0, TEAM_RED );
+    if (!spot)
+    {
+        G_Error("Trying to spawn V.I.P.[%s] - without spawnpoint!", TeamName(team) );
+        return;
+    }
+
+    // give the briefcase to the vip
+ //   if ( spot->ns_flags )
+//    {
+//        Pickup_Briefcase( spot, vip );
+//        vip->client->ns.is_vipWithBriefcase = qtrue;
+//    }
+
+    //vip->client->ns.rewards |= REWARD_VIP_ALIVE;
+
+    G_SetOrigin( vip, spot->s.origin );
+    VectorCopy (spot->s.origin, vip->client->ps.origin);
+
+    SetClientViewAngle( vip, spot->s.angles );
+
+    trap_SendServerCommand( vip->client->ps.clientNum, va("cp \""S_COLOR_GREEN"You are the V.I.P.\n\""));
+    G_UseTargets( spot, vip );
+
+    ClientUserinfoChanged( vip->s.clientNum );
+    G_LogPrintf( "OBJECTIVE: [%i] \"%s\" spawned as VIP\n", vip->client->ps.clientNum, vip->client->pers.netname );
+}
+
+
+
+
+#define ROUND_WARMUP_TIME       0;
+void CheckTeamplay( void ) {
+    int i;
+    int minplayers = 1;//g_minPlayers.integer;
+    gentity_t *bmbplayer;
+
+
+    if ( minplayers < 1 )
+        minplayers = 0;
+
+    if (g_gametype.integer != GT_BOMB && g_gametype.integer != GT_TEAMSV)
+        return; 
+
+    if (g_doWarmup.integer != 0){
+        trap_SendConsoleCommand( EXEC_INSERT, "g_doWarmup 0" );
+
+}
+    if ( level.intermissiontime ) {
+        return;
+    }
+    if ( (TeamCount( -1, TEAM_RED ) < minplayers) || ( TeamCount( -1, TEAM_BLUE ) < minplayers)  )
+    {
+       G_SetGameState( STATE_OPEN );
+
+        if (level.time > i_sNextWaitPrint )
+        {       // not enough players
+            G_Printf("Waiting for players to join.\n");
+            i_sNextWaitPrint = level.time + 5000;
+        }
+        for ( i = 0; i < level.maxclients; i++ )
+        {
+            gclient_t *client = &level.clients[i];
+            if (client->pers.connected != CON_CONNECTED)
+                continue;
+            if ( client->ps.pm_flags & PMF_FOLLOW )
+                continue;
+            if ( client->sess.waiting == qtrue )
+            {
+                if ( ( TeamCount( -1, TEAM_RED ) > 0 ) || ( TeamCount( -1, TEAM_BLUE ) > 0 ) )
+                {
+                    client->sess.waiting = qfalse;
+                    ClientSpawn( &g_entities[ client - level.clients ] );
+                   // client->ps.eFlags &= ~EF_WEAPONS_LOCKED; //removed this, don't fire during warmup! --xamis
+                }
+            }
+        }
+        b_sWaitingForPlayers = qtrue;
+
+        level.loseCount = 0;
+        level.lastLoser = TEAM_FREE;   
+        level.warmupTime = -2;
+        level.roundstartTime = 0;
+
+        trap_SetConfigstring( CS_ROUND_START_TIME, "0" );
+        trap_SetConfigstring( CS_VIP_START_TIME, "0" );
+        trap_SetConfigstring( CS_BOMB_START_TIME, "0" );
+	return;
+    }
+    else
+    {
+        // time to start a new warmup, initiate warmup - reset some variables
+        if (level.winTime == level.time ) {
+            level.warmupTime = -2;
+            level.done_objectives[TEAM_RED] = level.done_objectives[TEAM_BLUE] = 0;
+            G_SetGameState( STATE_OPEN );
+        }
+        // start the warmup
+        if (level.warmupTime == -2)
+        {
+            G_SetGameState( STATE_OPEN );
+            if ( LTS_Rounds == 1 ){
+                level.warmupTime = level.time + 10 * ONE_SECOND; //g_firstCountdown.integer * ONE_SECOND;
+            }else{
+                level.warmupTime = level.time + ROUND_WARMUP_TIME;
+		}
+            trap_SendServerCommand( -1, va( "cp \"Round #%i will start in %i seconds.\nWeapons Locked.\"", LTS_Rounds, (level.warmupTime - level.time)/ONE_SECOND  ) );
+            trap_SendServerCommand( -1, "roundst" );
+
+            G_EndTimer();
+           // G_SendResetAllStatusToAllPlayers();
+            for ( i = 0; i < level.maxclients; i++ )
+            {
+                gclient_t *client = &level.clients[i];
+
+                if (client->pers.connected != CON_CONNECTED)
+                    continue;
+
+                if ( client->sess.sessionTeam == TEAM_SPECTATOR )
+                    continue;
+
+                client->ps.eFlags &= ~EF_VIP;
+                client->ut.is_vip = client->ut.is_vipWithBriefcase = qfalse;
+                client->sess.waiting = qfalse;
+
+                if ( client->ps.pm_flags & PMF_FOLLOW )
+                    StopFollowing( &g_entities[ client - level.clients ] );
+
+                ClientSpawn( &g_entities[ client - level.clients ] );
+                client->ps.eFlags |= EF_WEAPONS_LOCKED;
+                ClientUserinfoChanged( client->ps.clientNum );
+            }
+        }
+        // our round begins
+        if (level.warmupTime == level.time)
+        {
+           // Time to start the next round
+            level.warmupTime = -1;
+            G_SetGameState( STATE_LOCKED );
+		if ( 1/*g_roundTime.integer */)
+                level.roundstartTime = level.time + ( 2/*g_roundTime.integer*/ * 60 * ONE_SECOND ); // round now started
+            else
+                level.roundstartTime = -1;
+            trap_SetConfigstring( CS_ROUND_START_TIME, va("%i",level.roundstartTime) );
+            // start timelimit
+            if ( LTS_Rounds == 1 )
+            {
+                level.startTime = level.time;
+                trap_SetConfigstring( CS_LEVEL_START_TIME, va("%i", level.startTime ) );
+
+                // spawn all clients that are still waiting to get spawned
+                for ( i = 0; i < level.maxclients; i++ )
+                {
+                    gclient_t *client = &level.clients[i];
+
+                    if (client->pers.connected != CON_CONNECTED)
+                        continue;
+                    if ( client->sess.sessionTeam == TEAM_SPECTATOR )
+                        continue;
+                    if ( !client->sess.waiting )
+                        continue;
+
+                    client->sess.waiting = qfalse;
+
+                    if ( client->ps.pm_flags & PMF_FOLLOW )
+                        StopFollowing( &g_entities[ client - level.clients ] );
+
+                    // spawn
+                    ClientSpawn( &g_entities[ client - level.clients ] );
+                }
+            }
+
+            for ( i = 0; i < level.maxclients; i++ )
+            {
+                gclient_t *client = &level.clients[i];
+
+                if (client->pers.connected != CON_CONNECTED)
+                    continue;
+                // if we're a waiting player don't ready our weapons
+                if (client->sess.waiting != qfalse)
+                    continue;
+                if ( client->sess.sessionTeam == TEAM_SPECTATOR )
+                    continue;
+                // unlock weapons
+                client->ps.eFlags &= ~EF_WEAPONS_LOCKED;
+            }
+
+              if (g_gametype.integer == GT_BOMB ){
+            // give bombs to players that require it.
+            if ( ! G_GiveBombToTeam( TEAM_RED ) ) {
+                G_EndRoundForTeam(TEAM_BLUE);
+                return;
+            }
+            // radiobroadcast the start radiomsg.
+            bmbplayer =G_RandomPlayer(-1, TEAM_RED);
+            
+              }
+            // log print a start
+            G_LogPrintf( "ROUND: Start.\n" );
+        }
+
+        if ( level.warmupTime != -3 )
+        {
+            {
+                if ( ( level.done_objectives[TEAM_RED] >= level.num_objectives[TEAM_RED] ) && level.num_objectives[TEAM_RED] > 0 )
+                {
+                    G_EndRoundForTeam( TEAM_RED );
+                    return;
+                }
+                else if ( ( level.done_objectives[TEAM_BLUE] >= level.num_objectives[TEAM_BLUE] ) && level.num_objectives[TEAM_BLUE] > 0 )
+                { 
+                    G_EndRoundForTeam( TEAM_BLUE );
+                    return;
+                }
+            }
+
+            if ( AliveTeamCount( -1, TEAM_RED ) + AliveTeamCount( -1, TEAM_BLUE ) <= 0 )
+            {
+
+                if ( G_BombPlanted( TEAM_RED ) )
+                    G_EndRoundForTeam( TEAM_RED );
+                else 
+		    G_EndRoundForTeam( TEAM_BLUE );
+
+                return;
+
+           }
+            if (AliveTeamCount( -1, TEAM_RED ) < 1  ){
+                G_EndRoundForTeam( TEAM_BLUE );
+                return;
+            }
+            else if ( AliveTeamCount( -1, TEAM_BLUE ) < 1 ){
+                 G_EndRoundForTeam( TEAM_RED ); 
+                return;
+            }
+            if (level.roundstartTime == level.time)
+                G_EndRound();
+        }
+    }
+
+    {
+        char buffer[512];
+        int oldWarmup;
+
+        trap_GetConfigstring( CS_WARMUP, buffer, sizeof(buffer) );
+        oldWarmup = atoi(buffer);
+
+        if (level.warmupTime > 0 )
+            trap_SetConfigstring( CS_WARMUP, va("%i", level.warmupTime) );
+        else if ( level.warmupTime == -2 )
+            trap_SetConfigstring( CS_WARMUP, "-1" );
+        else if ( oldWarmup  != 0 )
+            trap_SetConfigstring( CS_WARMUP, "0" );
+    }
+}
+
+

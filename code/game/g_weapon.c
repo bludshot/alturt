@@ -409,11 +409,11 @@ void Bullet_Fire (gentity_t *ent, float spread, int damage ) {
            if(!(count)){ //is this the first time through?
                                 G_Damage( traceEnt, ent, ent, forward, tr.endpos,
                                         damage, 0, MOD_MACHINEGUN);
-			if(traceEnt->health){
-                        tent2 = G_TempEntity( tr.endpos, EV_BULLET_HIT_GLASS );
-                        tent2->s.eventParm = DirToByte( tr.plane.normal );
-			tent2->s.otherEntityNum = ent->s.number;
-			}
+		//	if(traceEnt->health){
+                //        tent2 = G_TempEntity( tr.endpos, EV_BULLET_HIT_GLASS );
+                 //       tent2->s.eventParm = DirToByte( tr.plane.normal );
+	//		tent2->s.otherEntityNum = ent->s.number;
+	//		}
         trap_UnlinkEntity( traceEnt ); //unlink entity to on the next pass through the loop our trace will continue past it.
         unlinkedEntity[unlinked] = traceEnt; //so we can relink out func_breakable entity
         unlinked++;
@@ -502,11 +502,11 @@ qboolean ShotgunPellet( vec3_t start, vec3_t end, gentity_t *ent ) {
            if(!(count)){ //is this the first time through?
                                 G_Damage( traceEnt, ent, ent, forward, tr.endpos,
                                         damage, 0, MOD_MACHINEGUN);
-                        if(traceEnt->health){
-                        tent2 = G_TempEntity( tr.endpos, EV_BULLET_HIT_GLASS );
-                        tent2->s.eventParm = DirToByte( tr.plane.normal );
-                        tent2->s.otherEntityNum = ent->s.number;
-                        }
+                  //      if(traceEnt->health){
+                  //      tent2 = G_TempEntity( tr.endpos, EV_BULLET_HIT_GLASS );
+                 //       tent2->s.eventParm = DirToByte( tr.plane.normal );
+                //        tent2->s.otherEntityNum = ent->s.number;
+                //        }
         trap_UnlinkEntity( traceEnt ); //unlink entity to on the next pass through the loop our trace will continue past it.
         unlinkedEntity[unlinked] = traceEnt; //so we can relink out func_breakable entity
         unlinked++;
@@ -811,8 +811,8 @@ void weapon_railgun_fire (gentity_t *ent) {
                         ent->client->accurateCount -= 2;
                         ent->client->ps.persistant[PERS_IMPRESSIVE_COUNT]++;
                         // add the sprite over the player's head
-                        ent->client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
-                        ent->client->ps.eFlags |= EF_AWARD_IMPRESSIVE;
+                        ent->client->ps.eFlags &= ~( EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
+                       // ent->client->ps.eFlags |= EF_AWARD_IMPRESSIVE;
                         ent->client->rewardTime = level.time + REWARD_SPRITE_TIME;
                 }
                 ent->client->accuracy_hits++;

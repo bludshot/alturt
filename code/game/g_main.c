@@ -99,6 +99,15 @@ vmCvar_t	g_enableBreath;
 vmCvar_t	g_proxMineTimeout;
 #endif
 
+
+qboolean        b_sWaitingForPlayers = qfalse;
+int                     i_sNextWaitPrint = 0;
+int                     GameState = 0;
+int                     LTS_Rounds = 1;
+int                     i_sCountDown;
+
+
+
 static cvarTable_t		gameCvarTable[] = {
 	// don't override the cheat state set by the system
 	{ &g_cheats, "sv_cheats", "", 0, 0, qfalse },
@@ -1504,15 +1513,17 @@ void CheckTournament( void ) {
 		}
 
 		// if all players have arrived, start the countdown
+
 		if ( level.warmupTime < 0 ) {
+                    G_Printf("level.warmupTime < 0" );
 			// fudge by -1 to account for extra delays
 			level.warmupTime = level.time + ( g_warmup.integer - 1 ) * 1000;
 			trap_SetConfigstring( CS_WARMUP, va("%i", level.warmupTime) );
 			return;
 		}
-
 		// if the warmup time has counted down, restart
 		if ( level.time > level.warmupTime ) {
+                                        G_Printf("level.time > level.warmupTime" );
 			level.warmupTime += 10000;
 			trap_Cvar_Set( "g_restarted", "1" );
 			trap_SendConsoleCommand( EXEC_APPEND, "map_restart 0\n" );
@@ -1823,8 +1834,10 @@ start = trap_Milliseconds();
 	}
 end = trap_Milliseconds();
 
+	CheckTeamplay();
+
 	// see if it is time to do a tournement restart
-	CheckTournament();
+//	CheckTournament();
 
 	// see if it is time to end the level
 	CheckExitRules();
@@ -1838,6 +1851,9 @@ end = trap_Milliseconds();
 	// check team votes
 	CheckTeamVote( TEAM_RED );
 	CheckTeamVote( TEAM_BLUE );
+
+
+
 
 	// for tracking changes
 	CheckCvars();

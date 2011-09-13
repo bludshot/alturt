@@ -60,6 +60,13 @@ along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
 #define FL_OPENDOOR				0x00016000  //Xamis
 #define	FL_ROTATE				0x00032000  //Xamis
 
+
+#define VIP_NONE                        0
+#define VIP_ESCAPE                      1
+#define VIP_STAYALIVE           2
+
+
+
 // movers are things like doors, plats, buttons, etc
 typedef enum {
     MOVER_POS1,
@@ -286,6 +293,20 @@ typedef struct {
 #define LOC_KNEE      12
 
 
+typedef struct alturt_s{
+    int num_killed;
+    int rewards;
+
+    qboolean is_vip;
+    qboolean is_vipWithBriefcase;
+
+//    gentity_t   *lasersight;
+
+
+    gentity_t *bomb_parent;
+    gentity_t *bomb_world; // placed bomb
+
+}alturt_t;
 
 
 // client data that stays across multiple respawns, but is cleared
@@ -385,6 +406,8 @@ struct gclient_s {
 
         int             weaponMode[WP_NUM_WEAPONS];
         char            *weaponModeChar;
+   	alturt_t 	ut;
+
 };
 
 
@@ -487,8 +510,8 @@ typedef struct {
     int                 xpTime;
     char                lastmap[MAX_QPATH];
     char                nextmap[TEAM_NUM_TEAMS][MAX_QPATH];
-    int                 looseCount; // how often the team lost
-//    team_t              lastLooser;         // which team lost
+    int                 loseCount; // how often the team lost
+    team_t              lastLoser;         // which team lost
     int                 drawWinner;
 
     int                 breathsnd_male;
@@ -795,7 +818,7 @@ void BotInterbreedEndMatch( void );
 
 // ai_main.c
 #define MAX_FILEPATH			144
-
+#define ONE_SECOND      1000
 //bot settings
 typedef struct bot_settings_s
 {
@@ -814,10 +837,14 @@ void BotTestAAS(vec3_t origin);
 
 #include "g_team.h" // teamplay specific stuff
 
-
+extern  int                     i_sNextWaitPrint;
+extern  qboolean        b_sWaitingForPlayers;
+extern  int                     i_sCountDown;
+extern  int                     GameState;
+extern  int                     LTS_Rounds;
 extern	level_locals_t	level;
 extern	gentity_t		g_entities[MAX_GENTITIES];
-
+extern int GameState; //Xamis for bomb mode etc..
 #define	FOFS(x) ((size_t)&(((gentity_t *)0)->x))
 
 extern	vmCvar_t	g_gametype;
@@ -1090,5 +1117,10 @@ void UT_SelectItem ( gentity_t *ent, int itemNum); //blud I added this to fix wa
 void G_PlayerLoadout( gentity_t *ent );
 void UT_DropItem ( gentity_t *ent);
 void SP_Spawnsentry( gentity_t *ent );
-void G_GiveBombToTeam( team_t team ) ;
+qboolean G_GiveBombToTeam( team_t team ) ;
+gentity_t *G_RandomPlayer( int ignoreClientNum, team_t team );
+void G_WonRound ( team_t team );
+void G_SetGameState(int state);
+void CheckTeamplay(void);
+
 

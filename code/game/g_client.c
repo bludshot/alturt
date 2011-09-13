@@ -447,6 +447,11 @@ void CopyToBodyQue( gentity_t *ent ) {
 
         trap_UnlinkEntity (ent);
 
+    if ( ( !ent->client->sess.waiting || ent->client->ps.pm_type != PM_DEAD ) &&
+        (g_gametype.integer == GT_BOMB || g_gametype.integer == GT_TEAMSV)   )
+        return;
+
+
         // if client is in a nodrop area, don't leave the body
         contents = trap_PointContents( ent->s.origin, -1 );
         if ( contents & CONTENTS_NODROP ) {
@@ -533,6 +538,13 @@ void CopyToBodyQue( gentity_t *ent ) {
         } else {
                 body->takedamage = qtrue;
         }
+
+ 	if (g_gametype.integer == GT_BOMB || g_gametype.integer == GT_TEAMSV )
+    	{
+        
+        //body->team = ent->client->sess.sessionTeam;
+    	}
+
 
 
         VectorCopy ( body->s.pos.trBase, body->r.currentOrigin );
@@ -1065,6 +1077,13 @@ void ClientBegin( int clientNum ) {
         // locate ent at a spawn point
         ClientSpawn( ent );
 
+
+    if ( client->sess.sessionTeam == TEAM_SPECTATOR ||
+            g_gametype.integer == GT_BOMB ||  g_gametype.integer == GT_TEAMSV )
+        client->sess.waiting = qtrue;
+
+
+
         if ( client->sess.sessionTeam != TEAM_SPECTATOR ) {
                 // send event
                 tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_IN );
@@ -1107,13 +1126,16 @@ void G_PlayerLoadout( gentity_t *ent ){
 
         
         if( ent->r.svFlags & SVF_BOT){
+            int i = random()*8;
+            char tmpgear[8]={'e','c','a','Z','N','M','N','L' };
+            
             gear[0] ='G';
-            gear[1] ='L';
-                    gear[2] ='I';
-                    gear[3] ='A';
-                    gear[4] ='R';
-                    gear[5] ='W';
-                gear[6] ='A';                    
+            gear[1] =tmpgear[i ];
+            gear[2] ='I';
+            gear[3] ='A';
+            gear[4] ='R';
+            gear[5] ='W';
+            gear[6] ='A';                    
         }
 	//Make sure gear string is the correct length so that later we aren't trying to read chars that aren't even there.
 	len = strlen(gear);
@@ -1229,8 +1251,7 @@ void ClientSpawn(gentity_t *ent) {
         client = ent->client;
 
         VectorClear(spawn_origin);
-        
-
+ 
         // find a spawn point
         // do it before setting health back up, so farthest
         // ranging doesn't count this client
@@ -1336,8 +1357,18 @@ void ClientSpawn(gentity_t *ent) {
         client->ps.clientNum = index;
        // client->loadoutEnabled = qtrue;
 
+
+    if ( g_gametype.integer == GT_BOMB && GameState == STATE_OPEN )
+    {
+        client->ps.eFlags |= EF_WEAPONS_LOCKED;
+        //NS_SendPlayersStatusToAllPlayers( client->ps.clientNum , MS_HEALTH5 );
+    }
+
+
+
 	//Load all values for player loadout and add it to inventory --Xamis
- 	G_PlayerLoadout( ent );
+
+	G_PlayerLoadout( ent );
         
 
 	VectorSet( ent->client->ps.grapplePoint, 0.0f, 0.0f, 1.0f );
@@ -1363,10 +1394,20 @@ void ClientSpawn(gentity_t *ent) {
                 trap_LinkEntity (ent);
 
                 // force the base weapon up
-                client->ps.weapon = WP_KNIFE;
-                client->ps.weaponstate = WEAPON_READY;
+//Try to get weapon to appear correctly during spawn, as sometimes it shows up sideways.
+        if ( bg_inventory.sort[ent->client->ps.clientNum][PRIMARY])
+                client->ps.weapon = bg_inventory.sort[ent->client->ps.clientNum][PRIMARY];
+        else if ( bg_inventory.sort[ent->client->ps.clientNum][SECONDARY])
+                client->ps.weapon = bg_inventory.sort[ent->client->ps.clientNum][SECONDARY];
+        else if ( bg_inventory.sort[ent->client->ps.clientNum][SIDEARM])
+                client->ps.weapon = bg_inventory.sort[ent->client->ps.clientNum][SIDEARM];
+        else
+                client->ps.weapon = bg_inventory.sort[ent->client->ps.clientNum][MELEE];
 
+                client->ps.weaponstate = WEAPON_READY;
         }
+
+
 
         // don't allow full run speed for a bit
         client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
@@ -1389,7 +1430,7 @@ void ClientSpawn(gentity_t *ent) {
 
                 // select the highest weapon number available, after any
                 // spawn given items have fired
-
+     if ( !(ent->r.svFlags & SVF_BOT )) {
                 if ( bg_inventory.sort[ent->client->ps.clientNum][PRIMARY])
                   client->ps.weapon = bg_inventory.sort[ent->client->ps.clientNum][PRIMARY];
                 else if ( bg_inventory.sort[ent->client->ps.clientNum][SECONDARY])
@@ -1398,7 +1439,7 @@ void ClientSpawn(gentity_t *ent) {
                   client->ps.weapon = bg_inventory.sort[ent->client->ps.clientNum][SIDEARM];
                 else
                   client->ps.weapon = bg_inventory.sort[ent->client->ps.clientNum][MELEE];
-
+		}
         }
 
         // run a client frame to drop exactly to the floor,
@@ -1567,7 +1608,7 @@ gentity_t *G_RandomPlayer( int ignoreClientNum, team_t team ) {
 
 static int lastbmbplayer = -1;
 
-void G_GiveBombToTeam( team_t team ) {
+qboolean G_GiveBombToTeam( team_t team ) {
     gentity_t *bmbplayer;
 
 //    if ( g_overrideGoals.integer )
@@ -1577,9 +1618,9 @@ void G_GiveBombToTeam( team_t team ) {
         G_Error("G_GiveBombsToTeam. Unallowed team.\n");
     }
 
-    if (level.bombs[team] <= 0) return;// qtrue;
+    //if (level.bombs[team] <= 0) return qtrue;
 
-    bmbplayer = G_RandomPlayer(lastbmbplayer, team);
+    bmbplayer = G_RandomPlayer( -1/*lastbmbplayer*/, team);
 
     if ( bmbplayer) {
         // give the player the bomb
@@ -1591,10 +1632,11 @@ void G_GiveBombToTeam( team_t team ) {
 
         G_LogPrintf("[%i] \"%s\" has the bomb\n",
                     bmbplayer->s.clientNum, bmbplayer->client->pers.netname);
-    }// else {
-     //   return qfalse;
-   // }
+    } else {
 
-  //  return qtrue;
+        return qfalse;
+    }
+
+    return qtrue;
 }
 

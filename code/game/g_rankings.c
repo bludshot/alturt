@@ -914,9 +914,9 @@ void G_RankReward( int self, int award )
 
 	switch( award )
 	{
-	case EF_AWARD_IMPRESSIVE:
-		trap_RankReportInt( self, -1, QGR_KEY_IMPRESSIVE, 1, 1 );
-		break;
+//	case EF_AWARD_IMPRESSIVE:
+//		trap_RankReportInt( self, -1, QGR_KEY_IMPRESSIVE, 1, 1 );
+//		break;
 	case EF_AWARD_EXCELLENT:
 		trap_RankReportInt( self, -1, QGR_KEY_EXCELLENT, 1, 1 );
 		break;

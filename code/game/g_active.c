@@ -355,6 +355,18 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd ) {
         client->oldbuttons = client->buttons;
         client->buttons = ucmd->buttons;
 
+    if ( GameState != STATE_LOCKED &&
+            GameState != STATE_OVER )
+       return;
+
+    if ( !( client->ps.pm_flags & PMF_FOLLOW ) &&
+            GameState == STATE_LOCKED ) // only force camera when round begun
+    {
+        Cmd_FollowCycle_f( ent, 1 );
+//        ent->spec_updatetime = level.time;
+    }
+
+
         // attack button cycles through spectators
         if ( ( client->buttons & BUTTON_ATTACK ) && ! ( client->oldbuttons & BUTTON_ATTACK ) ) {
                 Cmd_FollowCycle_f( ent, 1 );
@@ -755,7 +767,7 @@ if ( (client->pers.cmd.forwardmove ||
 
         // clear the rewards if time
         if ( level.time > client->rewardTime ) {
-                client->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE | EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
+                client->ps.eFlags &= ~( EF_AWARD_EXCELLENT | EF_AWARD_GAUNTLET | EF_AWARD_ASSIST | EF_AWARD_DEFEND | EF_AWARD_CAP );
         }
 
         if ( client->noclip ) {
@@ -952,8 +964,16 @@ if ( (client->pers.cmd.forwardmove ||
 
         // check for respawning
         if ( client->ps.stats[STAT_HEALTH] <= 0 ) {
-                // wait for the attack button to be pressed
+                if ( GameState == STATE_LOCKED ){
+        client->ps.pm_flags |= PMF_FOLLOW;
+        return;   
+        }         // wait for the attack button to be pressed
                 if ( level.time > client->respawnTime ) {
+                    
+                    
+
+    
+    
                         // forcerespawn is to prevent users from waiting out powerups
                         if ( g_forcerespawn.integer > 0 &&
                                 ( level.time - client->respawnTime ) > g_forcerespawn.integer * 1000 ) {

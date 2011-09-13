@@ -836,7 +836,7 @@ void BotInputToUserCommand(bot_input_t *bi, usercmd_t *ucmd, int delta_angles[3]
 		bi->actionflags &= ~ACTION_DELAYEDJUMP;
 	}
 	//set the buttons
-	if (bi->actionflags & ACTION_RESPAWN) ucmd->buttons = BUTTON_ATTACK;
+        	if (bi->actionflags & ACTION_RESPAWN) ucmd->buttons = BUTTON_ATTACK;
 	if (bi->actionflags & ACTION_ATTACK) ucmd->buttons |= BUTTON_ATTACK;
 	if (bi->actionflags & ACTION_TALK) ucmd->buttons |= BUTTON_TALK;
 	if (bi->actionflags & ACTION_GESTURE) ucmd->buttons |= BUTTON_GESTURE;
@@ -913,6 +913,7 @@ void BotUpdateInput(bot_state_t *bs, int time, int elapsed_time) {
 	//retrieve the bot input
 	trap_EA_GetInput(bs->client, (float) time / 1000, &bi);
 	//respawn hack
+        
 	if (bi.actionflags & ACTION_RESPAWN) {
 		if (bs->lastucmd.buttons & BUTTON_ATTACK) bi.actionflags &= ~(ACTION_RESPAWN|ACTION_ATTACK);
 	}
@@ -1044,7 +1045,7 @@ int BotAI(int client, float thinktime) {
 	//the real AI
 	BotDeathmatchAI(bs, thinktime);
 	//set the weapon selection every AI frame
-	trap_EA_SelectWeapon(bs->client, bs->weaponnum);
+	trap_EA_SelectWeapon(bs->client, bs->cur_ps.weapon);
 	//subtract the delta angles
 	for (j = 0; j < 3; j++) {
 		bs->viewangles[j] = AngleMod(bs->viewangles[j] - SHORT2ANGLE(bs->cur_ps.delta_angles[j]));

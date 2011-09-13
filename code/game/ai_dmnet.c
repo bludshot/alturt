@@ -1234,6 +1234,8 @@ AIEnter_Respawn
 ==================
 */
 void AIEnter_Respawn(bot_state_t *bs, char *s) {
+    
+    
 	BotRecordNodeSwitch(bs, "respawn", "", s);
 	//reset some states
 	trap_BotResetMoveState(bs->ms);
@@ -1294,21 +1296,17 @@ BotSelectActivateWeapon
 */
 int BotSelectActivateWeapon(bot_state_t *bs) {
 	//
-	if (bs->inventory[INVENTORY_M4] > 0 && bs->inventory[INVENTORY_BULLETS] > 0)
-		return WEAPONINDEX_M4;
-	else if (bs->inventory[INVENTORY_SPAS] > 0 && bs->inventory[INVENTORY_SHELLS] > 0)
-		return WEAPONINDEX_SPAS;
-        else if (bs->inventory[INVENTORY_LR300] > 0 && bs->inventory[INVENTORY_BULLETS] > 0)
-          return WEAPONINDEX_LR300;
-	else if (bs->inventory[INVENTORY_HK69] > 0 && bs->inventory[INVENTORY_GRENADES] > 0)
-          return WEAPONINDEX_HK69;
+//BotAI_Print(PRT_MESSAGE, " BotSelectActivateWeapon called\n[INVENTORY_BULLETS] is %i\n", bs->inventory[INVENTORY_BULLETS]);
+	if (bs->inventory[INVENTORY_LR300] > 0 && bs->inventory[INVENTORY_BULLETS] > 0)
+		return WEAPONINDEX_LR300;
+	else if (bs->inventory[INVENTORY_DEAGLE] && bs->inventory[INVENTORY_BULLETS] >0)
+		return WP_DEAGLE;
         else if (bs->inventory[INVENTORY_MP5K] > 0 && bs->inventory[INVENTORY_BULLETS] > 0)
 		return WEAPONINDEX_MP5K;
         else if (bs->inventory[INVENTORY_UMP45] > 0 && bs->inventory[INVENTORY_BULLETS] > 0)
 		return WEAPONINDEX_UMP45;
-        else if (bs->inventory[INVENTORY_SR8] > 0 && bs->inventory[INVENTORY_BULLETS] > 0)
-		return WEAPONINDEX_SR8;
 	else {
+	//	return WEAPONINDEX_LR300;
 		return -1;
 	}
 }
@@ -1608,7 +1606,7 @@ int AINode_Seek_ActivateEntity(bot_state_t *bs) {
 	}
 	// if the weapon is used for the bot movement
 	if (moveresult.flags & MOVERESULT_MOVEMENTWEAPON)
-		bs->weaponnum = moveresult.weapon;
+		bs->cur_ps.weapon = moveresult.weapon;
 	// if there is an enemy
 	if (BotFindEnemy(bs, -1)) {
 		if (BotWantsToRetreat(bs)) {
@@ -1742,7 +1740,7 @@ int AINode_Seek_NBG(bot_state_t *bs) {
 		bs->ideal_viewangles[2] *= 0.5;
 	}
 	//if the weapon is used for the bot movement
-	if (moveresult.flags & MOVERESULT_MOVEMENTWEAPON) bs->weaponnum = moveresult.weapon;
+	if (moveresult.flags & MOVERESULT_MOVEMENTWEAPON) bs->cur_ps.weapon = moveresult.weapon;
 	//if there is an enemy
 	if (BotFindEnemy(bs, -1)) {
 		if (BotWantsToRetreat(bs)) {
@@ -1942,7 +1940,7 @@ int AINode_Seek_LTG(bot_state_t *bs)
 		bs->ideal_viewangles[2] *= 0.5;
 	}
 	//if the weapon is used for the bot movement
-	if (moveresult.flags & MOVERESULT_MOVEMENTWEAPON) bs->weaponnum = moveresult.weapon;
+	if (moveresult.flags & MOVERESULT_MOVEMENTWEAPON) bs->cur_ps.weapon = moveresult.weapon;
 	//
 	return qtrue;
 }
@@ -2253,7 +2251,7 @@ int AINode_Battle_Chase(bot_state_t *bs)
 		bs->ideal_viewangles[2] *= 0.5;
 	}
 	//if the weapon is used for the bot movement
-	if (moveresult.flags & MOVERESULT_MOVEMENTWEAPON) bs->weaponnum = moveresult.weapon;
+	if (moveresult.flags & MOVERESULT_MOVEMENTWEAPON) bs->cur_ps.weapon = moveresult.weapon;
 	//if the bot is in the area the enemy was last seen in
 	if (bs->areanum == bs->lastenemyareanum) bs->chase_time = 0;
 	//if the bot wants to retreat (the bot could have been damage during the chase)
@@ -2446,7 +2444,7 @@ int AINode_Battle_Retreat(bot_state_t *bs) {
 		}
 	}
 	//if the weapon is used for the bot movement
-	if (moveresult.flags & MOVERESULT_MOVEMENTWEAPON) bs->weaponnum = moveresult.weapon;
+	if (moveresult.flags & MOVERESULT_MOVEMENTWEAPON)  bs->cur_ps.weapon = moveresult.weapon;
 	//attack the enemy if possible
 	BotCheckAttack(bs);
 	//
@@ -2593,7 +2591,7 @@ int AINode_Battle_NBG(bot_state_t *bs) {
 		}
 	}
 	//if the weapon is used for the bot movement
-	if (moveresult.flags & MOVERESULT_MOVEMENTWEAPON) bs->weaponnum = moveresult.weapon;
+	if (moveresult.flags & MOVERESULT_MOVEMENTWEAPON) bs->cur_ps.weapon = moveresult.weapon;
 	//attack the enemy if possible
 	BotCheckAttack(bs);
 	//

@@ -103,7 +103,7 @@ void PM_AddTouchEnt( int entityNum ) {
 PM_StartTorsoAnim
 ===================
 */
-static void PM_StartTorsoAnim( int anim ) {
+void PM_StartTorsoAnim( int anim ) {
         if ( pm->ps->pm_type >= PM_DEAD ) {
                 return;
         }
@@ -2277,9 +2277,9 @@ static void PM_Weapon( void ) {
             &&  bg_weaponlist[0].rounds[pm->ps->clientNum] > 0
             && !( pm->ps->pm_flags & PMF_SINGLE_SHOT )
             &&  bg_weaponlist[pm->ps->weapon].rounds[pm->ps->clientNum] >0){
-            if(  pm->ps->weapon ==WP_UMP45 && bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] == 0 )
-                pm->ps->weaponTime = 45;
-            else
+    //        if(  pm->ps->weapon ==WP_UMP45 && bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] == 0 )
+    //            pm->ps->weaponTime = 45;
+    //        else
           pm->ps->weaponTime = PM_WeaponTime(pm->ps->weapon );
           PM_AddEvent( EV_FIRE_WEAPON );
           PM_StartWeaponAnim( WPN_FIRE );
@@ -2299,7 +2299,7 @@ static void PM_Weapon( void ) {
  
  */
                     
-
+if( pm->ps->eFlags & ~EF_WEAPONS_LOCKED){
         if ((pm->cmd.buttons & 1) ) {
             
            if(pm->ps->weapon==WP_KNIFE && pm->ps->stats[STAT_MODE]  && pm->ps->pm_flags & PMF_GRENADE_ARMED ){
@@ -2313,7 +2313,7 @@ static void PM_Weapon( void ) {
             return;
           }
         }
-
+}
         
         
         if ( pm->ps->pm_flags & PMF_RELOADING ){
@@ -2371,6 +2371,7 @@ static void PM_Weapon( void ) {
 
 
     // check for fire
+	//can not fire during warmup --Xamis
         if (!(pm->cmd.buttons & 1) ) {
             bg_weaponlist[0].numClips[pm->ps->clientNum] = 0; //for round increment count for spread/recoil
             
@@ -2410,7 +2411,7 @@ static void PM_Weapon( void ) {
                 return;
           }
         }
-
+       
         if(BG_Grenade(pm->ps->weapon) && pm->ps->pm_flags & PMF_GRENADE_ARMED ){
                       pm->ps->weaponTime = 50;
           PM_StartWeaponAnim(WPN_READY_FIRE_IDLE);
@@ -2433,8 +2434,10 @@ static void PM_Weapon( void ) {
         if ( pm->ps->weapon <= WP_NONE )
                 return;
 
+        if( pm->ps->eFlags & EF_WEAPONS_LOCKED)
+                return;
         
-
+        
                                 // check for out of ammo
         if ( (pm->ps->stats[STAT_ROUNDS] == 0 && !BG_Grenade(pm->ps->weapon))
             || (pm->ps->stats[STAT_CLIPS] == 0 && BG_Grenade(pm->ps->weapon) )) {

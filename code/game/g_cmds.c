@@ -755,16 +755,17 @@ void Cmd_FollowCycle_f( gentity_t *ent, int dir ) {
                 && ent->client->sess.sessionTeam == TEAM_FREE ) {
                 ent->client->sess.losses++;
         }
+
         // first set them to spectator
-        if ( ent->client->sess.spectatorState == SPECTATOR_NOT ) {
-                SetTeam( ent, "spectator" );
-        }
+     //   if ( ent->client->sess.spectatorState == SPECTATOR_NOT ) {
+      //          SetTeam( ent, "spectator" );
+     //   }
 
         if ( dir != 1 && dir != -1 ) {
                 G_Error( "Cmd_FollowCycle_f: bad dir %i", dir );
         }
 
-        clientnum = ent->client->sess.spectatorClient;
+        clientnum =  ent->client->sess.spectatorClient;
         original = clientnum;
         do {
                 clientnum += dir;
@@ -784,6 +785,8 @@ void Cmd_FollowCycle_f( gentity_t *ent, int dir ) {
                 if ( level.clients[ clientnum ].sess.sessionTeam == TEAM_SPECTATOR ) {
                         continue;
                 }
+                            
+                
 
                 // this is good, we can use it
                 ent->client->sess.spectatorClient = clientnum;

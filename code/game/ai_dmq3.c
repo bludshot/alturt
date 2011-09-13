@@ -1559,17 +1559,32 @@ BotChooseWeapon
 void BotChooseWeapon(bot_state_t *bs) {
 	int newweaponnum;
 
+
 	if (bs->cur_ps.weaponstate == WEAPON_RAISING ||
 			bs->cur_ps.weaponstate == WEAPON_DROPPING) {
-		trap_EA_SelectWeapon(bs->client, bs->weaponnum);
+		trap_EA_SelectWeapon(bs->client, bs->cur_ps.weapon);
 	}
 	else {
-		newweaponnum = trap_BotChooseBestFightWeapon(bs->ws, bs->inventory);
-		if (bs->weaponnum != newweaponnum) bs->weaponchange_time = FloatTime();
-		bs->weaponnum = newweaponnum;
-		//BotAI_Print(PRT_MESSAGE, "bs->weaponnum = %d\n", bs->weaponnum);
-		trap_EA_SelectWeapon(bs->client, bs->weaponnum);
+            
+         if ( bg_inventory.sort[bs->cur_ps.clientNum][PRIMARY])
+                bs->cur_ps.weapon = bg_inventory.sort[bs->cur_ps.clientNum][PRIMARY];
+        else if ( bg_inventory.sort[bs->cur_ps.clientNum][SECONDARY])
+                bs->cur_ps.weapon = bg_inventory.sort[bs->cur_ps.clientNum][SECONDARY];
+        else if ( bg_inventory.sort[bs->cur_ps.clientNum][SIDEARM])
+                bs->cur_ps.weapon = bg_inventory.sort[bs->cur_ps.clientNum][SIDEARM];
+        else
+                bs->cur_ps.weapon = bg_inventory.sort[bs->cur_ps.clientNum][MELEE];
+
+		//newweaponnum = trap_BotChooseBestFightWeapon(bs->ws, bs->inventory);
+                //BotAI_Print(PRT_MESSAGE, "bestweapon = %i\n", newweaponnum);
+		//if (bs->cur_ps.weapon != newweaponnum) bs->weaponchange_time = FloatTime();
+		//bs->cur_ps.weapon = newweaponnum;
+		//trap_EA_SelectWeapon(bs->client, bs->cur_ps.weapon);
 	}
+ 
+
+//trap_EA_SelectWeapon(bs->client, bs->cur_ps.weapon);
+
 }
 
 /*
@@ -1697,25 +1712,25 @@ void BotUpdateInventory(bot_state_t *bs) {
 //	bs->inventory[INVENTORY_ARMOR] = bs->cur_ps.stats[STAT_ARMOR];
 	//weapons
 	bs->inventory[INVENTORY_KNIFE] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_KNIFE)) != 0;
-	bs->inventory[INVENTORY_SPAS] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_SPAS)) != 0;
+	//bs->inventory[INVENTORY_SPAS] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_SPAS)) != 0;
 	bs->inventory[INVENTORY_M4] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_M4)) != 0;
-        bs->inventory[INVENTORY_HK69] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_HK69)) != 0;
+       // bs->inventory[INVENTORY_HK69] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_HK69)) != 0;
         bs->inventory[INVENTORY_LR300] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_LR300)) != 0;
-        bs->inventory[INVENTORY_PSG1] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_PSG1)) != 0;
-        bs->inventory[INVENTORY_SR8] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_SR8)) != 0;
+       // bs->inventory[INVENTORY_PSG1] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_PSG1)) != 0;
+       // bs->inventory[INVENTORY_SR8] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_SR8)) != 0;
         bs->inventory[INVENTORY_DEAGLE] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_DEAGLE)) != 0;
-        bs->inventory[INVENTORY_BERETTA] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_BERETTA)) != 0;
+       // bs->inventory[INVENTORY_BERETTA] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_BERETTA)) != 0;
 //	bs->inventory[INVENTORY_GRAPPLINGHOOK] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_GRAPPLING_HOOK)) != 0;
 //#ifdef MISSIONPACK
         bs->inventory[INVENTORY_UMP45] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_UMP45)) != 0;;
-        bs->inventory[INVENTORY_MP5K] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_MP5K)) != 0;;
-        bs->inventory[INVENTORY_G36] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_G36)) != 0;;
+       // bs->inventory[INVENTORY_MP5K] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_MP5K)) != 0;;
+        //bs->inventory[INVENTORY_G36] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_G36)) != 0;;
 //#endif
 	//ammo
-	bs->inventory[INVENTORY_SHELLS] = bs->cur_ps.ammo[WP_SPAS];
-      //  bs->inventory[INVENTORY_BULLETS] = bs->cur_ps.ammo[WP_M4]
-        bs->inventory[INVENTORY_BULLETS] = bg_weaponlist[WP_M4].rounds[ bs->cur_ps.clientNum ];
-	bs->inventory[INVENTORY_GRENADES] = bs->cur_ps.ammo[WP_HK69];
+//	bs->inventory[INVENTORY_SHELLS] = bs->cur_ps.ammo[WP_SPAS];
+        bs->inventory[INVENTORY_BULLETS] = bs->cur_ps.ammo[WP_LR300];
+        //bs->inventory[INVENTORY_BULLETS] = 100;//bg_weaponlist[WP_M4].rounds[ bs->cur_ps.clientNum ];
+	//bs->inventory[INVENTORY_GRENADES] = bs->cur_ps.ammo[WP_HK69];
 
 #ifdef MISSIONPACK
 //	bs->inventory[INVENTORY_NAILS] = bs->cur_ps.ammo[WP_NAILGUN];
@@ -2370,11 +2385,11 @@ int BotHasPersistantPowerupAndWeapon(bot_state_t *bs) {
 		if (bs->inventory[INVENTORY_ARMOR] < 40) return qfalse;
 	}
 	//
-	if (bs->inventory[INVENTORY_M4] > 0 &&
+	if (bs->inventory[INVENTORY_LR300] > 0 &&
 			bs->inventory[INVENTORY_BULLETS] >0) return qtrue;
 	//
-	if (bs->inventory[INVENTORY_SPAS] > 0 &&
-			bs->inventory[INVENTORY_SHELLS] > 0) return qtrue;
+	if (bs->inventory[INVENTORY_UMP45] > 0 &&
+			bs->inventory[INVENTORY_BULLETS] > 0) return qtrue;
 	//if the bot can use the plasmagun
 	if (bs->inventory[INVENTORY_HK69] > 0 &&
 			bs->inventory[INVENTORY_GRENADES] > 20) return qtrue;
@@ -3240,9 +3255,10 @@ void BotAimAtEnemy(bot_state_t *bs) {
 	}
 
 	//get the weapon information
-	trap_BotGetWeaponInfo(bs->ws, bs->weaponnum, &wi);
+//	Com_Printf( "bot weapon is %i\n",  bs->cur_ps.weapon);
+	trap_BotGetWeaponInfo(bs->ws, bs->cur_ps.weapon, &wi);
 	//get the weapon specific aim accuracy and or aim skill
-	if (wi.number == WP_M4) {
+	if (wi.number == WP_LR300) {
 		aim_accuracy = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_AIM_ACCURACY_MACHINEGUN, 0, 1);
 	}
 	else if (wi.number == WP_SPAS) {
@@ -3427,8 +3443,8 @@ void BotAimAtEnemy(bot_state_t *bs) {
 	//get aim direction
 	VectorSubtract(bestorigin, bs->eye, dir);
 	//
-	if (wi.number == WP_M4 ||
-		wi.number == WP_SPAS ) {
+	if (wi.number == WP_LR300 ||
+		wi.number == WP_UMP45 ) {
 		//distance towards the enemy
 		dist = VectorLength(dir);
 		if (dist > 150) dist = 150;
@@ -3480,17 +3496,6 @@ void BotCheckAttack(bot_state_t *bs) {
 	BotEntityInfo(attackentity, &entinfo);
 	// if not attacking a player
 	if (attackentity >= MAX_CLIENTS) {
-#ifdef MISSIONPACK
-		// if attacking an obelisk
-		if ( entinfo.number == redobelisk.entitynum ||
-			entinfo.number == blueobelisk.entitynum ) {
-			// if obelisk is respawning return
-			if ( g_entities[entinfo.number].activator &&
-				g_entities[entinfo.number].activator->s.frame == 2 ) {
-				return;
-			}
-		}
-#endif
 	}
 	//
 	reactiontime = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_REACTIONTIME, 0, 1);
@@ -3515,7 +3520,7 @@ void BotCheckAttack(bot_state_t *bs) {
 	//
 	VectorSubtract(bs->aimtarget, bs->eye, dir);
 	//
-	if (bs->weaponnum == WP_KNIFE) {
+	if (bs->cur_ps.weapon == WP_KNIFE) {
 		if (VectorLengthSquared(dir) > Square(60)) {
 			return;
 		}
@@ -3533,7 +3538,7 @@ void BotCheckAttack(bot_state_t *bs) {
 		return;
 
 	//get the weapon info
-	trap_BotGetWeaponInfo(bs->ws, bs->weaponnum, &wi);
+	trap_BotGetWeaponInfo(bs->ws, bs->cur_ps.weapon, &wi);
 	//get the start point shooting from
 	VectorCopy(bs->origin, start);
 	start[2] += bs->cur_ps.viewheight;

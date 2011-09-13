@@ -119,7 +119,12 @@ along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
 
 #define CS_ITEMS                                27              // string of 0's and 1's that tell which items are present
 
+#define CS_ROUND_START_TIME             28              // round start time
+#define CS_VIP_START_TIME               29
+#define CS_BOMB_START_TIME              30
+
 #define CS_MODELS                               32
+
 #define CS_SOUNDS                               (CS_MODELS+MAX_MODELS)
 #define CS_PLAYERS                              (CS_SOUNDS+MAX_SOUNDS)
 #define CS_LOCATIONS                    (CS_PLAYERS+MAX_CLIENTS)
@@ -357,11 +362,17 @@ typedef enum {
 #define EF_TALK                         0x00001000              // draw a talk balloon
 #define EF_CONNECTION           0x00002000              // draw a connection trouble sprite
 #define EF_VOTED                        0x00004000              // already cast a vote
-#define EF_AWARD_IMPRESSIVE     0x00008000              // draw an impressive sprite
+//#define EF_AWARD_IMPRESSIVE     0x00008000              // draw an impressive sprite
 #define EF_AWARD_DEFEND         0x00010000              // draw a defend sprite
 #define EF_AWARD_ASSIST         0x00020000              // draw a assist sprite
-#define EF_AWARD_DENIED         0x00040000              // denied
+#define EF_VIP		         0x00040000              // denied
 #define EF_TEAMVOTED            0x00080000              // already cast a team vote
+
+//#define EF_VIP                          0x00000800              // VIP
+
+#define EF_WEAPONS_LOCKED       0x00008000              // will lock weapons
+
+
 
 // NOTE: may not have more than 16
 typedef enum {
@@ -536,6 +547,7 @@ typedef enum {
         EV_RAILTRAIL,
         EV_SHOTGUN,
         EV_BULLET,                              // otherEntity is the shooter
+	EV_GAMESTATE,
 
         EV_PAIN,
         EV_DEATH1,
@@ -590,6 +602,7 @@ typedef enum {
         GTS_REDTEAM_TOOK_LEAD,
         GTS_BLUETEAM_TOOK_LEAD,
         GTS_TEAMS_ARE_TIED,
+    	GTS_DRAW_ROUND,
         GTS_KAMIKAZE
 } global_team_sound_t;
 
@@ -743,6 +756,20 @@ typedef enum {
         TEAMTASK_ESCORT,
         TEAMTASK_CAMP
 } teamtask_t;
+
+
+typedef enum {
+    /*  STATE_WAITING,
+    STATE_INPROGRESS,
+    STATE_ROUNDOVER*/
+    STATE_OPEN,
+    STATE_OVER,
+    STATE_LOCKED
+} gamestate_t;
+
+
+
+
 
 // means of death
 typedef enum {
