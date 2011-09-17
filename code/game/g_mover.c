@@ -1265,8 +1265,11 @@ Reset a door in the beginning of a round.
 */
 void Door_ResetState( gentity_t *door )
 {
-	if ( door->moverState == MOVER_POS2 || door->moverState == ROTATOR_POS2) {
+
+	if ( door->moverState == MOVER_POS2 ) {
 		Use_BinaryMover2(door, door, door );
+	} else if (door->moverState == ROTATOR_POS2  ) {
+		Use_BinaryMover(door, door, door );
 	} else if ( door->moverState == MOVER_POS1 || door->moverState == ROTATOR_POS1 ) {
         // closed do nothing
 	} else if ( door->moverState == MOVER_STOP_1TO2 ||
