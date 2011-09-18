@@ -31,14 +31,14 @@ menuDef {
     	visible 0
     	fullScreen 0
 	outOfBoundsClick	
-    	rect 16 45 128 60
+    	rect 16 45 400 300
 	focusColor 1 0 0 1
 
 
 itemDef {
      	name window
 	style WINDOW_STYLE_FILLED
-    	rect 0 0 128 60
+    	rect 0 0 400 300
 	backcolor .1 .1 .37 1
       	visible 1 
 	border 1
@@ -48,38 +48,145 @@ itemDef {
     	}
 
 itemDef {
-     	name noabout1
+     	name aboutwip
 	style 0
-    	rect 16 16 144 16
+    	rect 16 24 144 16
 	wrapped
-	text "about menu not"	
+	text "about menu is a work in progress"	
 
 	textalign 0
-	textalignx 8
-	textaligny 14
+	textalignx 0
+	textaligny 0
 	textscale .25
 
 	forecolor 1 1 1 1
       	visible 1 
      	decoration
     	}
+
+
+
+
+
 
 itemDef {
-     	name noabout2
-	style 0
-    	rect 16 30 144 16
-	wrapped
-	text "implemented yet"	
-
-	textalign 0
-	textalignx 8
-	textaligny 14
+	name downloadinfo
+	rect 16 75 200 270
+	type ITEM_TYPE_TEXT
+	style 1
+	textstyle 3
+	text "You can download the source code for this mod here:"
+	textalign ITEM_ALIGN_LEFT
+	textalignx 0
+	textaligny 0
 	textscale .25
-
 	forecolor 1 1 1 1
-      	visible 1 
-     	decoration
-    	}
+	visible 1
+	decoration
+}
+
+itemDef {
+	name uitext
+	rect 16 104 200 270
+	type ITEM_TYPE_TEXT
+	style 1
+	textstyle 3
+	text "User Interface: "
+	textalign ITEM_ALIGN_LEFT
+	textalignx 0
+	textaligny 0
+	textscale .25
+	forecolor 1 1 1 1
+	visible 1
+	decoration
+}
+
+itemDef {
+	name cgtext
+	rect 16 118 200 270
+	type ITEM_TYPE_TEXT
+	style 1
+	textstyle 3
+	text "Client Game: "
+	textalign ITEM_ALIGN_LEFT
+	textalignx 0
+	textaligny 0
+	textscale .25
+	forecolor 1 1 1 1
+	visible 1
+	decoration
+}
+
+itemDef {
+	name gtext
+	rect 16 132 200 270
+	type ITEM_TYPE_TEXT
+	style 1
+	textstyle 3
+	text "Server Game: "
+	textalign ITEM_ALIGN_LEFT
+	textalignx 0
+	textaligny 0
+	textscale .25
+	forecolor 1 1 1 1
+	visible 1
+	decoration
+}
+
+itemDef {
+	name uisource
+	rect 124 104 200 440
+	type ITEM_TYPE_TEXT
+	style 1
+	textstyle 3
+	cvar "ui_sourceURL"
+	textalign ITEM_ALIGN_LEFT
+	textalignx 0
+	textaligny 0
+	textscale .25
+	forecolor 0 1 0 1
+	visible 1
+	decoration
+}
+
+itemDef {
+	name cgsource
+	rect 124 118 200 440
+	type ITEM_TYPE_TEXT
+	style 1
+	textstyle 3
+	cvar "cg_sourceURL"
+	textalign ITEM_ALIGN_LEFT
+	textalignx 0
+	textaligny 0
+	textscale .25
+	forecolor 0 1 0 1
+	visible 1
+	decoration
+}
+
+itemDef {
+	name gsource
+	rect 124 132 200 440
+	type ITEM_TYPE_TEXT
+	style 1
+	textstyle 3
+	cvar "g_sourceURL"
+	textalign ITEM_ALIGN_LEFT
+	textalignx 0
+	textaligny 0
+	textscale .25
+	forecolor 0 1 0 1
+	visible 1
+	decoration
+}
+
+
+
+
+
+
+
 
 }
 

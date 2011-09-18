@@ -29,7 +29,7 @@ menuDef {
 	name "sourceurl_popmenu"
    	visible 0
    	fullscreen 0
-   	rect 158 80 320 340
+   	rect 60 60 420 590
 	focusColor 1 0 0 1
    	style 1
    	border 1
@@ -38,7 +38,7 @@ menuDef {
 
 itemDef {
 	name window
-	rect 0 0 320 340
+	rect 0 0 420 350
 	style 1
 	background "ui/assets/mod_popup_big.tga"
 	backcolor 1 1 1 1
@@ -51,14 +51,14 @@ itemDef {
 
 itemDef {
 	name dltitle
-	rect 0 32 320 20	
-	text "Download Source Code" 
+	rect 120 33 420 20	
+	text "Source Code Download" 
 	style 0
 	textscale .3 
 	textstyle 4
-	textalign 1
-	textalignx 160
-	textaligny 2
+	textalign 0
+	textalignx 0
+	textaligny 0
 	decoration
 	forecolor 1 1 1 1
 	visible 1
@@ -70,7 +70,7 @@ itemDef {
 	type ITEM_TYPE_TEXT
 	style 1
 	textstyle 3
-	text "You can download the source code for"
+	text "You can download the source code for this mod here:"
 	textalign ITEM_ALIGN_LEFT
 	textalignx 0
 	textaligny 0
@@ -81,12 +81,12 @@ itemDef {
 }
 
 itemDef {
-	name dlinfo2
-	rect 40 74 200 270
+	name uitext
+	rect 40 104 200 270
 	type ITEM_TYPE_TEXT
 	style 1
 	textstyle 3
-	text "this mod at:"
+	text "User Interface: "
 	textalign ITEM_ALIGN_LEFT
 	textalignx 0
 	textaligny 0
@@ -97,15 +97,77 @@ itemDef {
 }
 
 itemDef {
-	name sourceurlvalue
-	rect 60 102 200 270
+	name cgtext
+	rect 40 118 200 270
 	type ITEM_TYPE_TEXT
 	style 1
 	textstyle 3
-	autowrapped
-	//cvar "sourceurl"
-	cvar "name"
-	textalign ITEM_ALIGN_CENTER
+	text "Client Game: "
+	textalign ITEM_ALIGN_LEFT
+	textalignx 0
+	textaligny 0
+	textscale .25
+	forecolor 1 1 1 1
+	visible 1
+	decoration
+}
+
+itemDef {
+	name gtext
+	rect 40 132 200 270
+	type ITEM_TYPE_TEXT
+	style 1
+	textstyle 3
+	text "Server Game: "
+	textalign ITEM_ALIGN_LEFT
+	textalignx 0
+	textaligny 0
+	textscale .25
+	forecolor 1 1 1 1
+	visible 1
+	decoration
+}
+
+itemDef {
+	name uisource
+	rect 124 104 200 440
+	type ITEM_TYPE_TEXT
+	style 1
+	textstyle 3
+	cvar "ui_sourceURL"
+	textalign ITEM_ALIGN_LEFT
+	textalignx 0
+	textaligny 0
+	textscale .25
+	forecolor 0 1 0 1
+	visible 1
+	decoration
+}
+
+itemDef {
+	name cgsource
+	rect 124 118 200 440
+	type ITEM_TYPE_TEXT
+	style 1
+	textstyle 3
+	text "You are not currently in a game*"
+	textalign ITEM_ALIGN_LEFT
+	textalignx 0
+	textaligny 0
+	textscale .25
+	forecolor 1 0 0 1
+	visible 1
+	decoration
+}
+
+itemDef {
+	name gsource
+	rect 124 132 200 440
+	type ITEM_TYPE_TEXT
+	style 1
+	textstyle 3
+	text "You are not currently connected to a server**"
+	textalign ITEM_ALIGN_LEFT
 	textalignx 0
 	textaligny 0
 	textscale .25
@@ -116,11 +178,12 @@ itemDef {
 
 itemDef {
 	name dlinfo3
-	rect 40 130 200 270
+	rect 40 158 300 300
 	type ITEM_TYPE_TEXT
 	style 1
 	textstyle 3
-	text "Also if you are connected to a server"
+	text "*When in a local game, you can get the Client Game (and local Server Game) qvm source code download link by typing sourceURL in console, or from the in-game menu if the mod you are playing uses the Alturt menu UI."
+	autowrapped
 	textalign ITEM_ALIGN_LEFT
 	textalignx 0
 	textaligny 0
@@ -132,11 +195,12 @@ itemDef {
 
 itemDef {
 	name dlinfo4
-	rect 40 144 200 270
+	rect 40 250 300 300
 	type ITEM_TYPE_TEXT
 	style 1
 	textstyle 3
-	text "that is running custom server-side only"
+	text "**When connected to a remote server, you can get the remote Server Game (and local Client Game) qvm source code download link by typing sourceURL in console, or from the in-game menu if the mod you are playing uses the Alturt menu UI."
+	autowrapped
 	textalign ITEM_ALIGN_LEFT
 	textalignx 0
 	textaligny 0
@@ -145,55 +209,6 @@ itemDef {
 	visible 1
 	decoration
 }
-
-itemDef {
-	name dlinfo5
-	rect 40 158 200 270
-	type ITEM_TYPE_TEXT
-	style 1
-	textstyle 3
-	text "mod code, you can get the download"
-	textalign ITEM_ALIGN_LEFT
-	textalignx 0
-	textaligny 0
-	textscale .25
-	forecolor 1 1 1 1
-	visible 1
-	decoration
-}
-
-itemDef {
-	name dlinfo6
-	rect 40 172 200 270
-	type ITEM_TYPE_TEXT
-	style 1
-	textstyle 3
-	text "url for that source code at any time"
-	textalign ITEM_ALIGN_LEFT
-	textalignx 0
-	textaligny 0
-	textscale .25
-	forecolor 1 1 1 1
-	visible 1
-	decoration
-}
-
-itemDef {
-	name dlinfo7
-	rect 40 186 200 270
-	type ITEM_TYPE_TEXT
-	style 1
-	textstyle 3
-	text "by typing sourceurl in the console."
-	textalign ITEM_ALIGN_LEFT
-	textalignx 0
-	textaligny 0
-	textscale .25
-	forecolor 1 1 1 1
-	visible 1
-	decoration
-}
-
 
 itemDef {
 	name ok
@@ -203,7 +218,7 @@ itemDef {
 	style WINDOW_STYLE_FILLED
 	border 1
 	bordercolor 1 1 1 .25
-	rect 208 285 80 26
+	rect 304 295 80 26
 	textalign 1
 	textalignx 39
 	textaligny 18
@@ -219,7 +234,7 @@ itemDef {
 itemDef {
 	name windowexit
 	text "x"
-	rect 284 20 15 15
+	rect 376 20 15 15
 	type 1
 	style WINDOW_STYLE_FILLED
 	textalign 1
