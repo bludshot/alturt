@@ -37,6 +37,8 @@ along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
 #define CG_FONT_THRESHOLD 0.1
 #endif
 
+#define CG_SOURCE_URL "http://sourceforge.net/projects/alturt/"
+
 #define	POWERUP_BLINKS		5
 
 #define	POWERUP_BLINK_TIME	1000
@@ -1255,6 +1257,7 @@ extern  vmCvar_t                cg_gunsize;//Xamis
 extern	vmCvar_t		cg_gibs;
 extern	vmCvar_t		cg_drawTimer;
 extern	vmCvar_t		cg_drawFPS;
+extern  vmCvar_t		cg_sourceURL; //blud
 extern	vmCvar_t		cg_drawStamina;  //Xamis
 extern	vmCvar_t		racered; //blud
 extern	vmCvar_t		raceblue; //blud

@@ -995,6 +995,8 @@ Cmd_Argc() / Cmd_Argv()
 static void CG_ServerCommand( void ) {
 	const char	*cmd;
 	char		text[MAX_SAY_TEXT];
+	char	cgSourceCvarString[1024]; //I am not sure about the length
+	char	uiSourceCvarString[1024]; //I am not sure about the length
 
 	cmd = CG_Argv(0);
 
@@ -1010,6 +1012,25 @@ static void CG_ServerCommand( void ) {
 
 	if ( !strcmp( cmd, "cs" ) ) {
 		CG_ConfigStringModified();
+		return;
+	}
+
+	if ( !strcmp( cmd, "cmd_cg_source_url" ) ) {
+		trap_Cvar_VariableStringBuffer( "cg_sourceURL", cgSourceCvarString, sizeof(cgSourceCvarString) );
+		trap_Cvar_VariableStringBuffer( "ui_sourceURL", uiSourceCvarString, sizeof(uiSourceCvarString) );
+
+		//check to see if the ui_sourceURL cvar was empty. If it's empty that means this is an alturt mini-mod
+		//that uses the vanilla Urt UI instead of Alturt's UI. (Or that an Alturt modder has improperly removed
+		//the ui_sourceURL cvar or set it improperly to an empty value.)
+		if ( strlen(uiSourceCvarString) == 0 )
+		{
+			//this is a mini-mod with no alturt UI, so it uses the stock vanilla Urt menus which are of course closed source
+			strcpy( uiSourceCvarString, "base q3ut4" );
+		}
+
+		CG_Printf( "Client            %s\n", cgSourceCvarString );
+		CG_Printf( "User Interface    %s\n", uiSourceCvarString );
+
 		return;
 	}
 

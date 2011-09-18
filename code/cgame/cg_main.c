@@ -106,6 +106,7 @@ vmCvar_t        cg_gunsize;//xamis
 vmCvar_t	cg_gibs;
 vmCvar_t	cg_drawTimer;
 vmCvar_t	cg_drawFPS;
+vmCvar_t	cg_sourceURL; //blud
 vmCvar_t	cg_drawStamina; //xamis
 vmCvar_t	racered; //blud
 vmCvar_t	raceblue; //blud
@@ -230,6 +231,7 @@ static cvarTable_t cvarTable[] = {
 	{ &cg_drawStatus, "cg_drawStatus", "1", CVAR_ARCHIVE  },
 	{ &cg_drawTimer, "cg_drawTimer", "0", CVAR_ARCHIVE  },
 	{ &cg_drawFPS, "cg_drawFPS", "0", CVAR_ARCHIVE  },
+	{ &cg_sourceURL, "cg_sourceURL", CG_SOURCE_URL, CVAR_ROM | CVAR_INIT  },
 	{ &cg_drawSnapshot, "cg_drawSnapshot", "0", CVAR_ARCHIVE  },
 	{ &cg_drawStamina, "cg_drawStamina", "0", CVAR_ARCHIVE  }, //Xamis
 	{ &racered, "racered", "0", CVAR_USERINFO | CVAR_ARCHIVE }, //blud

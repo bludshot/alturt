@@ -32,7 +32,11 @@ along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
 #include "../game/bg_public.h"
 #include "ui_shared.h"
 
+#define UI_SOURCE_URL "http://sourceforge.net/projects/alturt/"
+
 // global display context
+
+extern vmCvar_t ui_sourceURL;
 
 extern vmCvar_t	ui_ffa_fraglimit;
 extern vmCvar_t	ui_ffa_timelimit;

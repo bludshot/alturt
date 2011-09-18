@@ -7041,6 +7041,8 @@ typedef struct {
 	int			cvarFlags;
 } cvarTable_t;
 
+vmCvar_t	ui_sourceURL;
+
 vmCvar_t	ui_ffa_fraglimit;
 vmCvar_t	ui_ffa_timelimit;
 
@@ -7184,6 +7186,8 @@ static cvarTable_t		cvarTable[] = {
 	{ &ui_ctf_capturelimit, "ui_ctf_capturelimit", "8", CVAR_ARCHIVE },
 	{ &ui_ctf_timelimit, "ui_ctf_timelimit", "30", CVAR_ARCHIVE },
 	{ &ui_ctf_friendly, "ui_ctf_friendly",  "0", CVAR_ARCHIVE },
+
+	{ &ui_sourceURL, "ui_sourceURL", UI_SOURCE_URL, CVAR_INIT | CVAR_ROM },
 
 	{ &ui_arenasFile, "g_arenasFile", "", CVAR_INIT|CVAR_ROM },
 	{ &ui_botsFile, "g_botsFile", "", CVAR_INIT|CVAR_ROM },

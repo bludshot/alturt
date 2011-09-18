@@ -36,6 +36,8 @@ along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
 //but again this doesn't suit alt urt, so:
 #define	GAMEVERSION	"Alturt alpha 0.02"	//change this for real releases to show proper version number
 
+#define G_SOURCE_URL "http://sourceforge.net/projects/alturt/"
+
 #define BODY_QUEUE_SIZE		8
 
 #define INFINITE			1000000

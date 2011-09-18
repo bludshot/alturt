@@ -922,6 +922,25 @@ static void Cmd_Say_f( gentity_t *ent, int mode, qboolean arg0 ) {
         G_Say( ent, NULL, mode, p );
 }
 
+
+/*
+==================
+Cmd_SourceURL_f
+==================
+*/
+static void Cmd_SourceURL_f( gentity_t *ent ) {
+	char gSourceCvarString[1024]; //I am not sure about the length
+
+	trap_Cvar_VariableStringBuffer( "g_sourceURL", gSourceCvarString, sizeof(gSourceCvarString) );
+
+	trap_SendServerCommand( ent-g_entities, "print \"QVM:              Source Code download URL:\n\"" );
+	trap_SendServerCommand( ent-g_entities, "print \"------------------------------------------------------------\n\"" );
+	trap_SendServerCommand( ent-g_entities, va("print \"Server            %s\n\"", gSourceCvarString) );
+
+	trap_SendServerCommand( ent-g_entities, "cmd_cg_source_url" );
+}
+
+
 /*
 ==================
 Cmd_Tell_f
@@ -1703,9 +1722,6 @@ void ClientCommand( int clientNum ) {
                 Cmd_GameCommand_f( ent );
         else if (Q_stricmp (cmd, "setviewpos") == 0)
                 Cmd_SetViewpos_f( ent );
-		//bludshot AGPL compliance (later lets grab the url from a constant we can also use elsewhere) and also grab 'this mod' from game_version
-		else if (Q_stricmp (cmd, "sourceurl") == 0)
-			trap_SendServerCommand( clientNum, va("print \"You can download the source code for this mod at http://sourceforge.net/projects/alturt/ \n\"") );
         else if (Q_stricmp (cmd, "stats") == 0)
                 Cmd_Stats_f( ent );
         else if (Q_stricmp (cmd, "ut_weapdrop") == 0)
@@ -1716,6 +1732,8 @@ void ClientCommand( int clientNum ) {
           UT_SelectItem ( ent, 0 );
         else if (Q_stricmp (cmd, "ut_itemdrop") == 0)
                 UT_DropItem ( ent);
+		else if  (Q_stricmp (cmd, "sourceURL") == 0)
+				Cmd_SourceURL_f ( ent);
         else
                 trap_SendServerCommand( clientNum, va("print \"unknown cmd %s\n\"", cmd ) );
 }
