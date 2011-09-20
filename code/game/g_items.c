@@ -810,6 +810,15 @@ gentity_t *Drop_Weapon( gentity_t *ent, gitem_t *item, float angle, int clips, i
   vec3_t      angles;
   vec3_t      origin;
 
+  
+  
+      if ( ent->client->ps.pm_flags & PMF_FOLLOW )
+        return;
+
+    if ( ent->client->ps.pm_flags & EF_WEAPONS_LOCKED)
+        return;
+  
+  
   VectorCopy( ent->s.apos.trBase, angles );
   angles[YAW] += angle;
   angles[PITCH] = 0;  // always forward
