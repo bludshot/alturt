@@ -349,7 +349,7 @@ Bullet_Fire
 ======================================================================
 */
 
-void Bullet_Fire (gentity_t *ent, float spread, int damage ) {
+void Bullet_Fire (gentity_t *ent, float spread, int damage, int MOD  ) {
         trace_t         tr;
         vec3_t          end;
         float           r;
@@ -373,7 +373,7 @@ void Bullet_Fire (gentity_t *ent, float spread, int damage ) {
         }
         
 
-         damage *= s_quadFactor;       
+     //    damage *= s_quadFactor;       
               // G_Printf ("spread = %f\n xyspeed = %f", spread, BG_CalcSpread(ent->client->ps) );
         
       if( ent->client->ps.powerups[ PW_LASERSIGHT ] ){
@@ -453,7 +453,7 @@ void Bullet_Fire (gentity_t *ent, float spread, int damage ) {
 
                 if ( traceEnt->takedamage) {
                                 G_Damage( traceEnt, ent, ent, forward, tr.endpos,
-                                        damage, 0, MOD_MACHINEGUN);
+                                        damage/2, 0, MOD);
                 }
                 //break;
        // }
@@ -1392,9 +1392,10 @@ int RoundCount( int w )
 }
 
 
+
 void Set_Mode(gentity_t *ent){
     
-  int             index;  
+  int             index, i;  
   char    userinfo[MAX_INFO_STRING];
   char                    weapmodes_save[WP_NUM_WEAPONS];//xamis
   index = ent - g_entities;
@@ -1403,6 +1404,16 @@ void Set_Mode(gentity_t *ent){
 
  Q_strncpyz( weapmodes_save, Info_ValueForKey (userinfo, "weapmodes_save"), sizeof( weapmodes_save ) );
  
+ 
+ 	if (!(strcmp(weapmodes_save ,"")) ){
+		strcpy(weapmodes_save, "0000202022200000");
+        }
+
+ if ( ent->r.svFlags & SVF_BOT ){
+strcpy(weapmodes_save, "0000202022200000");
+ ent->client->ps.stats[STAT_MODE] =weapmodes_save[ent->client->ps.weapon];
+ }
+
    switch (weapmodes_save[ent->client->ps.weapon] ){
     case '0':
   bg_weaponlist[ ent->client->ps.weapon ].weapMode[ent->client->ps.clientNum]
@@ -1449,14 +1460,15 @@ void Change_Mode(gentity_t *ent){
  if (ent->client->ps.weapon == WP_KNIFE && bg_weaponlist[ent->client->ps.weapon].rounds[ent->client->ps.clientNum] <2  )
      return;
 
+  ent->client->weaponMode[ ent->client->ps.weapon ] ++;
 
- ent->client->weaponMode[ ent->client->ps.weapon ]++;
+  if ( ent->client->weaponMode[ ent->client->ps.weapon ] > 2  || ent->client->weaponMode[ ent->client->ps.weapon ] < 0 ) //modes cannot go above 2  or below 0
+    ent->client->weaponMode[ ent->client->ps.weapon ] =0; 
+ 
  if ( ent->client->ps.weapon == WP_MP5K || ent->client->ps.weapon == WP_UMP45 || ent->client->ps.weapon ==WP_KNIFE  || ent->client->ps.weapon ==WP_HK69 ){
    if (ent->client->weaponMode[ ent->client->ps.weapon ] == 1 )
      ent->client->weaponMode[ ent->client->ps.weapon ]++;
  }
- if ( ent->client->weaponMode[ ent->client->ps.weapon ] > 2 || ent->client->weaponMode[ ent->client->ps.weapon ] >2 )
-   ent->client->weaponMode[ ent->client->ps.weapon ] =0;
 
 
  bg_weaponlist[ ent->client->ps.weapon ].weapMode[ent->client->ps.clientNum] = ent->client->ps.stats[STAT_MODE]= ent->client->weaponMode[ ent->client->ps.weapon ];
@@ -1496,11 +1508,11 @@ void Change_Mode(gentity_t *ent){
 
          
  trap_Cvar_Set( "weapmodes_save", weapmodes_save);
-  if ( ent->client->weaponMode[ ent->client->ps.weapon ] == 2)
-    ent->client->weaponMode[ ent->client->ps.weapon ] =-1;
-
 
 }
+
+
+
 /*
 ==================
   Cmd_Reload
@@ -1609,37 +1621,37 @@ void FireWeapon( gentity_t *ent ) {
                 case WP_SPAS:
                         weapon_supershotgun_fire( ent );
         case WP_M4:
-                        Bullet_Fire( ent, M4_SPREAD, M4_DAMAGE );
+                        Bullet_Fire( ent, M4_SPREAD, M4_DAMAGE, MOD_M4 );
                 break;
                 case WP_MP5K:
-                        Bullet_Fire( ent, MP5K_SPREAD, MP5K_DAMAGE );
+                        Bullet_Fire( ent, MP5K_SPREAD, MP5K_DAMAGE, MOD_MP5K );
                         break;
                 case WP_UMP45:
-                  Bullet_Fire( ent, UMP45_SPREAD, UMP45_DAMAGE );
+                  Bullet_Fire( ent, UMP45_SPREAD, UMP45_DAMAGE ,MOD_UMP45 );
                         break;
                 case WP_PSG1:
-                        Bullet_Fire( ent, PSG1_SPREAD, MACHINEGUN_DAMAGE );
+                        Bullet_Fire( ent, PSG1_SPREAD, MACHINEGUN_DAMAGE, MOD_PSG1 );
                         break;
                 case WP_SR8:
-                        Bullet_Fire( ent, SR8_SPREAD, SR8_DAMAGE );
+                        Bullet_Fire( ent, SR8_SPREAD, SR8_DAMAGE, MOD_SR8 );
                         break;
                 case WP_G36:
-                        Bullet_Fire( ent, G36_SPREAD, G36_DAMAGE );
+                        Bullet_Fire( ent, G36_SPREAD, G36_DAMAGE, MOD_G36 );
                         break;
                 case WP_LR300:
-                  Bullet_Fire( ent, LR300_SPREAD, LR300_DAMAGE );
+                  Bullet_Fire( ent, LR300_SPREAD, LR300_DAMAGE, MOD_LR300 );
                         break;
                 case WP_AK103:
-                        Bullet_Fire( ent, AK103_SPREAD, AK103_DAMAGE );
+                        Bullet_Fire( ent, AK103_SPREAD, AK103_DAMAGE, MOD_AK103 );
                         break;
                 case WP_NEGEV:
-                        Bullet_Fire( ent, NEGEV_SPREAD, NEGEV_DAMAGE );
+                        Bullet_Fire( ent, NEGEV_SPREAD, NEGEV_DAMAGE, MOD_NEGEV );
                         break;
                 case WP_DEAGLE:
-                        Bullet_Fire( ent, DEAGLE_SPREAD, DEAGLE_DAMAGE );
+                        Bullet_Fire( ent, DEAGLE_SPREAD, DEAGLE_DAMAGE, MOD_DEAGLE );
                         break;
                 case WP_BERETTA:
-                        Bullet_Fire( ent, BERETTA_SPREAD, BERETTA_DAMAGE );
+                        Bullet_Fire( ent, BERETTA_SPREAD, BERETTA_DAMAGE, MOD_BERETTA );
                         break;
         case WP_HK69:
                         weapon_grenadelauncher_fire( ent, ent->client->ps.stats[STAT_MODE]  );
