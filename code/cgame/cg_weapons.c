@@ -2084,7 +2084,7 @@ void CG_AddViewWeapon( playerState_t *ps ) {
         weaponInfo_t    *weapon;
         int             anim;
 
-        if ( ps->persistant[PERS_TEAM] == TEAM_SPECTATOR ) {
+        if ( ps->persistant[PERS_TEAM] >= TEAM_SPECTATOR ) {
                 return;
         }
         
