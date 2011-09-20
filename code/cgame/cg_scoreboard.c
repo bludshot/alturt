@@ -255,7 +255,7 @@ Draw the normal in-game scoreboard
 =================
 */
 qboolean CG_DrawOldScoreboard( void ) {
-	int		x, y, w, i, n1, n2;
+	int		x, y, w, i, n1, n2,n3,n4;
 	float	fade;
 	float	*fadeColor;
 	char	*s;
@@ -367,19 +367,35 @@ qboolean CG_DrawOldScoreboard( void ) {
 			CG_DrawTeamBackground( 0, y - topBorderSize, 640, n1 * lineHeight + bottomBorderSize, 0.33f, TEAM_RED );
 			y += (n1 * lineHeight) + BIGCHAR_HEIGHT;
 			maxClients -= n1;
+                        		n3 = CG_TeamScoreboard( y, TEAM_RED_SPECTATOR, fade, maxClients, lineHeight );
+			CG_DrawTeamBackground( 0, y - topBorderSize, 640, n3 * lineHeight + bottomBorderSize, 0.33f, TEAM_RED_SPECTATOR );
+			y += (n3 * lineHeight) + BIGCHAR_HEIGHT;
+			maxClients -= n3;
 			n2 = CG_TeamScoreboard( y, TEAM_BLUE, fade, maxClients, lineHeight );
 			CG_DrawTeamBackground( 0, y - topBorderSize, 640, n2 * lineHeight + bottomBorderSize, 0.33f, TEAM_BLUE );
 			y += (n2 * lineHeight) + BIGCHAR_HEIGHT;
 			maxClients -= n2;
+                        		n4 = CG_TeamScoreboard( y, TEAM_BLUE_SPECTATOR, fade, maxClients, lineHeight );
+			CG_DrawTeamBackground( 0, y - topBorderSize, 640, n4 * lineHeight + bottomBorderSize, 0.33f, TEAM_BLUE_SPECTATOR );
+			y += (n4 * lineHeight) + BIGCHAR_HEIGHT;
+			maxClients -= n4;
 		} else {
 			n1 = CG_TeamScoreboard( y, TEAM_BLUE, fade, maxClients, lineHeight );
 			CG_DrawTeamBackground( 0, y - topBorderSize, 640, n1 * lineHeight + bottomBorderSize, 0.33f, TEAM_BLUE );
 			y += (n1 * lineHeight) + BIGCHAR_HEIGHT;
 			maxClients -= n1;
+			n3 = CG_TeamScoreboard( y, TEAM_BLUE_SPECTATOR, fade, maxClients, lineHeight );
+			CG_DrawTeamBackground( 0, y - topBorderSize, 640, n3 * lineHeight + bottomBorderSize, 0.33f, TEAM_BLUE_SPECTATOR );
+			y += (n3 * lineHeight) + BIGCHAR_HEIGHT;
+			maxClients -= n3;
 			n2 = CG_TeamScoreboard( y, TEAM_RED, fade, maxClients, lineHeight );
 			CG_DrawTeamBackground( 0, y - topBorderSize, 640, n2 * lineHeight + bottomBorderSize, 0.33f, TEAM_RED );
 			y += (n2 * lineHeight) + BIGCHAR_HEIGHT;
 			maxClients -= n2;
+                        		n4 = CG_TeamScoreboard( y, TEAM_RED_SPECTATOR, fade, maxClients, lineHeight );
+			CG_DrawTeamBackground( 0, y - topBorderSize, 640, n4 * lineHeight + bottomBorderSize, 0.33f, TEAM_RED_SPECTATOR );
+			y += (n4 * lineHeight) + BIGCHAR_HEIGHT;
+			maxClients -= n4;
 		}
 		n1 = CG_TeamScoreboard( y, TEAM_SPECTATOR, fade, maxClients, lineHeight );
 		y += (n1 * lineHeight) + BIGCHAR_HEIGHT;

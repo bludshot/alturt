@@ -1123,14 +1123,14 @@ static void CG_ServerCommand( void ) {
 	}
 
     if (!strcmp(cmd, "roundst") ) { // remove marks / brass
-        int i;
-
 
         // reset some values on every round restart here.
         //cg.roundStarted = qtrue; // so the marks will be removed
         //cg.roundlimitWarnings = 0;
 
-        if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_RED ||
+        if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_BLUE_SPECTATOR ||
+                cg.snap->ps.persistant[PERS_TEAM] == TEAM_RED_SPECTATOR ||
+                cg.snap->ps.persistant[PERS_TEAM] == TEAM_RED ||
                 cg.snap->ps.persistant[PERS_TEAM] == TEAM_BLUE )
             trap_SendConsoleCommand( "vstr entry_startround" );
         // reset blocked entities
