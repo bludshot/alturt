@@ -382,8 +382,10 @@ float *CG_TeamColor( int team ) {
 	static vec4_t	spectator = {0.7f, 0.7f, 0.7f, 1};
 
 	switch ( team ) {
+            	case TEAM_RED_SPECTATOR:
 	case TEAM_RED:
 		return red;
+                	case TEAM_BLUE_SPECTATOR:
 	case TEAM_BLUE:
 		return blue;
 	case TEAM_SPECTATOR:
