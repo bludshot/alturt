@@ -1393,6 +1393,23 @@ int RoundCount( int w )
 
 
 
+
+qboolean G_WeaponHasModes ( int weaponNumber){
+
+switch (weaponNumber){
+	case WP_KNIFE:
+	case WP_UMP45:
+	case WP_MP5K:
+	case WP_M4:
+	case WP_LR300:
+	case WP_G36:
+	case WP_HK69:
+	return qtrue;
+	default:
+	return qfalse;
+	}
+}
+
 void Set_Mode(gentity_t *ent){
     
   int             index, i;  
@@ -1452,6 +1469,9 @@ void Change_Mode(gentity_t *ent){
   char    userinfo[MAX_INFO_STRING];
   char                    weapmodes_save[WP_NUM_WEAPONS];//xamis
   index = ent - g_entities;
+
+ if( !G_WeaponHasModes( ent->client->ps.weapon ))
+	return;
 
  trap_GetUserinfo( index, userinfo, sizeof(userinfo) );
 
