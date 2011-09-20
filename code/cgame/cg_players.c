@@ -695,7 +695,7 @@ static void CG_LoadClientInfo( int clientNum, clientInfo_t *ci ) {
 		// fall back to default team name
 		if( cgs.gametype >= GT_TEAM) {
 			// keep skin name
-			if( ci->team == TEAM_BLUE ) {
+			if( ci->team == TEAM_BLUE || ci->team == TEAM_BLUE_SPECTATOR) {
 				Q_strncpyz(teamname, DEFAULT_BLUETEAM_NAME, sizeof(teamname) );
 			} else {
 				Q_strncpyz(teamname, DEFAULT_REDTEAM_NAME, sizeof(teamname) );
@@ -874,7 +874,7 @@ static void CG_SetDeferredClientInfo( int clientNum, clientInfo_t *ci ) {
 		}
 		else //this is a team GT
 		{	
-			if (ci->team == TEAM_BLUE) //if it's blue team we compare raceblue (and team because we always compare team)
+			if (ci->team == TEAM_BLUE|| ci->team == TEAM_BLUE_SPECTATOR) //if it's blue team we compare raceblue (and team because we always compare team)
 			{
 				if ( ci->raceblue != match->raceblue && ci->team != match->team)
 				{
@@ -883,7 +883,7 @@ static void CG_SetDeferredClientInfo( int clientNum, clientInfo_t *ci ) {
 								//for loop to look at the next client
 				}
 			}
-			else if (ci->team == TEAM_RED)
+			else if (ci->team == TEAM_RED|| ci->team == TEAM_RED_SPECTATOR)
 			{
 				if ( ci->racered != match->racered && ci->team != match->team)
 				{
@@ -911,7 +911,7 @@ static void CG_SetDeferredClientInfo( int clientNum, clientInfo_t *ci ) {
 			if ( !match->infoValid || match->deferred ) {
 				continue;
 			}
-			if (ci->team == TEAM_BLUE) //if it's blue team we compare raceblue (and team because we always compare team)
+			if (ci->team == TEAM_BLUE || ci->team == TEAM_BLUE_SPECTATOR) //if it's blue team we compare raceblue (and team because we always compare team)
 			{
 				if ( ci->raceblue != match->raceblue && ci->team != match->team)
 				{
@@ -920,7 +920,7 @@ static void CG_SetDeferredClientInfo( int clientNum, clientInfo_t *ci ) {
 								//for loop to look at the next client
 				}
 			}
-			else if (ci->team == TEAM_RED)
+			else if (ci->team == TEAM_RED|| ci->team == TEAM_RED_SPECTATOR)
 			{
 				if ( ci->racered != match->racered && ci->team != match->team)
 				{
@@ -1066,7 +1066,7 @@ void CG_NewClientInfo( int clientNum ) {
 	if ( cgs.gametype >= GT_TEAM )
 	{
 		// get the race which determines the model regardless of team
-		if ( newInfo.team == TEAM_BLUE )
+		if ( newInfo.team == TEAM_BLUE ||  newInfo.team == TEAM_BLUE_SPECTATOR)
 		{
 			race = newInfo.raceblue;
 		}
@@ -1089,7 +1089,7 @@ void CG_NewClientInfo( int clientNum ) {
 		}
 
 		// determine the skin
-		if ( newInfo.team == TEAM_BLUE )
+		if ( newInfo.team == TEAM_BLUE  || newInfo.team == TEAM_BLUE_SPECTATOR)
 		{
 			if ( race == 0 || race == 2 )
 			{
@@ -2961,7 +2961,7 @@ by blud
 char *CG_GetPlayerSkinName( clientInfo_t *ci ) {
 	if (cgs.gametype >= GT_TEAM)
 	{
-		if (ci->team == TEAM_BLUE)
+		if (ci->team == TEAM_BLUE || ci->team == TEAM_BLUE_SPECTATOR)
 		{
 			if (ci->raceblue == 0 || ci->raceblue == 2 )
 				return "blue";
@@ -2992,7 +2992,7 @@ by blud
 char *CG_GetPlayerModelName( clientInfo_t *ci ) {
 	if (cgs.gametype >= GT_TEAM)
 	{
-		if (ci->team == TEAM_BLUE)
+		if (ci->team == TEAM_BLUE || ci->team == TEAM_BLUE_SPECTATOR )
 		{
 			if (ci->raceblue < 2)
 				return "athena";
