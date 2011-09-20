@@ -447,11 +447,6 @@ void CopyToBodyQue( gentity_t *ent ) {
 
         trap_UnlinkEntity (ent);
 
-    if ( ( !ent->client->sess.waiting || ent->client->ps.pm_type != PM_DEAD ) &&
-        (g_gametype.integer == GT_BOMB || g_gametype.integer == GT_TEAMSV)   )
-        return;
-
-
         // if client is in a nodrop area, don't leave the body
         contents = trap_PointContents( ent->s.origin, -1 );
         if ( contents & CONTENTS_NODROP ) {
@@ -466,24 +461,6 @@ void CopyToBodyQue( gentity_t *ent ) {
 
         body->s = ent->s;
         body->s.eFlags = EF_DEAD;               // clear EF_TALK, etc
-#ifdef MISSIONPACK
-        if ( ent->s.eFlags & EF_KAMIKAZE ) {
-                body->s.eFlags |= EF_KAMIKAZE;
-
-                // check if there is a kamikaze timer around for this owner
-                for (i = 0; i < MAX_GENTITIES; i++) {
-                        e = &g_entities[i];
-                        if (!e->inuse)
-                                continue;
-                        if (e->activator != ent)
-                                continue;
-                        if (strcmp(e->classname, "kamikaze timer"))
-                                continue;
-                        e->activator = body;
-                        break;
-                }
-        }
-#endif
         body->s.powerups = 0;   // clear powerups
         body->s.loopSound = 0;  // clear lava burning
         body->s.number = body - g_entities;
@@ -530,7 +507,7 @@ void CopyToBodyQue( gentity_t *ent ) {
         body->nextthink = level.time + 5000;
         body->think = BodySink;
 
-        body->die = body_die;
+        body->die =  body_die;
 
         // don't take more damage if already gibbed
         if ( ent->health <= GIB_HEALTH ) {
@@ -538,13 +515,6 @@ void CopyToBodyQue( gentity_t *ent ) {
         } else {
                 body->takedamage = qtrue;
         }
-
- 	if (g_gametype.integer == GT_BOMB || g_gametype.integer == GT_TEAMSV )
-    	{
-        
-        //body->team = ent->client->sess.sessionTeam;
-    	}
-
 
 
         VectorCopy ( body->s.pos.trBase, body->r.currentOrigin );
@@ -580,14 +550,11 @@ respawn
 ================
 */
 void respawn( gentity_t *ent ) {
-        gentity_t       *tent;
 
         CopyToBodyQue (ent);
         ClientSpawn(ent);
-
-        // add a teleportation effect
-        tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_IN );
-        tent->s.clientNum = ent->s.clientNum;
+       
+        
 }
 
 /*
@@ -845,12 +812,16 @@ void ClientUserinfoChanged( int clientNum ) {
         Q_strncpyz( weapmodes_save, Info_ValueForKey (userinfo, "weapmodes_save"), sizeof( weapmodes_save ) );
 
 		// bots set their team a few frames later
-        if (g_gametype.integer >= GT_TEAM && g_entities[clientNum].r.svFlags & SVF_BOT) {
-                s = Info_ValueForKey( userinfo, "team" );
-                if ( !Q_stricmp( s, "red" ) || !Q_stricmp( s, "r" ) ) {
-                        team = TEAM_RED;
-                } else if ( !Q_stricmp( s, "blue" ) || !Q_stricmp( s, "b" ) ) {
-                        team = TEAM_BLUE;
+	if (g_gametype.integer >= GT_TEAM && ent->r.svFlags & SVF_BOT) {
+		s = Info_ValueForKey( userinfo, "team" );
+		if ( !Q_stricmp( s, "red" ) || !Q_stricmp( s, "r" ) ) {
+				team = TEAM_RED;
+		} else if (  !Q_stricmp( s, "rs" )) {
+				team = TEAM_RED_SPECTATOR;
+		} else if ( !Q_stricmp( s, "blue" ) || !Q_stricmp( s, "b" )) {
+				team = TEAM_BLUE;
+		} else if ( !Q_stricmp( s, "bs" )) {
+				team = TEAM_BLUE_SPECTATOR;
                 } else {
                         // pick the team with the least number of players
                         team = PickTeam( clientNum );
@@ -1079,12 +1050,14 @@ void ClientBegin( int clientNum ) {
 
 
     if ( client->sess.sessionTeam == TEAM_SPECTATOR ||
-            g_gametype.integer == GT_BOMB ||  g_gametype.integer == GT_TEAMSV )
+         g_gametype.integer == GT_BOMB ||  g_gametype.integer == GT_TEAMSV )
         client->sess.waiting = qtrue;
 
 
 
-        if ( client->sess.sessionTeam != TEAM_SPECTATOR ) {
+        if ( client->sess.sessionTeam != TEAM_SPECTATOR && 
+		client->sess.sessionTeam != TEAM_BLUE_SPECTATOR && 
+		client->sess.sessionTeam != TEAM_RED_SPECTATOR) {
                 // send event
                 tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_IN );
                 tent->s.clientNum = ent->s.clientNum;
@@ -1222,7 +1195,8 @@ void G_PlayerLoadout( gentity_t *ent ){
 	else
 		client->ps.weapon = bg_inventory.sort[ent->client->ps.clientNum][MELEE];
 
-	//G_AddEvent(ent, EV_WEAPON_DROPPED, 0);
+                     client->ps.weaponstate = WEAPON_READY;
+
 
 }
 
@@ -1364,17 +1338,9 @@ void ClientSpawn(gentity_t *ent) {
        // client->loadoutEnabled = qtrue;
 
 
-    if ( g_gametype.integer == GT_BOMB && GameState == STATE_OPEN )
-    {
-        client->ps.eFlags |= EF_WEAPONS_LOCKED;
-        //NS_SendPlayersStatusToAllPlayers( client->ps.clientNum , MS_HEALTH5 );
-    }
-
-
-
 	//Load all values for player loadout and add it to inventory --Xamis
 
-	G_PlayerLoadout( ent );
+
         
 
 	VectorSet( ent->client->ps.grapplePoint, 0.0f, 0.0f, 1.0f );
@@ -1398,20 +1364,10 @@ void ClientSpawn(gentity_t *ent) {
         } else {
                 G_KillBox( ent );
                 trap_LinkEntity (ent);
-
+/*
                 // force the base weapon up
-//Try to get weapon to appear correctly during spawn, as sometimes it shows up sideways.
-        if ( bg_inventory.sort[ent->client->ps.clientNum][PRIMARY])
-                client->ps.weapon = bg_inventory.sort[ent->client->ps.clientNum][PRIMARY];
-        else if ( bg_inventory.sort[ent->client->ps.clientNum][SECONDARY])
-                client->ps.weapon = bg_inventory.sort[ent->client->ps.clientNum][SECONDARY];
-        else if ( bg_inventory.sort[ent->client->ps.clientNum][SIDEARM])
-                client->ps.weapon = bg_inventory.sort[ent->client->ps.clientNum][SIDEARM];
-        else
-                client->ps.weapon = bg_inventory.sort[ent->client->ps.clientNum][MELEE];
-
                 client->ps.weaponstate = WEAPON_READY;
-        }
+*/        }
 
 
 
@@ -1429,24 +1385,15 @@ void ClientSpawn(gentity_t *ent) {
         client->ps.legsAnim = LEGS_IDLE;
 
         if ( level.intermissiontime ) {
-                MoveClientToIntermission( ent );
+                //MoveClientToIntermission( ent );
         } else {
                 // fire the targets of the spawn point
                 G_UseTargets( spawnPoint, ent );
 
                 // select the highest weapon number available, after any
                 // spawn given items have fired
-     if ( !(ent->r.svFlags & SVF_BOT )) {
-                if ( bg_inventory.sort[ent->client->ps.clientNum][PRIMARY])
-                  client->ps.weapon = bg_inventory.sort[ent->client->ps.clientNum][PRIMARY];
-                else if ( bg_inventory.sort[ent->client->ps.clientNum][SECONDARY])
-                  client->ps.weapon = bg_inventory.sort[ent->client->ps.clientNum][SECONDARY];
-                else if ( bg_inventory.sort[ent->client->ps.clientNum][SIDEARM])
-                  client->ps.weapon = bg_inventory.sort[ent->client->ps.clientNum][SIDEARM];
-                else
-                  client->ps.weapon = bg_inventory.sort[ent->client->ps.clientNum][MELEE];
-		}
         }
+
 
         // run a client frame to drop exactly to the floor,
         // initialize animations and other things
@@ -1460,6 +1407,8 @@ void ClientSpawn(gentity_t *ent) {
                 VectorCopy( ent->client->ps.origin, ent->r.currentOrigin );
                 trap_LinkEntity( ent );
         }
+
+        G_PlayerLoadout( ent );
 	// Call Set_Mode to make sure the current weapons mode is synchronized between server and client. --Xamis
         Set_Mode(ent);
         // run the presend to set anything else
@@ -1502,8 +1451,8 @@ void ClientDisconnect( int clientNum ) {
 
         // stop any following clients
         for ( i = 0 ; i < level.maxclients ; i++ ) {
-                if ( level.clients[i].sess.sessionTeam == TEAM_SPECTATOR
-                        && level.clients[i].sess.spectatorState == SPECTATOR_FOLLOW
+                if ( level.clients[i].sess.sessionTeam >= TEAM_SPECTATOR
+                        && level.clients[i].sess.spectatorState >= SPECTATOR_FOLLOW
                         && level.clients[i].sess.spectatorClient == clientNum ) {
                         StopFollowing( &g_entities[i] );
                 }
