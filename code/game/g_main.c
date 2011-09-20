@@ -107,7 +107,12 @@ int                     GameState = 0;
 int                     LTS_Rounds = 1;
 int                     i_sCountDown;
 
+int			g_round;
+int			g_maxmapparts;
+int			g_roundendtime;
+int			g_roundstarttime;
 
+int			g_session;
 
 static cvarTable_t		gameCvarTable[] = {
 	// don't override the cheat state set by the system
@@ -172,7 +177,7 @@ static cvarTable_t		gameCvarTable[] = {
 
 	{ &g_allowVote, "g_allowVote", "1", CVAR_ARCHIVE, 0, qfalse },
  	// { &gear, "gear", "", CVAR_ARCHIVE },
-   { &weapmodes_save, "weapmodes_save", "00000000000000000",CVAR_ARCHIVE | CVAR_SERVERINFO | CVAR_USERINFO , 0, qtrue, qtrue },
+                  { &weapmodes_save, "weapmodes_save", "0000202022200000",CVAR_ARCHIVE | CVAR_USERINFO , 0, qtrue, qtrue },
 	{ &g_listEntity, "g_listEntity", "0", 0, 0, qfalse },
 
 #ifdef MISSIONPACK
@@ -610,7 +615,7 @@ void AddTournamentPlayer( void ) {
 		if ( client->pers.connected != CON_CONNECTED ) {
 			continue;
 		}
-		if ( client->sess.sessionTeam != TEAM_SPECTATOR ) {
+		if ( client->sess.sessionTeam != TEAM_SPECTATOR && client->sess.sessionTeam != TEAM_BLUE_SPECTATOR && client->sess.sessionTeam != TEAM_RED_SPECTATOR  ) {
 			continue;
 		}
 		// never select the dedicated follow or scoreboard clients
@@ -732,7 +737,7 @@ int QDECL SortRanks( const void *a, const void *b ) {
 
 
 	// then spectators
-	if ( ca->sess.sessionTeam == TEAM_SPECTATOR && cb->sess.sessionTeam == TEAM_SPECTATOR ) {
+	if ( ca->sess.sessionTeam >= TEAM_SPECTATOR && cb->sess.sessionTeam >= TEAM_SPECTATOR ) {
 		if ( ca->sess.spectatorTime < cb->sess.spectatorTime ) {
 			return -1;
 		}
@@ -741,10 +746,10 @@ int QDECL SortRanks( const void *a, const void *b ) {
 		}
 		return 0;
 	}
-	if ( ca->sess.sessionTeam == TEAM_SPECTATOR ) {
+	if ( ca->sess.sessionTeam >= TEAM_SPECTATOR ) {
 		return 1;
 	}
-	if ( cb->sess.sessionTeam == TEAM_SPECTATOR ) {
+	if ( cb->sess.sessionTeam >= TEAM_SPECTATOR ) {
 		return -1;
 	}
 
@@ -790,7 +795,8 @@ void CalculateRanks( void ) {
 			level.sortedClients[level.numConnectedClients] = i;
 			level.numConnectedClients++;
 
-			if ( level.clients[i].sess.sessionTeam != TEAM_SPECTATOR ) {
+			if ( level.clients[i].sess.sessionTeam != TEAM_SPECTATOR  
+				&& level.clients[i].sess.sessionTeam != TEAM_RED_SPECTATOR && level.clients[i].sess.sessionTeam != TEAM_BLUE_SPECTATOR) {
 				level.numNonSpectatorClients++;
 
 				// decide if this should be auto-followed
@@ -1160,7 +1166,7 @@ void LogExit( const char *string ) {
 
 		cl = &level.clients[level.sortedClients[i]];
 
-		if ( cl->sess.sessionTeam == TEAM_SPECTATOR ) {
+		if ( cl->sess.sessionTeam >= TEAM_SPECTATOR ) {
 			continue;
 		}
 		if ( cl->pers.connected == CON_CONNECTING ) {
