@@ -542,6 +542,17 @@ void body_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int d
 char	*modNames[] = {
 	"MOD_UNKNOWN",
         	"MOD_KNIFE",
+	"MOD_DEAGLE",
+	"MOD_BERETTA",
+	"MOD_MP5K",
+	"MOD_UMP45",
+	"MOD_M4",
+	"MOD_LR300",
+	"MOD_AK103",
+	"MOD_G36",
+	"MOD_NEGEV",
+	"MOD_SR8",
+	"MOD_PSG1",
 	"MOD_SHOTGUN",
 	"MOD_GAUNTLET",
 	"MOD_MACHINEGUN",
@@ -1366,9 +1377,13 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		}
 		// check for godmode
 		if ( targ->flags & FL_GODMODE ) {
-                  return ;
+                                         targ->client->ps.stats[STAT_DMG_LOC]=0;
+                                         return ;
 		}
 	}
+                                if ( targ->r.svFlags & SVF_BOT ){
+                                         targ->client->ps.stats[STAT_DMG_LOC]=0;
+                                        }
 
 	// add to the attacker's hit counter (if the target isn't a general entity like a prox mine)
 	if ( attacker->client && client
