@@ -263,9 +263,42 @@ static void CG_Obituary( entityState_t *ent ) {
 		case MOD_KNIFE:
 			message = "was slashed by";
 			break;
-		case MOD_MACHINEGUN:
+                case MOD_MACHINEGUN:
+                        message = "was machinegunned by";
+                        break;
+                case MOD_DEAGLE:
+                        message = "was machinegunned by";
+                        break;
+                case MOD_BERETTA:
+                        message = "was machinegunned by";
+                        break;
+                case MOD_UMP45:
+                        message = "was machinegunned by";
+                        break;
+                case MOD_MP5K:
+                        message = "was machinegunned by";
+                        break;
+                case MOD_M4:
+                        message = "was machinegunned by";
+                        break;
+		case MOD_LR300:
 			message = "was machinegunned by";
 			break;
+                case MOD_AK103:
+                        message = "was machinegunned by";
+                        break;
+                case MOD_G36:
+                        message = "was machinegunned by";
+                        break;
+                case MOD_NEGEV:
+                        message = "was machinegunned by";
+                        break;
+                case MOD_SR8:
+                        message = "was machinegunned by";
+                        break;
+                case MOD_PSG1:
+                        message = "was machinegunned by";
+                        break;
 		case MOD_SHOTGUN:
 			message = "was gunned down by";
 			break;
