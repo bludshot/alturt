@@ -295,6 +295,22 @@ char *BotWeaponNameForMeansOfDeath(int mod) {
 		case MOD_LIGHTNING: return "Lightning Gun";
 		case MOD_BFG:
 		case MOD_BFG_SPLASH: return "BFG10K";
+
+                case MOD_KNIFE: return "Knife";
+                case MOD_DEAGLE: return "Desert Eagle";
+                case MOD_UMP45: return "Machinegun";
+                case MOD_MP5K: return "Machinegun";
+                case MOD_M4: return "Machinegun";
+                case MOD_LR300: return "Machinegun";
+                case MOD_G36: return "Machinegun";
+                case MOD_AK103: return "Machinegun";
+                case MOD_NEGEV: return "Machinegun";
+                case MOD_SR8: return "Machinegun";
+                case MOD_PSG1: return "Machinegun";
+
+
+
+
 #ifdef MISSIONPACK
 		case MOD_NAIL: return "Nailgun";
 		case MOD_CHAINGUN: return "Chaingun";

@@ -401,7 +401,7 @@ void BotTeamplayReport(void) {
 		//if no config string or no name
 		if (!strlen(buf) || !strlen(Info_ValueForKey(buf, "n"))) continue;
 		//skip spectators
-		if (atoi(Info_ValueForKey(buf, "t")) == TEAM_RED) {
+		if (atoi(Info_ValueForKey(buf, "t")) == TEAM_RED || atoi(Info_ValueForKey(buf, "t")) == TEAM_RED_SPECTATOR) {
 			BotReportStatus(botstates[i]);
 		}
 	}
@@ -414,7 +414,7 @@ void BotTeamplayReport(void) {
 		//if no config string or no name
 		if (!strlen(buf) || !strlen(Info_ValueForKey(buf, "n"))) continue;
 		//skip spectators
-		if (atoi(Info_ValueForKey(buf, "t")) == TEAM_BLUE) {
+		if (atoi(Info_ValueForKey(buf, "t")) == TEAM_BLUE || atoi(Info_ValueForKey(buf, "t")) == TEAM_BLUE_SPECTATOR) {
 			BotReportStatus(botstates[i]);
 		}
 	}
@@ -842,8 +842,8 @@ void BotInputToUserCommand(bot_input_t *bi, usercmd_t *ucmd, int delta_angles[3]
 	if (bi->actionflags & ACTION_GESTURE) ucmd->buttons |= BUTTON_GESTURE;
 	if (bi->actionflags & ACTION_USE) ucmd->buttons |= BUTTON_USE_HOLDABLE;
 	if (bi->actionflags & ACTION_WALK) ucmd->buttons |= BUTTON_WALKING;
-//	if (bi->actionflags & ACTION_AFFIRMATIVE) ucmd->buttons |= BUTTON_AFFIRMATIVE;
-//	if (bi->actionflags & ACTION_NEGATIVE) ucmd->buttons |= BUTTON_NEGATIVE;
+	if (bi->actionflags & ACTION_RELOAD) ucmd->buttons |= BUTTON_RELOAD;
+	if (bi->actionflags & ACTION_HEAL) ucmd->buttons |= BUTTON_HEAL;
 	if (bi->actionflags & ACTION_GETFLAG) ucmd->buttons |= BUTTON_GETFLAG;
 	if (bi->actionflags & ACTION_GUARDBASE) ucmd->buttons |= BUTTON_GUARDBASE;
 	if (bi->actionflags & ACTION_PATROL) ucmd->buttons |= BUTTON_PATROL;
@@ -1045,6 +1045,9 @@ int BotAI(int client, float thinktime) {
 	//the real AI
 	BotDeathmatchAI(bs, thinktime);
 	//set the weapon selection every AI frame
+	if( bs->weaponnum > 0 && bs->weaponnum < WP_NUM_WEAPONS){
+	trap_EA_SelectWeapon(bs->client, bs->weaponnum);
+	}else
 	trap_EA_SelectWeapon(bs->client, bs->cur_ps.weapon);
 	//subtract the delta angles
 	for (j = 0; j < 3; j++) {

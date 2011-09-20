@@ -72,6 +72,8 @@ along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
 bot_waypoint_t botai_waypoints[MAX_WAYPOINTS];
 bot_waypoint_t *botai_freewaypoints;
 
+
+
 //NOTE: not using a cvars which can be updated because the game should be reloaded anyway
 int gametype;		//game type
 int maxclients;		//maximum number of clients
@@ -142,19 +144,39 @@ int BotCTFCarryingFlag(bot_state_t *bs) {
 BotTeam
 ==================
 */
+
+int BotTeam(bot_state_t *bs) {
+
+        if (bs->client < 0 || bs->client >= MAX_CLIENTS) {
+                //BotAI_Print(PRT_ERROR, "BotCTFTeam: client out of range\n");
+                return qfalse;
+        }
+        if(bs->cur_ps.persistant[PERS_TEAM] == TEAM_RED ||
+                bs->cur_ps.persistant[PERS_TEAM] == TEAM_RED_SPECTATOR)
+                return TEAM_RED;
+        if(bs->cur_ps.persistant[PERS_TEAM] == TEAM_BLUE ||
+                bs->cur_ps.persistant[PERS_TEAM] == TEAM_BLUE_SPECTATOR)
+                return TEAM_BLUE;
+        return TEAM_FREE;
+}
+
+/*
 int BotTeam(bot_state_t *bs) {
 	char info[1024];
 
 	if (bs->client < 0 || bs->client >= MAX_CLIENTS) {
-		//BotAI_Print(PRT_ERROR, "BotCTFTeam: client out of range\n");
+		BotAI_Print(PRT_ERROR, "BotCTFTeam: client out of range\n");
 		return qfalse;
 	}
 	trap_GetConfigstring(CS_PLAYERS+bs->client, info, sizeof(info));
 	//
 	if (atoi(Info_ValueForKey(info, "t")) == TEAM_RED) return TEAM_RED;
+	else if (atoi(Info_ValueForKey(info, "t")) == TEAM_RED_SPECTATOR) return TEAM_RED_SPECTATOR;
 	else if (atoi(Info_ValueForKey(info, "t")) == TEAM_BLUE) return TEAM_BLUE;
+	else if (atoi(Info_ValueForKey(info, "t")) == TEAM_BLUE_SPECTATOR) return TEAM_BLUE_SPECTATOR;
 	return TEAM_FREE;
 }
+*/
 
 /*
 ==================
@@ -163,8 +185,12 @@ BotOppositeTeam
 */
 int BotOppositeTeam(bot_state_t *bs) {
 	switch(BotTeam(bs)) {
-		case TEAM_RED: return TEAM_BLUE;
-		case TEAM_BLUE: return TEAM_RED;
+		case TEAM_RED: 
+                                    case  TEAM_RED_SPECTATOR:   
+                                        return TEAM_BLUE;
+		case TEAM_BLUE: 
+                                    case  TEAM_BLUE_SPECTATOR:    
+                                        return TEAM_RED;
 		default: return TEAM_FREE;
 	}
 }
@@ -472,12 +498,40 @@ void BotRefuseOrder(bot_state_t *bs) {
 		return;
 	// if the bot was ordered to do something
 	if ( bs->order_time && bs->order_time > FloatTime() - 10 ) {
-		trap_EA_Action(bs->client, ACTION_NEGATIVE);
+		//trap_EA_Action(bs->client, ACTION_NEGATIVE);
 		BotVoiceChat(bs, bs->decisionmaker, VOICECHAT_NO);
 		bs->order_time = 0;
 	}
 }
 
+
+/*
+==================
+BotReloadWeapon
+==================
+*/
+void BotReloadWeapon(bot_state_t *bs) {
+
+
+if (bg_weaponlist[bs->weaponnum].rounds[bs->cur_ps.clientNum ] < 2 &&
+	bg_weaponlist[bs->weaponnum].numClips[ bs->cur_ps.clientNum]>0 ){
+	trap_EA_Action(bs->client, ACTION_RELOAD);
+        BotAI_Print(PRT_MESSAGE, "BotReloadWeapon\n");
+}
+
+}
+
+
+/*
+==================
+BotHealSelf
+==================
+*/
+void BotHealSelf(bot_state_t *bs) {
+ if(  bs->cur_ps.stats[STAT_DMG_LOC] & ( 1 << LEG_DAMAGE ) ){
+	trap_EA_Action(bs->client, ACTION_HEAL);
+ }
+ }
 /*
 ==================
 BotCTFSeekGoals
@@ -1554,32 +1608,73 @@ int BotSynonymContext(bot_state_t *bs) {
 /*
 ==================
 BotChooseWeapon
+
+Completely rewritten to deal with new weapon loadout code
+--Xamis
 ==================
 */
 void BotChooseWeapon(bot_state_t *bs) {
 	int newweaponnum;
+	int attackentity;
+       	vec3_t forward;
+        aas_entityinfo_t entinfo;
+	float dist =0;
 
+
+	if(bs->weaponnum <=0)
+	bs->weaponnum=bs->cur_ps.weapon;
+
+	attackentity = bs->enemy;
+
+        //return;
+	if ( attackentity >= 0 ){
+        BotEntityInfo(attackentity, &entinfo);
+        //direction towards the enemy
+        VectorSubtract(entinfo.origin, bs->origin, forward);
+        //the distance towards the enemy
+        dist = VectorNormalize(forward);
+	}else
+	dist = 150;
 
 	if (bs->cur_ps.weaponstate == WEAPON_RAISING ||
 			bs->cur_ps.weaponstate == WEAPON_DROPPING) {
-		trap_EA_SelectWeapon(bs->client, bs->cur_ps.weapon);
+		trap_EA_SelectWeapon(bs->client, bs->weaponnum);
+
 	}
 	else {
-            
-         if ( bg_inventory.sort[bs->cur_ps.clientNum][PRIMARY])
-                bs->cur_ps.weapon = bg_inventory.sort[bs->cur_ps.clientNum][PRIMARY];
-        else if ( bg_inventory.sort[bs->cur_ps.clientNum][SECONDARY])
-                bs->cur_ps.weapon = bg_inventory.sort[bs->cur_ps.clientNum][SECONDARY];
-        else if ( bg_inventory.sort[bs->cur_ps.clientNum][SIDEARM])
-                bs->cur_ps.weapon = bg_inventory.sort[bs->cur_ps.clientNum][SIDEARM];
-        else
-                bs->cur_ps.weapon = bg_inventory.sort[bs->cur_ps.clientNum][MELEE];
+          
+	 if ( dist < 1 ){// enemy right next to us MELEE attack!
+		newweaponnum = WP_KNIFE;
+		//BotAI_Print(PRT_MESSAGE, "Knife!\n");
+	}else  if ( bg_inventory.sort[bs->cur_ps.clientNum][PRIMARY] && 
+		bg_weaponlist[bg_inventory.sort[bs->cur_ps.clientNum][PRIMARY]].rounds[bs->cur_ps.clientNum ] > 0 
+		&&(!( dist < 300 && (bg_inventory.sort[bs->cur_ps.clientNum][PRIMARY]==WP_SR8 ||
+			bg_inventory.sort[bs->cur_ps.clientNum][PRIMARY]==WP_HK69 ||
+			bg_inventory.sort[bs->cur_ps.clientNum][PRIMARY]==WP_PSG1)))	){ //Too close for sniper rifle or GL
+	//		BotAI_Print(PRT_MESSAGE, "Primary!\n");	
+	newweaponnum =bg_inventory.sort[bs->cur_ps.clientNum][PRIMARY];
+	}else if ( bg_inventory.sort[bs->cur_ps.clientNum][SECONDARY] && 
+		bg_weaponlist[bg_inventory.sort[bs->cur_ps.clientNum][SECONDARY]].rounds[bs->cur_ps.clientNum ] > 0 &&
+		 !( dist > 120 && bg_inventory.sort[bs->cur_ps.clientNum][SECONDARY]==WP_SPAS  )){ //Too far away for shotgun.
+			BotAI_Print(PRT_MESSAGE, "Secondary!\n");
+                newweaponnum =bg_inventory.sort[bs->cur_ps.clientNum][SECONDARY];
+
+        }else if ( bg_inventory.sort[bs->cur_ps.clientNum][SIDEARM]&&
+		bg_weaponlist[bg_inventory.sort[bs->cur_ps.clientNum][SIDEARM]].rounds[bs->cur_ps.clientNum ] > 0  ) {
+
+			BotAI_Print(PRT_MESSAGE, "Sidearm!\n");
+                newweaponnum = bg_inventory.sort[bs->cur_ps.clientNum][SIDEARM];
+
+        }else
+                newweaponnum = WP_KNIFE;
 
 		//newweaponnum = trap_BotChooseBestFightWeapon(bs->ws, bs->inventory);
-                //BotAI_Print(PRT_MESSAGE, "bestweapon = %i\n", newweaponnum);
-		//if (bs->cur_ps.weapon != newweaponnum) bs->weaponchange_time = FloatTime();
-		//bs->cur_ps.weapon = newweaponnum;
-		//trap_EA_SelectWeapon(bs->client, bs->cur_ps.weapon);
+       //         BotAI_Print(PRT_MESSAGE, "bestweapon = %i\n", newweaponnum);
+		if (bs->weaponnum != newweaponnum) bs->weaponchange_time = FloatTime();
+		bs->cur_ps.weapon = newweaponnum;
+                                    bs->weaponnum = newweaponnum; 
+		trap_EA_SelectWeapon(bs->client, newweaponnum);
+
 	}
  
 
@@ -1711,20 +1806,20 @@ void BotUpdateInventory(bot_state_t *bs) {
 	//armor
 //	bs->inventory[INVENTORY_ARMOR] = bs->cur_ps.stats[STAT_ARMOR];
 	//weapons
-	bs->inventory[INVENTORY_KNIFE] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_KNIFE)) != 0;
-	//bs->inventory[INVENTORY_SPAS] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_SPAS)) != 0;
-	bs->inventory[INVENTORY_M4] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_M4)) != 0;
-       // bs->inventory[INVENTORY_HK69] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_HK69)) != 0;
-        bs->inventory[INVENTORY_LR300] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_LR300)) != 0;
-       // bs->inventory[INVENTORY_PSG1] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_PSG1)) != 0;
-       // bs->inventory[INVENTORY_SR8] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_SR8)) != 0;
-        bs->inventory[INVENTORY_DEAGLE] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_DEAGLE)) != 0;
-       // bs->inventory[INVENTORY_BERETTA] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_BERETTA)) != 0;
+	bs->inventory[INVENTORY_KNIFE] = BG_HasWeapon( WP_KNIFE, bs->cur_ps.stats );  //(bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_KNIFE)) != 0;
+	bs->inventory[INVENTORY_SPAS] = BG_HasWeapon( WP_SPAS, bs->cur_ps.stats );//(bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_SPAS)) != 0;
+	bs->inventory[INVENTORY_M4] = BG_HasWeapon( WP_M4, bs->cur_ps.stats );//(bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_M4)) != 0;
+        bs->inventory[INVENTORY_HK69] = BG_HasWeapon( WP_HK69, bs->cur_ps.stats );//(bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_HK69)) != 0;
+        bs->inventory[INVENTORY_LR300] = BG_HasWeapon( WP_LR300, bs->cur_ps.stats );//(bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_LR300)) != 0;
+        bs->inventory[INVENTORY_PSG1] = BG_HasWeapon( WP_PSG1, bs->cur_ps.stats );//(bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_PSG1)) != 0;
+        bs->inventory[INVENTORY_SR8] =BG_HasWeapon( WP_SR8, bs->cur_ps.stats );// (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_SR8)) != 0;
+        bs->inventory[INVENTORY_DEAGLE] = BG_HasWeapon( WP_DEAGLE, bs->cur_ps.stats );//(bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_DEAGLE)) != 0;
+        bs->inventory[INVENTORY_BERETTA] = BG_HasWeapon( WP_BERETTA, bs->cur_ps.stats );//(bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_BERETTA)) != 0;
 //	bs->inventory[INVENTORY_GRAPPLINGHOOK] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_GRAPPLING_HOOK)) != 0;
 //#ifdef MISSIONPACK
-        bs->inventory[INVENTORY_UMP45] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_UMP45)) != 0;;
-       // bs->inventory[INVENTORY_MP5K] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_MP5K)) != 0;;
-        //bs->inventory[INVENTORY_G36] = (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_G36)) != 0;;
+        bs->inventory[INVENTORY_UMP45] = BG_HasWeapon( WP_UMP45, bs->cur_ps.stats );//(bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_UMP45)) != 0;;
+        bs->inventory[INVENTORY_MP5K] = BG_HasWeapon( WP_MP5K, bs->cur_ps.stats );//(bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_MP5K)) != 0;;
+        bs->inventory[INVENTORY_G36] = BG_HasWeapon( WP_G36, bs->cur_ps.stats );// (bs->cur_ps.stats[STAT_WEAPONS] & (1 << WP_G36)) != 0;;
 //#endif
 	//ammo
 //	bs->inventory[INVENTORY_SHELLS] = bs->cur_ps.ammo[WP_SPAS];
@@ -2640,7 +2735,7 @@ bot_moveresult_t BotAttackMove(bot_state_t *bs, int tfl) {
 			bs->attackjump_time = FloatTime() + 1;
 		}
 	}
-	if (bs->cur_ps.weapon == WP_KNIFE) {
+	if (bs->weaponnum == WP_KNIFE) {
 		attack_dist = 0;
 		attack_range = 0;
 	}
@@ -3256,7 +3351,7 @@ void BotAimAtEnemy(bot_state_t *bs) {
 
 	//get the weapon information
 //	Com_Printf( "bot weapon is %i\n",  bs->cur_ps.weapon);
-	trap_BotGetWeaponInfo(bs->ws, bs->cur_ps.weapon, &wi);
+	trap_BotGetWeaponInfo(bs->ws, bs->weaponnum, &wi);
 	//get the weapon specific aim accuracy and or aim skill
 	if (wi.number == WP_LR300) {
 		aim_accuracy = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_AIM_ACCURACY_MACHINEGUN, 0, 1);
@@ -3443,14 +3538,14 @@ void BotAimAtEnemy(bot_state_t *bs) {
 	//get aim direction
 	VectorSubtract(bestorigin, bs->eye, dir);
 	//
-	if (wi.number == WP_LR300 ||
-		wi.number == WP_UMP45 ) {
-		//distance towards the enemy
-		dist = VectorLength(dir);
-		if (dist > 150) dist = 150;
-		f = 0.6 + dist / 150 * 0.4;
-		aim_accuracy *= f;
-	}
+	//if (wi.number == WP_LR300 ||
+	//	wi.number == WP_UMP45 ) {
+	//	//distance towards the enemy
+	//	dist = VectorLength(dir);
+	//	if (dist > 150) dist = 150;
+	//	f = 0.6 + dist / 150 * 0.4;
+	//	aim_accuracy *= f;
+	//}
 	//add some random stuff to the aim direction depending on the aim accuracy
 	if (aim_accuracy < 0.8) {
 		VectorNormalize(dir);
@@ -3507,20 +3602,20 @@ void BotCheckAttack(bot_state_t *bs) {
 	if (bs->firethrottlewait_time > FloatTime()) return;
 	firethrottle = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_FIRETHROTTLE, 0, 1);
 	if (bs->firethrottleshoot_time < FloatTime()) {
-		if (random() > firethrottle) {
-			bs->firethrottlewait_time = FloatTime() + firethrottle;
-			bs->firethrottleshoot_time = 0;
-		}
-		else {
+		//if (random() > firethrottle) {
+		//	bs->firethrottlewait_time = FloatTime() + firethrottle;
+		//	bs->firethrottleshoot_time = 0;
+		//}
+		//else {
 			bs->firethrottleshoot_time = FloatTime() + 1 - firethrottle;
 			bs->firethrottlewait_time = 0;
-		}
+		//}
 	}
 	//
 	//
 	VectorSubtract(bs->aimtarget, bs->eye, dir);
 	//
-	if (bs->cur_ps.weapon == WP_KNIFE) {
+	if (bs->weaponnum == WP_KNIFE) {
 		if (VectorLengthSquared(dir) > Square(60)) {
 			return;
 		}
@@ -5105,6 +5200,10 @@ void BotDeathmatchAI(bot_state_t *bs, float thinktime) {
 	char userinfo[MAX_INFO_STRING];
 	int i;
 
+        
+        BotReloadWeapon(bs );
+
+        
 	//if the bot has just been setup
 	if (bs->setupcount > 0) {
 		bs->setupcount--;
