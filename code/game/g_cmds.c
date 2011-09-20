@@ -455,7 +455,7 @@ Cmd_Kill_f
 =================
 */
 void Cmd_Kill_f( gentity_t *ent ) {
-        if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
+        if ( ent->client->sess.sessionTeam >= TEAM_SPECTATOR ) {
                 return;
         }
         if (ent->health <= 0) {
@@ -515,24 +515,51 @@ void SetTeam( gentity_t *ent, char *s ) {
                 team = TEAM_SPECTATOR;
                 specState = SPECTATOR_SCOREBOARD;
         } else if ( !Q_stricmp( s, "follow1" ) ) {
+		G_Printf("follow1\n");
                 team = TEAM_SPECTATOR;
                 specState = SPECTATOR_FOLLOW;
                 specClient = -1;
         } else if ( !Q_stricmp( s, "follow2" ) ) {
+		G_Printf("follow2\n");
                 team = TEAM_SPECTATOR;
                 specState = SPECTATOR_FOLLOW;
                 specClient = -2;
         } else if ( !Q_stricmp( s, "spectator" ) || !Q_stricmp( s, "s" ) ) {
-                team = TEAM_SPECTATOR;
+                G_Printf(" !Q_stricmp( s, spectator ) || !Q_stricmp( s, s )\n"); 
+		team = TEAM_SPECTATOR;
                 specState = SPECTATOR_FREE;
+        } else if ( !Q_stricmp( s, "rs" ) ) {
+		G_Printf("rs\n");
+                team = TEAM_RED_SPECTATOR;
+                specState = SPECTATOR_FOLLOW;
+              //  specState = SPECTATOR_FOLLOW;
+        } else if ( !Q_stricmp( s, "bs" )  ) {
+		G_Printf("bs\n");
+                team = TEAM_BLUE_SPECTATOR;
+                                specState = SPECTATOR_FOLLOW;
+             //   specState = SPECTATOR_FOLLOW;
         } else if ( g_gametype.integer >= GT_TEAM ) {
                 // if running a team game, assign player to one of the teams
                 specState = SPECTATOR_NOT;
                 if ( !Q_stricmp( s, "red" ) || !Q_stricmp( s, "r" ) ) {
+		G_Printf("red\n");
                         team = TEAM_RED;
                 } else if ( !Q_stricmp( s, "blue" ) || !Q_stricmp( s, "b" ) ) {
+		G_Printf("blue\n");
                         team = TEAM_BLUE;
-                } else {
+                } else if ( !Q_stricmp( s, "rs" ) ) {
+		G_Printf("rs\n");
+                team = TEAM_RED_SPECTATOR;
+                                specState = SPECTATOR_FOLLOW;
+            //    specState = SPECTATOR_FOLLOW;
+		return;
+                  } else if ( !Q_stricmp( s, "bs" )  ) {
+		G_Printf("bs\n");
+                team = TEAM_BLUE_SPECTATOR;
+                                specState = SPECTATOR_FOLLOW;
+            //    specState = SPECTATOR_FOLLOW;
+		return;
+                     } else {
                         // pick the team with the least number of players
                         team = PickTeam( clientNum );
                 }
@@ -576,7 +603,9 @@ void SetTeam( gentity_t *ent, char *s ) {
         // decide if we will allow the change
         //
         oldTeam = client->sess.sessionTeam;
-        if ( team == oldTeam && team != TEAM_SPECTATOR ) {
+        if ( (team == oldTeam && team != TEAM_SPECTATOR) 
+		||(team == oldTeam && team != TEAM_BLUE_SPECTATOR)  
+		||(team == oldTeam && team != TEAM_RED_SPECTATOR) ) {
                 return;
         }
 
@@ -591,13 +620,15 @@ void SetTeam( gentity_t *ent, char *s ) {
 
         // he starts at 'base'
         client->pers.teamState.state = TEAM_BEGIN;
-        if ( oldTeam != TEAM_SPECTATOR ) {
+        if ( oldTeam != TEAM_SPECTATOR  ) {
+		if ( GT_TEAMSV && GameState != STATE_LOCKED ){
+			}else{
                 // Kill him (makes sure he loses flags, etc)
                 ent->flags &= ~FL_GODMODE;
                 ent->client->ps.stats[STAT_HEALTH] = ent->health = 0;
                 ent->client->ps.stats[STAT_STAMINA] = ent->health = 0;  //Xamis
                 player_die (ent, ent, ent, 100000, MOD_SUICIDE);
-
+		}
 
         }
         // they go to the end of the line for tournements
@@ -639,11 +670,22 @@ to free floating spectator mode
 =================
 */
 void StopFollowing( gentity_t *ent ) {
+    if (   ent->client->ps.persistant[ PERS_TEAM ] == TEAM_RED_SPECTATOR||
+            ent->client->sess.sessionTeam == TEAM_RED_SPECTATOR){
+        ent->client->ps.persistant[ PERS_TEAM ] = TEAM_RED;
+        ent->client->sess.sessionTeam = TEAM_RED;
+    }else if ( ent->client->ps.persistant[ PERS_TEAM ] == TEAM_BLUE_SPECTATOR ||
+            ent->client->sess.sessionTeam == TEAM_BLUE_SPECTATOR){
+        ent->client->ps.persistant[ PERS_TEAM ] = TEAM_BLUE;
+        ent->client->sess.sessionTeam = TEAM_BLUE;
+    }else{
         ent->client->ps.persistant[ PERS_TEAM ] = TEAM_SPECTATOR;
         ent->client->sess.sessionTeam = TEAM_SPECTATOR;
+
+    }
         ent->client->sess.spectatorState = SPECTATOR_FREE;
         ent->client->ps.pm_flags &= ~PMF_FOLLOW;
-        ent->r.svFlags &= ~SVF_BOT;
+    //    ent->r.svFlags &= ~SVF_BOT;
         ent->client->ps.clientNum = ent - g_entities;
 }
 
@@ -733,9 +775,13 @@ void Cmd_Follow_f( gentity_t *ent ) {
         }
 
         // first set them to spectator
-        if ( ent->client->sess.sessionTeam != TEAM_SPECTATOR ) {
-                SetTeam( ent, "spectator" );
-        }
+   //     if ( ent->client->sess.sessionTeam != TEAM_SPECTATOR ) {
+   //             SetTeam( ent, "spectator" );
+   //     }
+
+
+
+
 
         ent->client->sess.spectatorState = SPECTATOR_FOLLOW;
         ent->client->sess.spectatorClient = i;
@@ -785,9 +831,25 @@ void Cmd_FollowCycle_f( gentity_t *ent, int dir ) {
                 if ( level.clients[ clientnum ].sess.sessionTeam == TEAM_SPECTATOR ) {
                         continue;
                 }
-                            
                 
-
+                if ( level.clients[ clientnum ].sess.sessionTeam == TEAM_RED_SPECTATOR ) {
+                        continue;
+                }
+                
+                if ( level.clients[ clientnum ].sess.sessionTeam == TEAM_BLUE_SPECTATOR ) {
+                        continue;
+                }
+                
+                
+                if ( level.clients[ clientnum ].sess.sessionTeam == TEAM_BLUE && ent->client->sess.sessionTeam == TEAM_RED_SPECTATOR ) {
+                        continue;
+                }
+                  
+                if ( level.clients[ clientnum ].sess.sessionTeam == TEAM_RED && ent->client->sess.sessionTeam == TEAM_BLUE_SPECTATOR ) {
+                        continue;
+                }
+                              
+                
                 // this is good, we can use it
                 ent->client->sess.spectatorClient = clientnum;
                 ent->client->sess.spectatorState = SPECTATOR_FOLLOW;
