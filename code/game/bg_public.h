@@ -732,10 +732,9 @@ typedef enum {
         TEAM_FREE,
         TEAM_RED,
         TEAM_BLUE,
-        RED,
-        BLUE,
         TEAM_SPECTATOR,
-
+        TEAM_RED_SPECTATOR,
+        TEAM_BLUE_SPECTATOR,
         TEAM_NUM_TEAMS
 } team_t;
 
@@ -775,6 +774,17 @@ typedef enum {
 typedef enum {
         MOD_UNKNOWN,
         MOD_KNIFE,
+        MOD_DEAGLE,
+        MOD_BERETTA,
+        MOD_MP5K,
+        MOD_UMP45,
+        MOD_M4,
+        MOD_LR300,
+        MOD_AK103,
+        MOD_G36,
+        MOD_NEGEV,
+        MOD_SR8,
+        MOD_PSG1,
         MOD_SHOTGUN,
         MOD_GAUNTLET,
         MOD_MACHINEGUN,
