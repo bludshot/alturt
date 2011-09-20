@@ -1124,5 +1124,7 @@ gentity_t *G_RandomPlayer( int ignoreClientNum, team_t team );
 void G_WonRound ( team_t team );
 void G_SetGameState(int state);
 void CheckTeamplay(void);
+void G_ResetEntities( void );
+void Door_ResetState( gentity_t *door );
 
 
