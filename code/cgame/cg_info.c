@@ -215,7 +215,7 @@ void CG_LoadingClient( int clientNum ) {
 
 		if ( cgs.gametype >= GT_TEAM )
 		{
-			if ( team == TEAM_BLUE )
+			if ( team == TEAM_BLUE || team == TEAM_BLUE_SPECTATOR )
 			{
 				race = raceblue;
 			}
@@ -240,7 +240,7 @@ void CG_LoadingClient( int clientNum ) {
 
 			//blud: New bits added in here to try to fix invisible torso: BAH it didn't work (it's the skin = lines. So I might want to get rid of them since they didn't fix the problem...
 			// determine the skin (just for getting the right icon)
-			if ( team == TEAM_BLUE )
+			if ( team == TEAM_BLUE || team == TEAM_BLUE_SPECTATOR)
 			{
 				if ( race == 0 || race == 2 )
 				{
@@ -449,9 +449,9 @@ void CG_DrawInformation( void ) {
 	case GT_TEAM:
 		s = "Team Deathmatch";
 		break;
-          case GT_TEAMSV:
-            s = "Team Survivor";
-            break;
+                  case GT_TEAMSV:
+                                     s = "Team Survivor";
+                                     break;
 	case GT_CTF:
 		s = "Capture The Flag";
 		break;
