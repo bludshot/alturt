@@ -281,7 +281,7 @@ void    G_TouchTriggers( gentity_t *ent ) {
                 }
 
                 // ignore most entities if a spectator
-                if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
+                if ( ent->client->sess.sessionTeam >= TEAM_SPECTATOR ) {
                         if ( hit->s.eType != ET_TELEPORT_TRIGGER &&
                                 // this is ugly but adding a new ET_? type will
                                 // most likely cause network incompatibilities
@@ -362,7 +362,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd ) {
     if ( !( client->ps.pm_flags & PMF_FOLLOW ) &&
             GameState == STATE_LOCKED ) // only force camera when round begun
     {
-        Cmd_FollowCycle_f( ent, 1 );
+       // Cmd_FollowCycle_f( ent, 1 );
 //        ent->spec_updatetime = level.time;
     }
 
@@ -744,7 +744,7 @@ void ClientThink_real( gentity_t *ent ) {
         }
 
         // spectators don't do much
-        if ( client->sess.sessionTeam == TEAM_SPECTATOR ) {
+        if ( client->sess.sessionTeam >= TEAM_SPECTATOR ) {
                 if ( client->sess.spectatorState == SPECTATOR_SCOREBOARD ) {
                         return;
                 }
@@ -854,10 +854,10 @@ if ( (client->pers.cmd.forwardmove ||
 
         // check for the bandaging others
         CheckMed( ent);
-        if ( ent->flags & FL_FORCE_GESTURE ) {
-                ent->flags &= ~FL_FORCE_GESTURE;
-                ent->client->pers.cmd.buttons |= BUTTON_GESTURE;
-        }
+  //      if ( ent->flags & FL_FORCE_GESTURE ) {
+  //              ent->flags &= ~FL_FORCE_GESTURE;
+  //              ent->client->pers.cmd.buttons |= BUTTON_GESTURE;
+  //      }
 
 
 
@@ -964,17 +964,27 @@ if ( (client->pers.cmd.forwardmove ||
 
         // check for respawning
         if ( client->ps.stats[STAT_HEALTH] <= 0 ) {
-                if ( GameState == STATE_LOCKED ){
-        client->ps.pm_flags |= PMF_FOLLOW;
+      // wait for the attack button to be pressed
+          //      if ( level.time > client->respawnTime ) {
+                    
+       if ( GameState == STATE_LOCKED|| GameState == STATE_OVER){
+          client->ps.pm_flags |= PMF_FOLLOW;
+        if (client->sess.sessionTeam == TEAM_RED || client->ps.persistant[PERS_TEAM] == TEAM_RED )
+          SetTeam(  &g_entities[ client->ps.clientNum ], "rs");
+        if (client->sess.sessionTeam == TEAM_BLUE  || client->ps.persistant[PERS_TEAM] == TEAM_BLUE  )
+          SetTeam(  &g_entities[ client->ps.clientNum ], "bs");        
+        
         return;   
-        }         // wait for the attack button to be pressed
-                if ( level.time > client->respawnTime ) {
-                    
-                    
+        }          
 
-    
-    
-                        // forcerespawn is to prevent users from waiting out powerups
+        if(g_gametype.integer == GT_TEAMSV || g_gametype.integer == GT_BOMB ){
+        if ( GameState != STATE_LOCKED && GameState != STATE_OVER){
+        if (client->sess.sessionTeam == TEAM_RED_SPECTATOR  || client->ps.persistant[PERS_TEAM] == TEAM_RED_SPECTATOR   )
+          SetTeam(  &g_entities[ client->ps.clientNum ], "red");
+        if (client->sess.sessionTeam == TEAM_BLUE_SPECTATOR   || client->ps.persistant[PERS_TEAM] ==  TEAM_BLUE_SPECTATOR )
+          SetTeam(  &g_entities[ client->ps.clientNum ], "blue");      
+                } 
+        }             // forcerespawn is to prevent users from waiting out powerups
                         if ( g_forcerespawn.integer > 0 &&
                                 ( level.time - client->respawnTime ) > g_forcerespawn.integer * 1000 ) {
                                 respawn( ent );
@@ -985,7 +995,7 @@ if ( (client->pers.cmd.forwardmove ||
                         if ( ucmd->buttons & ( BUTTON_ATTACK | BUTTON_USE_HOLDABLE ) ) {
                                 respawn( ent );
                         }
-                }
+               // }
                 return;
         }
 
@@ -1054,7 +1064,10 @@ void SpectatorClientEndFrame( gentity_t *ent ) {
 
 
                         cl = &level.clients[ clientNum ];
-                        if ( cl->pers.connected == CON_CONNECTED && cl->sess.sessionTeam != TEAM_SPECTATOR ) {
+                        if (( cl->pers.connected == CON_CONNECTED && cl->sess.sessionTeam != TEAM_SPECTATOR ) || 
+				( cl->pers.connected == CON_CONNECTED && cl->sess.sessionTeam != TEAM_RED_SPECTATOR )||
+				( cl->pers.connected == CON_CONNECTED && cl->sess.sessionTeam != TEAM_BLUE_SPECTATOR )
+				){
                                 flags = (cl->ps.eFlags & ~(EF_VOTED | EF_TEAMVOTED)) | (ent->client->ps.eFlags & (EF_VOTED | EF_TEAMVOTED));
                                 ent->client->ps = cl->ps;
                                 ent->client->ps.pm_flags |= PMF_FOLLOW;
@@ -1085,7 +1098,7 @@ void ClientEndFrame( gentity_t *ent ) {
         int                     i;
         clientPersistant_t      *pers;
 
-        if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
+        if ( ent->client->sess.sessionTeam >= TEAM_SPECTATOR ) {
                 SpectatorClientEndFrame( ent );
                 return;
         }
