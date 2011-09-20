@@ -287,7 +287,9 @@ void G_AddRandomBot( int team ) {
 			num--;
 			if (num <= 0) {
 				skill = trap_Cvar_VariableValue( "g_spSkill" );
-				if (team == TEAM_RED) teamstr = "red";
+				if (team == TEAM_RED_SPECTATOR) teamstr = "red";
+				else if (team == TEAM_BLUE_SPECTATOR) teamstr = "blue";
+				else if (team == TEAM_RED) teamstr = "red";
 				else if (team == TEAM_BLUE) teamstr = "blue";
 				else teamstr = "";
 				strncpy(netname, value, sizeof(netname)-1);
@@ -412,8 +414,8 @@ void G_CheckMinimumPlayers( void ) {
 			minplayers = (g_maxclients.integer / 2) -1;
 		}
 
-		humanplayers = G_CountHumanPlayers( TEAM_RED );
-		botplayers = G_CountBotPlayers(	TEAM_RED );
+		humanplayers = G_CountHumanPlayers( TEAM_RED ) +  G_CountHumanPlayers( TEAM_RED_SPECTATOR ) ;
+		botplayers = G_CountBotPlayers( TEAM_RED ) +G_CountBotPlayers( TEAM_RED_SPECTATOR );
 		//
 		if (humanplayers + botplayers < minplayers) {
 			G_AddRandomBot( TEAM_RED );
@@ -421,8 +423,8 @@ void G_CheckMinimumPlayers( void ) {
 			G_RemoveRandomBot( TEAM_RED );
 		}
 		//
-		humanplayers = G_CountHumanPlayers( TEAM_BLUE );
-		botplayers = G_CountBotPlayers( TEAM_BLUE );
+		humanplayers = G_CountHumanPlayers( TEAM_BLUE )+  G_CountHumanPlayers( TEAM_BLUE_SPECTATOR ) ;
+		botplayers = G_CountBotPlayers( TEAM_BLUE )+G_CountBotPlayers( TEAM_BLUE_SPECTATOR );
 		//
 		if (humanplayers + botplayers < minplayers) {
 			G_AddRandomBot( TEAM_BLUE );
