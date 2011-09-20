@@ -626,11 +626,11 @@ void CG_DrawTeamBackground( int x, int y, int w, int h, float alpha, int team )
 	vec4_t		hcolor;
 
 	hcolor[3] = alpha;
-	if ( team == TEAM_RED ) {
+	if ( team == TEAM_RED || team == TEAM_RED_SPECTATOR ) {
 		hcolor[0] = 1;
 		hcolor[1] = 0;
 		hcolor[2] = 0;
-	} else if ( team == TEAM_BLUE ) {
+	} else if ( team == TEAM_BLUE || team == TEAM_BLUE_SPECTATOR) {
 		hcolor[0] = 0;
 		hcolor[1] = 0;
 		hcolor[2] = 1;
@@ -641,6 +641,47 @@ void CG_DrawTeamBackground( int x, int y, int w, int h, float alpha, int team )
 	//CG_DrawPic( x, y, w, h, cgs.media.teamStatusBar );
 	trap_R_SetColor( NULL );
 }
+
+void CG_TeamDebug( void ){
+		
+                clientInfo_t    *ci;
+		int i;
+		char *s;
+                int 	u=0,w=0,v=0,x=0,y=0,z=0;
+
+		for ( i = 0 ; i < MAX_CLIENTS ; i++ ) {
+                        ci = &cgs.clientinfo[i];
+                        if ( !ci->infoValid ) {
+        	                continue;
+                        }
+                        if ( ci->team == TEAM_FREE ) {
+                                v++;
+                        }
+                        if ( ci->team == TEAM_RED ) {
+                                w++;
+                        }
+                        if ( ci->team == TEAM_RED_SPECTATOR ) {
+                                x++;
+                        }
+                        if ( ci->team == TEAM_BLUE ) {
+                                y++;
+                        }
+                        if ( ci->team == TEAM_BLUE_SPECTATOR ) {
+                                z++;
+                        }
+                        if ( ci->team == TEAM_SPECTATOR ) {
+                                u++;
+                        }
+			}
+			s = va( "TEAM RED:%i; TEAM RED SPEC:%i; TEAM BLUE:%i; TEAM BLUE SPEC:%i; TEAM FREE:%i; TEAM SPEC:%i; ",
+				  w,x,y,z,v,u);
+
+                       // CG_DrawStringExt( 8, y, ci->name, color, qtrue, qtrue, GIANT_WIDTH, GIANT_HEIGHT, 0 );
+                        CG_DrawStringExt( 200, 300, s, colorWhite, qtrue, qtrue, 5, 15, 0 );
+                       
+                
+}
+
 
 /*
 ================
@@ -807,9 +848,9 @@ static void CG_DrawStatusBar( void ) {
         if (!( cg.predictedPlayerState.weapon == WP_HE
                ||cg.predictedPlayerState.weapon == WP_SMOKE
                 ||cg.predictedPlayerState.weapon == WP_SPAS
-	       ||cg.predictedPlayerState.weapon == WP_NEGEV
-	       ||cg.predictedPlayerState.weapon == WP_SR8
-	       ||cg.predictedPlayerState.weapon == WP_PSG1 
+                ||cg.predictedPlayerState.weapon == WP_NEGEV
+                ||cg.predictedPlayerState.weapon == WP_SR8
+                ||cg.predictedPlayerState.weapon == WP_PSG1 
                 || cg.predictedPlayerState.weapon == WP_BOMB
                || BG_Sidearm(cg.predictedPlayerState.weapon))){
           char *s;
@@ -2670,7 +2711,8 @@ static void CG_DrawCrosshair(void)
 		return;
 	}
         
-        	if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR) {
+        	if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_RED_SPECTATOR 
+                        || cg.snap->ps.persistant[PERS_TEAM] == TEAM_BLUE_SPECTATOR) {
 		return;
 	}
 
@@ -3225,6 +3267,8 @@ static void CG_DrawWarmup( void ) {
 			s = "Capture the Flag";
                         	} else if ( cgs.gametype == GT_BOMB ) {
 			s = "Bomb";
+                                    } else if ( cgs.gametype == GT_TEAMSV ) {
+			s = "Team Survivor";
 #ifdef MISSIONPACK
 
 		} else if ( cgs.gametype == GT_BOMB ) {
@@ -3424,7 +3468,7 @@ static void CG_Draw2D(stereoFrame_t stereoFrame)
         CG_DrawStatusHud();
 	CG_DrawLagometer();
         CG_DrawMap();
-
+	//CG_TeamDebug();
 #ifdef MISSIONPACK
 	if (!cg_paused.integer) {
 		CG_DrawUpperRight(stereoFrame);
