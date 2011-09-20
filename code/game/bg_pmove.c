@@ -2265,7 +2265,7 @@ static void PM_Weapon( void ) {
                            pm->ps->weaponTime = 200;
                            return;
            }
-        
+
         
 /*
  
@@ -2276,6 +2276,7 @@ static void PM_Weapon( void ) {
         if ( bg_weaponlist[0].rounds[pm->ps->clientNum] <= 2
             &&  bg_weaponlist[0].rounds[pm->ps->clientNum] > 0
             && !( pm->ps->pm_flags & PMF_SINGLE_SHOT )
+         //     &&  ( pm->ps->eFlags & ~EF_WEAPONS_LOCKED)
             &&  bg_weaponlist[pm->ps->weapon].rounds[pm->ps->clientNum] >0){
     //        if(  pm->ps->weapon ==WP_UMP45 && bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] == 0 )
     //            pm->ps->weaponTime = 45;
@@ -2299,7 +2300,7 @@ static void PM_Weapon( void ) {
  
  */
                     
-if( pm->ps->eFlags & ~EF_WEAPONS_LOCKED){
+
         if ((pm->cmd.buttons & 1) ) {
             
            if(pm->ps->weapon==WP_KNIFE && pm->ps->stats[STAT_MODE]  && pm->ps->pm_flags & PMF_GRENADE_ARMED ){
@@ -2313,7 +2314,7 @@ if( pm->ps->eFlags & ~EF_WEAPONS_LOCKED){
             return;
           }
         }
-}
+
         
         
         if ( pm->ps->pm_flags & PMF_RELOADING ){
@@ -2368,7 +2369,7 @@ if( pm->ps->eFlags & ~EF_WEAPONS_LOCKED){
                 PM_StartWeaponAnim( WPN_IDLE );
                 return;
         }
-
+   //    if( pm->ps->eFlags & ~EF_WEAPONS_LOCKED){
 
     // check for fire
 	//can not fire during warmup --Xamis
@@ -2434,8 +2435,6 @@ if( pm->ps->eFlags & ~EF_WEAPONS_LOCKED){
         if ( pm->ps->weapon <= WP_NONE )
                 return;
 
-        if( pm->ps->eFlags & EF_WEAPONS_LOCKED)
-                return;
         
         
                                 // check for out of ammo
@@ -2522,6 +2521,8 @@ if( pm->ps->eFlags & ~EF_WEAPONS_LOCKED){
                                           pm->ps->pm_flags |= PMF_SINGLE_SHOT;
 
                                   }
+                          
+     //   }
 
 }
 
@@ -2532,14 +2533,14 @@ PM_Animate
 */
 
 static void PM_Animate( void ) {
-        if ( pm->cmd.buttons & BUTTON_GESTURE ) {
-                if ( pm->ps->torsoTimer == 0 ) {
-                        PM_StartTorsoAnim( TORSO_GESTURE );
-                        pm->ps->torsoTimer = TIMER_GESTURE;
-                        PM_AddEvent( EV_TAUNT );
-                }
+        //if ( pm->cmd.buttons & BUTTON_GESTURE ) {
+          //      if ( pm->ps->torsoTimer == 0 ) {
+            //            PM_StartTorsoAnim( TORSO_GESTURE );
+              //          pm->ps->torsoTimer = TIMER_GESTURE;
+                //        PM_AddEvent( EV_TAUNT );
+             //   }
 
-        }
+       // }
 }
 
 
