@@ -76,7 +76,11 @@ int OtherTeam(int team) {
 }
 
 const char *TeamName(int team)  {
-	if (team==TEAM_RED)
+	if (team==TEAM_RED_SPECTATOR)
+		return "red";
+	else if (team==TEAM_BLUE_SPECTATOR)
+		return "blue";
+	else if (team==TEAM_RED)
 		return "red";
 	else if (team==TEAM_BLUE)
 		return "blue";
@@ -86,7 +90,11 @@ const char *TeamName(int team)  {
 }
 
 const char *OtherTeamName(int team) {
-	if (team==TEAM_RED)
+	if (team==TEAM_RED_SPECTATOR)
+		return "red";
+	else if (team==TEAM_BLUE_SPECTATOR)
+		return "blue";
+	else if (team==TEAM_RED)
 		return "red";
 	else if (team==TEAM_BLUE)
 		return "blue";
@@ -96,7 +104,11 @@ const char *OtherTeamName(int team) {
 }
 
 const char *TeamColorString(int team) {
-	if (team==TEAM_RED)
+	if (team==TEAM_RED_SPECTATOR)
+		return S_COLOR_RED;
+	else if (team==TEAM_BLUE_SPECTATOR)
+		return S_COLOR_BLUE;
+	else if (team==TEAM_RED)
 		return S_COLOR_RED;
 	else if (team==TEAM_BLUE)
 		return S_COLOR_BLUE;
@@ -965,10 +977,10 @@ gentity_t *SelectRandomTeamSpawnPoint( int teamstate, team_t utteam ) {
 	char		*teamname;
 	char		*class = "info_ut_spawn";
 
-		if (utteam == TEAM_BLUE){
+		if (utteam == TEAM_BLUE || utteam == TEAM_BLUE_SPECTATOR ){
 			teamname = "blue";
 		}
-		else if (utteam == TEAM_RED){
+		else if (utteam == TEAM_RED || utteam == TEAM_RED_SPECTATOR){
 			teamname = "red";
 		}else
 			return NULL;
@@ -1146,7 +1158,10 @@ void CheckTeamStatus(void) {
 				continue;
 			}
 
-			if (ent->inuse && (ent->client->sess.sessionTeam == TEAM_RED ||	ent->client->sess.sessionTeam == TEAM_BLUE)) {
+			if (ent->inuse && ( ent->client->sess.sessionTeam == TEAM_RED_SPECTATOR ||
+						ent->client->sess.sessionTeam == TEAM_BLUE_SPECTATOR ||
+						ent->client->sess.sessionTeam == TEAM_RED ||
+						ent->client->sess.sessionTeam == TEAM_BLUE)) {
 				TeamplayInfoMessage( ent );
 			}
 		}
@@ -1567,8 +1582,8 @@ void G_WonRound ( team_t team )
     }
     AddTeamScore( vec3_origin, team, 1 );
 
-    trap_SendServerCommand( -1, va("cp \"The %s won the round.\n\"", TeamName( team ) ) );
-    G_LogPrintf( "ROUND: %s won.\n", TeamName( team ) );
+    trap_SendServerCommand( -1, va("cp \"The %s team won the round.\n\"", TeamName( team ) ) );
+   // G_LogPrintf( "ROUND: %s won.\n", TeamName( team ) );
 
     // otherteam is still the looser
     if ( level.lastLoser == OtherTeam( team ) )
@@ -1805,7 +1820,7 @@ void CheckTeamplay( void ) {
     if ( level.intermissiontime ) {
         return;
     }
-    if ( (TeamCount( -1, TEAM_RED ) < minplayers) || ( TeamCount( -1, TEAM_BLUE ) < minplayers)  )
+    if ( (TeamCount( -1, TEAM_RED ) +TeamCount( -1, TEAM_RED_SPECTATOR )  < minplayers) || ( TeamCount( -1, TEAM_BLUE )+TeamCount( -1, TEAM_BLUE_SPECTATOR )  < minplayers)  )
     {
        G_SetGameState( STATE_OPEN );
 
@@ -1823,11 +1838,12 @@ void CheckTeamplay( void ) {
                 continue;
             if ( client->sess.waiting == qtrue )
             {
-                if ( ( TeamCount( -1, TEAM_RED ) > 0 ) || ( TeamCount( -1, TEAM_BLUE ) > 0 ) )
+                if ( ( TeamCount( -1, TEAM_RED )+TeamCount( -1, TEAM_RED_SPECTATOR ) > 0 ) || ( TeamCount( -1, TEAM_BLUE ) +TeamCount( -1, TEAM_BLUE_SPECTATOR )> 0 ) )
                 {
                     client->sess.waiting = qfalse;
                     ClientSpawn( &g_entities[ client - level.clients ] );
-                   // client->ps.eFlags &= ~EF_WEAPONS_LOCKED; //removed this, don't fire during warmup! --xamis
+                   client->ps.eFlags &= ~EF_WEAPONS_LOCKED; //removed this, don't fire during warmup! --xamis
+                  //  client->ps.eFlags |= EF_WEAPONS_LOCKED;
                 }
             }
         }
@@ -1860,7 +1876,7 @@ void CheckTeamplay( void ) {
             }else{
                 level.warmupTime = level.time + ROUND_WARMUP_TIME;
 		}
-            trap_SendServerCommand( -1, va( "cp \"Round #%i will start in %i seconds.\nWeapons Locked.\"", LTS_Rounds, (level.warmupTime - level.time)/ONE_SECOND  ) );
+            trap_SendServerCommand( -1, va( "cp \"Round %i\"", LTS_Rounds ) );
             trap_SendServerCommand( -1, "roundst" );
 
             G_EndTimer();
@@ -1874,6 +1890,13 @@ void CheckTeamplay( void ) {
 
                 if ( client->sess.sessionTeam == TEAM_SPECTATOR )
                     continue;
+                
+          //      if ( client->sess.sessionTeam == TEAM_RED_SPECTATOR )
+//			client->sess.sessionTeam = TEAM_RED;
+               //     SetTeam(  &g_entities[ client->ps.clientNum ], "red");
+             //   if ( client->sess.sessionTeam == TEAM_BLUE_SPECTATOR )
+//			client->sess.sessionTeam = TEAM_BLUE;
+               //     SetTeam(  &g_entities[ client->ps.clientNum ], "blue");
 
                 client->ps.eFlags &= ~EF_VIP;
                 client->ut.is_vip = client->ut.is_vipWithBriefcase = qfalse;
@@ -1883,6 +1906,7 @@ void CheckTeamplay( void ) {
                     StopFollowing( &g_entities[ client - level.clients ] );
 
                 ClientSpawn( &g_entities[ client - level.clients ] );
+                // for all clients in game... lock weapons
                 client->ps.eFlags |= EF_WEAPONS_LOCKED;
                 ClientUserinfoChanged( client->ps.clientNum );
             }
@@ -1890,6 +1914,7 @@ void CheckTeamplay( void ) {
         // our round begins
         if (level.warmupTime == level.time)
         {
+            G_ResetEntities();
            // Time to start the next round
             level.warmupTime = -1;
             G_SetGameState( STATE_LOCKED );
@@ -1915,8 +1940,6 @@ void CheckTeamplay( void ) {
                         continue;
                     if ( !client->sess.waiting )
                         continue;
-
-                    client->sess.waiting = qfalse;
 
                     if ( client->ps.pm_flags & PMF_FOLLOW )
                         StopFollowing( &g_entities[ client - level.clients ] );
@@ -1950,13 +1973,14 @@ void CheckTeamplay( void ) {
             // radiobroadcast the start radiomsg.
             bmbplayer =G_RandomPlayer(-1, TEAM_RED);
             
-              }
+          }
             // log print a start
             G_LogPrintf( "ROUND: Start.\n" );
         }
 
         if ( level.warmupTime != -3 )
         {
+                        G_SetGameState( STATE_LOCKED );
             {
                 if ( ( level.done_objectives[TEAM_RED] >= level.num_objectives[TEAM_RED] ) && level.num_objectives[TEAM_RED] > 0 )
                 {
@@ -2011,3 +2035,45 @@ void CheckTeamplay( void ) {
 }
 
 
+/*
+=================
+G_ResetEntities
+=================
+*/
+void G_ResetEntities( void ) {
+
+    // launch entities
+    int			i;
+    gentity_t	*ent;
+
+
+    ent = &g_entities[0];
+    for (i=0 ; i<level.num_entities ; i++, ent++) {
+
+         if (!Q_stricmp("func_wall", ent->classname ) )
+        {
+            ent->r.contents = CONTENTS_SOLID;
+            ent->r.svFlags &= ~SVF_NOCLIENT;
+
+            if (ent->spawnflags & 4)
+            {
+                ent->r.contents = CONTENTS_SOLID;
+            }
+            else
+            {
+                ent->r.contents = 0;
+                ent->r.svFlags |= SVF_NOCLIENT;
+            }
+        } else  if ( (!Q_stricmp("func_door", ent->classname )) ||
+                    !Q_stricmp("func_rotating_door", ent->classname ) )
+        {
+            Door_ResetState( ent );
+        } else if (!Q_stricmp("target_delay", ent->classname) )
+        {
+            ent->nextthink = 0;
+            ent->think = 0;
+            ent->activator = 0;
+        } 
+    }
+
+}
