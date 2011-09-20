@@ -2304,50 +2304,66 @@ if(cg.zoomed  ){
 }
 
 void CG_ZoomIn_f (void){
-float zoomFov;
-centity_t       *cent;
-cent = &cg_entities[cg.snap->ps.clientNum];
-zoomFov = cg_zoomFov.value;
+	float		zoomFov;
+	centity_t	*cent;
 
-if (cg.predictedPlayerState.weaponstate != WEAPON_READY)
-    return;
+	cent = &cg_entities[cg.snap->ps.clientNum];
+	zoomFov = cg_zoomFov.value;
 
-if (cent->currentState.weapon == WP_SR8 || cent->currentState.weapon == WP_PSG1  ){
+	if (cg.predictedPlayerState.weaponstate != WEAPON_READY)
+	{
+		return;
+	}
 
-if( cent->pe.zoomLevel == 0 ){
-        cg.setZoomFov = 33;
-        cg.zoomed = qtrue;
-        cent->pe.zoomLevel++ ;
-}else if( cent->pe.zoomLevel == 1 ){
-        cg.setZoomFov = 17;
-        cg.zoomed = qtrue;
-        cent->pe.zoomLevel++;
-} else if( cent->pe.zoomLevel == 2 ){
-        cg.setZoomFov = 8;
-        cg.zoomed = qtrue;
-        cent->pe.zoomLevel++;
-} else if ( cent->pe.zoomLevel > 2){
-        cent->pe.zoomLevel=0;
-        cg.setZoomFov= 1;
-        cg.zoomed = qfalse;
-}
+	if (cent->currentState.weapon == WP_SR8 || cent->currentState.weapon == WP_PSG1  )
+	{
+		if( cent->pe.zoomLevel == 0 )
+		{
+			cg.setZoomFov = 33;
+			cg.zoomed = qtrue;
+			cent->pe.zoomLevel++ ;
+		}
+		else if( cent->pe.zoomLevel == 1 )
+		{
+			cg.setZoomFov = 17;
+			cg.zoomed = qtrue;
+			cent->pe.zoomLevel++;
+		}
+		else if( cent->pe.zoomLevel == 2 )
+		{
+			cg.setZoomFov = 8;
+			cg.zoomed = qtrue;
+			cent->pe.zoomLevel++;
+		}
+		else if ( cent->pe.zoomLevel > 2)
+		{
+			cent->pe.zoomLevel=0;
+			cg.setZoomFov= 1;
+			cg.zoomed = qfalse;
+		}
+	}
 
 
-    }
-
-if (cent->currentState.weapon ==WP_G36 ){
-
-if( cent->pe.zoomLevel == 0 ){
-        cg.setZoomFov = 40;
-        cg.zoomed = qtrue;
-        cent->pe.zoomLevel++ ;
-} else if ( cent->pe.zoomLevel > 0){
-        cent->pe.zoomLevel=0;
-        cg.setZoomFov= 1;
-        cg.zoomed = qfalse;
-}
-
-    }trap_S_StartSound (NULL, cg.snap->ps.clientNum, CHAN_WEAPON, cgs.media.zoomSound );
+	if ( cent->currentState.weapon == WP_G36 )
+	{
+		if( cent->pe.zoomLevel == 0 )
+		{
+			cg.setZoomFov = 40;
+			cg.zoomed = qtrue;
+			cent->pe.zoomLevel++ ;
+		}
+		else if ( cent->pe.zoomLevel > 0)
+		{
+			cent->pe.zoomLevel=0;
+			cg.setZoomFov= 1;
+			cg.zoomed = qfalse;
+		}
+	}
+	
+	if (cent->currentState.weapon == WP_SR8 || cent->currentState.weapon == WP_PSG1 || cent->currentState.weapon == WP_G36 )
+	{
+		trap_S_StartSound (NULL, cg.snap->ps.clientNum, CHAN_WEAPON, cgs.media.zoomSound );
+	}
 }
 
 
