@@ -432,8 +432,8 @@ static void CG_Missile( centity_t *cent ) {
                                         ALTURT_SMOKEPUFF_TIME,
                                         cg.time,
                                         0,
-                                        LEF_PUFF_DONT_FADE,
-                                        cgs.media.smokePuffShader );
+                                        LEF_PUFF_DONT_SCALE,
+                                        cgs.media.grenadeSmokeShader );
                   break;
                 case TEAM_BLUE:
                   smoke = CG_SmokePuff( orig,
@@ -446,8 +446,8 @@ static void CG_Missile( centity_t *cent ) {
                                         ALTURT_SMOKEPUFF_TIME,
                                         cg.time,
                                         0,
-                                        LEF_PUFF_DONT_FADE,
-                                        cgs.media.smokePuffShader );
+                                        LEF_PUFF_DONT_SCALE,
+                                        cgs.media.grenadeSmokeShader );
                   break;
                 default:
                   smoke = CG_SmokePuff( orig,
@@ -461,7 +461,7 @@ static void CG_Missile( centity_t *cent ) {
                                         cg.time,
                                         0,
                                         LEF_PUFF_DONT_SCALE,
-                                        cgs.media.smokePuffShader );
+                                        cgs.media.grenadeSmokeShader );
                   
                   break;
               }
