@@ -202,6 +202,8 @@ A respawn happened this snapshot
 ================
 */
 void CG_Respawn( void ) {
+	centity_t *cent = &cg_entities[cg.snap->ps.clientNum];
+
         // no error decay on player movement
         cg.thisFrameTeleport = qtrue;
 
@@ -210,6 +212,8 @@ void CG_Respawn( void ) {
         CG_ZoomReset_f();
         // select the weapon the server says we are using
         cg.weaponSelect = cg.snap->ps.weapon;
+        cent->lastSmokeTime = 0;
+        cent->smokeTime = 0;
 
 }
 
