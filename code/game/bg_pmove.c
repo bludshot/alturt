@@ -28,8 +28,8 @@ along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
 #include "../qcommon/q_shared.h"
 #include "bg_public.h"
 #include "bg_local.h"
-
-
+static qboolean PM_WallJump(void);
+static qboolean PM_CheckWallJump(void);
 pmove_t         *pm;
 pml_t           pml;
 
@@ -59,7 +59,15 @@ float   pm_slidefriction = 0;
 
 int             c_pmove = 0;
 
+
+#define WALLJUMP_BOOST 160
+#define WALLCLIMB_BOOST 300
+#define MAX_WALLCLIMBS 1
+#define MAX_WALLJUMPS 3
+
+
 qboolean PM_CheckPowerSlide( void );
+
 
 /*
 ===============
@@ -887,7 +895,7 @@ static void PM_AirMove( void ) {
         float           wishspeed;
         float           scale;
         usercmd_t       cmd;
-        //PM_CheckWallJump( );
+
         PM_Friction();
 
         fmove = pm->cmd.forwardmove;
@@ -938,6 +946,14 @@ static void PM_AirMove( void ) {
         else
                 PM_SlideMove ( qtrue );
 #endif
+        
+
+    if (PM_CheckWallJump()) {
+      if (PM_WallJump()) {
+      }
+    }
+
+        
         PM_SlideMove ( qtrue );
 }
 
@@ -985,6 +1001,7 @@ static void PM_WalkMove( void ) {
         float           accelerate;
         float           vel;
 
+        
         if ( pm->waterlevel > 2 && DotProduct( pml.forward, pml.groundTrace.plane.normal ) > 0 ) {
                 // begin swimming
                 PM_WaterMove();
@@ -1001,6 +1018,8 @@ static void PM_WalkMove( void ) {
                 }
                 return;
         }
+        
+;
 
         PM_Friction ();
 
@@ -2961,6 +2980,8 @@ void PmoveSingle (pmove_t *pmove) {
         PM_Weapon();
         pm->ps->pm_flags &= ~ PMF_ONLADDER;
         }
+
+        
         // torso animation
         PM_TorsoAnimation();
 
@@ -3017,3 +3038,112 @@ void Pmove (pmove_t *pmove) {
 }
 
 
+/*
+ =============
+ PM_CheckWallJump
+ =============
+ */
+static qboolean PM_CheckWallJump(void) {
+  if (pm->ps->pm_flags & PMF_RESPAWNED) {
+    return qfalse;
+  }
+
+  if (pm->cmd.upmove < 10) {
+    return qfalse;
+  }
+
+  if (pm->waterlevel >= 2) {
+    return qfalse;
+  }
+
+  if (pm->ps->pm_flags & PMF_JUMP_HELD) {
+    pm->cmd.upmove = 0;
+    return qfalse;
+  }
+
+  //if (pm->ps->stamina < 1000) {
+ //   return qfalse;
+ // }
+
+  if (pm->cmd.buttons & BUTTON_WALKING) {
+    return qfalse;
+  }
+
+  if (pm->ps->velocity[2] < WALLJUMP_BOOST * -2) {
+    return qfalse;
+  }
+
+  return qtrue;
+}
+
+/*
+ =============
+ PM_WallJump
+ =============
+ */
+static qboolean PM_WallJump(void) {
+  vec3_t dir, forward, movedir, point;
+  vec3_t refNormal = {0.0f, 0.0f, 0.5f};
+  float normalFraction = 1.0f;
+  float cmdFraction = 1.0f;
+  float upFraction = 6.0f;
+  trace_t trace;
+
+  ProjectPointOnPlane(movedir, pml.forward, refNormal);
+  VectorNormalize(movedir);
+
+  if (pm->cmd.forwardmove < 0) {
+    VectorNegate(movedir, movedir);
+  }
+
+  //trace into direction we are moving
+  VectorMA(pm->ps->origin, 0.25f, movedir, point);
+  pm->trace(&trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask);
+
+  if (trace.fraction < 1.0f && !(trace.surfaceFlags & (SURF_SKY | SURF_SLICK))
+      && trace.plane.normal[2] < MIN_WALK_NORMAL) {
+    if (!VectorCompare(trace.plane.normal, pm->ps->grapplePoint)) {
+      VectorCopy( trace.plane.normal, pm->ps->grapplePoint );
+    }
+  } else {
+    return qfalse;
+  }
+
+  pml.groundPlane = qfalse; // jumping away
+  pml.walking = qfalse;
+  pm->ps->pm_flags |= PMF_JUMP_HELD;
+
+  pm->ps->groundEntityNum = ENTITYNUM_NONE;
+
+  ProjectPointOnPlane(forward, pml.forward, pm->ps->grapplePoint);
+
+  VectorScale( pm->ps->grapplePoint, normalFraction, dir );
+
+  if (pm->cmd.forwardmove > 0)
+    VectorMA(dir, cmdFraction, forward, dir);
+  else if (pm->cmd.forwardmove < 0)
+    VectorMA(dir, -cmdFraction, forward, dir);
+
+  VectorMA(dir, upFraction, refNormal, dir);
+  VectorNormalize(dir);
+
+  VectorMA(pm->ps->velocity, 675.0f, dir, pm->ps->velocity);
+  pm->ps->velocity[2] /= 2.5f;
+
+  if (VectorLength(pm->ps->velocity) > 1200) {
+    VectorNormalize(pm->ps->velocity);
+    VectorScale( pm->ps->velocity, 1200, pm->ps->velocity );
+  }
+
+  PM_AddEvent(EV_WALLJUMP);
+
+  if (pm->cmd.forwardmove >= 0) {
+    PM_ForceLegsAnim(LEGS_JUMP);
+    pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
+  } else {
+    PM_ForceLegsAnim(LEGS_JUMPB);
+    pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
+  }
+//  pm->ps->stamina -= 1000;
+  return qtrue;
+}
