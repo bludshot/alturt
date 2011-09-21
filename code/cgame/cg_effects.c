@@ -793,3 +793,40 @@ void CG_BigExplode( vec3_t playerOrigin ) {
 	 }
  }
 
+
+
+
+
+localEntity_t *CG_AddSmokeParticle(vec3_t origin, int radius, int randomradius, int lifetime,
+                                                                   int boost, int wind, vec3_t winddir){
+        localEntity_t   *le;
+        refEntity_t             *re;
+
+        le = CG_AllocLocalEntity();
+        re= &le->refEntity;
+
+        le->leType = LE_SMOKE;
+        le->startTime = cg.time;
+        le->endTime = le->startTime + lifetime;
+
+        re->reType = RT_SPRITE;
+        re->radius = radius + rand()%randomradius;
+        re->rotation = rand()%360;
+        le->boost = boost;
+        le->wind = wind;
+        VectorCopy(winddir, le->vector);
+
+        le->color[0] = 255;
+        le->color[1] = 255;
+        le->color[2] = 255;
+        le->color[3] = 225;
+
+        re->customShader = cgs.media.viewSmokeShader;
+
+        VectorCopy( origin, re->origin);
+        VectorCopy( re->origin, le->pos.trBase );
+
+        return le;
+}
+
+
