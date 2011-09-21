@@ -960,6 +960,10 @@ void CG_AddLocalEntities( void ) {
 		case LE_MARK:
 			break;
 
+                case LE_SMOKE:
+                        CG_AddSmoke( le );
+                        break;
+
 		case LE_SPRITE_EXPLOSION:
 			CG_AddSpriteExplosion( le );
 			break;
@@ -1013,6 +1017,55 @@ void CG_AddLocalEntities( void ) {
 	}
 }
 
+#define SPEED           0.015f
+#define FADE_IN         750.0f
+#define FADE_OUT        2000.0f
+void CG_AddSmoke( localEntity_t *le ) {
+
+        refEntity_t     re;
+        int fade_in, fade_out;
+        float boost = SPEED * (float)(le->boost/5);
+        float wind = SPEED * (float)(le->wind/5);
+        float windfactor = 1;
+        int temp;
+
+        re = le->refEntity;
+
+        fade_in = cg.time - le->startTime;
+        fade_out = le->endTime - cg.time;
+
+        re.rotation += fade_in/20;
+
+        Vector4Copy(le->color, re.shaderRGBA);
+        temp = le->color[3];
+
+        if(fade_in <= FADE_IN){
+                temp = (float)le->color[3] * ((float)fade_in/FADE_IN);
+                re.radius *= ((float)fade_in/FADE_IN);
+        } else if( fade_out <= FADE_OUT){
+                temp = (float)le->color[3] * ((float)fade_out/FADE_OUT);
+                re.radius *= 1 + ((float)(FADE_OUT-fade_out)/750);
+        }
+
+        re.shaderRGBA[3] = (int)temp;
+
+        re.reType = RT_SPRITE;
+
+        // move up slowly
+        re.origin[2] += fade_in*boost;
+
+        // if there's wind
+        if((le->vector[0] || le->vector[1] || le->vector[2]) &&
+                le->wind){
+                // the first seconds let the wind fade in
+                if(fade_in < FADE_IN*2){
+                        windfactor = fade_in/(FADE_IN*2);
+                }
+                VectorMA(re.origin, fade_in*wind*windfactor, le->vector, re.origin);
+        }
+
+        trap_R_AddRefEntityToScene( &re );
+}
 
 
 
