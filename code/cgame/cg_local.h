@@ -209,6 +209,12 @@ typedef struct centity_s {
 	// exact interpolated position of entity on this frame
 	vec3_t			lerpOrigin;
 	vec3_t			lerpAngles;
+
+        int                             smokeTime;
+        int                             lastSmokeTime;
+        int                             smokeTime2;
+        int                             lastSmokeTime2;
+
 } centity_t;
 
 
@@ -238,7 +244,8 @@ typedef enum {
 	LE_FADE_RGB,
 	LE_SCALE_FADE,
 	LE_SCOREPLUM,
-                  LE_PARTICLE,
+        LE_PARTICLE,
+	LE_SMOKE,
 #ifdef MISSIONPACK
 	LE_KAMIKAZE,
 	LE_INVULIMPACT,
@@ -294,6 +301,12 @@ typedef struct localEntity_s {
 	leBounceSoundType_t	leBounceSoundType;
 
 	refEntity_t		refEntity;
+
+        vec3_t                  vector;
+        int                     boost, wind;
+
+
+
 } localEntity_t;
 
 //======================================================================
@@ -877,6 +890,7 @@ typedef struct {
         qhandle_t       handsRedSkin; //Xamis
 
         qhandle_t       viewSmokeShader;
+        qhandle_t       grenadeSmokeShader;
 
 		qhandle_t       handsBlue2Skin; //blud
 		qhandle_t       handsRed2Skin; //blud
@@ -1875,3 +1889,7 @@ void CG_WeaponDropped( void );
 void CG_ToggleItem_f( void );
 void CG_RenderLaser(centity_t *cent);
 void CG_AddWeaponWithPowerups( refEntity_t *gun, int powerups ) ;
+void CG_AddSmoke( localEntity_t *le );
+localEntity_t *CG_AddSmokeParticle(vec3_t origin, int radius, int randomradius, int lifetime,
+                                                                   int boost, int wind, vec3_t winddir);
+
