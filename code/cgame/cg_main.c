@@ -886,6 +886,7 @@ static void CG_RegisterGraphics( void ) {
 
 
         cgs.media.viewSmokeShader = trap_R_RegisterShaderNoMip ( "viewsmokepuff" );
+        cgs.media.grenadeSmokeShader = trap_R_RegisterShaderNoMip ( "grenadeSmokePuff");
         cgs.media.smokePuffShader = trap_R_RegisterShader( "SmokePuff" );
 	cgs.media.smokePuffRageProShader = trap_R_RegisterShader( "smokePuffRagePro" );
 	cgs.media.shotgunSmokePuffShader = trap_R_RegisterShader( "shotgunSmokePuff" );
