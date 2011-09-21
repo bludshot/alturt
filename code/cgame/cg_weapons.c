@@ -1333,10 +1333,10 @@ void CG_RenderLaser(centity_t *cent){
                 VectorMA( trace.endpos, -1.4, forward, beam.origin );
                        
                 
-      if (cent->currentState.number != cg.predictedPlayerState.clientNum){
-                  if ( !( cg.ItemToggleState[cent->currentState.number] & ( 1 << PW_LASERSIGHT ))) 
-                         trap_R_AddRefEntityToScene( &beam );
-        }else   if ( !( cg.ItemToggleState[cg.predictedPlayerState.clientNum] & ( 1 << PW_LASERSIGHT ))) 
+//      if (cent->currentState.number != cg.predictedPlayerState.clientNum){
+//                  if ( !( cg.ItemToggleState[cent->currentState.number] & ( 1 << PW_LASERSIGHT ))) 
+//                         trap_R_AddRefEntityToScene( &beam );
+//        }else   if ( !( cg.ItemToggleState[cg.predictedPlayerState.clientNum] & ( 1 << PW_LASERSIGHT ))) 
                  trap_R_AddRefEntityToScene( &beam );
          
       //  CG_Printf( "len is %f\n",len );
@@ -1344,9 +1344,6 @@ void CG_RenderLaser(centity_t *cent){
 
             }
         }
-            
-            
-            
             
 } 
 
@@ -1677,9 +1674,11 @@ if ( weaponDown ) {
        if ( weapon->laserModel && weaponNum != WP_KNIFE && weaponNum != WP_HK69
              && weaponNum != WP_SPAS && weaponNum != WP_HE && weaponNum != WP_SR8
              && weaponNum != WP_G36 && weaponNum != WP_PSG1 && weaponNum != WP_NEGEV 
-            && weaponNum != WP_SMOKE && lasersight && !weaponDown ) 
-               CG_RenderLaser(cent);
-        
+            && weaponNum != WP_SMOKE && weaponNum != WP_BOMB && lasersight && !weaponDown ){ 
+        	
+	 if ( !( cg.ItemToggleState[ cent->currentState.clientNum] & ( 1 << PW_LASERSIGHT )))
+	      CG_RenderLaser(cent);
+        }
         
         
         if ( ps && weapon->laserModel && weaponNum != WP_KNIFE && weaponNum != WP_HK69
@@ -2047,8 +2046,30 @@ if ( weaponDown ) {
         else
           CG_PositionRotatedEntityOnTag( &flash, &gun, weapon->weaponModel, "tag_flash");
         trap_R_AddRefEntityToScene( &flash );
+/*
 
+*/
+#define SMOKE_TIME      1000
+#define DELTA_TIME      75
+#define LIFE_TIME       4000
 
+    if (!( trap_CM_PointContents( cg.refdef.vieworg, 0 ) & CONTENTS_WATER ) && ps){
+        // add smoke if nessecary
+        if(cg.time >= cent->lastSmokeTime && cent->lastSmokeTime ){
+                refEntity_t             re;
+
+                if(cent->lastSmokeTime - cent->smokeTime > SMOKE_TIME){
+                        cent->lastSmokeTime = 0;
+                        cent->smokeTime = 0;
+                } else
+                        cent->lastSmokeTime += DELTA_TIME;
+
+                        // get position of tag_flash
+                        CG_PositionRotatedEntityOnTag( &re, &gun, weapon->holdsModel, "tag_flash");
+
+                        CG_AddSmokeParticle(re.origin, 4, 2, LIFE_TIME, 5, 0, vec3_origin);
+        }
+}
 
     //    if ( ps || cg.renderingThirdPerson ||
      //           cent->currentState.number != cg.predictedPlayerState.clientNum ) {
