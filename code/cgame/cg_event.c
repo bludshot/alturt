@@ -689,7 +689,9 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
                                     CG_CreateBleeder( es->pos.trBase , 10, cent->currentState.clientNum ) ;
                                //     CG_PlayerBleed(cent->currentState.clientNum, 10, es->pos.trBase, dir );
                                      break;
-                
+                case EV_WALLJUMP:
+                                    DEBUGNAME("EV_WALLJUMP")
+                                    break;
 	case EV_TAUNT:
 		DEBUGNAME("EV_TAUNT");
 		trap_S_StartSound (NULL, es->number, CHAN_VOICE, CG_CustomSound( es->number, "*taunt.wav" ) );
