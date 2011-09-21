@@ -225,7 +225,7 @@ typedef enum {
 #define PMF_GRENADE_ARMED       16384
 #define PMF_BLEEDING       32768
 #define PMF_ONLADDER    65536
-
+#define PMF_EDGE    128
 
 
 #define PMF_ALL_TIMES   (PMF_TIME_WATERJUMP|PMF_TIME_LAND|PMF_TIME_KNOCKBACK)
@@ -583,6 +583,7 @@ typedef enum {
         EV_TAUNT_GETFLAG,
         EV_TAUNT_GUARDBASE,
         EV_TAUNT_PATROL,
+        EV_WALLJUMP
 
 
 } entity_event_t;
