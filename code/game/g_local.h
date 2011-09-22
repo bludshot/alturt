@@ -68,6 +68,10 @@ along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
 #define VIP_STAYALIVE           2
 
 
+#undef ACTION_AFFIRMATIVE  
+#undef ACTION_NEGATIVE                 
+#define ACTION_RELOAD                   0x0100000
+#define ACTION_HEAL                     0x0200000
 
 // movers are things like doors, plats, buttons, etc
 typedef enum {
