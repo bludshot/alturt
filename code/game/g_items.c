@@ -813,10 +813,10 @@ gentity_t *Drop_Weapon( gentity_t *ent, gitem_t *item, float angle, int clips, i
   
   
       if ( ent->client->ps.pm_flags & PMF_FOLLOW )
-        return;
+        return NULL;
 
     if ( ent->client->ps.pm_flags & EF_WEAPONS_LOCKED)
-        return;
+        return NULL;
   
   
   VectorCopy( ent->s.apos.trBase, angles );
