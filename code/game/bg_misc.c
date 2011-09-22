@@ -1824,6 +1824,49 @@ void BG_RemoveWeapon( int weapon, int stats[ ] )
   }
 }
 
+
+qboolean isSidearm(int w)
+{
+	return (w == WP_BERETTA || w == WP_DEAGLE);
+}
+
+qboolean isPrimary(int w)
+{
+	return (w == WP_MP5K	||
+			w == WP_SPAS	||
+			w == WP_UMP45	||
+			w == WP_M4		||
+			w == WP_LR300	||
+			w == WP_G36		||
+			w == WP_AK103	||
+			w == WP_HK69	||
+			w == WP_NEGEV	||
+			w == WP_PSG1	||
+			w == WP_SR8 );
+}
+
+qboolean isSecondary(int w)
+{
+	return (w == WP_MP5K || w == WP_SPAS || w == WP_UMP45);
+}
+
+qboolean isGrenade(int w)
+{
+	return (w == WP_HE || w == WP_SMOKE);
+}
+
+qboolean isItem(int i)
+{
+	return (i == PW_VEST		||
+			i == PW_HELMET		||
+			i == PW_SILENCER	||
+			i == PW_LASERSIGHT	||
+			i == PW_AMMO		||
+			i == PW_NVG			||
+			i == PW_MEDKIT );
+}
+
+
 /*
 =====================
 BG_HasWeapon
