@@ -1538,6 +1538,7 @@ void CG_PositionWeaponOnTag( refEntity_t *entity, const refEntity_t *parent, qha
 //
 // cg_weapons.c
 //
+qboolean CG_HasTwoSecondaries (void);
 int CG_GetPrimary (void);
 int CG_GetBestSecondary (void);
 int CG_GetWorstSecondary (void);
