@@ -340,7 +340,7 @@ static qboolean	CG_FindClientModelFile( char *filename, int length, clientInfo_t
 	// note: in q3a there's a lot more code here. But in my code I fixed it so that this function
 	//       is always passed the correct info, and with alturt there's only 1 path possibility
 	Com_sprintf( filename, length, "models/players/%s/%s_%s.%s", modelName, base, skinName, ext );
-        //CG_Printf("models/players/%s/%s_%s.%s\n", modelName, base, skinName, ext ); //xamis debugging
+
 	if ( CG_FileExists( filename ) )
 	{
 		return qtrue;
@@ -350,9 +350,9 @@ static qboolean	CG_FindClientModelFile( char *filename, int length, clientInfo_t
 		if ( cgs.gametype < GT_TEAM )
 		{
 			//the non-team GT skin that they asked for doesn't exist so set it to a valid one (default, which must exist)
-			Com_sprintf( filename, length, "models/players/%s/%s.%s", modelName, base, ext );
+			Com_sprintf( filename, length, "models/players/%s/%s_default.%s", modelName, base, ext );
 			Com_sprintf( ci->skinName, 8, "default" );
-                        //CG_Printf("models/players/%s/%s.%s", modelName, base, ext  ); //xamis debugging
+
 			//we'll check if it exists just in case even though it pretty much must exist.
 			if ( CG_FileExists( filename ) )
 			{
@@ -361,6 +361,7 @@ static qboolean	CG_FindClientModelFile( char *filename, int length, clientInfo_t
 			else
 			{
 				CG_Printf( "Error: default skin does not exist. That should never happen!\n" );
+				CG_Printf( "modelName: %s, base: %s, ext: %s.\n", modelName, base, ext);
 				return qfalse;
 			}
 		}
