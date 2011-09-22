@@ -723,11 +723,6 @@ void FireWeapon( gentity_t *ent );
 int GearToWPPW(char itemChar); //blud: Converts gear cvar slot char values to WP or PW numbers
 int getDefaultItem(int slot);
 qboolean isGoodItem(int weapNum, char primaryWeapon, char secondaryWeapon, char grenade, int slot);
-qboolean isSidearm(int w);
-qboolean isPrimary(int w);
-qboolean isSecondary(int w);
-qboolean isGrenade(int w);
-qboolean isItem(int i);
 int ClipCount( int w );
 int RoundCount( int w );
 void PM_arm_grenade( void );

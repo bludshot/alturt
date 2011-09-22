@@ -305,6 +305,12 @@ typedef enum {
 } statIndex_t;
 
 
+qboolean isSidearm(int w);
+qboolean isPrimary(int w);
+qboolean isSecondary(int w);
+qboolean isGrenade(int w);
+qboolean isItem(int i);
+
 // loadout related  -located in bg_misc.c --xamis
 qboolean BG_Melee( int weapon );
 qboolean BG_Sidearm( int weapon );
