@@ -2651,6 +2651,29 @@ void CG_PrevWeapon_f( void ) {
 
 /*
 ===============
+CG_HasTwoSecondaries
+===============
+*/
+qboolean CG_HasTwoSecondaries (void)
+{
+	int numSecondaries = 0;
+
+	if (BG_HasWeapon( WP_SPAS, cg.snap->ps.stats )) {
+		numSecondaries++; }
+	if (BG_HasWeapon( WP_MP5K, cg.snap->ps.stats )) {
+		numSecondaries++; }
+	if (BG_HasWeapon( WP_UMP45, cg.snap->ps.stats )) {
+		numSecondaries++; }
+
+	if (numSecondaries >= 2) {
+		return qtrue; }
+	else {
+		return qfalse; }
+}
+
+
+/*
+===============
 CG_GetPrimary
 ===============
 */
@@ -2676,7 +2699,7 @@ int CG_GetPrimary (void)
 	else if (BG_HasWeapon( WP_SR8, cg.snap->ps.stats ))
 		return WP_SR8;
 	else
-		return WP_NONE;
+		return CG_GetBestSecondary();
 }
 
 
@@ -2853,10 +2876,32 @@ void CG_WeapToggle_f( void ) {
 	{
 		if (!(strcmp(arg1, "primary")))
 		{
-			WP = CG_GetPrimary();
+			if (!CG_HasTwoSecondaries())
+			{
+				WP = CG_GetPrimary();
+			}
+			else
+			{
+				if (isSecondary(cent->currentState.weapon)) //if they are holding one
+				{
+					//give them the other one
+					if (cent->currentState.weapon == CG_GetBestSecondary())
+					{
+						WP = CG_GetWorstSecondary();
+					}
+					else
+					{
+						WP = CG_GetBestSecondary();
+					}
+				}
+				else
+				{
+					WP = CG_GetBestSecondary();
+				}
+			}
+
 			if (WP != WP_NONE)
 			{
-				//give them primary
 				cg.weaponSelect = WP;
 			}
 		}
