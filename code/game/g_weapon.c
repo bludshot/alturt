@@ -209,7 +209,7 @@ void CheckMed( gentity_t *ent ) {
 	ucmd = &ent->client->pers.cmd;
         ent->client->oldbuttons = ent->client->buttons;
         ent->client->buttons = ucmd->buttons;
-        ent->client->latched_buttons |= ent->client->buttons & ~ent->client->oldbuttons;
+   //     ent->client->latched_buttons |= ent->client->buttons & ~ent->client->oldbuttons;
 
 	if ( !( ent->client->buttons & BUTTON_HEAL && !( ent->client->oldbuttons & BUTTON_HEAL ) ) ){ 
        // if ( !(ent->client->buttons & BUTTON_HEAL)){
