@@ -1283,10 +1283,10 @@ void CG_RenderLaser(centity_t *cent){
         qhandle_t laserBeam;
         int	rf;
         int anim;
-                    
+	int             timeDelta;                    
                     
         memset( &beam, 0, sizeof( beam ) );
-        anim = cent->currentState.legsAnim & ~ANIM_TOGGLEBIT;
+        anim = cg.predictedPlayerState.legsAnim & ~ANIM_TOGGLEBIT;
         rf = 0;
 
 
@@ -1321,6 +1321,16 @@ void CG_RenderLaser(centity_t *cent){
         if (! (CG_PointContents( muzzlePoint, cent->currentState.number ) & CONTENTS_SOLID) &&
                 !trace.startsolid )
         {
+
+
+
+	// smooth out stair climbing
+	timeDelta = cg.time - cg.stepTime;
+	if ( timeDelta < STEP_TIME ) {
+		trace.endpos[2] -= cg.stepChange
+			* (STEP_TIME - timeDelta) / STEP_TIME;
+	}
+
 
             // add the impact flare if it hit something
             if ( trace.fraction < 1.0 ) {
@@ -1371,11 +1381,11 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	refEntity_t     vtrigger;
 	refEntity_t     vbolt;
 	refEntity_t     vclip;
-        	refEntity_t     vclip1;
-                	refEntity_t     vclip2;
-                  refEntity_t     vknob1;
-                  refEntity_t     vknob2;
-                  refEntity_t     vbutton;
+       	refEntity_t     vclip1;
+       	refEntity_t     vclip2;
+        refEntity_t     vknob1;
+        refEntity_t     vknob2;
+        refEntity_t     vbutton;
 	refEntity_t     vcliprel;
 	refEntity_t     vejector;
 	refEntity_t     vflap;
@@ -1424,7 +1434,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 
                         
 	ci = &cgs.clientinfo[cent->currentState.clientNum];
-
+	nonPredictedCent = &cg_entities[cent->currentState.clientNum];
         
         
                         
@@ -1675,8 +1685,10 @@ if ( weaponDown ) {
              && weaponNum != WP_SPAS && weaponNum != WP_HE && weaponNum != WP_SR8
              && weaponNum != WP_G36 && weaponNum != WP_PSG1 && weaponNum != WP_NEGEV 
             && weaponNum != WP_SMOKE && weaponNum != WP_BOMB && lasersight && !weaponDown ){ 
-        	
-	 if ( !( cg.ItemToggleState[ cent->currentState.clientNum] & ( 1 << PW_LASERSIGHT )))
+        
+
+//nonPredictedCent->currentState.clientNum cent->currentState.clientNum cg.predictedPlayerState.clientNum ? what to use here????
+	 if ( !( cg.ItemToggleState[ nonPredictedCent->currentState.clientNum] & ( 1 << PW_LASERSIGHT )))
 	      CG_RenderLaser(cent);
         }
         
@@ -2007,7 +2019,7 @@ if ( weaponDown ) {
 
 
         // make sure we aren't looking at cg.predictedPlayerEntity for LG
-        nonPredictedCent = &cg_entities[cent->currentState.clientNum];
+   //     nonPredictedCent = &cg_entities[cent->currentState.clientNum];
 
         // if the index of the nonPredictedCent is not the same as the clientNum
         // then this is a fake player (like on teh single player podiums), so
@@ -2056,7 +2068,7 @@ if ( weaponDown ) {
     if (!( trap_CM_PointContents( cg.refdef.vieworg, 0 ) & CONTENTS_WATER ) && ps){
         // add smoke if nessecary
         if(cg.time >= cent->lastSmokeTime && cent->lastSmokeTime ){
-                refEntity_t             re;
+                //refEntity_t             re;
 
                 if(cent->lastSmokeTime - cent->smokeTime > SMOKE_TIME){
                         cent->lastSmokeTime = 0;
