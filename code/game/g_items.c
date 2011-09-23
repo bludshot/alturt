@@ -899,8 +899,13 @@ void UT_DropWeapon ( gentity_t *ent)
 
   if ( weapon == bg_inventory.sort[client->ps.clientNum][PRIMARY])
     bg_inventory.sort[client->ps.clientNum][PRIMARY] = WP_NONE;
-  if ( weapon == bg_inventory.sort[client->ps.clientNum][SECONDARY])
-    bg_inventory.sort[client->ps.clientNum][SECONDARY] = WP_NONE;
+  if ( weapon == bg_inventory.sort[client->ps.clientNum][SECONDARY]){
+	if( BG_Secondary( bg_inventory.sort[client->ps.clientNum][PRIMARY] )){
+		bg_inventory.sort[client->ps.clientNum][SECONDARY] =  bg_inventory.sort[client->ps.clientNum][PRIMARY];
+		bg_inventory.sort[client->ps.clientNum][PRIMARY] = WP_NONE;
+	}else
+    		bg_inventory.sort[client->ps.clientNum][SECONDARY] = WP_NONE;
+	}
   if ( weapon == bg_inventory.sort[client->ps.clientNum][SIDEARM])
     bg_inventory.sort[client->ps.clientNum][SIDEARM] = WP_NONE;
   if ( weapon == bg_inventory.sort[client->ps.clientNum][NADE])
