@@ -343,7 +343,7 @@ void G_SetMovedir( vec3_t angles, vec3_t movedir ) {
 	VectorClear( angles );
 }
 
-
+/*
 float vectoyaw( const vec3_t vec ) {
 	float	yaw;
 	
@@ -364,7 +364,7 @@ float vectoyaw( const vec3_t vec ) {
 
 	return yaw;
 }
-
+*/
 
 void G_InitGentity( gentity_t *e ) {
 	e->inuse = qtrue;

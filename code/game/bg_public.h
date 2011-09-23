@@ -623,6 +623,7 @@ typedef enum {
         BOTH_DEAD3,
         BOTH_CLIMB,
         BOTH_CLIMB_IDLE,
+        BOTH_LEDGECLIMB,
 
         TORSO_GESTURE,
 

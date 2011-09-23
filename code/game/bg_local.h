@@ -106,8 +106,9 @@ qboolean	PM_SlideMove( qboolean gravity );
 
 void		PM_StepSlideMove( qboolean gravity );
 void PM_StartWeaponAnim( int anim );
-
-
+void PM_StartTorsoAnim( int anim );
+void PM_StartLegsAnim( int anim ) ;
+void PM_AdjustAngleForLedgeClimb( playerState_t *ps, usercmd_t *ucmd );
 
 
 
