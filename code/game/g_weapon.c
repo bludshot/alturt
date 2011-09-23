@@ -200,11 +200,19 @@ void CheckMed( gentity_t *ent ) {
         trace_t         tr;
         vec3_t          end;
         gentity_t       *traceEnt;
-
+	usercmd_t *ucmd;  
 
         // set aiming directions
         AngleVectors (ent->client->ps.viewangles, forward, right, up);
-        if ( !(ent->client->buttons & BUTTON_HEAL)){
+	
+
+	ucmd = &ent->client->pers.cmd;
+        ent->client->oldbuttons = ent->client->buttons;
+        ent->client->buttons = ucmd->buttons;
+        ent->client->latched_buttons |= ent->client->buttons & ~ent->client->oldbuttons;
+
+	if ( !( ent->client->buttons & BUTTON_HEAL && !( ent->client->oldbuttons & BUTTON_HEAL ) ) ){ 
+       // if ( !(ent->client->buttons & BUTTON_HEAL)){
             return;
         }
         CalcMuzzlePoint ( ent, forward, right, up, muzzle );
@@ -867,92 +875,12 @@ void Weapon_HookThink (gentity_t *ent)
 }
 
 /*
-======================================================================
+------------------------------------------------------------------------------------------------------------------------
 
-LIGHTNING GUN
+Weapon_KnifeSlash
 
-======================================================================
+------------------------------------------------------------------------------------------------------------------------
 */
-
-void Weapon_LightningFire( gentity_t *ent ) {
-        trace_t         tr;
-        vec3_t          end;
-#ifdef MISSIONPACK
-        vec3_t impactpoint, bouncedir;
-#endif
-        gentity_t       *traceEnt, *tent;
-        int                     damage, i, passent;
-
-        damage = 8 * s_quadFactor;
-
-        passent = ent->s.number;
-        for (i = 0; i < 10; i++) {
-                VectorMA( muzzle, LIGHTNING_RANGE, forward, end );
-
-                trap_Trace( &tr, muzzle, NULL, NULL, end, passent, MASK_SHOT );
-
-#ifdef MISSIONPACK
-                // if not the first trace (the lightning bounced of an invulnerability sphere)
-                if (i) {
-                        // add bounced off lightning bolt temp entity
-                        // the first lightning bolt is a cgame only visual
-                        //
-                        tent = G_TempEntity( muzzle, EV_LIGHTNINGBOLT );
-                        VectorCopy( tr.endpos, end );
-                        SnapVector( end );
-                        VectorCopy( end, tent->s.origin2 );
-                }
-#endif
-                if ( tr.entityNum == ENTITYNUM_NONE ) {
-                        return;
-                }
-
-                traceEnt = &g_entities[ tr.entityNum ];
-
-                if ( traceEnt->takedamage) {
-#ifdef MISSIONPACK
-                        if ( traceEnt->client && traceEnt->client->invulnerabilityTime > level.time ) {
-                                if (G_InvulnerabilityEffect( traceEnt, forward, tr.endpos, impactpoint, bouncedir )) {
-                                        G_BounceProjectile( muzzle, impactpoint, bouncedir, end );
-                                        VectorCopy( impactpoint, muzzle );
-                                        VectorSubtract( end, impactpoint, forward );
-                                        VectorNormalize(forward);
-                                        // the player can hit him/herself with the bounced lightning
-                                        passent = ENTITYNUM_NONE;
-                                }
-                                else {
-                                        VectorCopy( tr.endpos, muzzle );
-                                        passent = traceEnt->s.number;
-                                }
-                                continue;
-                        }
-                        else {
-                                G_Damage( traceEnt, ent, ent, forward, tr.endpos,
-                                        damage, 0, MOD_LIGHTNING);
-                        }
-#else
-                                G_Damage( traceEnt, ent, ent, forward, tr.endpos,
-                                        damage, 0, MOD_LIGHTNING);
-#endif
-                }
-
-                if ( traceEnt->takedamage && traceEnt->client ) {
-                        tent = G_TempEntity( tr.endpos, EV_MISSILE_HIT );
-                        tent->s.otherEntityNum = traceEnt->s.number;
-                        tent->s.eventParm = DirToByte( tr.plane.normal );
-                        tent->s.weapon = ent->s.weapon;
-                        if( LogAccuracyHit( traceEnt, ent ) ) {
-                                ent->client->accuracy_hits++;
-                        }
-                } else if ( !( tr.surfaceFlags & SURF_NOIMPACT ) ) {
-                        tent = G_TempEntity( tr.endpos, EV_MISSILE_MISS );
-                        tent->s.eventParm = DirToByte( tr.plane.normal );
-                }
-
-                break;
-        }
-}
-
 
 void Weapon_KnifeSlash( gentity_t *ent ) {
         trace_t         tr;
