@@ -1311,17 +1311,17 @@ void Touch_DoorTrigger( gentity_t *ent, gentity_t *other, trace_t *trace )
 	if ( !(other->client->buttons & BUTTON_USE ) )
 		return;
 	 if ( ent->parent->moverState == MOVER_POS2 ) {
-                 G_Printf("ent->parent->moverState == MOVER_POS2\n");
+                 //G_Printf("ent->parent->moverState == MOVER_POS2\n");
 		Use_BinaryMover2( ent->parent, ent, other );
 	} else if ( ent->parent->moverState == MOVER_POS1 ) {
-                             G_Printf("ent->parent->moverState == MOVER_POS1\n");
+                   //          G_Printf("ent->parent->moverState == MOVER_POS1\n");
 		Use_BinaryMover( ent->parent, ent, other );
 	} else if ( ent->parent->moverState == MOVER_STOP_1TO2 || ent->parent->moverState == MOVER_STOP_2TO1 ) {
-                                         G_Printf("ent->parent->moverState == MOVER_STOP_1TO2 || ent->parent->moverState == MOVER_STOP_2TO1\n");
+                     //                    G_Printf("ent->parent->moverState == MOVER_STOP_1TO2 || ent->parent->moverState == MOVER_STOP_2TO1\n");
 		Use_BinaryMover( ent->parent, ent, other );
 	}else  if ( ent->parent->moverState != MOVER_1TO2 &&
 		ent->parent->moverState != ROTATOR_1TO2 ) {
-                                                     G_Printf("ent->parent->moverState != MOVER__1TO2 && ent->parent->moverState != ROTATOR_1TO2\n");
+                       //                              G_Printf("ent->parent->moverState != MOVER__1TO2 && ent->parent->moverState != ROTATOR_1TO2\n");
 		Use_BinaryMover( ent->parent, ent, other );
 	}
 
