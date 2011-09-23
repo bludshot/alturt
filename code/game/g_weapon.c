@@ -228,7 +228,7 @@ void CheckMed( gentity_t *ent ) {
             traceEnt->health+=5;
             traceEnt->client->ps.pm_flags &=  ~ PMF_BLEEDING;
             ent->client->ps.weaponstate = WEAPON_START_BANDAGING_OTHER;
-            ent->client->ps.stats[STAT_DMG_LOC] = 0;
+            traceEnt->client->ps.stats[STAT_DMG_LOC] = 0;
         }
 
 
