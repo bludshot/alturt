@@ -354,7 +354,7 @@ void Bullet_Fire (gentity_t *ent, float spread, int damage, int MOD  ) {
         vec3_t          end;
         float           r;
         float           u;
-        gentity_t       *tent,*tent2;
+        gentity_t       *tent;//,*tent2;
         gentity_t       *traceEnt;
         int                     j, passent, spreadAdjustment;
         gentity_t       *unlinkedEntity[3];
@@ -477,7 +477,7 @@ SHOTGUN
 qboolean ShotgunPellet( vec3_t start, vec3_t end, gentity_t *ent ) {
         trace_t         tr;
         int                     j, damage, i, passent;
-        gentity_t       *traceEnt, *tent2;
+        gentity_t       *traceEnt;//, *tent2;
 #ifdef MISSIONPACK
         vec3_t          impactpoint, bouncedir;
 #endif
@@ -1371,7 +1371,7 @@ switch (weaponNumber){
 
 void Set_Mode(gentity_t *ent){
     
-  int             index, i;  
+  int             index;  
   char    userinfo[MAX_INFO_STRING];
   char                    weapmodes_save[WP_NUM_WEAPONS];//xamis
   index = ent - g_entities;
