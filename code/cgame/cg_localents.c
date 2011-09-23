@@ -507,7 +507,7 @@ static void CG_AddMoveScaleFade( localEntity_t *le ) {
 	// so it doesn't add too much overdraw
 	VectorSubtract( re->origin, cg.refdef.vieworg, delta );
 	len = VectorLength( delta );
-	if ( len < le->radius -100.0 ) {
+	if ( len < le->radius ) {
           BG_PlayerTouchesSmoke( 1, cg.snap->ps.stats );
           CG_FreeLocalEntity( le );
           return;

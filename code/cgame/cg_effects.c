@@ -821,7 +821,7 @@ localEntity_t *CG_AddSmokeParticle(vec3_t origin, int radius, int randomradius, 
         le->color[2] = 255;
         le->color[3] = 225;
 
-        re->customShader = cgs.media.viewSmokeShader;
+        re->customShader = cgs.media.smokePuffShader;
 
         VectorCopy( origin, re->origin);
         VectorCopy( re->origin, le->pos.trBase );

@@ -2703,7 +2703,7 @@ static void CG_DrawCrosshair(void)
 		return;
 	}           
                   
-                 if ( anim == BOTH_CLIMB ||  anim == BOTH_CLIMB_IDLE || anim == TORSO_BANDAGE ){
+                 if ( anim == BOTH_CLIMB ||  anim == BOTH_CLIMB_IDLE || anim == TORSO_BANDAGE || anim == BOTH_LEDGECLIMB){
 		return;
                   } 
                   

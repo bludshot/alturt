@@ -1409,7 +1409,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	qboolean silenced;
 	qboolean vestOn;	//needed for different torso weapon tag location
  	qboolean        weaponDown;
-        int            anim;
+                  int            anim;
 
 
 
@@ -1432,7 +1432,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	//Determine what items the user has --Xamis
             anim = cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT;
 
-            if ( anim == BOTH_CLIMB ||  anim == BOTH_CLIMB_IDLE || anim == TORSO_BANDAGE ){
+            if ( anim == BOTH_CLIMB ||  anim == BOTH_CLIMB_IDLE || anim == TORSO_BANDAGE || anim == BOTH_LEDGECLIMB ){
                       weaponDown=qtrue;
                   } else
                       weaponDown=qfalse;
@@ -2065,9 +2065,9 @@ if ( weaponDown ) {
                         cent->lastSmokeTime += DELTA_TIME;
 
                         // get position of tag_flash
-                        CG_PositionRotatedEntityOnTag( &re, &gun, weapon->holdsModel, "tag_flash");
+                    //    CG_PositionRotatedEntityOnTag( &re, &gun, weapon->holdsModel, "tag_flash");
 
-                        CG_AddSmokeParticle(re.origin, 4, 2, LIFE_TIME, 5, 0, vec3_origin);
+                  //      CG_AddSmokeParticle(re.origin, 4, 2, LIFE_TIME, 5, 0, vec3_origin);
         }
 }
 
@@ -2121,7 +2121,7 @@ void CG_AddViewWeapon( playerState_t *ps ) {
         if ( ps->pm_flags & PMF_ONLADDER ) {
             return;
         }
-        
+
         
         // allow the gun to be completely removed
         if ( !cg_drawGun.integer ) {
@@ -2168,6 +2168,11 @@ void CG_AddViewWeapon( playerState_t *ps ) {
             if ( anim == TORSO_BANDAGE ){
                 return;
                   } 
+        
+                 if ( anim == BOTH_CLIMB ||  anim == BOTH_CLIMB_IDLE || anim == TORSO_BANDAGE || anim == BOTH_LEDGECLIMB ){
+                      return;
+                  }
+        
         
         CG_RegisterWeapon( ps->weapon );
         weapon = &cg_weapons[ ps->weapon ];
@@ -3327,6 +3332,16 @@ void CG_FireWeapon( centity_t *cent ) {
         // mark the entity as muzzle flashing, so when it is added it will
         // append the flash to the weapon model
         cent->muzzleFlashTime = cg.time;
+
+
+			if(!cent->smokeTime)
+                                cent->smokeTime = cg.time + 500;
+                        else
+                                cent->smokeTime = cg.time;
+
+                        cent->lastSmokeTime = cent->smokeTime;
+
+
 
         // play a sound
         for ( c = 0 ; c < 4 ; c++ ) {
