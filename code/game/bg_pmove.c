@@ -199,7 +199,6 @@ void PM_SetVelocityforLedgeMove( playerState_t *ps, int anim )
 qboolean LedgeGrabableEntity(int entityNum)
 {//indicates if the given entity is an entity that can be ledgegrabbed.
         //bgEntity_t *ent = PM_BGEntForNum(entityNum);
-
       //  switch(ent->s.eType)
       //  {
       //  case ET_PLAYER:
@@ -3040,7 +3039,8 @@ void PmoveSingle (pmove_t *pmove) {
           //Com_Printf("PMF_BLEEDING TRUE\n");  
         }
         
-        if (pm->cmd.buttons & BUTTON_HEAL &&  (pm->ps->pm_flags & PMF_BLEEDING || pm->ps->stats[STAT_DMG_LOC])){
+        if (pm->cmd.buttons & BUTTON_HEAL &&  (pm->ps->pm_flags & PMF_BLEEDING || pm->ps->stats[STAT_DMG_LOC]) 
+		&& pm->ps->weaponstate != WEAPON_START_BANDAGING  && pm->ps->weaponstate != WEAPON_DOWN_BANDAGING ){
              pm->ps->weaponstate = WEAPON_START_BANDAGING;
              pm->cmd.buttons &= ~BUTTON_HEAL;
         }
