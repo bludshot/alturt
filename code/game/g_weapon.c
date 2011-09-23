@@ -206,15 +206,15 @@ void CheckMed( gentity_t *ent ) {
         AngleVectors (ent->client->ps.viewangles, forward, right, up);
 	
 
-	ucmd = &ent->client->pers.cmd;
-        ent->client->oldbuttons = ent->client->buttons;
-        ent->client->buttons = ucmd->buttons;
-   //     ent->client->latched_buttons |= ent->client->buttons & ~ent->client->oldbuttons;
 
-	if ( !( ent->client->buttons & BUTTON_HEAL && !( ent->client->oldbuttons & BUTTON_HEAL ) ) ){ 
-       // if ( !(ent->client->buttons & BUTTON_HEAL)){
+        if ( !(ent->client->buttons & BUTTON_HEAL)){
             return;
         }
+       if ( ent->client->ps.weaponstate == WEAPON_START_BANDAGING_OTHER || 
+               ent->client->ps.weaponstate == WEAPON_DOWN_BANDAGING_OTHER){
+            return;
+       }
+        
         CalcMuzzlePoint ( ent, forward, right, up, muzzle );
 
         VectorMA (muzzle, 32, forward, end);
