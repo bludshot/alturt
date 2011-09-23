@@ -1313,7 +1313,7 @@ void Touch_DoorTrigger( gentity_t *ent, gentity_t *other, trace_t *trace )
 
 	other->client->oldbuttons = other->client->buttons; 
 	other->client->buttons = ucmd->buttons; 
-	other->client->latched_buttons |= other->client->buttons & ~other->client->oldbuttons; 
+	//other->client->latched_buttons |= other->client->buttons & ~other->client->oldbuttons; 
 
 // only activate when button_use is called --Xamis
 	if ( (  other->client->buttons & BUTTON_USE && !( other->client->oldbuttons & BUTTON_USE) ) ) 
