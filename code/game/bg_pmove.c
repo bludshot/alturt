@@ -65,15 +65,6 @@ int             c_pmove = 0;
 #define WALLJUMP_BOOST 196
 #define MAX_WALLJUMPS 3
 
-//[LedgeGrab]
-//The height level at which you grab ledges.  In terms of player origin
-//#define LEDGEGRABMAXHEIGHT              44
-//#define LEDGEGRABHEIGHT                 42
-//#define LEDGEVERTOFFSET                 LEDGEGRABHEIGHT
-//#define LEDGEGRABMINHEIGHT              38
-
-
-
 #define LEDGEGRABMAXHEIGHT              42
 #define LEDGEGRABHEIGHT                 38
 #define LEDGEVERTOFFSET                 LEDGEGRABHEIGHT
@@ -205,7 +196,6 @@ void PM_SetVelocityforLedgeMove( playerState_t *ps, int anim )
 
 }
 
-//[LedgeGrab]
 qboolean LedgeGrabableEntity(int entityNum)
 {//indicates if the given entity is an entity that can be ledgegrabbed.
         //bgEntity_t *ent = PM_BGEntForNum(entityNum);
@@ -394,7 +384,7 @@ void PM_CheckGrab(void)
         PM_GrabWallForClimb(pm->ps);
 
 }
-//[/LedgeGrab]
+//End of ledgegrab functions
 
 /*
 ===============
