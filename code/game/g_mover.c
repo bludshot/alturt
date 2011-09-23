@@ -1302,14 +1302,23 @@ Touch_DoorTrigger
 void Touch_DoorTrigger( gentity_t *ent, gentity_t *other, trace_t *trace )
 {
 
+	usercmd_t *ucmd;
+
+	ucmd = &other->client->pers.cmd;
 
 	if( !other->client )
 		return;
 		if( ent->parent->trigger_only )
 		return;
-    // only activate when button_use is called --Xamis
-	if ( !(other->client->buttons & BUTTON_USE ) )
+
+	other->client->oldbuttons = other->client->buttons; 
+	other->client->buttons = ucmd->buttons; 
+
+
+// only activate when button_use is called --Xamis
+	if ( (  other->client->buttons & BUTTON_USE && !( other->client->oldbuttons & BUTTON_USE) ) ) 
 		return;
+
 	 if ( ent->parent->moverState == MOVER_POS2 ) {
                  //G_Printf("ent->parent->moverState == MOVER_POS2\n");
 		Use_BinaryMover2( ent->parent, ent, other );
