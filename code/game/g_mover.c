@@ -1302,21 +1302,15 @@ Touch_DoorTrigger
 void Touch_DoorTrigger( gentity_t *ent, gentity_t *other, trace_t *trace )
 {
 
-	usercmd_t *ucmd;
-
-	ucmd = &other->client->pers.cmd;
 
 	if( !other->client )
 		return;
 		if( ent->parent->trigger_only )
 		return;
 
-	other->client->oldbuttons = other->client->buttons; 
-	other->client->buttons = ucmd->buttons; 
-	//other->client->latched_buttons |= other->client->buttons & ~other->client->oldbuttons; 
 
 // only activate when button_use is called --Xamis
-	if ( (  other->client->buttons & BUTTON_USE && !( other->client->oldbuttons & BUTTON_USE) ) ) 
+	if ( !(  other->client->buttons & BUTTON_USE  ) ) 
 		return;
 
 	 if ( ent->parent->moverState == MOVER_POS2 ) {
