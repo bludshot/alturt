@@ -3040,7 +3040,8 @@ void PmoveSingle (pmove_t *pmove) {
         }
         
         if (pm->cmd.buttons & BUTTON_HEAL &&  (pm->ps->pm_flags & PMF_BLEEDING || pm->ps->stats[STAT_DMG_LOC]) 
-		&& pm->ps->weaponstate != WEAPON_START_BANDAGING  && pm->ps->weaponstate != WEAPON_DOWN_BANDAGING ){
+		&& pm->ps->weaponstate != WEAPON_START_BANDAGING  && pm->ps->weaponstate != WEAPON_DOWN_BANDAGING
+		&& pm->ps->weaponstate != WEAPON_DOWN_BANDAGING_OTHER ){
              pm->ps->weaponstate = WEAPON_START_BANDAGING;
              pm->cmd.buttons &= ~BUTTON_HEAL;
         }
