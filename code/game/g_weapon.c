@@ -916,10 +916,10 @@ void Weapon_KnifeSlash( gentity_t *ent ) {
                         if( LogAccuracyHit( traceEnt, ent ) ) {
                                 ent->client->accuracy_hits++;
                         }
-                } else if ( !( tr.surfaceFlags & SURF_NOIMPACT ) ) {
-                        tent = G_TempEntity( tr.endpos, EV_MISSILE_MISS );
-                        tent->s.eventParm = DirToByte( tr.plane.normal );
-                }
+                }// else if ( !( tr.surfaceFlags & SURF_NOIMPACT ) ) {
+                   //     tent = G_TempEntity( tr.endpos, EV_MISSILE_MISS );
+                  //      tent->s.eventParm = DirToByte( tr.plane.normal );
+              //  }
 
                 break;
         }
