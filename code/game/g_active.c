@@ -692,9 +692,10 @@ void ClientThink_real( gentity_t *ent ) {
         usercmd_t       *ucmd;
         float           xyspeed;
         int i;
+        gentity_t       *groundEnt;
         client = ent->client;
-
-        // don't think if the client is not yet connected (and thus not yet spawned in)
+        
+	// don't think if the client is not yet connected (and thus not yet spawned in)
         if (client->pers.connected != CON_CONNECTED) {
                 return;
         }
@@ -960,6 +961,16 @@ if ( (client->pers.cmd.forwardmove ||
 
           Change_Mode(ent);
         }
+
+
+//determine if we are on glass!
+	groundEnt = &g_entities[ ent->client->ps.groundEntityNum];
+	if  ( !strcmp(groundEnt->classname, "func_breakable") ){
+                           if(  level.time   % 500 == 0 ){
+	G_Damage ( groundEnt, NULL, NULL, NULL, NULL, 1, 0, MOD_MACHINEGUN );	
+                           }
+	}
+
 
 
         // check for respawning
