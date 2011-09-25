@@ -1303,18 +1303,14 @@ void CG_RenderLaser(centity_t *cent){
 
         VectorMA( cent->lerpOrigin, 8192*16, forward, endPoint );
 
-     //   { 
-        //    if ( anim == LEGS_WALKCR  || anim == LEGS_BACKCR || anim == LEGS_IDLECR )
-        //        endPoint[2] += CROUCH_VIEWHEIGHT +1;
-        //    else
-        //        endPoint[2] += DEFAULT_VIEWHEIGHT +1;
-       // }
-
-
         laserBeam = trap_R_RegisterShader( "laserShader" );
         // see if it hit a wall
         CG_Trace( &trace, muzzlePoint, vec3_origin, vec3_origin, endPoint,
                   cent->currentState.number, MASK_SHOT );
+        
+        if( trace.surfaceFlags & SURF_SKY ||  trace.surfaceFlags & SURF_NOMARKS )
+            return;
+        
 
         VectorCopy( trace.endpos , endPoint );
 
