@@ -212,8 +212,7 @@ typedef struct centity_s {
 
         int                             smokeTime;
         int                             lastSmokeTime;
-        int                             smokeTime2;
-        int                             lastSmokeTime2;
+
 
 } centity_t;
 
@@ -768,6 +767,7 @@ typedef struct {
 
 	//Xamis Inventory selection
 	int		ItemToggleState[MAX_CLIENTS];
+                  int                                selectedItem;
 
         vec3_t        lastVangles;                        // view smoothage
         smooth_t      sList[ MAXSMOOTHS ];                // WW smoothing

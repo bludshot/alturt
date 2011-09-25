@@ -1286,10 +1286,10 @@ void CG_RenderLaser(centity_t *cent){
 	int             timeDelta;                    
                     
         memset( &beam, 0, sizeof( beam ) );
-        anim = cg.predictedPlayerState.legsAnim & ~ANIM_TOGGLEBIT;
+        anim = cent->currentState.legsAnim & ~ANIM_TOGGLEBIT;
         rf = 0;
 
-
+        
         VectorCopy ( cent->lerpOrigin,muzzlePoint );
 
             if ( anim == LEGS_WALKCR  || anim == LEGS_BACKCR || anim == LEGS_IDLECR )
@@ -1303,12 +1303,12 @@ void CG_RenderLaser(centity_t *cent){
 
         VectorMA( cent->lerpOrigin, 8192*16, forward, endPoint );
 
-        { 
-            if ( anim == LEGS_WALKCR  || anim == LEGS_BACKCR || anim == LEGS_IDLECR )
-                endPoint[2] += CROUCH_VIEWHEIGHT +1;
-            else
-                endPoint[2] += DEFAULT_VIEWHEIGHT +1;
-        }
+     //   { 
+        //    if ( anim == LEGS_WALKCR  || anim == LEGS_BACKCR || anim == LEGS_IDLECR )
+        //        endPoint[2] += CROUCH_VIEWHEIGHT +1;
+        //    else
+        //        endPoint[2] += DEFAULT_VIEWHEIGHT +1;
+       // }
 
 
         laserBeam = trap_R_RegisterShader( "laserShader" );
@@ -1323,7 +1323,7 @@ void CG_RenderLaser(centity_t *cent){
         {
 
 
-
+ if (cent->currentState.clientNum == cg.predictedPlayerState.clientNum ){
 	// smooth out stair climbing
 	timeDelta = cg.time - cg.stepTime;
 	if ( timeDelta < STEP_TIME ) {
@@ -1331,7 +1331,7 @@ void CG_RenderLaser(centity_t *cent){
 			* (STEP_TIME - timeDelta) / STEP_TIME;
 	}
 
-
+ }
             // add the impact flare if it hit something
             if ( trace.fraction < 1.0 ) {
 
@@ -1342,16 +1342,8 @@ void CG_RenderLaser(centity_t *cent){
                 beam.renderfx = rf;
                 VectorMA( trace.endpos, -1.4, forward, beam.origin );
                        
-                
-//      if (cent->currentState.number != cg.predictedPlayerState.clientNum){
-//                  if ( !( cg.ItemToggleState[cent->currentState.number] & ( 1 << PW_LASERSIGHT ))) 
-//                         trap_R_AddRefEntityToScene( &beam );
-//        }else   if ( !( cg.ItemToggleState[cg.predictedPlayerState.clientNum] & ( 1 << PW_LASERSIGHT ))) 
                  trap_R_AddRefEntityToScene( &beam );
          
-      //  CG_Printf( "len is %f\n",len );
-
-
             }
         }
             
@@ -1436,10 +1428,9 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	ci = &cgs.clientinfo[cent->currentState.clientNum];
 	nonPredictedCent = &cg_entities[cent->currentState.clientNum];
         
-        
+    
                         
 
-	//Determine what items the user has --Xamis
             anim = cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT;
 
             if ( anim == BOTH_CLIMB ||  anim == BOTH_CLIMB_IDLE || anim == TORSO_BANDAGE || anim == BOTH_LEDGECLIMB ){
@@ -1681,17 +1672,14 @@ if ( weaponDown ) {
                 
         }else weapon->flashSound[0] = weapon->normalSound[0];
        // CG_Printf("cg.ItemToggleState[%i] is %i\n",cg.predictedPlayerState.clientNum, cg.ItemToggleState[cg.predictedPlayerState.clientNum] & ( 1 << PW_LASERSIGHT ));
-       if ( weapon->laserModel && weaponNum != WP_KNIFE && weaponNum != WP_HK69
+       if (  cent->currentState.eFlags & EF_TOGGLED && weapon->laserModel && weaponNum != WP_KNIFE && weaponNum != WP_HK69
              && weaponNum != WP_SPAS && weaponNum != WP_HE && weaponNum != WP_SR8
              && weaponNum != WP_G36 && weaponNum != WP_PSG1 && weaponNum != WP_NEGEV 
             && weaponNum != WP_SMOKE && weaponNum != WP_BOMB && lasersight && !weaponDown ){ 
-        
 
-//nonPredictedCent->currentState.clientNum cent->currentState.clientNum cg.predictedPlayerState.clientNum ? what to use here????
-	 if ( !( cg.ItemToggleState[ nonPredictedCent->currentState.clientNum] & ( 1 << PW_LASERSIGHT )))
-	      CG_RenderLaser(cent);
+                CG_RenderLaser(cent);
         }
-        
+     //  }
         
         if ( ps && weapon->laserModel && weaponNum != WP_KNIFE && weaponNum != WP_HK69
              && weaponNum != WP_SPAS && weaponNum != WP_HE && weaponNum != WP_SR8
@@ -2083,11 +2071,17 @@ if ( weaponDown ) {
         }
 }
 
-    //    if ( ps || cg.renderingThirdPerson ||
-     //           cent->currentState.number != cg.predictedPlayerState.clientNum ) {
+     //   if ( ps || cg.renderingThirdPerson ||
+    //           cent->currentState.number != cg.predictedPlayerState.clientNum ) {
                 // add lightning bolt
                 //CG_LightningBolt( nonPredictedCent, flash.origin );
 
+        
+          //      if ( cent->currentState.number != cg.predictedPlayerState.clientNum ) {
+                // add lightning bolt
+               //     CG_RenderLaser(cent);
+                //CG_LightningBolt( nonPredictedCent, flash.origin );
+            //    } 
                 // add rail trail
                 //CG_SpawnRailTrail( cent, flash.origin );
 
@@ -2245,48 +2239,54 @@ void CG_AddViewWeapon( playerState_t *ps ) {
 
 void CG_ToggleItem_f( void ) {
       
-    int i;
+      int i;
+      clientInfo_t    *ci;
       centity_t       *cent;
       playerState_t   *ps;
       ps = &cg.snap->ps;
       cent = &cg.predictedPlayerEntity;
-      
+      ci = &cgs.clientinfo[cent->currentState.clientNum];
       
       if (cg.snap->ps.clientNum != cg.predictedPlayerState.clientNum){
           return;
       }
-      
-      CG_Printf("cg.predictedPlayerState.clientNum is %i and cg.snap->ps.clientNum is %i\n",   cg.predictedPlayerState.clientNum, cg.snap->ps.clientNum );
-      //CG_AddEvent(EV_TOGGLEITEM);
  //ItemToggleState
-if ( !(cg.ItemToggleState[cg.predictedPlayerState.clientNum] & ( 1 << ps->stats[STAT_SELECTED_ITEM] ))){
-cg.ItemToggleState[cg.predictedPlayerState.clientNum] |= ( 1 << ps->stats[STAT_SELECTED_ITEM] );//item on
-}else{
-cg.ItemToggleState[cg.predictedPlayerState.clientNum] &= ~( 1 << ps->stats[STAT_SELECTED_ITEM] );//item off
-}
-      for(i=0; i< 2; i++){
-          CG_Printf("cg.ItemToggleState[%i] is %i\n", i ,cg.ItemToggleState[i] & ( 1 << ps->stats[STAT_SELECTED_ITEM] ));
-          
+      if (cg.selectedItem == PW_LASERSIGHT){
+        trap_SendClientCommand( "ut_togglelaser");
+        return;
       }
-          
+      
+if ( !(cg.ItemToggleState[cg.predictedPlayerState.clientNum] & ( 1 << cg.selectedItem ))){
+cg.ItemToggleState[cg.predictedPlayerState.clientNum] |= ( 1 << cg.selectedItem );//item on
+}else{
+cg.ItemToggleState[cg.predictedPlayerState.clientNum] &= ~( 1 << cg.selectedItem );//item off
+        }
 
 }
+
+
 void CG_DrawItemSelect( void ) {
         //int           value;
 
   gitem_t         *item;
-  int             i, x;
+  int             i, x,y;
   int             bits;
   int             count;
-  float       hcolor[4];
+  float       hcolor[4], hcolor2[4];
   float   *color;
   playerState_t   *ps;
-  hcolor[0] = 0.2f;
-  hcolor[1] = 0.3f;
-  hcolor[2] = 0.8f;
-  hcolor[3] = 0.3f;
+        hcolor[0] = 0.0f;
+        hcolor[1] = 0.0f;
+        hcolor[2] = 0.0f;
+        hcolor[3] = 0.6f;
+
+        hcolor2[0] = 0.2f;
+        hcolor2[1] = 0.3f;
+        hcolor2[2] = 0.8f;
+        hcolor2[3] = 0.3f;
   ps = &cg.snap->ps;
 
+  
   color = CG_FadeColor( cg.itemSelectTime, WEAPON_SELECT_TIME );
   if ( !color ) {
     return;
@@ -2300,34 +2300,85 @@ void CG_DrawItemSelect( void ) {
       count++;
     }
   }
-  x = 640-ICON_SIZE - count * 24;
+  
+        x = 290 - count * 20;
+        y = 400;
+  //x = 290-ICON_SIZE - count * 24;
   for ( i = 1 ; i < MAX_POWERUPS ; i++ ) {
     if ( !ps->powerups[ i ] ) {
       continue;
     }
   item = BG_FindItemForPowerup( i );
-        //value = cg.snap->ps.stats[STAT_SELECTED_ITEM];
+
   if ( item ) {
-         // CG_RegisterItemVisuals( STAT_SELECTED_ITEM );
 
-    CG_FillRect( x, (SCREEN_HEIGHT-ICON_SIZE)/2, ICON_SIZE, ICON_SIZE, hcolor);
-    CG_DrawPic( x, (SCREEN_HEIGHT-ICON_SIZE)/2, ICON_SIZE, ICON_SIZE, trap_R_RegisterShader( item->icon ) );
-    if( i == ps->stats[STAT_SELECTED_ITEM])
-    CG_DrawPic( x, (SCREEN_HEIGHT-ICON_SIZE)/2,ICON_SIZE, ICON_SIZE, cgs.media.selectShader );
-
-  } x += 48;
+      
+      CG_FillRect( x-10, y-4, 66, 46, hcolor);
+      CG_DrawPic( x-10, y-4, 65, 47, cgs.media.selectShader );
+      CG_DrawPic( x, y, 52, 42,  trap_R_RegisterShader( item->icon ) );
+    if( i == cg.selectedItem){
+        CG_FillRect( x-10, y-4, 66, 46, hcolor2);      
+           }
+        } x += 70;//x += 48;
   }
 }
 
+void CG_SelectItem(  int dir ){
+  int original, i;
+
+ //cg.selectedItem[PW_NUM_POWERUPS]
+  original = cg.selectedItem;
+if(dir){ 
+ for ( i = 1 ; i < PW_NUM_POWERUPS ; i++ ) {
+
+    cg.selectedItem++;
+
+    if ( cg.selectedItem == PW_NUM_POWERUPS ) {
+
+      cg.selectedItem = 1;
+    }
+    if ( cg.snap->ps.powerups[ cg.selectedItem ] ) {
+           //           ps->stats[STAT_SELECTED_ITEM]);
+      break;
+    }
+
+
+  }
+}else{
+
+
+for ( i = PW_NUM_POWERUPS-1 ; i > PW_NONE ; i-- ) {
+
+    cg.selectedItem--;
+
+    if ( cg.selectedItem == PW_NONE ) {
+
+      cg.selectedItem = PW_NUM_POWERUPS-1;
+    }
+    if ( cg.snap->ps.powerups[ cg.selectedItem ] ) {
+      break;
+    }
+  }
+}
+  if ( i == PW_NUM_POWERUPS ) {
+    cg.selectedItem = original;
+  }
+
+}
+
+
 void CG_NextItem_f (void){
   cg.itemSelectTime = cg.time;
-  trap_SendConsoleCommand( "next_item" );
+  CG_SelectItem(  1 );
+
 }
 
 void CG_PrevItem_f (void){
   cg.itemSelectTime = cg.time;
-  trap_SendConsoleCommand( "prev_item" );
+  CG_SelectItem(  0 );
+
 }
+
 
 void CG_ZoomReset_f (void){
  float zoomFov;

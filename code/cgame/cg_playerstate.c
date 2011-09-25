@@ -214,6 +214,8 @@ void CG_Respawn( void ) {
         cg.weaponSelect = cg.snap->ps.weapon;
         cent->lastSmokeTime = 0;
         cent->smokeTime = 0;
+        cg.selectedItem = cg.snap->ps.stats[STAT_SELECTED_ITEM];
+
 
 }
 

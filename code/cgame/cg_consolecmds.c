@@ -479,7 +479,7 @@ static consoleCommand_t	commands[] = {
 	{ "vtell_target", CG_VoiceTellTarget_f },
 	{ "vtell_attacker", CG_VoiceTellAttacker_f },
 	{ "tcmd", CG_TargetCommand_f },
-                   { "ut_itemuse", CG_ToggleItem_f },
+                  { "ut_itemuse", CG_ToggleItem_f },
 #ifdef MISSIONPACK
 	{ "loadhud", CG_LoadHud_f },
 	{ "nextTeamMember", CG_NextTeamMember_f },
@@ -584,4 +584,5 @@ void CG_InitConsoleCommands( void ) {
 	trap_AddCommand ("teamtask");
 	trap_AddCommand ("loaddefered");	// spelled wrong, but not changing for demo
 	trap_AddCommand ("sourceURL");
+        	trap_AddCommand ("ut_togglelaser");
 }
