@@ -1264,7 +1264,10 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
                 return qtrue;
 
         case IT_POWERUP:
-return qtrue;
+                      if( ps->weaponTime > 0)
+            return qfalse;
+                      else
+            return qtrue;
              // powerups are always picked up
 
 #ifdef MISSIONPACK

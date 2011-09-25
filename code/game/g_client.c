@@ -1157,6 +1157,16 @@ void G_PlayerLoadout( gentity_t *ent ){
 		inventoryItemSlot++;
 	}
 
+        
+       for( i = 0; i < 3; i++){
+           
+        if( bg_inventory.item[ent->client->ps.clientNum][i] && !(ent->client->ps.powerups[ bg_inventory.item[ent->client->ps.clientNum][i]] )){
+            ent->client->ps.powerups[ bg_inventory.item[ent->client->ps.clientNum][i]]=1000000000;
+          //G_Printf("spawned powerup!\n");
+        }
+        }
+        
+        
 	//knife isn't part of gear, you just always get it
 	BG_PackWeapon( WP_KNIFE , ent->client->ps.stats );
 	bg_weaponlist[WP_KNIFE].rounds[ ent->client->ps.clientNum]= RoundCount(WP_KNIFE);
@@ -1411,6 +1421,8 @@ void ClientSpawn(gentity_t *ent) {
         G_PlayerLoadout( ent );
 	// Call Set_Mode to make sure the current weapons mode is synchronized between server and client. --Xamis
         Set_Mode(ent);
+   
+        
         // run the presend to set anything else
         ClientEndFrame( ent );
 

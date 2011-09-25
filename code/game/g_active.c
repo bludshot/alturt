@@ -567,7 +567,7 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
                         if ( item ) {
                                 drop = Drop_Item( ent, item, 0 );
                                 // decide how many seconds it has left
-                                drop->count = ( ent->client->ps.powerups[ j ] - level.time ) / 1000;
+                                drop->count = 1;// ( ent->client->ps.powerups[ j ] - level.time ) / 1000;
                                 if ( drop->count < 1 ) {
                                         drop->count = 1;
                                 }
@@ -786,7 +786,7 @@ if ( (client->pers.cmd.forwardmove ||
 
         xyspeed = sqrt( client->ps.velocity[0] * client->ps.velocity[0]
             +  client->ps.velocity[1] * client->ps.velocity[1] );
-
+/*
         for( i = 0; i < 3; i++){
         if( bg_inventory.item[ent->client->ps.clientNum][i] && !(ent->client->ps.powerups[ bg_inventory.item[ent->client->ps.clientNum][i]] )){
 
@@ -794,6 +794,7 @@ if ( (client->pers.cmd.forwardmove ||
         //  G_Printf("spawned powerup!\n");
         }
         }
+ */
                 // -- Xamis
         if( ucmd->buttons & BUTTON_WALKING || client->ps.pm_flags & PMF_DUCKED ){
           //if walking/ducking do nothing!
@@ -1113,11 +1114,11 @@ void ClientEndFrame( gentity_t *ent ) {
         pers = &ent->client->pers;
 
         // turn off any expired powerups
-        for ( i = 0 ; i < MAX_POWERUPS ; i++ ) {
-                if ( ent->client->ps.powerups[ i ] < level.time ) {
-                        ent->client->ps.powerups[ i ] = 0;
-                }
-        }
+    //    for ( i = 0 ; i < MAX_POWERUPS ; i++ ) {
+    //            if ( ent->client->ps.powerups[ i ] < level.time ) {
+   //                     ent->client->ps.powerups[ i ] = 0;
+   //             }
+   //     }
 
 #ifdef MISSIONPACK
         // set powerup for player animation

@@ -1797,8 +1797,8 @@ void ClientCommand( int clientNum ) {
                 Cmd_ToggleItem_f ( ent);
         else if (Q_stricmp (cmd, "ut_weapdrop") == 0)
                 UT_DropWeapon ( ent);
-        else if (Q_stricmp (cmd, "ut_itemdrop") == 0)
-                UT_DropItem ( ent);
+        else if (Q_stricmp (cmd, "ut_dropitem") == 0)
+                UT_DropItem ( ent );
          else if  (Q_stricmp (cmd, "sourceURL") == 0)
 	Cmd_SourceURL_f ( ent);
         else

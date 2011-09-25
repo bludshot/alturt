@@ -56,8 +56,8 @@ int Pickup_Powerup( gentity_t *ent, gentity_t *other ) {
         if ( !other->client->ps.powerups[ent->item->giTag] ) {
                 // round timing to seconds to make multiple powerup timers
                 // count in sync
-                other->client->ps.powerups[ent->item->giTag] =
-                        level.time - ( level.time % 1000 );
+                other->client->ps.powerups[ent->item->giTag] =1;
+                       // level.time - ( level.time % 1000 );
         }
 
         if ( ent->count ) {
@@ -598,12 +598,12 @@ void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
 
 /*
 ================
-LaunchWeapon
+LaunchPowerup
 
 spawns a weapon and tosses it forward . adding clips
 ================
 */
-gentity_t *LaunchPowerup( gitem_t *item, vec3_t origin, vec3_t velocity, int clips, int x, int y ) {
+gentity_t *LaunchPowerup( gitem_t *item, vec3_t origin, vec3_t velocity, int x, int y ) {
   gentity_t   *dropped;
 
 
@@ -651,9 +651,8 @@ gentity_t *LaunchPowerup( gitem_t *item, vec3_t origin, vec3_t velocity, int cli
 
 /*
 ================
-Drop_Weapon
+SpawnPowerup
 
-Drops weapons, and adds the current clips to the spawned entity...
 ================
 */
 gentity_t *SpawnPowerup( gentity_t *ent, gitem_t *item, float angle, int clips, int x, int y ) {
@@ -674,19 +673,20 @@ gentity_t *SpawnPowerup( gentity_t *ent, gitem_t *item, float angle, int clips, 
 
 
     // add this
-  return LaunchPowerup( item, origin, velocity, clips, x, y  );
+  return LaunchPowerup( item, origin, velocity, x, y  );
 }
 
 
 /*
 ================
-Drop_Weapon
+UT_SpawnPowerup
 
-Drops current Weapon
 ================
 */
 void UT_SpawnPowerup ( gentity_t *ent, int i)
 {
+    
+
   gclient_t   *client;
   gitem_t             *item;
 
@@ -694,7 +694,7 @@ void UT_SpawnPowerup ( gentity_t *ent, int i)
 
   if ( ent->client->ps.pm_flags & PMF_FOLLOW )
     return;
-
+    
   item = BG_FindItemForPowerup( i );
 
   SpawnPowerup( ent, item, 90, 1, 10, 10 );
@@ -756,6 +756,56 @@ gentity_t *LaunchWeapon( gitem_t *item, vec3_t origin, vec3_t velocity, int clip
   return dropped;
 }
 
+
+/*
+================
+LaunchItem
+
+================
+*/
+gentity_t *LaunchItem2( gitem_t *item, vec3_t origin, vec3_t velocity  ) {
+  gentity_t   *dropped;
+
+
+
+  dropped = G_Spawn();
+
+  dropped->s.eType = ET_ITEM;
+  dropped->s.modelindex = item - bg_itemlist; // store item number in modelindex
+  dropped->s.modelindex2 = 1;                 // This is non-zero is it's a dropped item
+
+  dropped->classname = item->classname;
+  dropped->item = item;
+  VectorSet (dropped->r.mins, -ITEM_RADIUS, -ITEM_RADIUS, -3);
+  VectorSet (dropped->r.maxs, ITEM_RADIUS, ITEM_RADIUS, 3);
+  dropped->r.contents = CONTENTS_TRIGGER;
+
+
+ // G_Printf("origin = 0:%f, 1:%f,2:%f\n", origin[0], origin[1],  origin[2] );
+  G_SetOrigin( dropped, origin );
+
+  dropped->s.groundEntityNum = -1;
+  dropped->s.pos.trType = TR_GRAVITY;
+  dropped->s.pos.trTime = level.time;
+  VectorCopy( velocity, dropped->s.pos.trDelta );
+
+  dropped->s.eFlags |= EF_BOUNCE_HALF;
+
+  dropped->flags = FL_DROPPED_ITEM;
+
+  dropped->touch = Touch_Item;
+
+
+  dropped->s.apos.trBase[YAW] = rand() % 360;
+
+  dropped->count = 10000000;
+  dropped->think = G_FreeEntity;
+  dropped->nextthink = level.time + 20000; // remove after 20 seconds
+  trap_LinkEntity (dropped);
+  //G_Printf("trBase[YAW] = %i, trBase[ROLL] = %i\n",(int)dropped->s.apos.trBase[YAW], (int)dropped->s.apos.trBase[ROLL] );
+  return dropped;
+}
+
 /*
 ================
 Drop_Weapon
@@ -793,11 +843,46 @@ gentity_t *Drop_Weapon( gentity_t *ent, gitem_t *item, float angle, int clips, i
   return LaunchWeapon( item, origin, velocity, clips, x, y  );
 }
 
+
+
+gentity_t *TossItem( gentity_t *ent, gitem_t *item ) {
+  vec3_t      velocity,forward;
+  vec3_t      angles;
+  vec3_t      origin;
+
+  
+  
+      if ( ent->client->ps.pm_flags & PMF_FOLLOW )
+        return NULL;
+
+    if ( ent->client->ps.pm_flags & EF_WEAPONS_LOCKED)
+        return NULL;
+  
+  
+  VectorCopy( ent->s.apos.trBase, angles );
+  angles[YAW] = 180;
+  angles[PITCH] = 0;  // always forward
+
+  AngleVectors( ent->client->ps.viewangles, forward, NULL, NULL );
+  VectorScale( forward, 320, velocity );
+  velocity[2] += 80;
+
+  VectorCopy(ent->client->ps.origin,origin );
+  origin[2] +=23;
+  
+
+    // add this
+  ent->client->ps.weaponTime = 250;
+  return LaunchItem2( item, origin, velocity  );
+}
+
+
 void UT_DropItem ( gentity_t *ent)
 {
+   int         pw,i;
+  char        msg[64];
   gclient_t   *client;
-  //gitem_t             *item;
-
+  gitem_t             *item;
 
   client = ent->client;
   
@@ -806,7 +891,24 @@ void UT_DropItem ( gentity_t *ent)
 
   if (client->ps.weaponstate != WEAPON_READY)
     return;
+  
+   trap_Argv( 1, msg, sizeof( msg ) );
+   
+   
+   
+  pw = atoi(msg);
+  
 
+          if(ent->client->ps.powerups[pw]){
+                item = BG_FindItemForPowerup( pw );
+                TossItem( ent, item );
+                ent->client->ps.powerups[pw]=0;
+          for(i=0; i < 3; i++ )
+          if (bg_inventory.item[ent->client->ps.clientNum][i] == pw ){
+          bg_inventory.item[ent->client->ps.clientNum][i] = 0;
+          }
+              
+      }
   
 }
 /*
@@ -1073,10 +1175,10 @@ void FinishSpawningItem( gentity_t *ent ) {
         if ( ent->item->giType == IT_POWERUP ) {
                 float   respawn;
 
-                respawn = 45;
+                respawn = 10;
                 ent->s.eFlags |= EF_NODRAW;
                 ent->r.contents = 0;
-                ent->nextthink = level.time + respawn * 10;
+                ent->nextthink = level.time + respawn;
                 ent->think = RespawnItem;
                 return;
         }
@@ -1178,10 +1280,15 @@ ClearRegisteredItems
 ==============
 */
 void ClearRegisteredItems( void ) {
+    int i;
         memset( itemRegistered, 0, sizeof( itemRegistered ) );
 
         // players always start with the base weapon
         RegisterItem( BG_FindItemForWeapon( WP_KNIFE ) );
+        
+         for( i = PW_NEUTRALFLAG + 1; i < PW_NUM_POWERUPS -1; i++ ){
+            RegisterItem(BG_FindItemForPowerup( i ));
+        }
 #ifdef MISSIONPACK
         if( g_gametype.integer == GT_BOMB ) {
                 RegisterItem( BG_FindItem( "Red Cube" ) );
