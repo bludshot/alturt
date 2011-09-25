@@ -1184,7 +1184,7 @@ void G_PlayerLoadout( gentity_t *ent ){
 
 	//I'm wondering if right here I should set the client's gear cvar if it was invalid at all?
 	//I know I don't really need to, but I think I want to?...
-
+                  ent->client->ps.eFlags |= EF_TOGGLED; //for lasersight toggle
 	//Switch the player's gun to the best one they have
 	if ( bg_inventory.sort[ent->client->ps.clientNum][PRIMARY])
 		client->ps.weapon = bg_inventory.sort[ent->client->ps.clientNum][PRIMARY];

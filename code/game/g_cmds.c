@@ -1656,8 +1656,15 @@ void Cmd_SetViewpos_f( gentity_t *ent ) {
         TeleportPlayer( ent, origin, angles );
 }
 
-
-
+void Cmd_ToggleItem_f( gentity_t *ent ) {
+ //ItemToggleState
+      
+if ( !( ent->client->ps.eFlags & EF_TOGGLED)){
+ent->client->ps.eFlags  |= EF_TOGGLED;
+}else{
+ent->client->ps.eFlags  &= ~EF_TOGGLED;
+}
+}
 /*
 =================
 Cmd_Stats_f
@@ -1786,16 +1793,14 @@ void ClientCommand( int clientNum ) {
                 Cmd_SetViewpos_f( ent );
         else if (Q_stricmp (cmd, "stats") == 0)
                 Cmd_Stats_f( ent );
+        else if (Q_stricmp (cmd, "ut_togglelaser") == 0)
+                Cmd_ToggleItem_f ( ent);
         else if (Q_stricmp (cmd, "ut_weapdrop") == 0)
                 UT_DropWeapon ( ent);
-        else if (Q_stricmp (cmd, "next_item") == 0)
-          UT_SelectItem ( ent, 1 );
-        else if (Q_stricmp (cmd, "prev_item") == 0)
-          UT_SelectItem ( ent, 0 );
         else if (Q_stricmp (cmd, "ut_itemdrop") == 0)
                 UT_DropItem ( ent);
-		else if  (Q_stricmp (cmd, "sourceURL") == 0)
-				Cmd_SourceURL_f ( ent);
+         else if  (Q_stricmp (cmd, "sourceURL") == 0)
+	Cmd_SourceURL_f ( ent);
         else
                 trap_SendServerCommand( clientNum, va("print \"unknown cmd %s\n\"", cmd ) );
 }

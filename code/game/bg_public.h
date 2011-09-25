@@ -300,7 +300,7 @@ typedef enum {
 
           STAT_NADE_FUSE,
           STAT_DMG_LOC,
-//          STAT_SHIT,  // Status Holder for Item Toggle --Xamis
+        //  STAT_SHIT,  // Status Holder for Item Toggle --Xamis
 
 } statIndex_t;
 
@@ -354,6 +354,8 @@ typedef enum {
 #ifdef MISSIONPACK
 #define EF_TICKING                      0x00000002              // used to make players play the prox mine ticking sound
 #endif
+#define EF_TOGGLED                      0x00000002    
+
 #define EF_TELEPORT_BIT         0x00000004              // toggled every time the origin abruptly changes
 #define EF_AWARD_EXCELLENT      0x00000008              // draw an excellent sprite
 #define EF_PLAYER_EVENT         0x00000010

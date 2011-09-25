@@ -596,48 +596,6 @@ void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
 }
 
 
-void UT_SelectItem( gentity_t *ent, int dir ){
-  int original, i;
-
-  original = ent->client->ps.stats[STAT_SELECTED_ITEM];
-if(dir){ 
- for ( i = 1 ; i < PW_NUM_POWERUPS ; i++ ) {
-
-    ent->client->ps.stats[STAT_SELECTED_ITEM]++;
-
-    if ( ent->client->ps.stats[STAT_SELECTED_ITEM] == PW_NUM_POWERUPS ) {
-
-      ent->client->ps.stats[STAT_SELECTED_ITEM] = 1;
-    }
-    if ( ent->client->ps.powerups[ ent->client->ps.stats[STAT_SELECTED_ITEM] ] ) {
-           //           ps->stats[STAT_SELECTED_ITEM]);
-      break;
-    }
-
-
-  }
-}else{
-
-
-for ( i = PW_NUM_POWERUPS-1 ; i > PW_NONE ; i-- ) {
-
-    ent->client->ps.stats[STAT_SELECTED_ITEM]--;
-
-    if ( ent->client->ps.stats[STAT_SELECTED_ITEM] == PW_NONE ) {
-
-      ent->client->ps.stats[STAT_SELECTED_ITEM] = PW_NUM_POWERUPS-1;
-    }
-    if ( ent->client->ps.powerups[ ent->client->ps.stats[STAT_SELECTED_ITEM] ] ) {
-      break;
-    }
-  }
-}
-  if ( i == PW_NUM_POWERUPS ) {
-    ent->client->ps.stats[STAT_SELECTED_ITEM] = original;
-  }
-
-}
-
 /*
 ================
 LaunchWeapon
