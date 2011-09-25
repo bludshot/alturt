@@ -202,7 +202,8 @@ A respawn happened this snapshot
 ================
 */
 void CG_Respawn( void ) {
-	centity_t *cent = &cg_entities[cg.snap->ps.clientNum];
+        int i;
+        centity_t *cent = &cg_entities[cg.snap->ps.clientNum];
 
         // no error decay on player movement
         cg.thisFrameTeleport = qtrue;
@@ -214,6 +215,15 @@ void CG_Respawn( void ) {
         cg.weaponSelect = cg.snap->ps.weapon;
         cent->lastSmokeTime = 0;
         cent->smokeTime = 0;
+        
+        for(i =PW_NUM_POWERUPS; i >0 ; --i){
+            if( cg.snap->ps.powerups[ i ] ){
+                cg.selectedItem = i;
+                break;
+            }
+        }
+        
+        
 
 }
 

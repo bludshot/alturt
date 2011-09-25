@@ -2321,8 +2321,7 @@ void CG_DrawItemSelect( void ) {
 
 void CG_SelectItem(  int dir ){
   int original, i;
-
- //cg.selectedItem[PW_NUM_POWERUPS]
+ 
   original = cg.selectedItem;
 if(dir){ 
  for ( i = 1 ; i < PW_NUM_POWERUPS ; i++ ) {
@@ -2359,6 +2358,52 @@ for ( i = PW_NUM_POWERUPS-1 ; i > PW_NONE ; i-- ) {
     cg.selectedItem = original;
   }
 
+}
+
+void CG_SelectItemToDrop ( void)
+{
+   int         pw, i;
+  char        msg[64];
+
+  //gitem_t             *item;
+
+  
+  if ( cg.snap->ps.pm_flags & PMF_FOLLOW )
+    return;
+
+  if (cg.snap->ps.weaponstate != WEAPON_READY)
+    return;
+  
+   trap_Argv( 1, msg, sizeof( msg ) );
+   
+
+            if (Q_stricmp (msg, "helmet") == 0){
+                pw = PW_HELMET;
+            }else if(Q_stricmp (msg, "silencer") == 0){
+                pw = PW_HELMET;
+            }else  if (Q_stricmp (msg, "medkit") == 0){
+                pw = PW_MEDKIT;
+            }else  if (Q_stricmp (msg, "kevlar") == 0){
+                pw = PW_VEST;
+             }else  if (Q_stricmp (msg, "lasersight") == 0){
+                pw = PW_LASERSIGHT;
+             }else  if (Q_stricmp (msg, "medkit") == 0){
+                pw = PW_HELMET;
+            }else  if (Q_stricmp (msg, "flag") == 0){
+                if( cg.snap->ps.persistant[PERS_TEAM] == TEAM_RED)
+                    pw =PW_REDFLAG;
+                else if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_BLUE)
+                    pw =PW_BLUEFLAG;
+                else
+                pw = PW_NEUTRALFLAG;
+             }else 
+                pw = cg.selectedItem;
+
+             if (cg.snap->ps.powerups[pw]){
+                   trap_SendClientCommand( va("ut_dropitem %i",pw ) );
+                   
+             }
+  
 }
 
 

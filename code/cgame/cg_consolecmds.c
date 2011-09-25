@@ -480,6 +480,7 @@ static consoleCommand_t	commands[] = {
 	{ "vtell_attacker", CG_VoiceTellAttacker_f },
 	{ "tcmd", CG_TargetCommand_f },
                   { "ut_itemuse", CG_ToggleItem_f },
+                  { "ut_itemdrop", CG_SelectItemToDrop},
 #ifdef MISSIONPACK
 	{ "loadhud", CG_LoadHud_f },
 	{ "nextTeamMember", CG_NextTeamMember_f },

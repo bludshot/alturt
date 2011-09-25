@@ -1894,3 +1894,4 @@ void CG_AddSmoke( localEntity_t *le );
 localEntity_t *CG_AddSmokeParticle(vec3_t origin, int radius, int randomradius, int lifetime,
                                                                    int boost, int wind, vec3_t winddir);
 
+void CG_SelectItemToDrop ( void);
