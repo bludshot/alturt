@@ -2334,7 +2334,6 @@ if(dir){
       cg.selectedItem = 1;
     }
     if ( cg.snap->ps.powerups[ cg.selectedItem ] ) {
-           //           ps->stats[STAT_SELECTED_ITEM]);
       break;
     }
 

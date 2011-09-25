@@ -1778,11 +1778,6 @@ qboolean BG_PlayerInSmoke( int stats[ ] ){
 
 }
 
-void BG_SelectItem( int item, int stats[ ] )
-{
-  stats[STAT_SELECTED_ITEM]=item;
-}
-
 // loadout related  -prototype in bg_public.h --xamis
 
 

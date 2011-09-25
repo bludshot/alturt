@@ -2167,10 +2167,9 @@ static void CG_DrawHoldableItem( void ) {
 
 
 
-        item = BG_FindItemForPowerup( cg.snap->ps.stats[STAT_SELECTED_ITEM] );
-        //value = cg.snap->ps.stats[STAT_SELECTED_ITEM];
+        item = BG_FindItemForPowerup( cg.selectedItem );
+
         if ( 0 ) {
-         // CG_RegisterItemVisuals( STAT_SELECTED_ITEM );
 
           CG_FillRect( 640-ICON_SIZE, (SCREEN_HEIGHT-ICON_SIZE)/2, ICON_SIZE, ICON_SIZE, hcolor);
                 // draw weapon icon

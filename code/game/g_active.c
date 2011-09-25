@@ -792,10 +792,6 @@ if ( (client->pers.cmd.forwardmove ||
 
           UT_SpawnPowerup ( ent, bg_inventory.item[ent->client->ps.clientNum][i]);
         //  G_Printf("spawned powerup!\n");
-          if(!ent->client->ps.stats[STAT_SELECTED_ITEM]){
-        //    G_Printf("setting powerup to %i!\n", bg_inventory.item[ent->client->ps.clientNum][i]);
-          ent->client->ps.stats[STAT_SELECTED_ITEM]=bg_inventory.item[ent->client->ps.clientNum][i];
-          }
         }
         }
                 // -- Xamis

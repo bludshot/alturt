@@ -295,7 +295,6 @@ typedef enum {
 
         STAT_DEAD_YAW,                                  // look this direction when dead (FIXME: get rid of?)
         STAT_CLIENTS_READY,                             // bit mask of clients wishing to exit the intermission (FIXME: configstring?)
-        STAT_SELECTED_ITEM,//Xamis
         STAT_XYSPEED,//Xamis
 
           STAT_NADE_FUSE,
