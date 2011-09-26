@@ -222,7 +222,16 @@ void ClientImpacts( gentity_t *ent, pmove_t *pm ) {
                         continue;       // duplicated
                 }
                 other = &g_entities[ pm->touchents[i] ];
-
+                
+                if  ( !strcmp(other->classname, "func_breakable") ){
+                     if(  (ent->s.legsAnim ==LEGS_JUMP || 
+                             ent->s.legsAnim ==LEGS_JUMPB || 
+                             ent->s.legsAnim == LEGS_LAND || 
+                             pm->ps->legsAnim ==LEGS_LANDB) )
+                   G_Damage ( other, NULL, NULL, NULL, NULL, 100, 0, MOD_MACHINEGUN );
+                    //G_Printf("func_breakable\n");
+                }
+                
                 if ( ( ent->r.svFlags & SVF_BOT ) && ( ent->touch ) ) {
                         ent->touch( ent, other, &trace );
                 }
@@ -230,6 +239,8 @@ void ClientImpacts( gentity_t *ent, pmove_t *pm ) {
                 if ( !other->touch ) {
                         continue;
                 }
+                
+
 
                 other->touch( other, ent, &trace );
         }
