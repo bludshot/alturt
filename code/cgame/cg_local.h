@@ -816,6 +816,7 @@ typedef struct {
 	qhandle_t	redFlagBaseModel;
 	qhandle_t	blueFlagBaseModel;
 	qhandle_t	neutralFlagBaseModel;
+	qhandle_t	smokeGrenadeSkin;                  
 
 #ifdef MISSIONPACK
 	qhandle_t	overloadBaseModel;

@@ -521,7 +521,8 @@ static void CG_Missile( centity_t *cent ) {
         ent.skinNum = cg.clientFrame & 1;
         ent.hModel = weapon->missileModel;
         ent.renderfx = weapon->missileRenderfx | RF_NOSHADOW;
-
+        if ( s1->generic1 == MF_SMOKE )
+        ent.customSkin = trap_R_RegisterSkin( "models/weapons2/grenade/grenade_smoke.skin" );
 
         // convert direction of travel into axis
         if ( VectorNormalize2( s1->pos.trDelta, ent.axis[0] ) == 0 ) {

@@ -1617,6 +1617,8 @@ CG_PositionWeaponOnTag( &gun, parent, parent->hModel, "tag_weapon");
           weaponModel.shadowPlane = parent->shadowPlane;
           weaponModel.renderfx = parent->renderfx;
           weaponModel.hModel = weapon->weaponModel;
+          if(weaponNum == WP_SMOKE)
+          weaponModel.customSkin =trap_R_RegisterSkin( "models/weapons2/grenade/grenade_smoke.skin" );
           
 if ( weaponDown ) {
        if (  BG_Primary( cent->currentState.weapon))
@@ -1642,6 +1644,8 @@ if ( weaponDown ) {
           viewmainModel.shadowPlane = parent->shadowPlane;
           viewmainModel.renderfx = parent->renderfx;
           viewmainModel.hModel = weapon->vmainModel;
+          if(weaponNum == WP_SMOKE)
+          viewmainModel.customSkin =trap_R_RegisterSkin( "models/weapons2/grenade/grenade_view_main_smoke.skin" );
           CG_PositionEntityOnTag( &viewmainModel, &gun, weapon->holdsModel, "tag_main" );
 
           CG_AddWeaponWithPowerups( &viewmainModel, cent->currentState.powerups );
