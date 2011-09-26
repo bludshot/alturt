@@ -2077,3 +2077,4 @@ void G_ResetEntities( void ) {
     }
 
 }
+
