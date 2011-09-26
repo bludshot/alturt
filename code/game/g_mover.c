@@ -632,7 +632,7 @@ void ReturnToPos1( gentity_t *ent ) {
     
 	MatchTeam( ent, MOVER_2TO1, level.time );
 
-        	//G_Printf( "ReturnToPos1 called\n");
+        //	G_Printf( "ReturnToPos1 called\n");
 
 	// looping sound
 	ent->s.loopSound = ent->soundLoop;
@@ -693,12 +693,10 @@ void Reached_BinaryMover( gentity_t *ent ) {
 
        //  return to pos1 after a delay
                 if( !(ent->wait == -1))
-		ent->think = ReturnToPos1;
-          
-		//if( ent->wait > 0 )
-		ent->nextthink = level.time + ent->wait;
-            //    if( ent->trigger_only )
-              //    ent->nextthink = level.time + 10;
+	ent->think = ReturnToPos1;
+                
+	ent->nextthink = level.time + ent->wait;
+
 
         // fire targets
 		if ( !ent->activator ) {
@@ -709,12 +707,13 @@ void Reached_BinaryMover( gentity_t *ent ) {
 			   ent->moverState == MOVER_STOP_2TO1 ) {
 				 //  G_Printf( "Reached_BinaryMover  moverState == MOVER_2TO1 or moverState == MOVER_STOP_2TO1\n");
         // reached pos1
+
 			SetMoverState( ent, MOVER_POS1, level.time );
 					//G_Printf( "Reached_BinaryMover SetMoverState MOVER_POS1\n");
         // play sound
-			 if ( ent->soundPos1 ) {
-			     G_AddEvent( ent, EV_GENERAL_SOUND, ent->soundPos1 );
-			     }
+			// if ( ent->soundPos1 ) {
+			//     G_AddEvent( ent, EV_GENERAL_SOUND, ent->soundPos1 );
+			//     }
 
         // close areaportals
 			 if ( ent->teammaster == ent || !ent->teammaster ) {
@@ -817,7 +816,35 @@ if(!(ent->trigger_only)){
 		    }
 
 
-		    if( ent->moverState == MOVER_POS2 && ent->wait > 0 ) {
+		 /*   if( ent->moverState == MOVER_POS2 && ent->wait > 0 ) {
+					//G_Printf( "Use_BinaryMover moverState == MOVER_POS2 && ent->wait > 0\n");
+        // start moving 50 msec later, becase if this was player
+        // triggered, level.time hasn't been advanced yet
+			    MatchTeam( ent, MOVER_2TO1, level.time + 550 );
+					//G_Printf( "Use_BinaryMover MOVER_2TO1 MatchTeam called\n");
+        // starting sound
+			    if ( ent->sound2to1 ) {
+					    G_AddEvent( ent, EV_GENERAL_SOUND, ent->sound2to1 );
+			    }
+
+        // looping sound
+			    ent->s.loopSound = ent->soundLoop;
+
+        // open areaportal
+			    if ( ent->teammaster == ent || !ent->teammaster ) {
+				    trap_AdjustAreaPortalState( ent, qtrue );
+			    }
+			    return;
+		    } else */ if ( ent->moverState == MOVER_POS2 && ent->nextthink < level.time  &&  ent->wait > 0 ) { // this is for making the door stay up
+				//G_Printf( "ent->moverState == MOVER_POS2 && ent->nextthink < level.time  &&  ent->wait > 0\n");
+                                                          MatchTeam( ent, MOVER_2TO1, level.time + 50 );
+			    return;
+		    }else if ( ent->moverState == MOVER_POS2 && ent->wait > 0 ) { // this is for making the door stay up
+				//G_Printf( "ent->moverState == MOVER_POS2 && ent->wait > 0\n");
+                                                          ent->think = ReturnToPos1;
+			    ent->nextthink = level.time + 550;
+			    return;
+		    }else if( ent->moverState == MOVER_POS2  ) {
 					//G_Printf( "Use_BinaryMover moverState == MOVER_POS2 && ent->wait > 0\n");
         // start moving 50 msec later, becase if this was player
         // triggered, level.time hasn't been advanced yet
@@ -835,10 +862,6 @@ if(!(ent->trigger_only)){
 			    if ( ent->teammaster == ent || !ent->teammaster ) {
 				    trap_AdjustAreaPortalState( ent, qtrue );
 			    }
-			    return;
-		    } else if ( ent->moverState == MOVER_POS2 && ent->wait > 0 ) { // this is for making the door stay up
-				//G_Printf( "Use_BinaryMover moverState == MOVER_POS2 && ent->wait > 0\n");
-			    ent->nextthink = level.time + ent->wait;
 			    return;
 		    }
 
@@ -1186,7 +1209,7 @@ Blocked_Door
 */
 void Blocked_Door( gentity_t *ent, gentity_t *other ) {
     
-    G_Printf("Blocked_Door\n");
+ //  G_Printf("Blocked_Door\n");
 
 	if ( ent->moverState == MOVER_1TO2 ){
             		ent->moverState = MOVER_STOP_1TO2;
