@@ -1071,6 +1071,7 @@ void ClientBegin( int clientNum ) {
 
         // count current clients and rank for scoreboard
         CalculateRanks();
+	G_AddEvent(ent, EV_WEAPON_DROPPED, 0);
 }
 
 
