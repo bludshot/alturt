@@ -104,9 +104,9 @@ void SP_trigger_multiple( gentity_t *ent ) {
 	G_SpawnFloat( "wait", "0.5", &ent->wait );
 	G_SpawnFloat( "random", "0", &ent->random );
 
-	if ( ent->wait == 0.25){ //This is such a hack
+	if ( ent->target_ent->CloseWhenIdle){ //This is such a hack
 
-		ent->active = qtrue;
+		ent->target_ent->active = qtrue;
 	}
 
 	if ( ent->random >= ent->wait && ent->wait >= 0 ) {

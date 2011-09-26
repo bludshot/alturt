@@ -632,7 +632,7 @@ void ReturnToPos1( gentity_t *ent ) {
     
 	MatchTeam( ent, MOVER_2TO1, level.time );
 
-        //	G_Printf( "ReturnToPos1 called\n");
+        	G_Printf( "ReturnToPos1 called\n");
 
 	// looping sound
 	ent->s.loopSound = ent->soundLoop;
@@ -678,8 +678,12 @@ void Reached_BinaryMover( gentity_t *ent ) {
 
     // toggle the open state of doors
 
-	if ( ent->moverState == MOVER_1TO2 ||
-		    ent->moverState == MOVER_STOP_1TO2 ) {
+        
+        
+        if ( ent->moverState == MOVER_POS2 &&   ent->CloseWhenIdle ) {
+            ent->nextthink = level.time + 200;
+           return;
+        }	if ( ent->moverState == MOVER_1TO2 || ent->moverState == MOVER_STOP_1TO2 ) {
 					//G_Printf( "Reached_BinaryMover moverState == MOVER_STOP_1TO2 or MOVER_1TO2 \n");
         // reached pos2
 		SetMoverState( ent, MOVER_POS2, level.time );
@@ -692,9 +696,15 @@ void Reached_BinaryMover( gentity_t *ent ) {
 		}
 
        //  return to pos1 after a delay
-                if( !(ent->wait == -1))
+                if( !(ent->wait == -1)){
 	ent->think = ReturnToPos1;
-                
+
+                }
+                if ( ent->CloseWhenIdle){
+                  //  G_Printf( "ent->CloseWhenIdle \n");
+	ent->nextthink = level.time + 200;
+                }
+                else
 	ent->nextthink = level.time + ent->wait;
 
 
@@ -705,7 +715,7 @@ void Reached_BinaryMover( gentity_t *ent ) {
 		G_UseTargets( ent, ent->activator );
 		    } else if ( ent->moverState == MOVER_2TO1 ||
 			   ent->moverState == MOVER_STOP_2TO1 ) {
-				 //  G_Printf( "Reached_BinaryMover  moverState == MOVER_2TO1 or moverState == MOVER_STOP_2TO1\n");
+				//   G_Printf( "Reached_BinaryMover  moverState == MOVER_2TO1 or moverState == MOVER_STOP_2TO1\n");
         // reached pos1
 
 			SetMoverState( ent, MOVER_POS1, level.time );
