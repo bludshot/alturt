@@ -899,8 +899,9 @@ void ClientUserinfoChanged( int clientNum ) {
         // this is not the userinfo, more like the configstring actually
         G_LogPrintf( "ClientUserinfoChanged: %i %s\n", clientNum, s );
         
-//if ( client->loadoutEnabled  )
-    //    G_PlayerLoadout( ent );
+if ( client->loadoutEnabled  )
+      G_PlayerLoadout( ent );
+      G_AddEvent(ent, EV_WEAPON_DROPPED, 0);
 }
 
 
@@ -1345,7 +1346,7 @@ void ClientSpawn(gentity_t *ent) {
         VectorCopy (playerMaxs, ent->r.maxs);
         Q_strncpyz( gear, Info_ValueForKey (userinfo, "gear"), sizeof( gear ) );
         client->ps.clientNum = index;
-       // client->loadoutEnabled = qtrue;
+        client->loadoutEnabled = qtrue;
 
 
 	//Load all values for player loadout and add it to inventory --Xamis
