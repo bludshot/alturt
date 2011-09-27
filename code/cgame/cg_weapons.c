@@ -2655,16 +2655,16 @@ void CG_OutOfNadesChange( centity_t *cent ) {
 }
 
 
-
 /*
 ===============
-CG_WeaponDropped
+CG_WeaponWeaponSort
 Called to force a weapon switch when you drop your current weapon
 Xamis
 ===============
 */
-void CG_WeaponDropped( void ) {
-        int             i;
+void CG_WeaponSort( void ) {
+        int             i, grenade ;
+	qboolean	hasGrenade = qfalse;
 
         if ( !cg.snap ) {
                 return;
@@ -2672,18 +2672,32 @@ void CG_WeaponDropped( void ) {
         if ( cg.snap->ps.pm_flags & PMF_FOLLOW ) {
                 return;
         }
-
-        cg.weaponSelectTime = cg.time;
+       
 
         CG_ZoomReset_f();
 
 for( i = WP_NUM_WEAPONS-1; i > WP_NONE; i--){
-
+                cg.weaponSelectTime = cg.time;
                if (BG_HasWeapon( i, (int*)cg.predictedPlayerState.stats )){
-                                cg.weaponSelect =  i;
-                         break;
-              }
+
+			if( i == WP_BOMB){
+				continue;
+			}
+			if(BG_Grenade(i)){
+                                                                        hasGrenade = qtrue;
+                                                                        grenade = i;
+				continue;
+			}
+			if ( i ==WP_KNIFE && hasGrenade  ){
+                                                                cg.weaponSelect = grenade;
+				break;	
+			}
+			else 
+                                        cg.weaponSelect =  i;
+                                        break;
+              } 
         }
+
 
 }
 

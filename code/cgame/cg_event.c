@@ -823,7 +823,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
                 	case EV_WEAPON_DROPPED:
 		DEBUGNAME("EV_WEAPON_DROPPED");
                                      if ( clientNum == cg.predictedPlayerState.clientNum ) {
-                                     CG_WeaponDropped();
+                                     CG_WeaponSort();
                                      }
 		break;       
 	case EV_FIRE_WEAPON:
