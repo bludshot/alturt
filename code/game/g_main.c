@@ -85,7 +85,7 @@ vmCvar_t	pmove_msec;
 vmCvar_t	g_rankings;
 vmCvar_t	g_listEntity;
 //vmCvar_t	gear; //Xamis, This holds the inventory information that is stored in the config file.
-//vmCvar_t        weapmodes_save;
+//extern vmCvar_t        weapmodes_save;
 #ifdef MISSIONPACK
 vmCvar_t	g_obeliskHealth;
 vmCvar_t	g_obeliskRegenPeriod;
@@ -177,7 +177,7 @@ static cvarTable_t		gameCvarTable[] = {
 
 	{ &g_allowVote, "g_allowVote", "1", CVAR_ARCHIVE, 0, qfalse },
  	// { &gear, "gear", "", CVAR_ARCHIVE },
-                  { &weapmodes_save, "weapmodes_save", "0000202022200000",CVAR_ARCHIVE | CVAR_USERINFO , 0, qtrue, qtrue },
+        //          { &weapmodes_save, "weapmodes_save", "0000202022200000",CVAR_ARCHIVE | CVAR_USERINFO , 0, qtrue, qtrue },
 	{ &g_listEntity, "g_listEntity", "0", 0, 0, qfalse },
 
 #ifdef MISSIONPACK
