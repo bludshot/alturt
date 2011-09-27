@@ -248,7 +248,7 @@ qboolean LedgeTrace( trace_t *trace, vec3_t dir, float *lerpup, float *lerpfwd, 
         traceFrom[2] += LEDGEGRABMINHEIGHT;
         traceTo[2] += LEDGEGRABMINHEIGHT;
 
-        pm->trace( trace, traceFrom, NULL, NULL, traceTo, pm->ps->clientNum, pm->tracemask );
+        pm->trace( trace, traceFrom, NULL, NULL, traceTo, pm->ps->clientNum, MASK_SOLID );
 
         if(trace->fraction < 1 && LedgeGrabableEntity(trace->entityNum))
         {//hit a wall, pop into the wall and fire down to find top of wall
@@ -258,7 +258,7 @@ qboolean LedgeTrace( trace_t *trace, vec3_t dir, float *lerpup, float *lerpfwd, 
 
                 traceFrom[2] += (LEDGEGRABMAXHEIGHT - LEDGEGRABMINHEIGHT);
 
-                pm->trace( trace, traceFrom, NULL, NULL, traceTo, pm->ps->clientNum, pm->tracemask );
+                pm->trace( trace, traceFrom, NULL, NULL, traceTo, pm->ps->clientNum, MASK_SOLID );
 
                 if(trace->fraction == 1.0 || trace->startsolid || !LedgeGrabableEntity(trace->entityNum))
                 {
@@ -283,14 +283,16 @@ qboolean LedgeTrace( trace_t *trace, vec3_t dir, float *lerpup, float *lerpfwd, 
 
                 traceFrom[2] = traceTo[2];
 
-                pm->trace( trace, traceFrom, NULL, NULL, traceTo, pm->ps->clientNum, pm->tracemask );
+                pm->trace( trace, traceFrom, NULL, NULL, traceTo, pm->ps->clientNum, MASK_SOLID );
                 vectoangles(trace->plane.normal, wallangles);
-                if(trace->fraction == 1.0
+                if(trace->fraction == 1.0 
                         || wallangles[PITCH] > 20 || wallangles[PITCH] < -20
                         || !LedgeGrabableEntity(trace->entityNum))
                 {//no ledge or too steep of a ledge
                         return qfalse;
                 }
+                
+                
                 *lerpfwd = Distance(trace->endpos, traceFrom) - LEDGEHOROFFSET;
                 *lerpyaw = vectoyaw( trace->plane.normal )+180;
                 return qtrue;
