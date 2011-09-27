@@ -2061,6 +2061,11 @@ PM_TorsoAnimation
 ==============
 */
 static void PM_TorsoAnimation( void ) {
+    
+    if (pm->ps->pm_flags & PMF_EDGE)
+                return;
+    
+    
         if ( pm->ps->weaponstate == WEAPON_READY ) {
           if ( pm->ps->weapon == WP_KNIFE || BG_Grenade(pm->ps->weapon) ) {
                         PM_ContinueTorsoAnim( TORSO_STAND2 );
