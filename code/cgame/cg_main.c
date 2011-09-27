@@ -195,7 +195,7 @@ vmCvar_t	cg_oldRocket;
 vmCvar_t	cg_oldPlasma;
 vmCvar_t	cg_trueLightning;
 vmCvar_t  gear;
-//vmCvar_t  weapmodes_save;
+vmCvar_t  weapmodes_save;
 
 
 #ifdef MISSIONPACK
@@ -339,7 +339,7 @@ static cvarTable_t cvarTable[] = {
 	{ &cg_oldPlasma, "cg_oldPlasma", "1", CVAR_ARCHIVE},
 	{ &cg_trueLightning, "cg_trueLightning", "0.0", CVAR_ARCHIVE},
  	{ &gear, "gear", "", CVAR_USERINFO | CVAR_ARCHIVE },
-        //{ &weapmodes_save, "weapmodes_save", "00000000000000000", CVAR_USERINFO | CVAR_ARCHIVE }
+        { &weapmodes_save, "weapmodes_save", "00000000000000000", CVAR_USERINFO | CVAR_ARCHIVE }
 //	{ &cg_pmove_fixed, "cg_pmove_fixed", "0", CVAR_USERINFO | CVAR_ARCHIVE }
 };
 
