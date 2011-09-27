@@ -1002,7 +1002,7 @@ typedef struct {
 	sfxHandle_t	sfx_ric3;
 	sfxHandle_t	sfx_railg;
 	sfxHandle_t	sfx_rockexp;
-	sfxHandle_t	sfx_plasmaexp;
+	sfxHandle_t	sfx_plasmaexp;                
 #ifdef MISSIONPACK
 	sfxHandle_t	sfx_proxexp;
 	sfxHandle_t	sfx_nghit;
@@ -1038,6 +1038,7 @@ typedef struct {
 	sfxHandle_t	teleOutSound;
 	sfxHandle_t	noAmmoSound;
 	sfxHandle_t	respawnSound;
+	sfxHandle_t	stompSound;  
 	sfxHandle_t talkSound;
 	sfxHandle_t landSound;
 	sfxHandle_t fallSound;

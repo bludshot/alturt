@@ -598,7 +598,10 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			cg.landTime = cg.time;
 		}
 		break;
-
+            case EV_CURBSTOMP:
+                		DEBUGNAME("EV_CURBSTOMP");
+		trap_S_StartSound (NULL, es->number, CHAN_AUTO, cgs.media.stompSound );            
+                   break;
 	case EV_STEP_4:
 	case EV_STEP_8:
 	case EV_STEP_12:
