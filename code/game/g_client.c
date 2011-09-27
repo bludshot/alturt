@@ -1071,7 +1071,9 @@ void ClientBegin( int clientNum ) {
 
         // count current clients and rank for scoreboard
         CalculateRanks();
-	G_AddEvent(ent, EV_WEAPON_DROPPED, 0);
+      G_PlayerLoadout( ent );
+      G_AddEvent(ent, EV_WEAPON_DROPPED, 0);
+
 }
 
 
@@ -1420,7 +1422,8 @@ void ClientSpawn(gentity_t *ent) {
                 trap_LinkEntity( ent );
         }
 
-        G_PlayerLoadout( ent );
+      G_PlayerLoadout( ent );
+      G_AddEvent(ent, EV_WEAPON_DROPPED, 0);
 	// Call Set_Mode to make sure the current weapons mode is synchronized between server and client. --Xamis
         Set_Mode(ent);
    
