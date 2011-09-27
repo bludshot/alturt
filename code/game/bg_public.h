@@ -494,6 +494,7 @@ typedef enum {
         EV_FALL_SHORT,
         EV_FALL_MEDIUM,
         EV_FALL_FAR,
+        EV_CURBSTOMP,
 
         EV_JUMP_PAD,                    // boing sound at origin, jump sound on player
 

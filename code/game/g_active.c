@@ -515,7 +515,10 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
         gitem_t *item;
         gentity_t *drop;
         usercmd_t       *ucmd;
+        gentity_t       *groundEnt;
 
+        
+        groundEnt = &g_entities[ ent->client->ps.groundEntityNum];
         client = ent->client;
         ucmd = &ent->client->pers.cmd;
  if ( oldEventSequence < client->ps.eventSequence - MAX_PS_EVENTS ) { 	
@@ -525,15 +528,35 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
                 event = client->ps.events[ i & (MAX_PS_EVENTS-1) ];
 
                 switch ( event ) {
+                    case EV_CURBSTOMP:
+                        break;
               	case EV_FALL_SHORT:
+                                                                                                 G_Printf(" EV_FALL_S\n");
+                                 if  ( groundEnt->client ){
+                                     G_AddEvent( ent, EV_CURBSTOMP, 0);
+                                             G_Damage (groundEnt, NULL, NULL, NULL, NULL, 100, 0, MOD_MACHINEGUN);
+                                             break;
+                                        }else
                                   damage=15;
                                 G_Damage (ent, NULL, NULL, NULL, NULL, damage, 0, MOD_FALLING);
 		break;
 	case EV_FALL_MEDIUM:
-                                      damage=55;    
+
+                                          if  ( groundEnt->client ){
+                                     G_AddEvent( ent, EV_CURBSTOMP, 0);
+                                             G_Damage (groundEnt, NULL, NULL, NULL, NULL, 100, 0, MOD_MACHINEGUN);
+                                             break;
+                                        }else
+                                        damage=55;    
                                       G_Damage (ent, NULL, NULL, NULL, NULL, damage, 0, MOD_FALLING);
 		break;
                 case EV_FALL_FAR:
+
+                                         if  ( groundEnt->client ){
+                                     G_AddEvent( ent, EV_CURBSTOMP, 0);
+                                             G_Damage (groundEnt, NULL, NULL, NULL, NULL, 100, 0, MOD_MACHINEGUN);
+                                             break;
+                                        }else
                         damage=100;  
                         G_Damage (ent, NULL, NULL, NULL, NULL, damage, 0, MOD_FALLING);
                         break;
@@ -977,6 +1000,12 @@ if ( (client->pers.cmd.forwardmove ||
                            if(  level.time   % 500 == 0 ){
 	G_Damage ( groundEnt, NULL, NULL, NULL, NULL, 1, 0, MOD_MACHINEGUN );	
                            }
+	}
+        
+                  if  ( groundEnt->client ){
+                         
+                      G_Printf("CurbStomp\n");
+
 	}
 
 
