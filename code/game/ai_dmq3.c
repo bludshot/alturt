@@ -1656,13 +1656,13 @@ void BotChooseWeapon(bot_state_t *bs) {
 	}else if ( bg_inventory.sort[bs->cur_ps.clientNum][SECONDARY] && 
 		bg_weaponlist[bg_inventory.sort[bs->cur_ps.clientNum][SECONDARY]].rounds[bs->cur_ps.clientNum ] > 0 &&
 		 !( dist > 120 && bg_inventory.sort[bs->cur_ps.clientNum][SECONDARY]==WP_SPAS  )){ //Too far away for shotgun.
-			BotAI_Print(PRT_MESSAGE, "Secondary!\n");
+			//BotAI_Print(PRT_MESSAGE, "Secondary!\n");
                 newweaponnum =bg_inventory.sort[bs->cur_ps.clientNum][SECONDARY];
 
         }else if ( bg_inventory.sort[bs->cur_ps.clientNum][SIDEARM]&&
 		bg_weaponlist[bg_inventory.sort[bs->cur_ps.clientNum][SIDEARM]].rounds[bs->cur_ps.clientNum ] > 0  ) {
 
-			BotAI_Print(PRT_MESSAGE, "Sidearm!\n");
+			//BotAI_Print(PRT_MESSAGE, "Sidearm!\n");
                 newweaponnum = bg_inventory.sort[bs->cur_ps.clientNum][SIDEARM];
 
         }else
