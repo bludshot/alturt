@@ -228,7 +228,7 @@ void ClientImpacts( gentity_t *ent, pmove_t *pm ) {
                              ent->s.legsAnim ==LEGS_JUMPB || 
                              ent->s.legsAnim == LEGS_LAND || 
                              pm->ps->legsAnim ==LEGS_LANDB) )
-                   G_Damage ( other, NULL, NULL, NULL, NULL, 100, 0, MOD_MACHINEGUN );
+                   G_Damage ( other, NULL, NULL, NULL, NULL, 50, 0, MOD_MACHINEGUN );
                     //G_Printf("func_breakable\n");
                 }
                 
