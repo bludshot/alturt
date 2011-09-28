@@ -200,7 +200,6 @@ void CheckMed( gentity_t *ent ) {
         trace_t         tr;
         vec3_t          end;
         gentity_t       *traceEnt;
-	usercmd_t *ucmd;  
 
         // set aiming directions
         AngleVectors (ent->client->ps.viewangles, forward, right, up);
@@ -1298,27 +1297,14 @@ switch (weaponNumber){
 }
 
 void Set_Mode(gentity_t *ent){
-    
-  int             index;  
-  char    userinfo[MAX_INFO_STRING];
-  char                    weapmodes_save[WP_NUM_WEAPONS];//xamis
-  index = ent - g_entities;
+  
 
-  trap_GetUserinfo( index, userinfo, sizeof(userinfo) );
 
- Q_strncpyz( weapmodes_save, Info_ValueForKey (userinfo, "weapmodes_save"), sizeof( weapmodes_save ) );
- 
- 
- 	if (!(strcmp(weapmodes_save ,"")) ){
-		strcpy(weapmodes_save, "0000202022200000");
-        }
+  char                    weapmodes_saves[WP_NUM_WEAPONS];//xamis
+   strcpy( weapmodes_saves, va("%016d", ent->client->ps.powerups[PW_WEAPMODES]) );
+ //weapmodes_saves = va("%016d", ent->client->ps.powerups[PW_WEAPMODES]) ;
 
- if ( ent->r.svFlags & SVF_BOT ){
-strcpy(weapmodes_save, "0000202022200000");
- ent->client->ps.stats[STAT_MODE] =weapmodes_save[ent->client->ps.weapon];
- }
-
-   switch (weapmodes_save[ent->client->ps.weapon] ){
+   switch (weapmodes_saves[ent->client->ps.weapon] ){
     case '0':
   bg_weaponlist[ ent->client->ps.weapon ].weapMode[ent->client->ps.clientNum]
       = ent->client->ps.stats[STAT_MODE]
@@ -1353,17 +1339,16 @@ strcpy(weapmodes_save, "0000202022200000");
 void Change_Mode(gentity_t *ent){
 
   int             index;  
-  char    userinfo[MAX_INFO_STRING];
-  char                    weapmodes_save[WP_NUM_WEAPONS];//xamis
+  char                    weapmodes_saves[WP_NUM_WEAPONS];//xamis
   index = ent - g_entities;
 
  if( !G_WeaponHasModes( ent->client->ps.weapon ))
 	return;
+ ent->client->modechangeTime = level.time + 3000;
+ ent->client->modeChanged =qtrue;
 
- trap_GetUserinfo( index, userinfo, sizeof(userinfo) );
-
- Q_strncpyz( weapmodes_save, Info_ValueForKey (userinfo, "weapmodes_save"), sizeof( weapmodes_save ) );
-
+ strcpy(weapmodes_saves,  va("%016d", ent->client->ps.powerups[PW_WEAPMODES]));
+ 
  if (ent->client->ps.weapon == WP_KNIFE && bg_weaponlist[ent->client->ps.weapon].rounds[ent->client->ps.clientNum] <2  )
      return;
 
@@ -1384,7 +1369,7 @@ void Change_Mode(gentity_t *ent){
 
 
    case 0:
-        weapmodes_save[ent->client->ps.weapon]= '0';
+        weapmodes_saves[ent->client->ps.weapon]= '0';
         ent->client->ps.pm_flags &= ~PMF_SINGLE_MODE;
         if(ent->client->ps.weapon==WP_KNIFE ||ent->client->ps.weapon==WP_HK69 ){
             ent->client->ps.pm_flags |= PMF_SINGLE_MODE;
@@ -1393,14 +1378,14 @@ void Change_Mode(gentity_t *ent){
         break;
    case 1:
         if ( ent->client->ps.weapon == WP_MP5K || ent->client->ps.weapon == WP_UMP45 ){
-     weapmodes_save[ent->client->ps.weapon]= '2';
+     weapmodes_saves[ent->client->ps.weapon]= '2';
         }else{
-      weapmodes_save[ent->client->ps.weapon]= '1';
+      weapmodes_saves[ent->client->ps.weapon]= '1';
      ent->client->ps.pm_flags |= PMF_SINGLE_MODE;
         }
      break;
     case 2:
-      weapmodes_save[ent->client->ps.weapon]= '2';
+      weapmodes_saves[ent->client->ps.weapon]= '2';
       ent->client->ps.pm_flags &= ~PMF_SINGLE_MODE;
       if(ent->client->ps.weapon==WP_KNIFE ||ent->client->ps.weapon==WP_HK69 ){
 
@@ -1409,13 +1394,10 @@ void Change_Mode(gentity_t *ent){
       }
       break;
     default:
-      weapmodes_save[ent->client->ps.weapon]= '2';
+      weapmodes_saves[ent->client->ps.weapon]= '2';
 
-  }
-
-         
- trap_Cvar_Set( "weapmodes_save", weapmodes_save);
-
+     }
+ent->client->ps.powerups[PW_WEAPMODES]= atoi(weapmodes_saves);
 }
 
 
@@ -1440,7 +1422,7 @@ void Cmd_Reload( gentity_t *ent )       {
   if (BG_Grenade(ent->client->ps.weapon))
     return;
   G_AddEvent(ent,EV_ZOOM_RESET,0);
-  //if (ent->client->ps.ammo[ent->client->ps.weapon] == 0 || ent->client->ps.weapon == WP_KNIFE ) return;
+
   if ( bg_weaponlist[ent->client->ps.weapon].numClips[ent->client->ps.clientNum] == 0 || ent->client->ps.weapon == WP_KNIFE ) return;
   if (ent->client->ps.weapon == WP_SPAS && bg_weaponlist[ent->client->ps.weapon].rounds[ent->client->ps.clientNum] > 7 ){
     return;
@@ -1456,16 +1438,13 @@ void Cmd_Reload( gentity_t *ent )       {
     ammotoadd -= bg_weaponlist[ent->client->ps.weapon].rounds[ent->client->ps.clientNum];
   }
 
-  //if (ent->client->ps.ammo[ent->client->ps.weapon] > 0)   {
+
     if ( bg_weaponlist[ent->client->ps.weapon].numClips[ent->client->ps.clientNum] > 0)   {
     bg_weaponlist[ent->client->ps.weapon].numClips[ent->client->ps.clientNum]--;
-    //ent->client->ps.ammo[ent->client->ps.weapon]--;
+
   }
 
- // ent->client->ps.ammo[ent->client->ps.weapon]+= ammotoadd;
   bg_weaponlist[ent->client->ps.weapon].rounds[ent->client->ps.clientNum] += ammotoadd;
- // ent->client->clipammo[ent->client->ps.weapon]+= ammotoadd;
-
 
 }
 
@@ -1862,9 +1841,10 @@ if (!target->inuse) // Does the target still exist?
         return qfalse;
 if (target==firer) // is the target us?
         return qfalse;
-if( !(target->s.powerups & PW_REDFLAG || target->s.powerups & PW_BLUEFLAG ))
+if( !(target->s.powerups & PW_REDFLAG || target->s.powerups & PW_BLUEFLAG )){
 if (!(strcmp(firer->team, target->team ))) //are we on the same team?
      return qfalse;
+}
 if(!target->client) // is the target a bot or player?
         return qfalse;
 if (target==firer->parent) // is the target the person that created the turret?
