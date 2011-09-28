@@ -1841,10 +1841,12 @@ if (!target->inuse) // Does the target still exist?
         return qfalse;
 if (target==firer) // is the target us?
         return qfalse;
-if( !(target->s.powerups & PW_REDFLAG || target->s.powerups & PW_BLUEFLAG )){
+if( (target->client->ps.powerups[PW_REDFLAG] || target->client->ps.powerups[PW_BLUEFLAG] )){
+    
+}else
 if (!(strcmp(firer->team, target->team ))) //are we on the same team?
      return qfalse;
-}
+
 if(!target->client) // is the target a bot or player?
         return qfalse;
 if (target==firer->parent) // is the target the person that created the turret?
