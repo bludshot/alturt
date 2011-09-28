@@ -245,6 +245,9 @@ qboolean LedgeTrace( trace_t *trace, vec3_t dir, float *lerpup, float *lerpfwd, 
         VectorMA( pm->ps->origin, LEDGEGRABDISTANCE, dir, traceTo );
         VectorCopy(pm->ps->origin, traceFrom);
 
+	if ( CheckLadder() != 0 )
+		return qfalse;
+
         traceFrom[2] += LEDGEGRABMINHEIGHT;
         traceTo[2] += LEDGEGRABMINHEIGHT;
 
@@ -1816,6 +1819,7 @@ static void PM_Footsteps( void ) {
         qboolean        footstep;
         footstep = qfalse;
 
+
         //
         // calculate speed and cycle to be used for
         // all cyclic walking effects
@@ -1829,6 +1833,9 @@ static void PM_Footsteps( void ) {
 
         if ( onladder == -1 || onladder == 1 ) // on ladder
         {
+            
+
+            
             pm->ps->pm_flags |= PMF_ONLADDER;
         // moving up or down)
                 if ( xyzspeed ) {
@@ -2493,9 +2500,9 @@ static void PM_Weapon( void ) {
             && !( pm->ps->pm_flags & PMF_SINGLE_SHOT )
          //     &&  ( pm->ps->eFlags & ~EF_WEAPONS_LOCKED)
             &&  bg_weaponlist[pm->ps->weapon].rounds[pm->ps->clientNum] >0){
-    //        if(  pm->ps->weapon ==WP_UMP45 && bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] == 0 )
-    //            pm->ps->weaponTime = 45;
-    //        else
+            if(  pm->ps->weapon ==WP_UMP45 && bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] == 0 )
+                pm->ps->weaponTime = 45;
+            else
           pm->ps->weaponTime = PM_WeaponTime(pm->ps->weapon );
           PM_AddEvent( EV_FIRE_WEAPON );
           PM_StartWeaponAnim( WPN_FIRE );
@@ -2504,8 +2511,10 @@ static void PM_Weapon( void ) {
           bg_weaponlist[0].numClips[pm->ps->clientNum]++; //Round count for spread.
           if( bg_weaponlist[0].rounds[pm->ps->clientNum] == 3){
             pm->ps->pm_flags |= PMF_SINGLE_SHOT;
-            if(  pm->ps->weapon ==WP_UMP45 && bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] == 0 )
+            if(  pm->ps->weapon ==WP_UMP45 && bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] == 0 ){
                 pm->ps->weaponTime = 205;
+            }else
+                pm->ps->weaponTime = PM_WeaponTime(pm->ps->weapon ) + 15;
           }
           return;
             }
@@ -2934,6 +2943,9 @@ static void PM_LadderMove( void ) {
 
         }
         wishvel[2] = scale * pm->cmd.forwardmove + scale  ;
+        
+        if( pm->cmd.rightmove == 0)
+            wishvel[0] = wishvel[1]=0;
 
         VectorCopy (wishvel, wishdir);
         wishspeed = VectorNormalize(wishdir);
