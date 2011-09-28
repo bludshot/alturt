@@ -1392,7 +1392,8 @@ void CG_WeaponAnimation( centity_t *cent, int *weaponOld, int *weapon, float *we
   
   // Check for sounds that should start on each frame --Xamis
   if    (  (cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT ) == TORSO_RELOAD_PISTOL ||
-		(cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT ) == TORSO_RELOAD_RIFLE  )   {
+	(cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT ) == TORSO_RELOAD_RIFLE
+          || ent->weapon  == WP_SR8 )   {
   for ( i = 0 ; i < 14 ; i++ ) {
 
   if (weap->sounds[i].type == 1 && cent->pe.weapon.frame == weap->sounds[i].startFrame  ){
