@@ -496,7 +496,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	int				event;
 	vec3_t			dir;
 	const char		*s;
-	int				clientNum;
+	int				weapsave,clientNum;
 	clientInfo_t	*ci;
 	es = &cent->currentState;
 	event = es->event & ~EV_EVENT_BITS;
@@ -818,14 +818,25 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
           CG_HasteTrail( cent );
 
           break;
-          
-	case EV_CHANGE_WEAPON:
-		DEBUGNAME("EV_CHANGE_WEAPON");
-		trap_S_StartSound (NULL, es->number, CHAN_AUTO, cgs.media.selectSound );
+        case EV_CHANGE_WEAPON:
+                DEBUGNAME("EV_CHANGE_WEAPON");
+                trap_S_StartSound (NULL, es->number, CHAN_AUTO, cgs.media.selectSound );
+                break;
+  
+	case EV_SAVEMODE:
+		DEBUGNAME("EV_SAVEMODE");
+              //  CG_Printf("SAVEMODE \n" );
+		if ( clientNum == cg.predictedPlayerState.clientNum ){ 
+                trap_Cvar_Set( "weapmodes_save",  va("%016d", cg.predictedPlayerState.powerups[PW_WEAPMODES]) );
+		//char *tmpstr;
+            //    CG_Printf("SAVEMODE  %s\n",va("%016d", cg.predictedPlayerState.powerups[PW_WEAPMODES]) );
+		//strcpy( tmpstr , va("%016d", cg.predictedPlayerState.powerups[PW_WEAPMODES]));
+		}
 		break;
-                	case EV_WEAPON_DROPPED:
+  	case EV_WEAPON_DROPPED:
 		DEBUGNAME("EV_WEAPON_DROPPED");
                                      if ( clientNum == cg.predictedPlayerState.clientNum ) {
+					//CG_Printf("EV_WEAPON_DROPPED\n");
                                      CG_WeaponSort();
                                      }
 		break;       
