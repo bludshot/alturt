@@ -299,7 +299,7 @@ typedef enum {
 
           STAT_NADE_FUSE,
           STAT_DMG_LOC,
-        //  STAT_SHIT,  // Status Holder for Item Toggle --Xamis
+      //    STAT_SHIT,  // Status Holder for Item Toggle --Xamis
 
 } statIndex_t;
 
@@ -384,7 +384,7 @@ typedef enum {
 // NOTE: may not have more than 16
 typedef enum {
         PW_NONE,
-
+	PW_WEAPMODES,
         PW_REDFLAG,
         PW_BLUEFLAG,
         PW_NEUTRALFLAG,
@@ -515,6 +515,7 @@ typedef enum {
         EV_WEAPON_DROPPED,
         EV_FIRE_WEAPON,
         EV_ZOOM_RESET,
+	EV_SAVEMODE,
         EV_EJECT_CASING,
 
         EV_USE_ITEM0,

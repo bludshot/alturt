@@ -109,6 +109,7 @@ void PM_StartWeaponAnim( int anim );
 void PM_StartTorsoAnim( int anim );
 void PM_StartLegsAnim( int anim ) ;
 void PM_AdjustAngleForLedgeClimb( playerState_t *ps, usercmd_t *ucmd );
+int CheckLadder( void );
 
 
 

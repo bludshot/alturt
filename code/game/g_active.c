@@ -530,6 +530,8 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
                 switch ( event ) {
                     case EV_CURBSTOMP:
                         break;
+		case EV_SAVEMODE:
+			break;
               	case EV_FALL_SHORT:
                                                                                                  G_Printf(" EV_FALL_S\n");
                                  if  ( groundEnt->client ){
@@ -578,6 +580,7 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
                       if(  ucmd->serverTime   % 20 == 0 )
                       ent->health--;
                       if(ent->health <=1 ){
+                          G_AddEvent( ent, EV_SAVEMODE,0);  
                           ent->client->ps.stats[STAT_HEALTH] = ent->health = -999;
                           player_die (ent, NULL, NULL, 100000, MOD_BLED);
                       }
@@ -790,6 +793,11 @@ void ClientThink_real( gentity_t *ent ) {
         // check for inactivity timer, but never drop the local client of a non-dedicated server
         if ( !ClientInactivityTimer( client ) ) {
                 return;
+        }
+        
+        if( client->modeChanged && client->modechangeTime + 1000 <= level.time ){
+            client->modeChanged= qfalse;
+            G_AddEvent( ent, EV_SAVEMODE,0);    
         }
         
         

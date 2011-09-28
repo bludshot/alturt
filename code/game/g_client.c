@@ -438,10 +438,7 @@ just like the existing corpse to leave behind.
 =============
 */
 void CopyToBodyQue( gentity_t *ent ) {
-#ifdef MISSIONPACK
-        gentity_t       *e;
-        int i;
-#endif
+
         gentity_t               *body;
         int                     contents;
 
@@ -899,9 +896,10 @@ void ClientUserinfoChanged( int clientNum ) {
         // this is not the userinfo, more like the configstring actually
         G_LogPrintf( "ClientUserinfoChanged: %i %s\n", clientNum, s );
         
-if ( client->loadoutEnabled  )
+if ( client->loadoutEnabled && ent->client->modechangeTime <= level.time ){
       G_PlayerLoadout( ent );
       G_AddEvent(ent, EV_WEAPON_DROPPED, 0);
+	}
 }
 
 
@@ -1020,11 +1018,13 @@ void ClientBegin( int clientNum ) {
         gclient_t       *client;
         gentity_t       *tent;
         int                     flags;
-
+        char                    weapmodes_save[WP_NUM_WEAPONS];//xamis
+        char    userinfo[MAX_INFO_STRING];
+                
         ent = g_entities + clientNum;
 
         client = level.clients + clientNum;
-
+        trap_GetUserinfo( clientNum, userinfo, sizeof( userinfo ) );
         if ( ent->r.linked ) {
                 trap_UnlinkEntity( ent );
         }
@@ -1035,8 +1035,9 @@ void ClientBegin( int clientNum ) {
 
         client->pers.connected = CON_CONNECTED;
         client->pers.enterTime = level.time;
+        client->modechangeTime = level.time;
         client->pers.teamState.state = TEAM_BEGIN;
-
+        client->modeChanged =qfalse;
         // save eflags around this, because changing teams will
         // cause this to happen with a valid entity, and we
         // want to make sure the teleport bit is set right
@@ -1048,7 +1049,8 @@ void ClientBegin( int clientNum ) {
 
         // locate ent at a spawn point
         ClientSpawn( ent );
-
+        
+        Q_strncpyz( weapmodes_save, Info_ValueForKey (userinfo, "weapmodes_save"), sizeof( weapmodes_save ) );
 
     if ( client->sess.sessionTeam == TEAM_SPECTATOR ||
          g_gametype.integer == GT_BOMB ||  g_gametype.integer == GT_TEAMSV )
@@ -1072,8 +1074,7 @@ void ClientBegin( int clientNum ) {
         // count current clients and rank for scoreboard
         CalculateRanks();
       G_PlayerLoadout( ent );
-      G_AddEvent(ent, EV_WEAPON_DROPPED, 0);
-
+      ent->client->ps.powerups[PW_WEAPMODES]= atoi(weapmodes_save);
 }
 
 
@@ -1083,6 +1084,7 @@ void G_PlayerLoadout( gentity_t *ent ){
 	gclient_t	*client;
 	char		userinfo[MAX_INFO_STRING];
 	char		gear[MAX_QPATH];
+                  char                    weapmodes_save[WP_NUM_WEAPONS];//xamis
 	int			inventoryItemSlot;
 	int			WPPWnum;
 	int			extraAmmoMultiplier;
@@ -1097,6 +1099,9 @@ void G_PlayerLoadout( gentity_t *ent ){
 	trap_GetUserinfo( index, userinfo, sizeof(userinfo) );
 	client = ent->client;
 	Q_strncpyz( gear, Info_ValueForKey (userinfo, "gear"), sizeof( gear ) );
+                  Q_strncpyz( weapmodes_save, Info_ValueForKey (userinfo, "weapmodes_save"), sizeof( weapmodes_save ) );
+                  ent->client->ps.powerups[PW_WEAPMODES]= atoi(weapmodes_save);
+                  
 	client->ps.clientNum = index;
 
 	BG_ClearWeapons( ent->client->ps.stats );
@@ -1310,7 +1315,8 @@ void ClientSpawn(gentity_t *ent) {
         client->accuracy_hits = accuracy_hits;
         client->accuracy_shots = accuracy_shots;
         client->lastkilled_client = -1;
-
+        client->modechangeTime = level.time;
+        client->modeChanged =qfalse;
         for ( i = 0 ; i < MAX_PERSISTANT ; i++ ) {
                 client->ps.persistant[i] = persistant[i];
         }
@@ -1423,7 +1429,8 @@ void ClientSpawn(gentity_t *ent) {
         }
 
       G_PlayerLoadout( ent );
-      G_AddEvent(ent, EV_WEAPON_DROPPED, 0);
+//if(ent->client->modechangeTime < level.time)
+//      G_AddEvent(ent, EV_WEAPON_DROPPED, 0);
 	// Call Set_Mode to make sure the current weapons mode is synchronized between server and client. --Xamis
         Set_Mode(ent);
    
@@ -1465,7 +1472,8 @@ void ClientDisconnect( int clientNum ) {
         if ( !ent->client ) {
                 return;
         }
-
+        
+        
         // stop any following clients
         for ( i = 0 ; i < level.maxclients ; i++ ) {
                 if ( level.clients[i].sess.sessionTeam >= TEAM_SPECTATOR
