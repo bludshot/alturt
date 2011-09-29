@@ -2055,6 +2055,8 @@ static void PM_FinishWeaponChange( void ) {
         //bg_nadeTimer.fuseTime[pm->ps->clientNum] = 6000;
         pm->ps->weapon = weapon;
         pm->ps->weaponstate = WEAPON_RAISING;        
+        pm->ps->weaponTime +=300;
+        pm->ps->torsoTimer +=300;
        //PM_StartWeaponAnim(WPN_DRAW);
         //pm->ps->weaponTime +=300;
         //pm->ps->torsoTimer +=300;
@@ -2288,6 +2290,9 @@ static void PM_Weapon( void ) {
         if( pm->ps->legsAnim == BOTH_LEDGECLIMB )
 		return;
 
+        
+
+        
         if(pm->ps->stats[STAT_CLIPS] <= 0 ){
         if(BG_Grenade(pm->ps->weapon) )
          PM_AddEvent( EV_NONADES );
@@ -2475,6 +2480,8 @@ static void PM_Weapon( void ) {
                 return;
         }       
         
+            
+        
 /*
  Weapon Firing
  
@@ -2494,30 +2501,34 @@ static void PM_Weapon( void ) {
  *  Burst
  
  */
+
+
+if (bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] == 0){
                     
-        if ( bg_weaponlist[0].rounds[pm->ps->clientNum] <= 2
-            &&  bg_weaponlist[0].rounds[pm->ps->clientNum] > 0
-            && !( pm->ps->pm_flags & PMF_SINGLE_SHOT )
-         //     &&  ( pm->ps->eFlags & ~EF_WEAPONS_LOCKED)
-            &&  bg_weaponlist[pm->ps->weapon].rounds[pm->ps->clientNum] >0){
-            if(  pm->ps->weapon ==WP_UMP45 && bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] == 0 )
+        if ( bg_weaponlist[0].rounds[pm->ps->clientNum] <= 2  //still have rounds to fire in burst /spam mode
+            &&  bg_weaponlist[0].rounds[pm->ps->clientNum] > 0 //firing has started, must continue
+            && !( pm->ps->pm_flags & PMF_SINGLE_SHOT ) 		//last burst round?
+            &&  bg_weaponlist[pm->ps->weapon].rounds[pm->ps->clientNum] >0){ //gun not empty
+            if(  pm->ps->weapon ==WP_UMP45 && bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] == 0 ) //spam
                 pm->ps->weaponTime = 45;
             else
-          pm->ps->weaponTime = PM_WeaponTime(pm->ps->weapon );
-          PM_AddEvent( EV_FIRE_WEAPON );
-          PM_StartWeaponAnim( WPN_FIRE );
-          pm->ps->weaponstate = WEAPON_FIRING;
+          pm->ps->weaponTime = PM_WeaponTime(pm->ps->weapon ); //time between rounds
+          PM_AddEvent( EV_FIRE_WEAPON ); //fire weapon 
+          PM_StartWeaponAnim( WPN_FIRE ); //fire weapon animations
+          pm->ps->weaponstate = WEAPON_FIRING; 
           bg_weaponlist[0].rounds[pm->ps->clientNum]++; //Round count for burst mode.
           bg_weaponlist[0].numClips[pm->ps->clientNum]++; //Round count for spread.
-          if( bg_weaponlist[0].rounds[pm->ps->clientNum] == 3){
+          if( bg_weaponlist[0].rounds[pm->ps->clientNum] == 3){ //last round set single should this be 2 or 3 ?
             pm->ps->pm_flags |= PMF_SINGLE_SHOT;
             if(  pm->ps->weapon ==WP_UMP45 && bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] == 0 ){
-                pm->ps->weaponTime = 205;
+                pm->ps->weaponTime = 205; //time between spam bursts
             }else
-                pm->ps->weaponTime = PM_WeaponTime(pm->ps->weapon ) + 15;
+                pm->ps->weaponTime = PM_WeaponTime(pm->ps->weapon ) + 15; // add a little time between bursts 
           }
           return;
-            }
+       }
+
+}
         
 /*
  * Fire held
@@ -2662,8 +2673,8 @@ static void PM_Weapon( void ) {
         
         
                                 // check for out of ammo
-        if ( (pm->ps->stats[STAT_ROUNDS] == 0 && !BG_Grenade(pm->ps->weapon))
-            || (pm->ps->stats[STAT_CLIPS] == 0 && BG_Grenade(pm->ps->weapon) )) {
+        if ( (pm->ps->stats[STAT_ROUNDS] <= 0 && !BG_Grenade(pm->ps->weapon))
+            || (pm->ps->stats[STAT_CLIPS] <= 0 && BG_Grenade(pm->ps->weapon) )) {
             
           PM_AddEvent( EV_NOAMMO );
           pm->ps->weaponTime = 550;
