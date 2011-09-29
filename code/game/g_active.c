@@ -580,7 +580,6 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
                       if(  ucmd->serverTime   % 20 == 0 )
                       ent->health--;
                       if(ent->health <=1 ){
-                          G_AddEvent( ent, EV_SAVEMODE,0);  
                           ent->client->ps.stats[STAT_HEALTH] = ent->health = -999;
                           player_die (ent, NULL, NULL, 100000, MOD_BLED);
                       }
@@ -879,6 +878,14 @@ if ( (client->pers.cmd.forwardmove ||
 
  }else
    bg_ps.bg_flags[client->ps.clientNum] &= ~BGF_POWERSLIDE;
+
+
+if( client->ps.weaponstate == WEAPON_START_BANDAGING || client->ps.weaponstate == WEAPON_DOWN_BANDAGING ){
+		if(  ucmd->serverTime   % 20 == 0 )
+			if (ent->health < 100 ){
+				 ent->health++;
+				}
+			}
 
 
         // Let go of the hook if we aren't firing
