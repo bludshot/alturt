@@ -344,7 +344,8 @@ typedef enum {
         PERS_DEFEND_COUNT,                              // defend awards
         PERS_ASSIST_COUNT,                              // assist awards
         PERS_GAUNTLET_FRAG_COUNT,               // kills with the guantlet
-        PERS_CAPTURES                                   // captures
+        PERS_CAPTURES,                                   // captures
+        PERS_SECONDARY
 } persEnum_t;
 
 
@@ -384,7 +385,7 @@ typedef enum {
 // NOTE: may not have more than 16
 typedef enum {
         PW_NONE,
-	PW_WEAPMODES,
+        PW_WEAPMODES,
         PW_REDFLAG,
         PW_BLUEFLAG,
         PW_NEUTRALFLAG,
@@ -396,7 +397,7 @@ typedef enum {
         PW_LASERSIGHT,
         PW_AMMO,
         PW_NVG,
-		PW_MEDKIT,
+        PW_MEDKIT,
 
         PW_NUM_POWERUPS
 
@@ -974,6 +975,7 @@ void      BG_PackWeapon( int weapon, int stats[ ] );
 void      BG_RemoveWeapon( int weapon, int stats[ ] );
 void	BG_LastKnife(void);
 void BG_ClearWeapons( int stats[ ] );
+int             BG_GetSecondary( int stats [ ] );
 
 #define ARENAS_PER_TIER         4
 #define MAX_ARENAS                      1024
