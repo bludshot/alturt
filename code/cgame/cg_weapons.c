@@ -1283,20 +1283,22 @@ void CG_RenderLaser(centity_t *cent){
         qhandle_t laserBeam;
         int	rf;
         int anim;
-	int             timeDelta;                    
                     
         memset( &beam, 0, sizeof( beam ) );
         anim = cent->currentState.legsAnim & ~ANIM_TOGGLEBIT;
         rf = 0;
 
-        
-        VectorCopy ( cent->lerpOrigin,muzzlePoint );
+      if( cent->currentState.clientNum == cg.predictedPlayerState.clientNum ){
+        VectorCopy ( cg.refdef.vieworg ,muzzlePoint ); 
+      }else{
+      VectorCopy ( cent->lerpOrigin ,muzzlePoint );
 
-            if ( anim == LEGS_WALKCR  || anim == LEGS_BACKCR || anim == LEGS_IDLECR )
+           if ( anim == LEGS_WALKCR  || anim == LEGS_BACKCR || anim == LEGS_IDLECR )
                muzzlePoint[2] += CROUCH_VIEWHEIGHT +1;
-            else
+           else
                 muzzlePoint[2] += DEFAULT_VIEWHEIGHT +1;
-
+        
+      }     
 
         AngleVectors( cent->currentState.apos.trBase , forward, NULL, NULL );
 
@@ -1318,16 +1320,6 @@ void CG_RenderLaser(centity_t *cent){
                 !trace.startsolid )
         {
 
-
- if (cent->currentState.clientNum == cg.predictedPlayerState.clientNum ){
-	// smooth out stair climbing
-	timeDelta = cg.time - cg.stepTime;
-	if ( timeDelta < STEP_TIME ) {
-		trace.endpos[2] -= cg.stepChange
-			* (STEP_TIME - timeDelta) / STEP_TIME;
-	}
-
- }
             // add the impact flare if it hit something
             if ( trace.fraction < 1.0 ) {
 
@@ -1425,7 +1417,6 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	nonPredictedCent = &cg_entities[cent->currentState.clientNum];
         
     
-                        
 
             anim = cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT;
 
@@ -2403,7 +2394,8 @@ void CG_SelectItemToDrop ( void)
              }else 
                 pw = cg.selectedItem;
 
-             if (cg.snap->ps.powerups[pw]){
+	
+             if (cg.snap->ps.powerups[pw] && pw < PW_NUM_POWERUPS && pw > PW_WEAPMODES){
                    trap_SendClientCommand( va("ut_dropitem %i",pw ) );
                    
              }
@@ -2716,6 +2708,11 @@ void CG_NextWeapon_f( void ) {
         if ( cg.snap->ps.pm_flags & PMF_FOLLOW ) {
                 return;
         }
+        if(cg.snap->ps.weaponTime > 0)
+            return;
+        
+        if(cg.snap->ps.weaponstate != WEAPON_READY)
+            return;
 
         cg.weaponSelectTime = cg.time;
         original = cg.weaponSelect;
@@ -2753,6 +2750,12 @@ void CG_PrevWeapon_f( void ) {
                 return;
         }
 
+        if(cg.snap->ps.weaponTime > 0)
+            return;
+        
+       if(cg.snap->ps.weaponstate != WEAPON_READY)
+            return;
+        
         cg.weaponSelectTime = cg.time;
         original = cg.weaponSelect;
         CG_ZoomReset_f();
