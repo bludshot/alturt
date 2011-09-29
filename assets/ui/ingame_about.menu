@@ -171,7 +171,7 @@ itemDef {
 	type ITEM_TYPE_TEXT
 	style 1
 	textstyle 3
-	cvar "g_sourceURL"
+	cvar "cg_g_sourceURL"
 	textalign ITEM_ALIGN_LEFT
 	textalignx 0
 	textaligny 0
