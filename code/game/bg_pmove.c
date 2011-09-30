@@ -2275,6 +2275,25 @@ void BG_LastKnife(void){
 }
 
 
+qboolean G_WeaponHasModes ( int weaponNumber){
+
+switch (weaponNumber){
+        case WP_KNIFE:
+        case WP_UMP45:
+        case WP_MP5K:
+        case WP_M4:
+        case WP_LR300:
+        case WP_G36:
+        case WP_HK69:
+        case WP_AK103:
+        return qtrue;
+        default:
+        return qfalse;
+        }
+}
+
+
+
 static void PM_Weapon( void ) {
 
 
@@ -2574,11 +2593,9 @@ static void PM_Weapon( void ) {
         }
    //    if( pm->ps->eFlags & ~EF_WEAPONS_LOCKED){
 
-    // check for fire
-	//can not fire during warmup --Xamis
 
 
-        if( bg_weaponlist[0].rounds[pm->ps->clientNum] == 3){ //last burst round set single flag to prevent more firing till trigger released
+        if( bg_weaponlist[0].rounds[pm->ps->clientNum] == 3 && G_WeaponHasModes ( pm->ps->weapon ) ){ //last burst round set single flag to prevent more firing till trigger released
         	pm->ps->pm_flags |= PMF_SINGLE_SHOT;
 		if ( pm->ps->weapon == WP_UMP45 )
 		pm->ps->weaponTime = PM_WeaponTime(pm->ps->weapon, bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] )+45;
@@ -2592,7 +2609,7 @@ static void PM_Weapon( void ) {
 				bg_weaponlist[0].rounds[pm->ps->clientNum] < 3  ){ //burst count under 3
                  }else{
 
-
+//fire not pressed
         if (!(pm->cmd.buttons & 1) ) {
             bg_weaponlist[0].numClips[pm->ps->clientNum] = 0; //for round increment count for spread/recoil
             
@@ -2623,7 +2640,7 @@ static void PM_Weapon( void ) {
                 }else
                 PM_StartWeaponAnim( WPN_IDLE );
 
-        // remove flag
+        // fire not pressed so remove single flag, reset burst count and spread count
                 if ( pm->ps->pm_flags & PMF_SINGLE_SHOT ){
                         pm->ps->pm_flags &= ~PMF_SINGLE_SHOT;
                         bg_weaponlist[0].rounds[pm->ps->clientNum] = 0;//burst count
@@ -2635,20 +2652,20 @@ static void PM_Weapon( void ) {
           }
         }
       }
-       
+       // grenade ready to throw animation
         if(BG_Grenade(pm->ps->weapon) && pm->ps->pm_flags & PMF_GRENADE_ARMED ){
                       pm->ps->weaponTime = 50;
           PM_StartWeaponAnim(WPN_READY_FIRE_IDLE);
           return;
         }
-        
+        // knife ready to throw animation
         if(pm->ps->weapon == WP_KNIFE && pm->ps->stats[STAT_MODE] && pm->ps->pm_flags & PMF_GRENADE_ARMED ){
           pm->ps->weaponTime = 50;
           PM_StartWeaponAnim(WPN_READY_FIRE_IDLE_ALT);
           return;
         }
 
-    // single shot mode
+    // single shot mode, exit! no more shots while fire held
         if ( pm->ps->pm_flags & PMF_SINGLE_SHOT ) {
                 pm->ps->weaponstate = WEAPON_READY;
                 pm->ps->weaponTime = 0;
@@ -2675,22 +2692,22 @@ static void PM_Weapon( void ) {
           return;
             }
         
-        
+        //press fire when holding grenade, grenade not armed yet
             if ( BG_Grenade(pm->ps->weapon) && !(pm->ps->pm_flags & PMF_GRENADE_ARMED)){
-              pm->ps->weaponstate =WEAPON_READY_FIRE_IDLE_ALT ;
-              pm->ps->pm_flags |= PMF_GRENADE_ARMED;
-              bg_nadeTimer.fuseTime[pm->ps->clientNum] = 6000;
-              pm->ps->stats[STAT_NADE_FUSE]= 6000;
-              bg_nadeTimer.throwStrength[pm->ps->clientNum] = 62000;
-              PM_StartWeaponAnim( WPN_READY_FIRE );
+              pm->ps->weaponstate =WEAPON_READY_FIRE_IDLE_ALT ; 
+              pm->ps->pm_flags |= PMF_GRENADE_ARMED; //pin pulled
+              bg_nadeTimer.fuseTime[pm->ps->clientNum] = 6000; //start fuse countdown
+              pm->ps->stats[STAT_NADE_FUSE]= 6000; //start fuse countdown
+              bg_nadeTimer.throwStrength[pm->ps->clientNum] = 62000; 
+              PM_StartWeaponAnim( WPN_READY_FIRE ); //animation. pull pin and pull arm back
               pm->ps->weaponTime = 800;             
               return;
             }
         
         
-        
+        // PMF_GRENADE_ARMED used for both grenade and knife throwing. should probably rename  PMF_ARMED or something.
         if (pm->ps->weapon == WP_KNIFE && pm->ps->stats[STAT_MODE] && !(pm->ps->pm_flags & PMF_GRENADE_ARMED)){
-              pm->ps->weaponstate =WEAPON_READY_FIRE_IDLE_ALT ;
+              pm->ps->weaponstate =WEAPON_READY_FIRE_IDLE_ALT ; //holding the weapon in the ready to throw position 
               pm->ps->pm_flags |= PMF_GRENADE_ARMED;
               //PM_StartWeaponAnim( WPN_READY_FIRE_ALT );
               pm->ps->weaponTime = 800; 
@@ -2698,7 +2715,7 @@ static void PM_Weapon( void ) {
             }
 
 
-
+//start a torso animation to match our weapon animations
         if ( BG_Sidearm(pm->ps->weapon)){
           PM_StartTorsoAnim( TORSO_ATTACK_PISTOL );
         }else if ( pm->ps->weapon == WP_KNIFE){
@@ -2707,28 +2724,31 @@ static void PM_Weapon( void ) {
           PM_StartTorsoAnim( TORSO_ATTACK_PUMPGUN );
         }else{
           PM_StartTorsoAnim( TORSO_ATTACK_RIFLE );
-        } 
-         if ( pm->ps->weapon == WP_HK69 && pm->ps->stats[STAT_MODE] ){
-          PM_StartWeaponAnim( WPN_FIRE_ALT );
-         }else  PM_StartWeaponAnim( WPN_FIRE );
+        }
 
+ 
 
+			//start the weapon firing animation, first person view 
+		         if ( pm->ps->weapon == WP_HK69 && pm->ps->stats[STAT_MODE] ){
+         		 PM_StartWeaponAnim( WPN_FIRE_ALT ); //hk long distance mode
+        		 }else  PM_StartWeaponAnim( WPN_FIRE ); 
 
                           pm->ps->weaponstate = WEAPON_FIRING;
                           pm->ps->weaponTime = PM_WeaponTime(pm->ps->weapon, bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] );
-                          PM_AddEvent( EV_FIRE_WEAPON );
-                                if( bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] == 0  &&  pm->ps->weapon != WP_SPAS  &&  pm->ps->weapon != WP_NEGEV ){
+                          PM_AddEvent( EV_FIRE_WEAPON );//this is the client side effects, sound and muzzle flash 
+                          if(  G_WeaponHasModes( pm->ps->weapon) && bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] == 0  && pm->ps->weapon != WP_KNIFE && pm->ps->weapon != WP_HK69 ){
                                   bg_weaponlist[0].rounds[pm->ps->clientNum]++;//increment burst count
                                   }
                           bg_weaponlist[0].numClips[pm->ps->clientNum]++; //This is a round count for spread.
                           if (pm->ps->weapon == WP_SR8 || pm->ps->weapon == WP_SPAS ){
-                            pm->ps->pm_flags |= PMF_RELOADING;
+                            pm->ps->pm_flags |= PMF_RELOADING;//for the bolt animation after each round.
                             if (pm->ps->weapon == WP_SR8){
-                            pm->ps->weaponstate =WEAPON_FIRING2;
-                            pm->ps->weaponTime = 700;//PM_WeaponTime(pm->ps->weapon );
+                            pm->ps->weaponstate =WEAPON_FIRING2;//this is just for the zoom reset after each shot 
+                            pm->ps->weaponTime = 700;//just enough time for the animations
                             }
                           }
-
+			// if the weapon is single shot, or is at the last round of burst, 
+			//set a flag to prevent another shot without releasing fire button
                           if ( pm->ps->pm_flags & PMF_SINGLE_MODE
                                 || pm->ps->weapon == WP_SPAS
                                 || pm->ps->weapon == WP_DEAGLE
