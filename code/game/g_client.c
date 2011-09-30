@@ -1001,7 +1001,7 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 //      if ( !client->areabits )
 //              client->areabits = G_Alloc( (trap_AAS_PointReachabilityAreaIndex( NULL ) + 7) / 8 );
 
-        return NULL;
+		return NULL;
 }
 
 /*
@@ -1046,6 +1046,9 @@ void ClientBegin( int clientNum ) {
         flags = client->ps.eFlags;
         memset( &client->ps, 0, sizeof( client->ps ) );
         client->ps.eFlags = flags;
+
+		//set the client's cg_g_sourceURL cvar value through this server command
+		trap_SendServerCommand( clientNum, va("setgsourceurl \"%s\"", G_SOURCE_URL) );
 
         // locate ent at a spawn point
         ClientSpawn( ent );
