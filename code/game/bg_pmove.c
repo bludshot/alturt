@@ -2289,13 +2289,11 @@ static void PM_Weapon( void ) {
                 return;
         }
 
-
         if( pm->ps->legsAnim == BOTH_LEDGECLIMB )
 		return;
 
         
-
-        
+    //if player has thrown the last nade in their inventory, remove it.        
         if(pm->ps->stats[STAT_CLIPS] <= 0 ){
         if(BG_Grenade(pm->ps->weapon) )
          PM_AddEvent( EV_NONADES );
@@ -2307,17 +2305,17 @@ static void PM_Weapon( void ) {
         if ( pm->ps->weaponTime <= 0 )
           pm->ps->weaponTime = 0;
         
-//check grenade fuse time
+    //check grenade fuse time
         if ( pm->ps->stats[STAT_NADE_FUSE]  > 0 && pm->ps->pm_flags & PMF_GRENADE_ARMED){
-          pm->ps->stats[STAT_NADE_FUSE] -= pml.msec;
-        bg_nadeTimer.fuseTime[pm->ps->clientNum] = pm->ps->stats[STAT_NADE_FUSE];
-        }else if (  pm->ps->stats[STAT_NADE_FUSE]   <= 0 ){
+          pm->ps->stats[STAT_NADE_FUSE] -= pml.msec; //count down for the fuse
+        bg_nadeTimer.fuseTime[pm->ps->clientNum] = pm->ps->stats[STAT_NADE_FUSE]; 
+        }else if (  pm->ps->stats[STAT_NADE_FUSE]   <= 0 ){ 
           bg_nadeTimer.fuseTime[pm->ps->clientNum] = 0;
            pm->ps->stats[STAT_NADE_FUSE] = 0;
-          if(BG_Grenade(pm->ps->weapon) && pm->ps->pm_flags & PMF_GRENADE_ARMED){
+          if(BG_Grenade(pm->ps->weapon) && pm->ps->pm_flags & PMF_GRENADE_ARMED){ //we held the grenade too long!
             bg_nadeTimer.throwStrength[pm->ps->clientNum]= 0;
             pm->ps->weaponTime = 0;
-            PM_AddEvent( EV_FIRE_WEAPON );
+            PM_AddEvent( EV_FIRE_WEAPON ); //BOOM!
             pm->ps->pm_flags &= ~PMF_GRENADE_ARMED;
             return;
         }
@@ -2435,7 +2433,7 @@ static void PM_Weapon( void ) {
           }
           
           PM_StartWeaponAnim( WPN_RELOAD );
-          bg_weaponlist[0].rounds[pm->ps->clientNum] =0;
+          bg_weaponlist[0].rounds[pm->ps->clientNum] =0;//burst count
           if (BG_Sidearm( pm->ps->weapon )){
           PM_StartTorsoAnim(TORSO_RELOAD_PISTOL );
           }else if (!(pm->ps->weapon == WP_SPAS || BG_Grenade( pm->ps->weapon )) ){
@@ -2589,16 +2587,16 @@ static void PM_Weapon( void ) {
 		}
 
 		//if we are in burst and have not fired three rounds, ignore that the trigger was released until all rounds are fired.
-         if (bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] == 0  &&
-                                bg_weaponlist[0].rounds[pm->ps->clientNum] > 0 &&
-				bg_weaponlist[0].rounds[pm->ps->clientNum] < 3  ){
+         if (bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] == 0  && //burst & spam modes
+                                bg_weaponlist[0].rounds[pm->ps->clientNum] > 0 && //burst count started 
+				bg_weaponlist[0].rounds[pm->ps->clientNum] < 3  ){ //burst count under 3
                  }else{
 
 
         if (!(pm->cmd.buttons & 1) ) {
             bg_weaponlist[0].numClips[pm->ps->clientNum] = 0; //for round increment count for spread/recoil
             
-          if(BG_Grenade(pm->ps->weapon) && pm->ps->pm_flags & PMF_GRENADE_ARMED){
+          if(BG_Grenade(pm->ps->weapon) && pm->ps->pm_flags & PMF_GRENADE_ARMED){//we let go of fire do we have a grenade armed?
             PM_StartWeaponAnim( WPN_FIRE );
             pm->ps->weaponstate = WEAPON_FIRING;
             pm->ps->weaponTime = 200;
@@ -2606,7 +2604,7 @@ static void PM_Weapon( void ) {
             PM_StartTorsoAnim( TORSO_ATTACK_GRENADE );
             pm->ps->pm_flags &= ~PMF_GRENADE_ARMED;
             return;
-          }else if ( pm->ps->weapon == WP_KNIFE && pm->ps->stats[STAT_MODE]&& pm->ps->pm_flags & PMF_GRENADE_ARMED ){
+          }else if ( pm->ps->weapon == WP_KNIFE && pm->ps->stats[STAT_MODE]&& pm->ps->pm_flags & PMF_GRENADE_ARMED ){ //fire released, knife throw
             PM_StartWeaponAnim( WPN_FIRE_ALT );
             pm->ps->weaponstate = WEAPON_FIRING;
             pm->ps->weaponTime = PM_WeaponTime(pm->ps->weapon ,bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] );
@@ -2628,8 +2626,8 @@ static void PM_Weapon( void ) {
         // remove flag
                 if ( pm->ps->pm_flags & PMF_SINGLE_SHOT ){
                         pm->ps->pm_flags &= ~PMF_SINGLE_SHOT;
-                        bg_weaponlist[0].rounds[pm->ps->clientNum] = 0;
-                        bg_weaponlist[0].numClips[pm->ps->clientNum] = 0;
+                        bg_weaponlist[0].rounds[pm->ps->clientNum] = 0;//burst count
+                        bg_weaponlist[0].numClips[pm->ps->clientNum] = 0; //spread count
                         
                 
               }
@@ -2720,7 +2718,7 @@ static void PM_Weapon( void ) {
                           pm->ps->weaponTime = PM_WeaponTime(pm->ps->weapon, bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] );
                           PM_AddEvent( EV_FIRE_WEAPON );
                                 if( bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] == 0  &&  pm->ps->weapon != WP_SPAS  &&  pm->ps->weapon != WP_NEGEV ){
-                                  bg_weaponlist[0].rounds[pm->ps->clientNum]++;
+                                  bg_weaponlist[0].rounds[pm->ps->clientNum]++;//increment burst count
                                   }
                           bg_weaponlist[0].numClips[pm->ps->clientNum]++; //This is a round count for spread.
                           if (pm->ps->weapon == WP_SR8 || pm->ps->weapon == WP_SPAS ){
