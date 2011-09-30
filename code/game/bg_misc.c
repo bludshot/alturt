@@ -1928,7 +1928,9 @@ qboolean BG_HasPrimary  (const  playerState_t *ps ) {
         return qtrue;
     if (BG_HasWeapon(WP_LR300 , (int*)ps->stats ) )
         return qtrue;
-            if (BG_HasWeapon(WP_NEGEV , (int*)ps->stats ) )
+    if (BG_HasWeapon(WP_NEGEV , (int*)ps->stats ) )
+        return qtrue;
+    if (BG_HasWeapon(WP_HK69 , (int*)ps->stats ) )
         return qtrue;
 
     return qfalse;
@@ -2050,6 +2052,7 @@ qboolean BG_Primary ( int weapon ) {
     case WP_G36:
     case WP_LR300:
     case WP_NEGEV:
+    case WP_HK69:
         return qtrue;
     default:
         return qfalse;
