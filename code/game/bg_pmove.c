@@ -2683,6 +2683,7 @@ static void PM_Weapon( void ) {
             
           PM_AddEvent( EV_NOAMMO );
           pm->ps->weaponTime = 550;
+	  bg_weaponlist[0].rounds[pm->ps->clientNum] = 0;
           pm->ps->weaponstate = WEAPON_READY;
            if ( pm->ps->weapon == WP_HK69 && pm->ps->stats[STAT_MODE] ){
                 PM_ContinueWeaponAnim( WPN_FIRE_ALT );
@@ -2736,10 +2737,14 @@ static void PM_Weapon( void ) {
                           pm->ps->weaponstate = WEAPON_FIRING;
                           pm->ps->weaponTime = PM_WeaponTime(pm->ps->weapon, bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] );
                           PM_AddEvent( EV_FIRE_WEAPON );//this is the client side effects, sound and muzzle flash 
+
+			  //only increment burst round count if the weapon actually has a burst mode!
                           if(  G_WeaponHasModes( pm->ps->weapon) && bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] == 0  && pm->ps->weapon != WP_KNIFE && pm->ps->weapon != WP_HK69 ){
-                                  bg_weaponlist[0].rounds[pm->ps->clientNum]++;//increment burst count
+                                  bg_weaponlist[0].rounds[pm->ps->clientNum]++;//increment burst count, this is reset when fire is released, or when out of ammo.
                                   }
+
                           bg_weaponlist[0].numClips[pm->ps->clientNum]++; //This is a round count for spread.
+
                           if (pm->ps->weapon == WP_SR8 || pm->ps->weapon == WP_SPAS ){
                             pm->ps->pm_flags |= PMF_RELOADING;//for the bolt animation after each round.
                             if (pm->ps->weapon == WP_SR8){
