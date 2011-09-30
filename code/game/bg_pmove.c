@@ -2929,20 +2929,19 @@ static void PM_LadderMove( void ) {
 
         for (i=0 ; i<3 ; i++) {
                 if ( CheckLadder() == -1 )
-                {
+                {  
                         if ( i < 2 )
                         {
-                                if ( pm->cmd.forwardmove > 0 )
+                                if ( pm->cmd.rightmove )
                                 {
-                                        wishvel[i] = scale * pml.forward[i]*pm->cmd.forwardmove +
-                                                        scale * pml.right[i]*pm->cmd.rightmove;
-
+                                        wishvel[i] = scale * pml.right[i]*pm->cmd.rightmove;
+                                        
                                 }
                                 else
-                                        wishvel[i] = 0;
-                        }
+                                        wishvel[i] = 0; //prevent steering 
+                        }       
                 }
-                else if ( CheckLadder() == -2 )  {
+                else if ( CheckLadder() == -2 )  { // backing down on a ladder --Xamis
                         wishvel[i] = scale * pml.forward[i]*pm->cmd.forwardmove +
                                         scale * pml.right[i]*pm->cmd.rightmove;
 
@@ -2950,13 +2949,21 @@ static void PM_LadderMove( void ) {
                 else {
                         wishvel[i] = scale * pml.forward[i]*pm->cmd.forwardmove +
                                         scale * pml.right[i]*pm->cmd.rightmove;
+                         if( pm->cmd.rightmove == 0)
+                              wishvel[0] = wishvel[1]=0; //prevent steering 
                 }
 
         }
+
         wishvel[2] = scale * pm->cmd.forwardmove + scale  ;
         
-        if( pm->cmd.rightmove == 0)
-            wishvel[0] = wishvel[1]=0;
+        if( pm->cmd.rightmove != 0){
+        wishvel[0] = scale * pml.right[0]*pm->cmd.rightmove;
+        wishvel[1] = scale * pml.right[1]*pm->cmd.rightmove;
+            
+        }
+            
+         //   
 
         VectorCopy (wishvel, wishdir);
         wishspeed = VectorNormalize(wishdir);
