@@ -1034,6 +1034,12 @@ static void CG_ServerCommand( void ) {
 		return;
 	}
 
+	if ( !strcmp( cmd, "setgsourceurl" ) ) {
+		trap_Cvar_Set("cg_g_sourceURL", va("%s", CG_Argv(1)));
+		
+		return;
+	}
+
 	if ( !strcmp( cmd, "print" ) ) {
 		CG_Printf( "%s", CG_Argv(1) );
 #ifdef MISSIONPACK

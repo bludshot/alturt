@@ -1276,6 +1276,7 @@ extern	vmCvar_t		cg_drawFPS;
 extern	vmCvar_t		password; //blud
 extern	vmCvar_t		rconpassword; //blud
 extern  vmCvar_t		cg_sourceURL; //blud
+extern	vmCvar_t		cg_g_sourceURL; //blud
 extern	vmCvar_t		cg_drawStamina;  //Xamis
 extern	vmCvar_t		racered; //blud
 extern	vmCvar_t		raceblue; //blud

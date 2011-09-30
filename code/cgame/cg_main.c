@@ -106,6 +106,7 @@ vmCvar_t        cg_gunsize;//xamis
 vmCvar_t	cg_gibs;
 vmCvar_t	cg_drawTimer;
 vmCvar_t	cg_drawFPS;
+vmCvar_t	cg_g_sourceURL; //blud
 vmCvar_t	cg_sourceURL; //blud
 vmCvar_t	password; //blud
 vmCvar_t	rconpassword; //blud
@@ -233,6 +234,7 @@ static cvarTable_t cvarTable[] = {
 	{ &cg_drawStatus, "cg_drawStatus", "1", CVAR_ARCHIVE  },
 	{ &cg_drawTimer, "cg_drawTimer", "0", CVAR_ARCHIVE  },
 	{ &cg_drawFPS, "cg_drawFPS", "0", CVAR_ARCHIVE  },
+	{ &cg_g_sourceURL, "cg_g_sourceURL", "", 0 },
 	{ &cg_sourceURL, "cg_sourceURL", CG_SOURCE_URL, CVAR_ROM | CVAR_INIT  },
 	{ &password, "password", "", CVAR_USERINFO | CVAR_ARCHIVE }, //blud
 	{ &rconpassword, "rconpassword", "", CVAR_ARCHIVE }, //blud
