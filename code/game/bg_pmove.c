@@ -2253,10 +2253,10 @@ static int PM_WeaponTime( int weapon, int mode  )
                         addTime = 45;
                         break;
                 case WP_DEAGLE:
-                        addTime = 200;
+                        addTime = 140;
                         break;
                 case WP_BERETTA:
-                        addTime = 120;
+                        addTime = 100;
                         break;
                 case WP_NEGEV:
                 case WP_AK103:
@@ -2641,6 +2641,8 @@ static void PM_Weapon( void ) {
                 if ( pm->ps->pm_flags & PMF_SINGLE_SHOT ){
                         pm->ps->pm_flags &= ~PMF_SINGLE_SHOT;                     
                         bg_weaponlist[0].numClips[pm->ps->clientNum] = 0;
+                        pm->ps->weaponTime = PM_WeaponTime(pm->ps->weapon, 1 );
+
                 }
                 return;
           }
@@ -2666,12 +2668,6 @@ static void PM_Weapon( void ) {
                 return;
         }
 
-        if ( pm->ps->weapon <= WP_NONE )
-                return;
-
-        if (  pm->ps->weaponTime > 0 )
-            return;
-        
                                 // check for out of ammo
         if ( (pm->ps->stats[STAT_ROUNDS] <= 0 && !BG_Grenade(pm->ps->weapon))
             || (pm->ps->stats[STAT_CLIPS] <= 0 && BG_Grenade(pm->ps->weapon) )) {
