@@ -811,7 +811,8 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
           case EV_NONADES:
             DEBUGNAME("EV_NONADES");
          if ( clientNum == cg.predictedPlayerState.clientNum ) {
-                          CG_OutOfNadesChange( cent ); 
+               //           CG_OutOfNadesChange( cent ); 
+             CG_WeaponSort();
             }
             break;
         case EV_POWERSLIDE:
