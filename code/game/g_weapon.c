@@ -1290,6 +1290,7 @@ switch (weaponNumber){
 	case WP_LR300:
 	case WP_G36:
 	case WP_HK69:
+	case WP_AK103:
 	return qtrue;
 	default:
 	return qfalse;
