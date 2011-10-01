@@ -884,9 +884,9 @@ void ClientUserinfoChanged( int clientNum ) {
         }
         else
         {
-                s = va("n\\%s\\guid\\%s\\t\\%i\\model\\%s\\hmodel\\%s\\rr\\%d\\rb\\%d\\skin\\%s\\g_redteam\\%s\\g_blueteam\\%s\\c1\\%s\\c2\\%s\\hc\\%i\\w\\%i\\l\\%i\\gear\\%s\\tt\\%d\\tl\\%d\\weapmodes\\%s",
+                s = va("n\\%s\\guid\\%s\\t\\%i\\model\\%s\\hmodel\\%s\\rr\\%d\\rb\\%d\\skin\\%s\\g_redteam\\%s\\g_blueteam\\%s\\c1\\%s\\c2\\%s\\hc\\%i\\w\\%i\\l\\%i\\gear\\%s\\tt\\%d\\tl\\%d\\", /*weapmodes\\%s */
                         client->pers.netname, guid, client->sess.sessionTeam, model, headModel, racered, raceblue, skin, redTeam, blueTeam, c1, c2,
-                        client->pers.maxHealth, client->sess.wins, client->sess.losses,gear, teamTask, teamLeader,weapmodes_save);
+                        client->pers.maxHealth, client->sess.wins, client->sess.losses,gear, teamTask, teamLeader/*,weapmodes_save*/);
         }
 
      
@@ -1370,6 +1370,7 @@ void ClientSpawn(gentity_t *ent) {
         // health will count down towards max_health
         ent->health = client->ps.stats[STAT_HEALTH]= STAT_MAX_HEALTH;// removed + 25 Xamis
         ent->stamina = client->ps.stats[STAT_STAMINA] = STAT_MAX_STAMINA;
+        client->ps.stats[STAT_BURST_COUNT] = 0;
           bg_weaponlist[0].rounds[client->ps.clientNum]=0; //Round count for burst mode.
           bg_weaponlist[0].numClips[client->ps.clientNum]=0; //Round count for spread.
 
