@@ -299,7 +299,7 @@ typedef enum {
 
           STAT_NADE_FUSE,
           STAT_DMG_LOC,
-      //    STAT_SHIT,  // Status Holder for Item Toggle --Xamis
+          STAT_BURST_COUNT  // Status Holder for Item Toggle --Xamis
 
 } statIndex_t;
 
@@ -976,7 +976,6 @@ void      BG_RemoveWeapon( int weapon, int stats[ ] );
 void	BG_LastKnife(void);
 void BG_ClearWeapons( int stats[ ] );
 int             BG_GetSecondary( int stats [ ] );
-
 #define ARENAS_PER_TIER         4
 #define MAX_ARENAS                      1024
 #define MAX_ARENAS_TEXT         8192
