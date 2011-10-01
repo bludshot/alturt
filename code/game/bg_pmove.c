@@ -35,6 +35,9 @@ qboolean PM_CheckPowerSlide( void );
 pmove_t         *pm;
 pml_t           pml;
 
+
+int burstCount[MAX_CLIENTS];
+
 // movement parameters
 float   pm_stopspeed = 100.0f;
 float   pm_duckScale = 0.45f; // blud
@@ -2229,7 +2232,7 @@ static int PM_WeaponTime( int weapon, int mode  )
                 case WP_MP5K:
                 case WP_M4:
                 case WP_LR300:
-                        addTime = 100;
+                        addTime = 122;
                         break;
                 case WP_G36:
                         addTime = 130;
@@ -2244,9 +2247,9 @@ static int PM_WeaponTime( int weapon, int mode  )
                         addTime = 1000; //Xamis, changed to accomodate bolt animation
                         break;
                 case WP_UMP45:
-			if( mode )
-			addTime = 150;
-			else
+	 if( mode )
+	     addTime = 150;
+	else
                         addTime = 45;
                         break;
                 case WP_DEAGLE:
@@ -2275,21 +2278,26 @@ void BG_LastKnife(void){
 }
 
 
-qboolean G_WeaponHasModes ( int weaponNumber){
-
-switch (weaponNumber){
-        case WP_KNIFE:
-        case WP_UMP45:
-        case WP_MP5K:
-        case WP_M4:
-        case WP_LR300:
-        case WP_G36:
-        case WP_HK69:
-        case WP_AK103:
-        return qtrue;
-        default:
+qboolean isInBurst( pmove_t *pm ){
+     
+    
+    if (bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] ){
         return qfalse;
-        }
+    }
+    if( !
+            (pm->ps->weapon == WP_LR300 ||
+            pm->ps->weapon ==WP_M4 ||
+            pm->ps->weapon ==WP_G36 ||
+            pm->ps->weapon ==WP_UMP45 ||
+            pm->ps->weapon ==WP_MP5K )  ){
+        return qfalse;
+    }
+    
+   if(   pm->ps->stats[STAT_BURST_COUNT]  <= 0 ){
+       return qfalse;
+   }
+    
+      return qtrue;    
 }
 
 
@@ -2452,7 +2460,8 @@ static void PM_Weapon( void ) {
           }
           
           PM_StartWeaponAnim( WPN_RELOAD );
-          bg_weaponlist[0].rounds[pm->ps->clientNum] =0;//burst count
+          pm->ps->stats[STAT_BURST_COUNT]=0;
+
           if (BG_Sidearm( pm->ps->weapon )){
           PM_StartTorsoAnim(TORSO_RELOAD_PISTOL );
           }else if (!(pm->ps->weapon == WP_SPAS || BG_Grenade( pm->ps->weapon )) ){
@@ -2516,14 +2525,16 @@ static void PM_Weapon( void ) {
            }
 
        
+
  
 /*
+
  * Fire held
  
  */
                     
 
-        if ((pm->cmd.buttons & 1) ) {
+
             
            if(pm->ps->weapon==WP_KNIFE && pm->ps->stats[STAT_MODE]  && pm->ps->pm_flags & PMF_GRENADE_ARMED ){
             pm->ps->weaponTime += 50;
@@ -2535,7 +2546,7 @@ static void PM_Weapon( void ) {
             PM_ContinueWeaponAnim(WPN_READY_FIRE_IDLE);
             return;
           }
-        }
+
 
         
         
@@ -2595,24 +2606,10 @@ static void PM_Weapon( void ) {
 
 
 
-        if( bg_weaponlist[0].rounds[pm->ps->clientNum] == 3 && G_WeaponHasModes ( pm->ps->weapon ) ){ //last burst round set single flag to prevent more firing till trigger released
-        	pm->ps->pm_flags |= PMF_SINGLE_SHOT;
-		if ( pm->ps->weapon == WP_UMP45 )
-		pm->ps->weaponTime = PM_WeaponTime(pm->ps->weapon, bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] )+45;
-		else
-	 	pm->ps->weaponTime = PM_WeaponTime(pm->ps->weapon, bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] )+15;
-		}
-
-		//if we are in burst and have not fired three rounds, ignore that the trigger was released until all rounds are fired.
-         if (bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] == 0  && //burst & spam modes
-                                bg_weaponlist[0].rounds[pm->ps->clientNum] > 0 && //burst count started 
-				bg_weaponlist[0].rounds[pm->ps->clientNum] < 3  ){ //burst count under 3
-                 }else{
-
 //fire not pressed
-        if (!(pm->cmd.buttons & 1) ) {
+        if (!(pm->cmd.buttons & 1  )&& !isInBurst(pm) ) {
             bg_weaponlist[0].numClips[pm->ps->clientNum] = 0; //for round increment count for spread/recoil
-            
+            pm->ps->stats[STAT_BURST_COUNT]  = 0;
           if(BG_Grenade(pm->ps->weapon) && pm->ps->pm_flags & PMF_GRENADE_ARMED){//we let go of fire do we have a grenade armed?
             PM_StartWeaponAnim( WPN_FIRE );
             pm->ps->weaponstate = WEAPON_FIRING;
@@ -2630,7 +2627,7 @@ static void PM_Weapon( void ) {
             pm->ps->pm_flags &= ~PMF_GRENADE_ARMED;
             return;
               
-          }else          {
+          }else    {
                 pm->ps->weaponTime = 0;
 
                 pm->ps->weaponstate = WEAPON_READY;
@@ -2642,16 +2639,13 @@ static void PM_Weapon( void ) {
 
         // fire not pressed so remove single flag, reset burst count and spread count
                 if ( pm->ps->pm_flags & PMF_SINGLE_SHOT ){
-                        pm->ps->pm_flags &= ~PMF_SINGLE_SHOT;
-                        bg_weaponlist[0].rounds[pm->ps->clientNum] = 0;//burst count
-                        bg_weaponlist[0].numClips[pm->ps->clientNum] = 0; //spread count
-                        
-                
-              }
+                        pm->ps->pm_flags &= ~PMF_SINGLE_SHOT;                     
+                        bg_weaponlist[0].numClips[pm->ps->clientNum] = 0;
+                }
                 return;
           }
         }
-      }
+      
        // grenade ready to throw animation
         if(BG_Grenade(pm->ps->weapon) && pm->ps->pm_flags & PMF_GRENADE_ARMED ){
                       pm->ps->weaponTime = 50;
@@ -2675,15 +2669,15 @@ static void PM_Weapon( void ) {
         if ( pm->ps->weapon <= WP_NONE )
                 return;
 
-        
+        if (  pm->ps->weaponTime > 0 )
+            return;
         
                                 // check for out of ammo
         if ( (pm->ps->stats[STAT_ROUNDS] <= 0 && !BG_Grenade(pm->ps->weapon))
             || (pm->ps->stats[STAT_CLIPS] <= 0 && BG_Grenade(pm->ps->weapon) )) {
-            
+            pm->ps->stats[STAT_BURST_COUNT] =0;
           PM_AddEvent( EV_NOAMMO );
           pm->ps->weaponTime = 550;
-	  bg_weaponlist[0].rounds[pm->ps->clientNum] = 0;
           pm->ps->weaponstate = WEAPON_READY;
            if ( pm->ps->weapon == WP_HK69 && pm->ps->stats[STAT_MODE] ){
                 PM_ContinueWeaponAnim( WPN_FIRE_ALT );
@@ -2728,21 +2722,16 @@ static void PM_Weapon( void ) {
         }
 
  
-
 			//start the weapon firing animation, first person view 
 		         if ( pm->ps->weapon == WP_HK69 && pm->ps->stats[STAT_MODE] ){
          		 PM_StartWeaponAnim( WPN_FIRE_ALT ); //hk long distance mode
         		 }else  PM_StartWeaponAnim( WPN_FIRE ); 
 
+
                           pm->ps->weaponstate = WEAPON_FIRING;
                           pm->ps->weaponTime = PM_WeaponTime(pm->ps->weapon, bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] );
                           PM_AddEvent( EV_FIRE_WEAPON );//this is the client side effects, sound and muzzle flash 
-
-			  //only increment burst round count if the weapon actually has a burst mode!
-                          if(  G_WeaponHasModes( pm->ps->weapon) && bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] == 0  && pm->ps->weapon != WP_KNIFE && pm->ps->weapon != WP_HK69 ){
-                                  bg_weaponlist[0].rounds[pm->ps->clientNum]++;//increment burst count, this is reset when fire is released, or when out of ammo.
-                                  }
-
+                          pm->ps->stats[STAT_BURST_COUNT]++;
                           bg_weaponlist[0].numClips[pm->ps->clientNum]++; //This is a round count for spread.
 
                           if (pm->ps->weapon == WP_SR8 || pm->ps->weapon == WP_SPAS ){
@@ -2754,7 +2743,12 @@ static void PM_Weapon( void ) {
                           }
 			// if the weapon is single shot, or is at the last round of burst, 
 			//set a flag to prevent another shot without releasing fire button
+                          
+                          
+                         
+                          
                           if ( pm->ps->pm_flags & PMF_SINGLE_MODE
+                                || ( pm->ps->stats[STAT_BURST_COUNT] == 3 && isInBurst(pm) )  
                                 || pm->ps->weapon == WP_SPAS
                                 || pm->ps->weapon == WP_DEAGLE
                                 || pm->ps->weapon == WP_BERETTA
@@ -2764,6 +2758,7 @@ static void PM_Weapon( void ) {
                                 || pm->ps->weapon == WP_HK69
                                 || BG_Grenade(pm->ps->weapon))
                                   {
+                                        pm->ps->stats[STAT_BURST_COUNT] =0;
                                           pm->ps->pm_flags |= PMF_SINGLE_SHOT;
 
                                   }
