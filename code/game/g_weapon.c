@@ -1422,7 +1422,9 @@ void Cmd_Reload( gentity_t *ent )       {
 
   if (BG_Grenade(ent->client->ps.weapon))
     return;
-  G_AddEvent(ent,EV_ZOOM_RESET,0);
+  
+  // G_AddEvent(ent,EV_ZOOM_RESET,0);
+  
 
   if ( bg_weaponlist[ent->client->ps.weapon].numClips[ent->client->ps.clientNum] == 0 || ent->client->ps.weapon == WP_KNIFE ) return;
   if (ent->client->ps.weapon == WP_SPAS && bg_weaponlist[ent->client->ps.weapon].rounds[ent->client->ps.clientNum] > 7 ){
