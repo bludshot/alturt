@@ -1399,6 +1399,7 @@ void CG_WeaponAnimation( centity_t *cent, int *weaponOld, int *weapon, float *we
   if (weap->sounds[i].type == 1 && cent->pe.weapon.frame == weap->sounds[i].startFrame  ){
       
       trap_S_StartSound( NULL, clientNum, CHAN_WEAPON,weap->sounds[i].soundPath );
+      break;
  }
   }
   }

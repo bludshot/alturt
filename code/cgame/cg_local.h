@@ -1043,7 +1043,8 @@ typedef struct {
 	sfxHandle_t landSound;
 	sfxHandle_t fallSound;
 	sfxHandle_t jumpPadSound;
-	sfxHandle_t ladderSound;
+	sfxHandle_t ladderSound[4];
+	sfxHandle_t ledgeSound;        
 	sfxHandle_t noammoSound;
                   sfxHandle_t zoomSound;
                   sfxHandle_t                bandageSound;

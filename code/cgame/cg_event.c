@@ -565,10 +565,17 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	case EV_FOOTSTEP_LADDER:  //Xamis
 		DEBUGNAME("EV_FOOTSTEP_LADDER");
 		{
-			trap_S_StartSound (NULL, es->number, CHAN_BODY, cgs.media.ladderSound );
+			trap_S_StartSound (NULL, es->number, CHAN_BODY, cgs.media.ladderSound[rand()&3]  );
 		}
 		break;
 
+	case EV_LEDGEGRAB:  //Xamis
+		DEBUGNAME("EV_LEDGEGRAB");
+		{
+			trap_S_StartSound (NULL, es->number, CHAN_BODY, cgs.media.ledgeSound  );
+		}
+		break;                
+                
 	case EV_FALL_SHORT:
 		DEBUGNAME("EV_FALL_SHORT");
 		trap_S_StartSound (NULL, es->number, CHAN_AUTO, cgs.media.landSound );

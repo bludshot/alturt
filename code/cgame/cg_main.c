@@ -706,13 +706,24 @@ static void CG_RegisterSounds( void ) {
 	cgs.media.watrInSound = trap_S_RegisterSound( "sound/player/watr_in.wav", qfalse);
 	cgs.media.watrOutSound = trap_S_RegisterSound( "sound/player/watr_out.wav", qfalse);
 	cgs.media.watrUnSound = trap_S_RegisterSound( "sound/player/watr_un.wav", qfalse);
-	cgs.media.ladderSound = trap_S_RegisterSound ("sound/player/footsteps/clank1.wav", qfalse ); //Xamis
+	//cgs.media.ladderSound = trap_S_RegisterSound ("sound/player/footsteps/clank1.wav", qfalse ); //Xamis
 	cgs.media.jumpPadSound = trap_S_RegisterSound ("sound/world/jumppad.wav", qfalse );
 	cgs.media.noammoSound = trap_S_RegisterSound ("sound/weapons/beretta/92G_noammo.wav", qfalse );
 	cgs.media.zoomSound = trap_S_RegisterSound ("sound/zoom.wav", qfalse );
                   cgs.media.bandageSound = trap_S_RegisterSound ("sound/bandage.wav", qfalse );
                 
 
+	for (i=0 ; i<4 ; i++) {
+		Com_sprintf (name, sizeof(name), "sound/climb/ladder%i.wav", i+1);
+		cgs.media.ladderSound[i] = trap_S_RegisterSound (name, qfalse);
+
+	}
+                  
+
+                  cgs.media.ledgeSound = trap_S_RegisterSound ("sound/player/ledgegrab.wav", qfalse);
+
+         
+                  
 	for (i=0 ; i<4 ; i++) {
 		Com_sprintf (name, sizeof(name), "sound/player/footsteps/boot%i.wav", i+1);
 		cgs.media.footsteps[FOOTSTEP_NORMAL][i] = trap_S_RegisterSound (name, qfalse);
