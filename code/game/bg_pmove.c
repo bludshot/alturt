@@ -69,13 +69,13 @@ int             c_pmove = 0;
 #define LEDGEGRABMAXHEIGHT              42
 #define LEDGEGRABHEIGHT                 38
 #define LEDGEVERTOFFSET                 LEDGEGRABHEIGHT
-#define LEDGEGRABMINHEIGHT              34
+#define LEDGEGRABMINHEIGHT              32
 
 //max distance you can be from the ledge for ledge grabbing to work
 #define LEDGEGRABDISTANCE               20
 
 //min distance you can be from the ledge for ledge grab to work
-#define LEDGEGRABMINDISTANCE    10
+#define LEDGEGRABMINDISTANCE    4
 
 //distance at which the animation grabs the ledge
 #define LEDGEHOROFFSET                  22
@@ -252,7 +252,7 @@ qboolean LedgeTrace( trace_t *trace, vec3_t dir, float *lerpup, float *lerpfwd, 
         traceFrom[2] += LEDGEGRABMINHEIGHT;
         traceTo[2] += LEDGEGRABMINHEIGHT;
 
-        pm->trace( trace, traceFrom, NULL, NULL, traceTo, pm->ps->clientNum, MASK_SOLID );
+        pm->trace( trace, traceFrom, NULL, NULL, traceTo, pm->ps->clientNum, pm->tracemask );
 
         if(trace->fraction < 1 && LedgeGrabableEntity(trace->entityNum))
         {//hit a wall, pop into the wall and fire down to find top of wall
@@ -262,7 +262,7 @@ qboolean LedgeTrace( trace_t *trace, vec3_t dir, float *lerpup, float *lerpfwd, 
 
                 traceFrom[2] += (LEDGEGRABMAXHEIGHT - LEDGEGRABMINHEIGHT);
 
-                pm->trace( trace, traceFrom, NULL, NULL, traceTo, pm->ps->clientNum, MASK_SOLID );
+                pm->trace( trace, traceFrom, NULL, NULL, traceTo, pm->ps->clientNum, pm->tracemask );
 
                 if(trace->fraction == 1.0 || trace->startsolid || !LedgeGrabableEntity(trace->entityNum))
                 {
@@ -272,7 +272,7 @@ qboolean LedgeTrace( trace_t *trace, vec3_t dir, float *lerpup, float *lerpfwd, 
 
         //check to make sure we found a good top surface and go from there
         vectoangles(trace->plane.normal, wallangles);
-        if(wallangles[PITCH] > -45)
+        if(wallangles[PITCH] > -20)
         {//no ledge or the ledge is too steep
 
                 return qfalse;
@@ -1141,6 +1141,7 @@ static void PM_AirMove( void ) {
           }
     if (PM_CheckWallJump()) {
       if (PM_WallJump()) {
+          pm->ps->stats[STAT_WALLJUMPS]++;
       }
     }
 
@@ -1192,6 +1193,7 @@ static void PM_WalkMove( void ) {
         float           accelerate;
         float           vel;
 
+        pm->ps->stats[STAT_WALLJUMPS] = 0;
         
         if ( pm->waterlevel > 2 && DotProduct( pml.forward, pml.groundTrace.plane.normal ) > 0 ) {
                 // begin swimming
@@ -3360,6 +3362,10 @@ static qboolean PM_CheckWallJump(void) {
     return qfalse;
   }
 
+    if (pm->ps->stats[STAT_WALLJUMPS] > MAX_WALLJUMPS) {
+    return qfalse;
+  }
+  
   if (pm->ps->pm_flags & PMF_JUMP_HELD) {
     pm->cmd.upmove = 0;
     return qfalse;
@@ -3390,7 +3396,7 @@ static qboolean PM_WallJump(void) {
   vec3_t refNormal = {0.0f, 0.0f, 0.5f};
   float normalFraction = 1.0f;
   float cmdFraction = 1.0f;
-  float upFraction = 6.0f;
+  float upFraction = 6.5f;
   trace_t trace;
 
   ProjectPointOnPlane(movedir, pml.forward, refNormal);
@@ -3431,8 +3437,8 @@ static qboolean PM_WallJump(void) {
   VectorMA(dir, upFraction, refNormal, dir);
   VectorNormalize(dir);
 
-  VectorMA(pm->ps->velocity, 675.0f, dir, pm->ps->velocity);
-  pm->ps->velocity[2] /= 2.5f;
+  VectorMA(pm->ps->velocity, 600.0f, dir, pm->ps->velocity);
+  pm->ps->velocity[2] *= 0.6f;
 
   if (VectorLength(pm->ps->velocity) > 1200) {
     VectorNormalize(pm->ps->velocity);

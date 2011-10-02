@@ -300,7 +300,8 @@ typedef enum {
 
           STAT_NADE_FUSE,
           STAT_DMG_LOC,
-          STAT_BURST_COUNT  // Status Holder for Item Toggle --Xamis
+          STAT_BURST_COUNT,  // Status Holder for Item Toggle --Xamis
+          STAT_WALLJUMPS
 
 } statIndex_t;
 
