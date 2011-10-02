@@ -518,7 +518,7 @@ typedef enum {
         EV_WEAPON_DROPPED,
         EV_FIRE_WEAPON,
         EV_ZOOM_RESET,
-	EV_SAVEMODE,
+        EV_SAVEMODE,
         EV_EJECT_CASING,
 
         EV_USE_ITEM0,
@@ -595,7 +595,8 @@ typedef enum {
         EV_TAUNT_GETFLAG,
         EV_TAUNT_GUARDBASE,
         EV_TAUNT_PATROL,
-        EV_WALLJUMP
+        EV_WALLJUMP,
+        EV_LEDGEGRAB        
 
 
 } entity_event_t;

@@ -63,7 +63,7 @@ float   pm_slidefriction = 0;
 int             c_pmove = 0;
 
 
-#define WALLJUMP_BOOST 196
+#define WALLJUMP_BOOST 180
 #define MAX_WALLJUMPS 3
 
 #define LEDGEGRABMAXHEIGHT              42
@@ -218,7 +218,7 @@ void PM_GrabWallForClimb( playerState_t *ps )
         ps->torsoTimer = 800;
         ps->legsTimer = 800;
         ps->weaponTime = 800;
-        //PM_AddEvent( EV_JUMP );//make sound for grab
+        PM_AddEvent(EV_LEDGEGRAB);
         ps->pm_flags |= PMF_EDGE;
 }
 
@@ -647,12 +647,6 @@ static void PM_Friction( void ) {
         if ( pm->ps->pm_type == PM_SPECTATOR) {
                 drop += speed*pm_spectatorfriction*pml.frametime;
         }
-        if ( pml.ladder ) // If they're on a ladder...
-        {
-                drop += speed*pm_ladderfriction*pml.frametime;  // Add ladder friction!
-        }
-
-
                 //apply ladder friction Xamis
         if ( CheckLadder() != 0 )
         {
@@ -1141,7 +1135,6 @@ static void PM_AirMove( void ) {
           }
     if (PM_CheckWallJump()) {
       if (PM_WallJump()) {
-          pm->ps->stats[STAT_WALLJUMPS]++;
       }
     }
 
@@ -1408,7 +1401,7 @@ static int PM_FootstepForSurface( void ) {
         if ( pml.groundTrace.surfaceFlags & SURF_METALSTEPS ) {
                 return EV_FOOTSTEP_METAL;
         }
-        if ( pml.ladder ) {
+         if ( CheckLadder() != 0 ){
                 return EV_FOOTSTEP_LADDER;
         }
         return EV_FOOTSTEP;
@@ -1818,7 +1811,6 @@ static void PM_Footsteps( void ) {
         float           bobmove;
         int             xyzspeed;
         int                     old;
-        int             onladder = CheckLadder();
         qboolean        footstep;
         footstep = qfalse;
 
@@ -1833,15 +1825,12 @@ static void PM_Footsteps( void ) {
         xyzspeed = sqrt( pm->ps->velocity[0] * pm->ps->velocity[0]
                         +  pm->ps->velocity[1] * pm->ps->velocity[1]
                         +  pm->ps->velocity[2] * pm->ps->velocity[2] );
-
-        if ( onladder == -1 || onladder == 1 ) // on ladder
-        {
-            
-
-            
+   if ( CheckLadder() != 0 )     
+   {
             pm->ps->pm_flags |= PMF_ONLADDER;
         // moving up or down)
                 if ( xyzspeed ) {
+                  bobmove = 0.3f;
                   PM_ContinueTorsoAnim ( BOTH_CLIMB );
                   PM_ContinueLegsAnim  ( BOTH_CLIMB );
                         footstep = qtrue; //not sure why this isn't working, need more testing
@@ -1852,13 +1841,13 @@ static void PM_Footsteps( void ) {
                   PM_ContinueLegsAnim  ( BOTH_CLIMB_IDLE );
 
                         footstep = qfalse;
-
-                }return;
+                        return;
+                }
 
         }
 
 
-        if ( pm->ps->groundEntityNum == ENTITYNUM_NONE ) {
+        if ( pm->ps->groundEntityNum == ENTITYNUM_NONE &&   CheckLadder() == 0) {
 
 
                 // airborne leaves position in cycle intact, but doesn't advance
@@ -1940,6 +1929,8 @@ footstep = qfalse;
                         }
                 }
         }
+
+
 
         // check for footstep / splash sounds
         old = pm->ps->bobCycle;
@@ -3437,8 +3428,12 @@ static qboolean PM_WallJump(void) {
   VectorMA(dir, upFraction, refNormal, dir);
   VectorNormalize(dir);
 
-  VectorMA(pm->ps->velocity, 600.0f, dir, pm->ps->velocity);
-  pm->ps->velocity[2] *= 0.6f;
+  VectorMA(pm->ps->velocity, 580.0f, dir, pm->ps->velocity);
+  pm->ps->velocity[2] *= 0.5f;
+  if(pm->ps->velocity[2]  > 240){
+      pm->ps->velocity[2] = 240;      
+  }
+
 
   if (VectorLength(pm->ps->velocity) > 1200) {
     VectorNormalize(pm->ps->velocity);
@@ -3446,7 +3441,11 @@ static qboolean PM_WallJump(void) {
   }
 
     PM_AddEvent(EV_WALLJUMP);
-
+          pm->ps->stats[STAT_WALLJUMPS]++;
+      
+  Com_Printf("pm->ps->velocity[2] is %f\n  pm->ps->stats[STAT_WALLJUMPS] is %i\npm->ps->stats[STAT_STAMINA] is %i\n",
+           pm->ps->velocity[2],pm->ps->stats[STAT_WALLJUMPS], pm->ps->stats[STAT_STAMINA] );
+  
   if (pm->cmd.forwardmove >= 0) {
     PM_ForceLegsAnim(LEGS_JUMP);
     pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
@@ -3458,6 +3457,5 @@ static qboolean PM_WallJump(void) {
   }else if(pm->cmd.rightmove < 0){
 //todo jump left animation
   }
-  pm->ps->stats[STAT_STAMINA] -= 100;
   return qtrue;
 }
