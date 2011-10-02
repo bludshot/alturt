@@ -571,7 +571,14 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
                case EV_CHANGE_WEAPON:
                     Set_Mode(ent);
                     break;
-                    
+               case EV_WALLJUMP:
+                   if(ent->stamina  > 0 )
+                        ent->stamina-=240;
+                     break;
+               case EV_JUMP:
+                   if(ent->stamina  > 0 )
+                        ent->stamina-=200;
+                     break;       
                   case EV_NONADES:
                     UT_DropWeapon ( ent );
                     break;
