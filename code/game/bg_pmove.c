@@ -36,8 +36,6 @@ pmove_t         *pm;
 pml_t           pml;
 
 
-int burstCount[MAX_CLIENTS];
-
 // movement parameters
 float   pm_stopspeed = 100.0f;
 float   pm_duckScale = 0.45f; // blud
@@ -2241,7 +2239,7 @@ static int PM_WeaponTime( int weapon, int mode  )
                         addTime = 500;
                         break;
                 case WP_PSG1:
-                        addTime = 800;
+                        addTime = 500;
                         break;
                 case WP_SR8:
                         addTime = 1000; //Xamis, changed to accomodate bolt animation
@@ -2308,7 +2306,7 @@ qboolean isInBurst( pmove_t *pm ){
 qboolean PM_Reload(void){
     
     
-    
+
     
          if ( pm->ps->pm_flags & PMF_RELOADING ){
            //PM_AddEvent( EV_ZOOM_RESET );
@@ -2329,20 +2327,40 @@ qboolean PM_Reload(void){
  
  */            
         if ( pm->ps->weaponstate == WEAPON_RELOADING_START ) {
+
+              if(pm->ps->weapon == WP_SR8 || 
+            pm->ps->weapon == WP_PSG1 || 
+            pm->ps->weapon == WP_G36  ){
+            PM_AddEvent( EV_ZOOM_RESET );       
+            pm->ps->weaponstate =WEAPON_RELOADING_ZOOM_RESET;
+            pm->ps->weaponTime = 200;
+              }else{
           pm->ps->weaponTime = ReloadStartTime( pm->ps->weapon );
           pm->ps->weaponstate = WEAPON_RELOADING;
           if ( pm->ps->weapon == WP_NEGEV || pm->ps->weapon == WP_SPAS ){
             PM_StartWeaponAnim( WPN_RELOAD_START );
+
           }
+         }            return qtrue;
         }
         
           
+         
+         
+         
+       if ( pm->ps->weaponstate == WEAPON_RELOADING_ZOOM_RESET ) {
+
+          pm->ps->weaponTime = 200;
+          pm->ps->weaponstate = WEAPON_RELOADING;
+            return qtrue;
+        }
         
 /*
  Weapon reloading
  weaponstate == WEAPON_RELOADING
  
  */
+         
             
         if ( pm->ps->weaponstate == WEAPON_RELOADING && pm->ps->weaponTime <= 0 ) {
 
@@ -2557,6 +2575,10 @@ static void PM_Weapon( void ) {
           }
       
         
+        
+
+        
+        
        if (PM_Reload() )
            return;
         
@@ -2566,10 +2588,9 @@ static void PM_Weapon( void ) {
             return;
         
         
-        if ( pm->ps->weaponTime > 0 ) {
+       if ( pm->ps->weaponTime > 0 ) {
                 return;
         }       
-        
 
 /*
  Weapon Firing
