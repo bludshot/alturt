@@ -372,6 +372,7 @@ typedef struct {
 	int				invulnerabilityStopTime;
 
 	int				breathPuffTime;
+                  int                                                                    breathDir;
 
 	// when clientinfo is changed, the loading of models/skins/sounds
 	// can be deferred until you are dead, to prevent hitches in
@@ -1365,6 +1366,7 @@ extern	vmCvar_t		cg_trueLightning;
 extern	vmCvar_t		gear;
 extern	vmCvar_t		weapmodes_save;
 //extern	vmCvar_t		cg_trueLightning;
+extern	vmCvar_t		cg_enableBreath;
 
 #ifdef MISSIONPACK
 extern	vmCvar_t		cg_redTeamName;
@@ -1373,7 +1375,7 @@ extern	vmCvar_t		cg_currentSelectedPlayer;
 extern	vmCvar_t		cg_currentSelectedPlayerName;
 extern	vmCvar_t		cg_singlePlayer;
 extern	vmCvar_t		cg_enableDust;
-extern	vmCvar_t		cg_enableBreath;
+
 extern	vmCvar_t		cg_singlePlayerActive;
 extern  vmCvar_t		cg_recordSPDemo;
 extern  vmCvar_t		cg_recordSPDemoName;

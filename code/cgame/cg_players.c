@@ -38,7 +38,9 @@ char	*cg_customSoundNames[MAX_CUSTOM_SOUNDS] = {
 	"*gasp.wav",
 	"*drown.wav",
 	"*fall1.wav",
-	"*taunt.wav"
+	"*taunt.wav",
+                  "*breathin1.wav",
+                  "*breathout1.wav"
 };
 
 
@@ -1750,6 +1752,69 @@ void CG_HasteTrail( centity_t *cent ) {
 	smoke->leType = LE_SCALE_FADE;
 }
 
+
+
+
+
+static void CG_BreathSounds( centity_t *cent, refEntity_t *head ) {
+	clientInfo_t *ci;
+	vec3_t up, origin;
+	int contents;
+                  int breathTime;
+
+	ci = &cgs.clientinfo[ cent->currentState.number ];
+
+	if (!cg_enableBreath.integer) {
+		return;
+	}
+
+                  if ( cent->currentState.eFlags & EF_DEAD ) {
+		return;
+	}
+	contents = trap_CM_PointContents( head->origin, 0 );
+	if ( contents & ( CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA ) ) {
+		return;
+	}
+        
+	if ( cg.snap->ps.stats[STAT_STAMINA] > 500 ) {
+                                   ci->breathDir = 0;
+		return;
+	}
+
+        
+        	if ( ci->breathPuffTime > cg.time ) {
+		return;
+	}
+	VectorSet( up, 0, 0, 8 );
+	VectorMA(head->origin, 8, head->axis[0], origin);
+	VectorMA(origin, -4, head->axis[2], origin);
+        
+                  breathTime =cg.snap->ps.stats[STAT_STAMINA]*3;
+                  if (breathTime < 500)
+                      breathTime = 500;
+                  
+    //    ci->gender
+        
+               //   sound/player/male/
+                  
+                  
+        if( ci->breathDir ){
+            
+
+            trap_S_StartSound (NULL, cent->currentState.number, CHAN_BODY, CG_CustomSound( cent->currentState.number, "*breathout1.wav" ) );
+            ci->breathDir = 0;
+            
+        }else{
+             trap_S_StartSound (NULL, cent->currentState.number, CHAN_BODY, CG_CustomSound( cent->currentState.number, "*breathin1.wav" ) );
+            ci->breathDir = 1;
+        }
+
+	//CG_SmokePuff( origin, up, 16, 1, 1, 1, 0.66f, 1500, cg.time, cg.time + 400, LEF_PUFF_DONT_SCALE, cgs.media.shotgunSmokePuffShader );
+	ci->breathPuffTime = cg.time + breathTime;
+        
+        
+}
+
 #ifdef MISSIONPACK
 /*
 ===============
@@ -2881,6 +2946,8 @@ void CG_Player( centity_t *cent ) {
                 CG_AddWeaponWithPowerups( &SidweaponModel, cent->currentState.powerups );
           }
         }
+        
+        CG_BreathSounds(cent, &head);
 
 #ifdef MISSIONPACK
 	CG_BreathPuffs(cent, &head);
