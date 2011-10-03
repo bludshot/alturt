@@ -150,9 +150,9 @@ static void CG_Obituary( entityState_t *ent ) {
 	case MOD_TRIGGER_HURT:
 		message = "was in the wrong place";
 		break;
-                 	case MOD_BLED:
-		message = "bled to death";
-                                    break;
+     //	case MOD_BLED:
+	//	message = "bled to death";
+        //      break;
 	default:
 		message = NULL;
 		break;
@@ -322,6 +322,10 @@ static void CG_Obituary( entityState_t *ent ) {
 			message = "was melted by";
 			message2 = "'s plasmagun";
 			break;
+     		case MOD_BLED:
+        	      	message = "bled to death from";
+			message2 = "'s attacks";
+        	        break;
 		case MOD_PLASMA_SPLASH:
 			message = "was melted by";
 			message2 = "'s plasmagun";
@@ -852,9 +856,9 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		DEBUGNAME("EV_FIRE_WEAPON");
 		CG_FireWeapon( cent );
 		break;
-               case EV_ZOOM_RESET:
-                        CG_ZoomReset_f();
-                        break;
+        case EV_ZOOM_RESET:
+                CG_ZoomReset_f();
+                 break;
 
         case EV_EJECT_CASING:
         {
