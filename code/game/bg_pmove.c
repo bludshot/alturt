@@ -3443,8 +3443,8 @@ static qboolean PM_WallJump(void) {
     PM_AddEvent(EV_WALLJUMP);
           pm->ps->stats[STAT_WALLJUMPS]++;
       
-  Com_Printf("pm->ps->velocity[2] is %f\n  pm->ps->stats[STAT_WALLJUMPS] is %i\npm->ps->stats[STAT_STAMINA] is %i\n",
-           pm->ps->velocity[2],pm->ps->stats[STAT_WALLJUMPS], pm->ps->stats[STAT_STAMINA] );
+  //Com_Printf("pm->ps->velocity[2] is %f\n  pm->ps->stats[STAT_WALLJUMPS] is %i\npm->ps->stats[STAT_STAMINA] is %i\n",
+   //        pm->ps->velocity[2],pm->ps->stats[STAT_WALLJUMPS], pm->ps->stats[STAT_STAMINA] );
   
   if (pm->cmd.forwardmove >= 0) {
     PM_ForceLegsAnim(LEGS_JUMP);
