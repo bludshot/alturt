@@ -994,6 +994,8 @@ typedef struct {
 	sfxHandle_t	selectSound;
 	sfxHandle_t	useNothingSound;
 	sfxHandle_t	wearOffSound;
+        sfxHandle_t     itemOffSound;
+        sfxHandle_t     itemOnSound;
 	sfxHandle_t	footsteps[FOOTSTEP_TOTAL][4];
 	sfxHandle_t	sfx_lghit1;
 	sfxHandle_t	sfx_lghit2;
