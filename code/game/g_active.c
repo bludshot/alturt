@@ -573,7 +573,7 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
                     break;
                case EV_WALLJUMP:
                    if(ent->stamina  > 0 )
-                        ent->stamina-=220;
+                        ent->stamina-=100;
                      break;
                case EV_JUMP:
                    if(ent->stamina  > 0 )
