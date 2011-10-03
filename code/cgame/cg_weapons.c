@@ -2230,7 +2230,6 @@ void CG_AddViewWeapon( playerState_t *ps ) {
 
 void CG_ToggleItem_f( void ) {
       
-      int i;
       clientInfo_t    *ci;
       centity_t       *cent;
       playerState_t   *ps;
@@ -2357,7 +2356,7 @@ for ( i = PW_NUM_POWERUPS-1 ; i > PW_NONE ; i-- ) {
 
 void CG_SelectItemToDrop ( void)
 {
-   int         pw, i;
+   int         pw;
   char        msg[64];
 
   //gitem_t             *item;
@@ -2655,40 +2654,50 @@ Xamis
 ===============
 */
 void CG_WeaponSort( void ) {
-        int             i, grenade ;
+	int			i, grenade;
 	qboolean	hasGrenade = qfalse;
 
-        if ( !cg.snap ) {
-                return;
-        }
-        if ( cg.snap->ps.pm_flags & PMF_FOLLOW ) {
-                return;
-        }
-       
+	if ( !cg.snap )
+	{
+		return;
+	}
+	if ( cg.snap->ps.pm_flags & PMF_FOLLOW )
+	{
+		return;
+	}
 
-        CG_ZoomReset_f();
+	CG_ZoomReset_f();
 
-for( i = WP_NUM_WEAPONS-1; i > WP_NONE; i--){
-                cg.weaponSelectTime = cg.time;
-               if (BG_HasWeapon( i, (int*)cg.predictedPlayerState.stats )){
-
-			if( i == WP_BOMB){
+	for( i = WP_NUM_WEAPONS-1; i > WP_NONE; i--)
+	{
+		cg.weaponSelectTime = cg.time;
+		if (BG_HasWeapon( i, (int*)cg.predictedPlayerState.stats ))
+		{
+			if( i == WP_BOMB)
+			{
 				continue;
 			}
-			if(BG_Grenade(i)){
-                                                                        hasGrenade = qtrue;
-                                                                        grenade = i;
+
+			if(BG_Grenade(i))
+			{
+				hasGrenade = qtrue;
+				grenade = i;
 				continue;
 			}
-			if ( i ==WP_KNIFE && hasGrenade  ){
-                                                                cg.weaponSelect = grenade;
+
+			if ( i ==WP_KNIFE && hasGrenade  )
+			{
+				cg.weaponSelect = grenade;
 				break;	
 			}
-			else 
-                                        cg.weaponSelect =  i;
-                                        break;
-              } 
-        }
+			else
+			{
+				cg.weaponSelect =  i;
+			}
+	
+			break;
+		} 
+	}
 
 
 }
