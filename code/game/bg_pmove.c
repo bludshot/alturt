@@ -2282,8 +2282,7 @@ void BG_LastKnife(void){
 qboolean isInBurst( pmove_t *pm ){
      
     
-    Com_Printf("pm->ps->stats[STAT_MODE]  is %i\n ",
-           pm->ps->stats[STAT_MODE]);
+    //Com_Printf("pm->ps->stats[STAT_MODE]  is %i\n ", pm->ps->stats[STAT_MODE]); //xamis debug
     
     if (pm->ps->stats[STAT_MODE] ){
         return qfalse;
