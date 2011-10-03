@@ -632,7 +632,6 @@ void ReturnToPos1( gentity_t *ent ) {
     
 	MatchTeam( ent, MOVER_2TO1, level.time );
 
-        	G_Printf( "ReturnToPos1 called\n");
 
 	// looping sound
 	ent->s.loopSound = ent->soundLoop;
