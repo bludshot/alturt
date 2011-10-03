@@ -2233,6 +2233,9 @@ static void UI_DrawItemName(rectDef_t *rect, float scale, vec4_t color, qboolean
 	UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/none"));
 }
 
+//Blud: we don't currently use these 2 functions but I am leaving them here till the menus are all finished up some day
+//		(commenting them out to supress warnings)
+/*
 static void UI_DrawGear(rectDef_t *rect, float scale, vec4_t color, qboolean doineedthis, int ownerDraw) {
 	//all it does is just always draw the none picture for now
 	UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/none"));
@@ -2280,7 +2283,8 @@ static void UI_DrawGear(rectDef_t *rect, float scale, vec4_t color, qboolean doi
 			break;
 	}
 }
-
+*/
+/*
 static void UI_DrawItem(rectDef_t *rect, float scale, vec4_t color, qboolean doineedthis, int ownerDraw) {
 	switch (ownerDraw) {
 		case ITEM_NONE:
@@ -2369,7 +2373,7 @@ static void UI_DrawItem(rectDef_t *rect, float scale, vec4_t color, qboolean doi
 			break;
 	}
 }
-
+*/
 
 static void UI_DrawGLInfo(rectDef_t *rect, float scale, vec4_t color, int textStyle) {
 	char * eptr;
