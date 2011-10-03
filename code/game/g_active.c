@@ -588,7 +588,7 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
                       ent->health--;
                       if(ent->health <=1 ){
                           ent->client->ps.stats[STAT_HEALTH] = ent->health = -999;
-                          player_die (ent, NULL, NULL, 100000, MOD_BLED);
+                          player_die (ent, NULL, &g_entities[ent->client->lasthurt_client], 100000, MOD_BLED);
                       }
                     break;
                 case EV_USE_ITEM1:              // teleporter
