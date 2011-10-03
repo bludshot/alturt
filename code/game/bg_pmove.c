@@ -1143,8 +1143,11 @@ static void PM_AirMove( void ) {
           if ( pm->cmd.forwardmove > 0 ) {
                 PM_CheckGrab();
           }
+
     if (PM_CheckWallJump()) {
       if (PM_WallJump()) {
+          PM_AddEvent(EV_WALLJUMP);
+          pm->ps->stats[STAT_WALLJUMPS]++;
       }
     }
 
@@ -3464,8 +3467,8 @@ static qboolean PM_WallJump(void) {
     VectorScale( pm->ps->velocity, WALLJUMP_MAX_VEL, pm->ps->velocity );
   }
 
-    PM_AddEvent(EV_WALLJUMP);
-          pm->ps->stats[STAT_WALLJUMPS]++;
+      //    PM_AddEvent(EV_WALLJUMP);
+      //    pm->ps->stats[STAT_WALLJUMPS]++;
       
   //Com_Printf("pm->ps->velocity[2] is %f\n  pm->ps->stats[STAT_WALLJUMPS] is %i\npm->ps->stats[STAT_STAMINA] is %i\n",
    //        pm->ps->velocity[2],pm->ps->stats[STAT_WALLJUMPS], pm->ps->stats[STAT_STAMINA] );
