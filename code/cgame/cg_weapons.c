@@ -2435,7 +2435,7 @@ void CG_ZoomIn_f (void){
 	cent = &cg_entities[cg.snap->ps.clientNum];
 	zoomFov = cg_zoomFov.value;
 
-	if (cg.predictedPlayerState.weaponstate != WEAPON_READY)
+	if (cg.predictedPlayerState.weaponstate != WEAPON_READY  && cg.predictedPlayerState.weapon != WP_G36 )
 	{
 		return;
 	}
