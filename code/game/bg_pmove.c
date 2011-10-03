@@ -62,9 +62,19 @@ float   pm_slidefriction = 0;
 
 int             c_pmove = 0;
 
+//Walljump constants
+#define WALLJUMP_BOOST 180 //used in the checkWalljump function, no change to the actual walljump made here.
+#define MAX_WALLJUMPS 3 //no explanation needed 
+#define WALLJUMP_SPEED 580.0f //used in VectorMA for walljumps, affects player velocity
+#define WALLJUMP_MAX_VEL 600 //max velocity during walljumps. I cut this in half, it was 1200 which seems way too high --xamis
+#define WALLJUMP_MAX_UP_VEL 240 //cap the upward velocity on a walljump
+#define WALLJUMP_UP_VEL_BOOST 0.5f //give the player some upward boost off the wall
 
-#define WALLJUMP_BOOST 180
-#define MAX_WALLJUMPS 3
+
+
+
+
+
 
 #define LEDGEGRABMAXHEIGHT              42
 #define LEDGEGRABHEIGHT                 38
@@ -2435,7 +2445,7 @@ qboolean PM_Reload(void){
 
 qboolean PM_Grenade(void){
     
-        if(pm->ps->stats[STAT_CLIPS] <= 0 && BG_Grenade(pm->ps->weapon) ){
+        if(pm->ps->stats[STAT_CLIPS] <= 0 && BG_Grenade(pm->ps->weapon) && pm->ps->weaponTime <= 0 ){
          PM_AddEvent( EV_NONADES );
         }
         
@@ -3439,16 +3449,16 @@ static qboolean PM_WallJump(void) {
   VectorMA(dir, upFraction, refNormal, dir);
   VectorNormalize(dir);
 
-  VectorMA(pm->ps->velocity, 580.0f, dir, pm->ps->velocity);
-  pm->ps->velocity[2] *= 0.5f;
-  if(pm->ps->velocity[2]  > 240){
-      pm->ps->velocity[2] = 240;      
+  VectorMA(pm->ps->velocity, WALLJUMP_SPEED, dir, pm->ps->velocity);
+  pm->ps->velocity[2] *= WALLJUMP_UP_VEL_BOOST;
+  if(pm->ps->velocity[2]  > WALLJUMP_MAX_UP_VEL){
+      pm->ps->velocity[2] = WALLJUMP_MAX_UP_VEL;      
   }
 
 
-  if (VectorLength(pm->ps->velocity) > 1200) {
+  if (VectorLength(pm->ps->velocity) > WALLJUMP_MAX_VEL) {
     VectorNormalize(pm->ps->velocity);
-    VectorScale( pm->ps->velocity, 1200, pm->ps->velocity );
+    VectorScale( pm->ps->velocity, WALLJUMP_MAX_VEL, pm->ps->velocity );
   }
 
     PM_AddEvent(EV_WALLJUMP);
