@@ -308,7 +308,7 @@ void SnapVectorTowards( vec3_t v, vec3_t to ) {
 void Apply_Weapon_Kick ( gentity_t *ent, int weapon )
 {
     double   kickfact = 0.0;
-    double   kickreduct = 0.0;
+
     double   kickangle = 0.0;
 
 
@@ -342,9 +342,9 @@ void Apply_Weapon_Kick ( gentity_t *ent, int weapon )
 
  
     kickangle += kickfact;
-    ent->client->ps.delta_angles[PITCH] += ANGLE2SHORT( kickangle/kickreduct );
+    ent->client->ps.delta_angles[PITCH] -= ANGLE2SHORT( kickangle/4 );
     
-    ent->client->ps.delta_angles[PITCH] -= ANGLE2SHORT( kickangle/10 );
+    ent->client->ps.delta_angles[PITCH] += ANGLE2SHORT( kickangle/10 );
 
 }
 
