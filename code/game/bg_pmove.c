@@ -2440,15 +2440,19 @@ qboolean PM_Reload(void){
 
 
 
-
-
-
 qboolean PM_Grenade(void){
-    
-        if(pm->ps->stats[STAT_CLIPS] <= 0 && BG_Grenade(pm->ps->weapon) && pm->ps->weaponTime <= 0 ){
+	
+	//i was trying to figure out about the bg_weaponlist numClips 2 0 2 0 0 2 0 0 0 2 mystery:
+	//Com_Printf("CLIPS:%i\n", pm->ps->stats[STAT_CLIPS] );
+	//	Com_Printf("THISGUNCLIPS:%i\n", bg_weaponlist[pm->ps->weapon].numClips[pm->ps->clientNum] );
+	//Com_Printf("HEVAL: %i HEs:%i Client: %i\n", WP_HE, bg_weaponlist[WP_HE].numClips[pm->ps->clientNum], pm->ps->clientNum );
+
+	//if(pm->ps->stats[STAT_CLIPS] <= 0 && BG_Grenade(pm->ps->weapon) ){ <-- used to be this. We added the weaponTime to make sure that the weapon had fully switched first
+		//because if it hadn't then STAT_CLIPS would be from the previous gun!
+		if(pm->ps->stats[STAT_CLIPS] <= 0 && BG_Grenade(pm->ps->weapon) && pm->ps->weaponTime <=0 ){
          PM_AddEvent( EV_NONADES );
         }
-        
+
             //check grenade fuse time
         if ( pm->ps->stats[STAT_NADE_FUSE]  > 0 && pm->ps->pm_flags & PMF_GRENADE_ARMED){
           pm->ps->stats[STAT_NADE_FUSE] -= pml.msec; //count down for the fuse
