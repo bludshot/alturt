@@ -349,7 +349,7 @@ void TossClientItems( gentity_t *self ) {
        
 	if ( g_gametype.integer != GT_TEAM ) {
 		angle = 45;
-		for ( i = 1 ; i < PW_NUM_POWERUPS ; i++ ) {
+		for ( i = 2 ; i < PW_NUM_POWERUPS ; i++ ) {
 			if ( self->client->ps.powerups[ i ] > level.time ) {
 				item = BG_FindItemForPowerup( i );
 				if ( !item ) {
@@ -368,7 +368,7 @@ void TossClientItems( gentity_t *self ) {
 		}
         }
         
-        for ( i = 0; i < PW_NUM_POWERUPS; i++){
+        for ( i = 2; i < PW_NUM_POWERUPS; i++){
         self->client->ps.powerups[ i ] = 0;
 
         }
