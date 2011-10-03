@@ -307,14 +307,15 @@ void SnapVectorTowards( vec3_t v, vec3_t to ) {
 
 void Apply_Weapon_Kick ( gentity_t *ent, int weapon )
 {
-
-    double   kickfact;
+    double   kickfact = 0.0;
+    double   kickreduct = 0.0;
     double   kickangle = 0.0;
 
 
     kickfact = bg_weaponlist[0].numClips[ent->client->ps.clientNum]/6 ;
 
-
+    if (kickfact > 2.5 )
+        kickfact =2.5;
 
     switch (ent->s.weapon) {
     case WP_BERETTA: kickangle = .2; break;
@@ -323,6 +324,7 @@ void Apply_Weapon_Kick ( gentity_t *ent, int weapon )
     case WP_AK103: kickangle = .4; break;
     case WP_M4: kickangle = .4; break;
     case WP_LR300: kickangle = .4; break;
+    case WP_G36: kickangle = .4; break;
 
 
     case WP_SPAS: kickangle = 2; break;
@@ -340,8 +342,9 @@ void Apply_Weapon_Kick ( gentity_t *ent, int weapon )
 
  
     kickangle += kickfact;
-    ent->client->ps.delta_angles[PITCH] -= ANGLE2SHORT( kickangle );
-
+    ent->client->ps.delta_angles[PITCH] += ANGLE2SHORT( kickangle/kickreduct );
+    
+    ent->client->ps.delta_angles[PITCH] -= ANGLE2SHORT( kickangle/10 );
 
 }
 
