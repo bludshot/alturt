@@ -2249,17 +2249,25 @@ void CG_ToggleItem_f( void ) {
           return;
       }
  //ItemToggleState
+     if (cg.selectedItem == PW_HELMET 
+             || cg.selectedItem == PW_VEST
+             || cg.selectedItem == PW_AMMO
+             || cg.selectedItem == PW_MEDKIT){
+        return;
+      }
+      
+      
       if (cg.selectedItem == PW_LASERSIGHT){
         trap_SendClientCommand( "ut_togglelaser");
         return;
       }
       
 if ( !(cg.ItemToggleState[cg.predictedPlayerState.clientNum] & ( 1 << cg.selectedItem ))){
-cg.ItemToggleState[cg.predictedPlayerState.clientNum] |= ( 1 << cg.selectedItem );//item on
-trap_S_StartSound( NULL, cg.predictedPlayerState.clientNum, CHAN_AUTO, cgs.media.itemOnSound );
-}else{
-cg.ItemToggleState[cg.predictedPlayerState.clientNum] &= ~( 1 << cg.selectedItem );//item off
+cg.ItemToggleState[cg.predictedPlayerState.clientNum] |= ( 1 << cg.selectedItem );//item off
 trap_S_StartSound( NULL, cg.predictedPlayerState.clientNum, CHAN_AUTO, cgs.media.itemOffSound );
+}else{
+cg.ItemToggleState[cg.predictedPlayerState.clientNum] &= ~( 1 << cg.selectedItem );//item on
+trap_S_StartSound( NULL, cg.predictedPlayerState.clientNum, CHAN_AUTO, cgs.media.itemOnSound );
         }
 
 }
@@ -2328,13 +2336,13 @@ void CG_SelectItem(  int dir ){
  
   original = cg.selectedItem;
 if(dir){ 
- for ( i = 1 ; i < PW_NUM_POWERUPS ; i++ ) {
+ for ( i = 2 ; i < PW_NUM_POWERUPS ; i++ ) {
 
     cg.selectedItem++;
 
     if ( cg.selectedItem == PW_NUM_POWERUPS ) {
 
-      cg.selectedItem = 1;
+      cg.selectedItem = 2;
     }
     if ( cg.snap->ps.powerups[ cg.selectedItem ] ) {
       break;
@@ -2345,11 +2353,11 @@ if(dir){
 }else{
 
 
-for ( i = PW_NUM_POWERUPS-1 ; i > PW_NONE ; i-- ) {
+for ( i = PW_NUM_POWERUPS-1 ; i > 2 ; i-- ) {
 
     cg.selectedItem--;
 
-    if ( cg.selectedItem == PW_NONE ) {
+    if ( cg.selectedItem == 2 ) {
 
       cg.selectedItem = PW_NUM_POWERUPS-1;
     }
@@ -2415,12 +2423,14 @@ void CG_SelectItemToDrop ( void)
 void CG_NextItem_f (void){
   cg.itemSelectTime = cg.time;
   CG_SelectItem(  1 );
+  trap_S_StartSound (NULL, cg.snap->ps.clientNum, CHAN_AUTO, cgs.media.selectSound );
 
 }
 
 void CG_PrevItem_f (void){
   cg.itemSelectTime = cg.time;
   CG_SelectItem(  0 );
+  trap_S_StartSound (NULL, cg.snap->ps.clientNum, CHAN_AUTO, cgs.media.selectSound );
 
 }
 
