@@ -2538,7 +2538,18 @@ static void PM_Weapon( void ) {
        if ( pm->ps->weaponstate == WEAPON_READY_FIRE_ALT && pm->ps->weaponTime > 0 ) {
                 return;
         }
-
+        if( pm->ps->weaponstate ==  WEAPON_FIRING2 && pm->ps->weaponTime > 0){
+                           return;
+           }
+        
+        
+                
+        if( pm->ps->weaponstate ==  WEAPON_FIRING2){
+               pm->ps->weaponstate = WEAPON_FIRING;
+                           PM_AddEvent( EV_ZOOM_RESET );
+                           pm->ps->weaponTime = 200;
+                           return;
+           }
         
       if (pm->ps->weapon == WP_KNIFE && ( pm->ps->weaponstate == WEAPON_TOALTERNATE ||pm->ps->weaponstate == WEAPON_TONORMAL)&& pm->ps->weaponTime <= 0)
            pm->ps->weaponstate = WEAPON_READY;
@@ -2567,6 +2578,7 @@ static void PM_Weapon( void ) {
               }
           }
       
+
         
         
 
@@ -2590,13 +2602,9 @@ static void PM_Weapon( void ) {
  
  */
                             
-        
-        if( pm->ps->weaponstate ==  WEAPON_FIRING2){
-               pm->ps->weaponstate = WEAPON_FIRING;
-                           PM_AddEvent( EV_ZOOM_RESET );
-                           pm->ps->weaponTime = 200;
-                           return;
-           }
+   
+
+
       
 
  
