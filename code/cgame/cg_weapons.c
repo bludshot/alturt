@@ -2678,24 +2678,25 @@ void CG_WeaponSort( void ) {
 	}
 
 	CG_ZoomReset_f();
-
+//run through all weapons and find the highest one
 	for( i = WP_NUM_WEAPONS-1; i > WP_NONE; i--)
 	{
 		cg.weaponSelectTime = cg.time;
 		if (BG_HasWeapon( i, (int*)cg.predictedPlayerState.stats ))
 		{
+			//Don't select bomb, ever
 			if( i == WP_BOMB)
 			{
 				continue;
 			}
-
+			//we have grenades, we'll come back to these if we don't have any other weapons
 			if(BG_Grenade(i))
 			{
 				hasGrenade = qtrue;
 				grenade = i;
 				continue;
 			}
-
+			//if all we hae is a knife and grenades, choose grenades.
 			if ( i ==WP_KNIFE && hasGrenade  )
 			{
 				cg.weaponSelect = grenade;
