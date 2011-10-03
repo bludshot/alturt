@@ -496,7 +496,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	int				event;
 	vec3_t			dir;
 	const char		*s;
-	int				weapsave,clientNum;
+	int				clientNum;
 	clientInfo_t	*ci;
 	es = &cent->currentState;
 	event = es->event & ~EV_EVENT_BITS;
