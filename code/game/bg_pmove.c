@@ -2272,7 +2272,10 @@ void BG_LastKnife(void){
 qboolean isInBurst( pmove_t *pm ){
      
     
-    if (bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] ){
+    Com_Printf("pm->ps->stats[STAT_MODE]  is %i\n ",
+           pm->ps->stats[STAT_MODE]);
+    
+    if (pm->ps->stats[STAT_MODE] ){
         return qfalse;
     }
     if( !
@@ -2690,7 +2693,7 @@ if ((pm->cmd.buttons & 1) ) {
           }else if ( pm->ps->weapon == WP_KNIFE && pm->ps->stats[STAT_MODE]&& pm->ps->pm_flags & PMF_GRENADE_ARMED ){ //fire released, knife throw
             PM_StartWeaponAnim( WPN_FIRE_ALT );
             pm->ps->weaponstate = WEAPON_FIRING;
-            pm->ps->weaponTime = PM_WeaponTime(pm->ps->weapon ,bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] );
+            pm->ps->weaponTime = PM_WeaponTime(pm->ps->weapon ,pm->ps->stats[STAT_MODE] );
             PM_AddEvent( EV_FIRE_WEAPON );
             PM_StartTorsoAnim( TORSO_ATTACK_GRENADE );
             pm->ps->pm_flags &= ~PMF_GRENADE_ARMED;
@@ -2792,7 +2795,7 @@ if ((pm->cmd.buttons & 1) ) {
 
 
                           pm->ps->weaponstate = WEAPON_FIRING;
-                          pm->ps->weaponTime = PM_WeaponTime(pm->ps->weapon, bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] );
+                          pm->ps->weaponTime = PM_WeaponTime(pm->ps->weapon, pm->ps->stats[STAT_MODE] );
                           PM_AddEvent( EV_FIRE_WEAPON );//this is the client side effects, sound and muzzle flash 
                           if(bg_weaponlist[ pm->ps->weapon ].weapMode[pm->ps->clientNum] == 0){
                           pm->ps->stats[STAT_BURST_COUNT]++;
