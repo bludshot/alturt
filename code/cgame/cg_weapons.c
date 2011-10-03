@@ -1274,6 +1274,14 @@ static qboolean CG_CalcMuzzlePoint( int entityNum, vec3_t muzzle ) {
 
 }
 
+/*
+===================================================================
+CG_RenderLaser
+renders a laserdot effect on a wall
+--Xamis
+===================================================================
+*/
+
 void CG_RenderLaser(centity_t *cent){
 
         vec3_t forward;
@@ -2248,8 +2256,10 @@ void CG_ToggleItem_f( void ) {
       
 if ( !(cg.ItemToggleState[cg.predictedPlayerState.clientNum] & ( 1 << cg.selectedItem ))){
 cg.ItemToggleState[cg.predictedPlayerState.clientNum] |= ( 1 << cg.selectedItem );//item on
+trap_S_StartSound( NULL, cg.predictedPlayerState.clientNum, CHAN_AUTO, cgs.media.itemOnSound );
 }else{
 cg.ItemToggleState[cg.predictedPlayerState.clientNum] &= ~( 1 << cg.selectedItem );//item off
+trap_S_StartSound( NULL, cg.predictedPlayerState.clientNum, CHAN_AUTO, cgs.media.itemOffSound );
         }
 
 }
@@ -2654,7 +2664,8 @@ Xamis
 ===============
 */
 void CG_WeaponSort( void ) {
-	int			i, grenade;
+	int			i;
+	int 			grenade = 1;
 	qboolean	hasGrenade = qfalse;
 
 	if ( !cg.snap )
@@ -3496,55 +3507,6 @@ void CG_FireWeapon( centity_t *cent ) {
         if ( weap->ejectBrassFunc && cg_brassTime.integer > 0 ) {
                 weap->ejectBrassFunc( cent );
         }
-}
-
-/*
-=================
-CG_LaserHitWall
-
-=================
-*/
-void CG_LaserHitWall( int clientNum, vec3_t origin, vec3_t dir ) {
-        qhandle_t               mod;
-        qhandle_t               mark;
-        qhandle_t               shader;
-        sfxHandle_t             sfx;
-        float                   radius;
-        float                   light;
-        vec3_t                  lightColor;
-        qboolean                alphaFade;
-        qboolean                isSprite;
-        int                             duration;
-
-        mark = 0;
-        radius = 32;
-        sfx = 0;
-        mod = 0;
-        shader = 0;
-        light = 0;
-        lightColor[0] = 1;
-        lightColor[1] = 1;
-        lightColor[2] = 0;
-
-        // set defaults
-        isSprite = qfalse;
-        duration = 10;
-
-                mod = cgs.media.dishFlashModel;
-                shader = cgs.media.grenadeExplosionShader;
-                sfx = cgs.media.sfx_rockexp;
-                mark = cgs.media.burnMarkShader;
-                radius = 64;
-                light = 300;
-                isSprite = qtrue;
-
-        //
-        // impact mark
-        //
-        	alphaFade = (mark == cgs.media.energyMarkShader);       // plasma fades alpha, all others fade color
-
-                CG_ImpactMark( mark, origin, dir, random()*360, 1,1,1,1, alphaFade, radius, qfalse );
-
 }
 
 
