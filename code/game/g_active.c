@@ -734,7 +734,6 @@ void ClientThink_real( gentity_t *ent ) {
         int                     msec;
         usercmd_t       *ucmd;
         float           xyspeed;
-        int i;
         gentity_t       *groundEnt;
         client = ent->client;
         
@@ -1165,7 +1164,6 @@ while a slow client may have multiple ClientEndFrame between ClientThink.
 ==============
 */
 void ClientEndFrame( gentity_t *ent ) {
-        int                     i;
         clientPersistant_t      *pers;
 
         if ( ent->client->sess.sessionTeam >= TEAM_SPECTATOR ) {
