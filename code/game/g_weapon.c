@@ -231,7 +231,7 @@ void CheckMed( gentity_t *ent ) {
         }
 
         if ( traceEnt->takedamage && traceEnt->client ) {
-            if ( traceEnt->health <100  )
+            if ( traceEnt->health <100 && traceEnt->client->ps.pm_type != PM_DEAD )
             traceEnt->health+=5;
             traceEnt->client->ps.pm_flags &=  ~ PMF_BLEEDING;
             ent->client->ps.weaponstate = WEAPON_START_BANDAGING_OTHER;
