@@ -79,7 +79,7 @@ int             c_pmove = 0;
 #define LEDGEGRABMAXHEIGHT              42
 #define LEDGEGRABHEIGHT                 38
 #define LEDGEVERTOFFSET                 LEDGEGRABHEIGHT
-#define LEDGEGRABMINHEIGHT              32
+#define LEDGEGRABMINHEIGHT              28
 
 //max distance you can be from the ledge for ledge grabbing to work
 #define LEDGEGRABDISTANCE               20
@@ -390,7 +390,7 @@ void PM_CheckGrab(void)
 
         //turn to face wall
         pm->ps->viewangles[YAW] = lerpyaw;
-        PM_SetPMViewAngle(pm->ps, pm->ps->viewangles, &pm->cmd);
+       // PM_SetPMViewAngle(pm->ps, pm->ps->viewangles, &pm->cmd);
         pm->cmd.angles[YAW] = ANGLE2SHORT( pm->ps->viewangles[YAW] ) - pm->ps->delta_angles[YAW];
         pm->ps->weaponTime = 0;       
         pm->cmd.upmove=0;
@@ -848,8 +848,6 @@ VectorMA( pm->ps->velocity, JUMP_VELOCITY *0.5,
   VectorMA( pm->ps->velocity, JUMP_VELOCITY,
             normal, pm->ps->velocity );
   
- // VectorMA( pm->ps->velocity, JUMP_VELOCITY,
-  //          normal, pm->ps->velocity ); //JUMP_VELOCITY was hardcoded here at 300. blud increasing jump height to match urt
 
   PM_AddEvent( EV_JUMP );
 
@@ -1102,10 +1100,10 @@ static void PM_AirMove( void ) {
         PM_SetMovementDir();
 
         // project moves down to flat plane
-        pml.forward[2] = 0;
-        pml.right[2] = 0;
-        VectorNormalize (pml.forward);
-        VectorNormalize (pml.right);
+      //  pml.forward[2] = 0;
+     //   pml.right[2] = 0;
+      //  VectorNormalize (pml.forward);
+     //   VectorNormalize (pml.right);
 
         for ( i = 0 ; i < 2 ; i++ ) {
                 wishvel[i] = pml.forward[i]*fmove + pml.right[i]*smove;
@@ -1808,6 +1806,13 @@ static void PM_CheckDuck (void)
                 pm->maxs[2] = PLAYER_STANDHEIGHT; //was 32
                 pm->ps->viewheight = DEFAULT_VIEWHEIGHT;
         }
+        
+        if (pm->ps->pm_flags & ~PMF_ONGROUND ){
+         pm->maxs[2] = 40;
+         
+        }
+        
+        
 }
 
 
@@ -2098,8 +2103,15 @@ static void PM_TorsoAnimation( void ) {
             //     PM_ContinueWeaponAnim(WPN_READY_FIRE_IDLE);
                    return;
                 }else
-                if ( (pm->ps->weapon == WP_KNIFE ) && pm->ps->stats[STAT_MODE] ){
-                    PM_ContinueWeaponAnim( WPN_IDLE_ALT );
+                if ( (pm->ps->weapon == WP_KNIFE ) 
+			&& pm->ps->stats[STAT_MODE]
+			&& pm->ps->pm_flags & ~PMF_GRENADE_ARMED ){
+                   return; //PM_ContinueWeaponAnim( WPN_IDLE_ALT );
+                }else
+		if ( (pm->ps->weapon == WP_KNIFE )
+                        && pm->ps->stats[STAT_MODE]
+                        && pm->ps->pm_flags & PMF_GRENADE_ARMED ){
+                   return; //PM_ContinueWeaponAnim( WPN_READY_FIRE_IDLE_ALT );
                 }else
                 PM_ContinueWeaponAnim( WPN_IDLE );
 
@@ -2313,7 +2325,9 @@ qboolean isInBurst( pmove_t *pm ){
 
 qboolean PM_Reload(void){
     
-    
+	if( pm->ps->weapon == WP_KNIFE){
+		return qfalse;
+	}    
 
     
          if ( pm->ps->pm_flags & PMF_RELOADING ){
@@ -2451,7 +2465,14 @@ qboolean PM_Grenade(void){
 
 	//if(pm->ps->stats[STAT_CLIPS] <= 0 && BG_Grenade(pm->ps->weapon) ){ <-- used to be this. We added the weaponTime to make sure that the weapon had fully switched first
 		//because if it hadn't then STAT_CLIPS would be from the previous gun!
-		if(pm->ps->stats[STAT_CLIPS] <= 0 && BG_Grenade(pm->ps->weapon) && pm->ps->weaponTime <=0 ){
+	
+
+        if( pm->ps->weapon == WP_KNIFE){
+                return qfalse;
+        }
+
+
+	if(pm->ps->stats[STAT_CLIPS] <= 0 && BG_Grenade(pm->ps->weapon) && pm->ps->weaponTime <=0 ){
          PM_AddEvent( EV_NONADES );
         }
 
@@ -2551,12 +2572,13 @@ static void PM_Weapon( void ) {
           pm->ps->weaponTime = 0;
         
         
-        if (PM_Grenade())
+       if (PM_Grenade())
             return;
         
-       if ( pm->ps->weaponstate == WEAPON_READY_FIRE_ALT && pm->ps->weaponTime > 0 ) {
-                return;
-        }
+      // if ( pm->ps->weaponstate == WEAPON_READY_FIRE_ALT && pm->ps->weaponTime > 0 ) {
+      //          return;
+      //  }
+
         if( pm->ps->weaponstate ==  WEAPON_FIRING2 && pm->ps->weaponTime > 0){
                            return;
            }
@@ -2570,8 +2592,8 @@ static void PM_Weapon( void ) {
                            return;
            }
         
-      if (pm->ps->weapon == WP_KNIFE && ( pm->ps->weaponstate == WEAPON_TOALTERNATE ||pm->ps->weaponstate == WEAPON_TONORMAL)&& pm->ps->weaponTime <= 0)
-           pm->ps->weaponstate = WEAPON_READY;
+//      if (pm->ps->weapon == WP_KNIFE && ( pm->ps->weaponstate == WEAPON_TOALTERNATE ||pm->ps->weaponstate == WEAPON_TONORMAL)&& pm->ps->weaponTime <= 0)
+//           pm->ps->weaponstate = WEAPON_READY;
        
       if ( pm->ps->weaponstate == WEAPON_TOALTERNATE ) {
           pm->ps->weaponTime +=1000;
@@ -2590,7 +2612,7 @@ static void PM_Weapon( void ) {
         
           if ( pm->ps->weaponstate ==WEAPON_READY_FIRE_IDLE_ALT&& pm->ps->weaponTime <= 0 ) {
               if(pm->ps->weapon==WP_KNIFE ){
-             PM_ContinueWeaponAnim(WEAPON_IDLE_ALT);
+             PM_ContinueWeaponAnim(WPN_READY_FIRE_IDLE_ALT);
               }
               else{
               PM_StartWeaponAnim(WPN_READY_FIRE_IDLE);    
@@ -2612,46 +2634,31 @@ static void PM_Weapon( void ) {
             return;
         
         
-       if ( pm->ps->weaponTime > 0 ) {
+
+   if ( pm->ps->weaponTime > 0 ) {
                 return;
-        }       
-
-/*
- Weapon Firing
- 
- */
-                            
-   
-
-
-      
-
- 
-/*
-
- * Fire held
- 
- */
-                    
+  }                        
 
 if ((pm->cmd.buttons & 1) ) {
-            
-           if(BG_Grenade(pm->ps->weapon) && pm->ps->pm_flags & PMF_GRENADE_ARMED ){
-                          pm->ps->weaponTime += 50;
-            PM_ContinueWeaponAnim(WPN_READY_FIRE_IDLE);
-            return;
-          }
-          
-    
+
+
            if(pm->ps->weapon==WP_KNIFE && pm->ps->stats[STAT_MODE]  && pm->ps->pm_flags & PMF_GRENADE_ARMED ){
             pm->ps->weaponTime += 50;
             PM_ContinueWeaponAnim(WPN_READY_FIRE_IDLE_ALT);
             return;
           }
 
+
+           if(BG_Grenade(pm->ps->weapon) && pm->ps->pm_flags & PMF_GRENADE_ARMED ){
+                          pm->ps->weaponTime += 50;
+            PM_ContinueWeaponAnim(WPN_READY_FIRE_IDLE);
+            return;
+          }
+          
+
 }
         
-   
+  
 
     // check for weapon change
     // can't change if weapon is firing, but can change
@@ -2786,7 +2793,7 @@ if ((pm->cmd.buttons & 1) ) {
         if (pm->ps->weapon == WP_KNIFE && pm->ps->stats[STAT_MODE] && !(pm->ps->pm_flags & PMF_GRENADE_ARMED)){
               pm->ps->weaponstate =WEAPON_READY_FIRE_IDLE_ALT ; //holding the weapon in the ready to throw position 
               pm->ps->pm_flags |= PMF_GRENADE_ARMED;
-              //PM_StartWeaponAnim( WPN_READY_FIRE_ALT );
+              PM_StartWeaponAnim( WPN_READY_FIRE_ALT );
               pm->ps->weaponTime = 800; 
               return;
             }
@@ -3416,6 +3423,16 @@ static qboolean PM_WallJump(void) {
   float cmdFraction = 1.0f;
   float upFraction = 6.5f;
   trace_t trace;
+  vec3_t maxs, mins;
+  
+        mins[0] = -15;
+        mins[1] = -15;
+
+        maxs[0] = 15;
+        maxs[1] = 15;
+
+        maxs[2] = 20;
+        mins[2] = -20;
 
   ProjectPointOnPlane(movedir, pml.forward, refNormal);
   VectorNormalize(movedir);
@@ -3426,7 +3443,7 @@ static qboolean PM_WallJump(void) {
 
   //trace into direction we are moving
   VectorMA(pm->ps->origin, 0.25f, movedir, point);
-  pm->trace(&trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask);
+  pm->trace(&trace, pm->ps->origin, mins, maxs, point, pm->ps->clientNum, pm->tracemask);
 
   if (trace.fraction < 1.0f && !(trace.surfaceFlags & (SURF_SKY | SURF_SLICK))
       && trace.plane.normal[2] < MIN_WALK_NORMAL) {
