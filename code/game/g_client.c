@@ -1108,6 +1108,11 @@ void G_PlayerLoadout( gentity_t *ent ){
 	client->ps.clientNum = index;
 
 	BG_ClearWeapons( ent->client->ps.stats );
+        
+        //clear current powerups
+        for( i =2; i<PW_NUM_POWERUPS; i++){
+            ent->client->ps.powerups[i]=0;
+        }
 
         
         if( ent->r.svFlags & SVF_BOT){
