@@ -1289,6 +1289,12 @@ void ClearRegisteredItems( void ) {
          for( i = PW_NEUTRALFLAG + 1; i < PW_NUM_POWERUPS -1; i++ ){
             RegisterItem(BG_FindItemForPowerup( i ));
         }
+        
+         for( i = WP_NONE + 1; i < WP_NUM_WEAPONS -1; i++ ){
+            RegisterItem(BG_FindItemForWeapon( i ));
+        }
+        
+        
 #ifdef MISSIONPACK
         if( g_gametype.integer == GT_BOMB ) {
                 RegisterItem( BG_FindItem( "Red Cube" ) );
