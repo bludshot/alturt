@@ -1781,6 +1781,12 @@ static void CG_BreathSounds( centity_t *cent, refEntity_t *head ) {
 		return;
 	}
 
+	if ( cg.snap->ps.stats[STAT_STAMINA] >= cg.snap->ps.stats[STAT_HEALTH]*9 )
+	{
+		ci->breathDir = 0;
+		return;
+	}
+
         
         	if ( ci->breathPuffTime > cg.time ) {
 		return;
