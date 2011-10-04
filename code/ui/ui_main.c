@@ -2249,7 +2249,7 @@ static void UI_DrawGear(rectDef_t *rect, float scale, vec4_t color, qboolean doi
 			//UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/none"));
 			//Text_Paint(rect->x, rect->y, scale, color, UI_Cvar_VariableString("ui_opponentName"),
 
-			//* also, the other cases below will need the same kind of thing.
+			// also, the other cases below will need the same kind of thing.
 
 			//but for right now I will just draw "none"
 			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip("icons/weapons/none"));
