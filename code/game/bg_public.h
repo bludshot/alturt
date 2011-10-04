@@ -82,11 +82,11 @@ along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
 #define VOTE_TIME                       30000   // 30 seconds before vote times out
 
 #define MINS_Z                          -29
-#define DEFAULT_VIEWHEIGHT      38 //blud, was 26
+#define DEFAULT_VIEWHEIGHT      28 //blud, was 26
 #define CROUCH_VIEWHEIGHT       20 //blud, was 12
 #define DEAD_VIEWHEIGHT         -16
-#define PLAYER_STANDHEIGHT		40 //blud new constant
-#define PLAYER_CROUCHHEIGHT		24 //blud new constant
+#define PLAYER_STANDHEIGHT		34 //blud new constant
+#define PLAYER_CROUCHHEIGHT		20 //blud new constant
 
 //
 // config strings are a general means of communicating variable length strings
@@ -708,10 +708,8 @@ typedef enum {
   WPN_IDLE_ALT,
   WPN_READY_FIRE_ALT,
   WPN_READY_FIRE_IDLE_ALT,
-          
-          
-          
-  MAX_WEAPON_ANIMATIONS
+  MAX_WEAPON_ANIMATIONS,
+	
 } wpAnimNumber_t;
 
 
@@ -1062,7 +1060,7 @@ int             BG_GetSecondary( int stats [ ] );
 
 #define STAT_MAX_HEALTH 100
 
-#define STAT_MAX_STAMINA 900
+#define STAT_MAX_STAMINA 1350
 
 
 //Gear values - these are for the gear cvar
