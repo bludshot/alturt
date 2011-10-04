@@ -533,7 +533,7 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 		case EV_SAVEMODE:
 			break;
               	case EV_FALL_SHORT:
-                                                                                                 G_Printf(" EV_FALL_S\n");
+                                                                                                // G_Printf(" EV_FALL_S\n"); //xamis debug
                                  if  ( groundEnt->client ){
                                      G_AddEvent( ent, EV_CURBSTOMP, 0);
                                              G_Damage (groundEnt, NULL, NULL, NULL, NULL, 100, 0, MOD_MACHINEGUN);
