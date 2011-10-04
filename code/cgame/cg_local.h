@@ -50,7 +50,7 @@ along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
 #define	LAND_DEFLECT_TIME	150
 #define	LAND_RETURN_TIME	300
 #define	STEP_TIME			200
-#define	DUCK_TIME			100
+#define	DUCK_TIME			170
 #define	PAIN_TWITCH_TIME	200
 #define	WEAPON_SELECT_TIME	1400
 #define	ITEM_SCALEUP_TIME	1000
