@@ -1210,7 +1210,7 @@ static void CG_SetWeaponLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
   lf->animationNumber = newAnimation;
   newAnimation &= ~ANIM_TOGGLEBIT;
 
-  if ( newAnimation < 0 || newAnimation >= MAX_WEAPON_ANIMATIONS ) {
+  if ( newAnimation < 0 || newAnimation > MAX_WEAPON_ANIMATIONS ) {
     CG_Error( "Bad weapon animation number: %i", newAnimation );
   }
 
@@ -1776,10 +1776,6 @@ static void CG_BreathSounds( centity_t *cent, refEntity_t *head ) {
 		return;
 	}
         
-	if ( cg.snap->ps.stats[STAT_STAMINA] > 500 ) {
-                                   ci->breathDir = 0;
-		return;
-	}
 
 	if ( cg.snap->ps.stats[STAT_STAMINA] >= cg.snap->ps.stats[STAT_HEALTH]*9 )
 	{
@@ -1795,9 +1791,9 @@ static void CG_BreathSounds( centity_t *cent, refEntity_t *head ) {
 	VectorMA(head->origin, 8, head->axis[0], origin);
 	VectorMA(origin, -4, head->axis[2], origin);
         
-                  breathTime =cg.snap->ps.stats[STAT_STAMINA]*3;
-                  if (breathTime < 500)
-                      breathTime = 500;
+                  breathTime =cg.snap->ps.stats[STAT_STAMINA]*2;
+                  if (breathTime < (0.6*(float)STAT_MAX_STAMINA) )
+                      breathTime = (0.6*(float)STAT_MAX_STAMINA) ;
                   
     //    ci->gender
         
