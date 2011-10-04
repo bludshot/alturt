@@ -449,11 +449,11 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
 //--Xamis   Sprinting/Stamina
 
                 if ( !( ucmd->buttons & BUTTON_SPRINTING )|| xyspeed < 220 ) {
-                        if ( ent->stamina < ent->health*9 ) {
-                                ent->stamina += 45;
+                        if ( ent->stamina < ent->health*13.5 ) {
+                                ent->stamina += 90;
                         }
-                        if ( ent->stamina > ent->health*9 ) {
-                                ent->stamina = ent->health*9 ;
+                        if ( ent->stamina > ent->health*13.5 ) {
+                                ent->stamina = ent->health*13.5 ;
                         }
                         if ( ent->stamina > STAT_MAX_STAMINA ) {
                                 ent->stamina = STAT_MAX_STAMINA;
@@ -886,7 +886,9 @@ if ( (client->pers.cmd.forwardmove ||
    bg_ps.bg_flags[client->ps.clientNum] &= ~BGF_POWERSLIDE;
 
 
-if( client->ps.weaponstate == WEAPON_START_BANDAGING || client->ps.weaponstate == WEAPON_DOWN_BANDAGING ){
+if(  ( client->ps.weaponstate == WEAPON_START_BANDAGING 
+        || client->ps.weaponstate == WEAPON_DOWN_BANDAGING) 
+           && client->ps.pm_type != PM_DEAD ){
 		if(  ucmd->serverTime   % 20 == 0 )
 			if (ent->health < 100 ){
 				 ent->health++;
@@ -1025,7 +1027,7 @@ if( client->ps.weaponstate == WEAPON_START_BANDAGING || client->ps.weaponstate =
         
                   if  ( groundEnt->client ){
                          
-                      G_Printf("CurbStomp\n");
+                     // G_Printf("CurbStomp\n");
 
 	}
 
