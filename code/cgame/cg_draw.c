@@ -926,6 +926,11 @@ void CG_DrawStatusHud( void )
 
                                          stamina[9];
 
+	if (cg.snap->ps.pm_type == PM_DEAD )
+	{
+		return;
+	}
+
                                          stamina[0]  =       trap_R_RegisterShaderNoMip( "gfx/hud/stamina1.tga" );
                                          stamina[1]  =       trap_R_RegisterShaderNoMip( "gfx/hud/stamina2.tga" );
                                          stamina[2]  =       trap_R_RegisterShaderNoMip( "gfx/hud/stamina3.tga" );
