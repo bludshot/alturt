@@ -223,7 +223,7 @@ You MAY make new mods based on this mod. Everything in this mod*, including the 
 
 The AGPLv3 license applies to everything in Alturt, including all of the assets and text files, configs, shaders, menus, scripts and art and sound assets.
 
-To comply with AGPLv3, we have added the command "sourceURL", which any client can type into their console and the server will echo to them the url(s) where they can find the source code for the ui, cgame and game to download. The sourceURL command is also bound to the P key by default. Also, for mods which use the alturt UI, the in-game about menu also displays the download links to the ui, cgame, and game source code.
+To comply with AGPLv3, we have added the command "sourceURL", which any client can type into their console and the server will echo to them the url(s) where they can find the source code for the ui, cgame and game to download. The sourceURL command is also bound to the O key by default. Also, for mods which use the alturt UI, the in-game about menu also displays the download links to the ui, cgame, and game source code.
 
 The source code for Alturt can be downloaded here: http://sourceforge.net/projects/alturt/  The layered "source files" for some of the skins are available there too. The rest of Alturt (in the normal playable download) contains the rest of the graphics, and sounds, many of which are also "source" files that you may use or alter for your mod.
 
