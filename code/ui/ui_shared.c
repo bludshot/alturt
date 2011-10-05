@@ -3262,7 +3262,18 @@ static bind_t g_bindings[] =
 	{"messagemode",  -1,					-1,		-1, -1},
 	{"messagemode2", -1,						-1,		-1, -1},
 	{"messagemode3", -1,						-1,		-1, -1},
-	{"messagemode4", -1,						-1,		-1, -1}
+	{"messagemode4", -1,						-1,		-1, -1},
+	{"ut_itemdrop", '=', -1, -1, -1},
+	{"ut_itemprev", '[', -1, -1, -1},
+	{"ut_itemnext", ']', -1, -1, -1},
+	{"ut_itemuse", 'p', -1, -1, -1},
+	{"ut_weapdrop", '-', -1, -1, -1},
+	{"+button8", 'e', -1, -1, -1},
+	{"+button6", 'q', -1, -1, -1},
+	{"+button5", 'r', -1, -1, -1},
+	{"+button7", K_CTRL, -1, -1, -1},
+	{"ut_zoomin", 'z', -1, -1, -1},
+	{"ut_zoomreset", 'x', -1, -1, -1}
 };
 
 
