@@ -231,8 +231,15 @@ void CheckMed( gentity_t *ent ) {
         }
 
         if ( traceEnt->takedamage && traceEnt->client ) {
-            if ( traceEnt->health <100 && traceEnt->client->ps.pm_type != PM_DEAD )
-            traceEnt->health+=5;
+            if ( traceEnt->health <100 &&
+                    traceEnt->health > 0 &&
+                    traceEnt->client->ps.pm_type != PM_DEAD ){
+                if(ent->client->ps.powerups[PW_MEDKIT] ){
+                        traceEnt->health+=8;
+                }else{
+                        traceEnt->health+=5;
+                }
+            }   
             traceEnt->client->ps.pm_flags &=  ~ PMF_BLEEDING;
             ent->client->ps.weaponstate = WEAPON_START_BANDAGING_OTHER;
             traceEnt->client->ps.stats[STAT_DMG_LOC] = 0;
@@ -463,7 +470,7 @@ void Bullet_Fire (gentity_t *ent, float spread, int damage, int MOD  ) {
 
                 if ( traceEnt->takedamage) {
                                 G_Damage( traceEnt, ent, ent, forward, tr.endpos,
-                                        damage/2, 0, MOD);
+                                        damage, 0, MOD);
                 }
                 //break;
        // }
