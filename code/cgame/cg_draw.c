@@ -1106,9 +1106,9 @@ void CG_DrawStatusHud( void )
                                            hColor[3] = 0.0f;
 
 
-                                           if ( staminaV > (0.9*(float)STAT_MAX_STAMINA) ) //0.9*(double)STAT_MAX_STAMINA;
+                                           if ( staminaV > (0.9*STAT_MAX_STAMINA) ) //0.9*(double)STAT_MAX_STAMINA;
                                            {
-                                             temp = staminaV-(0.9*(float)STAT_MAX_STAMINA) ;
+                                             temp = staminaV-(0.9*STAT_MAX_STAMINA) ;
 
                                              temp = temp/100.0f;
 
@@ -1116,16 +1116,16 @@ void CG_DrawStatusHud( void )
                                                temp = 1.0f;
 
                                              hColor[3] = temp;
-                                             staminaV = (0.9*(float)STAT_MAX_STAMINA) ;
+                                             staminaV = (0.9*STAT_MAX_STAMINA) ;
                                            }
                                            trap_R_SetColor( hColor );
                                            CG_DrawPic( base_x , base_y , 40,86, stamina[0] );
                                            trap_R_SetColor( NULL );
 
                                            hColor[3] = 0.0f;
-                                           if ( staminaV > (0.8*(float)STAT_MAX_STAMINA)  )
+                                           if ( staminaV > (0.8*STAT_MAX_STAMINA)  )
                                            {
-                                             temp = staminaV- (0.8*(float)STAT_MAX_STAMINA);
+                                             temp = staminaV- (0.8*STAT_MAX_STAMINA);
 
                                              temp = temp/100.0f;
 
@@ -1133,7 +1133,7 @@ void CG_DrawStatusHud( void )
                                                temp = 1.0f;
 
                                              hColor[3] = temp;
-                                             staminaV =  (0.8*(float)STAT_MAX_STAMINA);
+                                             staminaV =  (0.8*STAT_MAX_STAMINA);
                                            }
                                            trap_R_SetColor( hColor );
                                            CG_DrawPic( base_x , base_y , 40,86, stamina[1] );
@@ -1141,9 +1141,9 @@ void CG_DrawStatusHud( void )
 
                                            hColor[3] = 0.0f;
 
-                                           if ( staminaV >  (0.7*(float)STAT_MAX_STAMINA) )
+                                           if ( staminaV >  (0.7*STAT_MAX_STAMINA) )
                                            {
-                                             temp = staminaV-(0.7*(float)STAT_MAX_STAMINA);
+                                             temp = staminaV-(0.7*STAT_MAX_STAMINA);
 
                                              temp = temp/100.0f;
 
@@ -1152,7 +1152,7 @@ void CG_DrawStatusHud( void )
 
                                              hColor[3] = temp;
 
-                                             staminaV = (0.7*(float)STAT_MAX_STAMINA);
+                                             staminaV = (0.7*STAT_MAX_STAMINA);
 
                                            }
                                            trap_R_SetColor( hColor );
@@ -1161,9 +1161,9 @@ void CG_DrawStatusHud( void )
 
                                            hColor[3] = 0.0f;
 
-                                           if ( staminaV > (0.6*(float)STAT_MAX_STAMINA) )
+                                           if ( staminaV > (0.6*STAT_MAX_STAMINA) )
                                            {
-                                             temp = staminaV- (0.6*(float)STAT_MAX_STAMINA) ;
+                                             temp = staminaV- (0.6*STAT_MAX_STAMINA) ;
 
                                              temp = temp/100.0f;
 
@@ -1171,7 +1171,7 @@ void CG_DrawStatusHud( void )
                                                temp = 1.0f;
 
                                              hColor[3] = temp;
-                                             staminaV =  (0.6*(float)STAT_MAX_STAMINA) ;
+                                             staminaV =  (0.6*STAT_MAX_STAMINA) ;
                                            }
                                            trap_R_SetColor( hColor );
                                            CG_DrawPic( base_x , base_y , 40,86, stamina[3] );
@@ -1179,9 +1179,9 @@ void CG_DrawStatusHud( void )
 
                                            hColor[3] = 0.0f;
 
-                                           if ( staminaV >  (0.5*(float)STAT_MAX_STAMINA)  )
+                                           if ( staminaV >  (0.5*STAT_MAX_STAMINA)  )
                                            {
-                                             temp = staminaV- (0.5*(float)STAT_MAX_STAMINA);
+                                             temp = staminaV- (0.5*STAT_MAX_STAMINA);
 
                                              temp = temp/100.0f;
 
@@ -1189,7 +1189,7 @@ void CG_DrawStatusHud( void )
                                                temp = 1.0f;
 
                                              hColor[3] = temp;
-                                             staminaV =  (0.5*(float)STAT_MAX_STAMINA);
+                                             staminaV =  (0.5*STAT_MAX_STAMINA);
                                            }
                                            trap_R_SetColor( hColor );
                                            CG_DrawPic( base_x , base_y , 40,86, stamina[4] );
@@ -1198,9 +1198,9 @@ void CG_DrawStatusHud( void )
                                            hColor[3] = 0.0f;
 
 
-                                           if ( staminaV >  (0.4*(float)STAT_MAX_STAMINA) )
+                                           if ( staminaV >  (0.4*STAT_MAX_STAMINA) )
                                            {
-                                             temp = staminaV-  (0.4*(float)STAT_MAX_STAMINA);
+                                             temp = staminaV-  (0.4*STAT_MAX_STAMINA);
 
                                              temp = temp/100.0f;
 
@@ -1208,7 +1208,7 @@ void CG_DrawStatusHud( void )
                                                temp = 1.0f;
 
                                              hColor[3] = temp;
-                                             staminaV =  (0.4*(float)STAT_MAX_STAMINA);
+                                             staminaV =  (0.4*STAT_MAX_STAMINA);
                                            }
                                            trap_R_SetColor( hColor );
                                            CG_DrawPic( base_x , base_y , 40,86, stamina[5] );
@@ -1216,9 +1216,9 @@ void CG_DrawStatusHud( void )
 
                                            hColor[3] = 0.0f;
 
-                                           if ( staminaV >   (0.3*(float)STAT_MAX_STAMINA) )
+                                           if ( staminaV >   (0.3*STAT_MAX_STAMINA) )
                                            {
-                                             temp = staminaV- (0.3*(float)STAT_MAX_STAMINA);
+                                             temp = staminaV- (0.3*STAT_MAX_STAMINA);
 
                                              temp = temp/100.0f;
 
@@ -1226,7 +1226,7 @@ void CG_DrawStatusHud( void )
                                                temp = 1.0f;
 
                                              hColor[3] = temp;
-                                             staminaV =  (0.3*(float)STAT_MAX_STAMINA);
+                                             staminaV =  (0.3*STAT_MAX_STAMINA);
                                            }
                                            trap_R_SetColor( hColor );
                                            CG_DrawPic( base_x , base_y , 40,86, stamina[6] );
@@ -1234,9 +1234,9 @@ void CG_DrawStatusHud( void )
 
                                            hColor[3] = 0.0f;
 
-                                           if ( staminaV >  (0.2*(float)STAT_MAX_STAMINA) )
+                                           if ( staminaV >  (0.2*STAT_MAX_STAMINA) )
                                            {
-                                             temp = staminaV- (0.2*(float)STAT_MAX_STAMINA);
+                                             temp = staminaV- (0.2*STAT_MAX_STAMINA);
 
                                              temp = temp/100.0f;
 
@@ -1245,7 +1245,7 @@ void CG_DrawStatusHud( void )
 
                                              hColor[3] = temp;
 
-                                             staminaV =  (0.2*(float)STAT_MAX_STAMINA);
+                                             staminaV =  (0.2*STAT_MAX_STAMINA);
                                            }
                                            trap_R_SetColor( hColor );
                                            CG_DrawPic( base_x , base_y , 40,86, stamina[7] );
