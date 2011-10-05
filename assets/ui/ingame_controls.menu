@@ -242,7 +242,7 @@ itemDef {
       		name move
 		group grpControls
       		type ITEM_TYPE_BIND
-		text "Run / Walk:"
+		text "Run / Walk::"
 		cvar "+speed"
 		rect 40 190 320 15
       		textalign ITEM_ALIGN_RIGHT
@@ -259,7 +259,7 @@ itemDef {
 		group grpControls
       		type ITEM_TYPE_BIND
 		text "Sprint:"
-		cvar "+button5"
+		cvar "+button8"
 		rect 40 205 320 15
       		textalign ITEM_ALIGN_RIGHT
       		textalignx 160
@@ -268,6 +268,8 @@ itemDef {
 		textscale .25        
       		forecolor 1 1 1 1
       		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
     		}
 
 
@@ -460,7 +462,44 @@ itemDef {
       	mouseExit { setitemcolor ctr_shoot backcolor .1 .2 .6 0.5 ; hide message_weapons  }
 	}
 
+	itemDef {
+      		name shoot
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Zoom In:"
+		cvar "ut_zoomin"
+		rect 40 85 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
 
+	itemDef {
+      		name shoot
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Zoom Reset:"
+		cvar "ut_zoomreset"
+		rect 40 100 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+
+/*
 	itemDef {
       		name shoot
 		group grpControls
@@ -550,7 +589,7 @@ itemDef {
 		mouseenter { show keyBindStatus }
 		mouseexit { hide keyBindStatus }
     		}
-
+*/
 	itemDef {
       		name shoot
 		group grpControls
@@ -586,7 +625,7 @@ itemDef {
 		mouseenter { show keyBindStatus }
 		mouseexit { hide keyBindStatus }
     		}
-	
+/*	
 	itemDef {
       		name shoot
 		group grpControls
@@ -604,7 +643,7 @@ itemDef {
 		mouseenter { show yesno_message }
 		mouseexit { hide yesno_message }
     		}
-
+*/
 
 	itemDef {
       		name shoot				
@@ -629,7 +668,7 @@ itemDef {
 		group grpControls
       		type ITEM_TYPE_BIND
 		text "Reload:"
-		cvar "+button6"
+		cvar "+button5"
 		rect 40 215 320 15
       		textalign ITEM_ALIGN_RIGHT
       		textalignx 160
@@ -646,8 +685,8 @@ itemDef {
       		name shoot				
 		group grpControls
       		type ITEM_TYPE_BIND
-		text "Internal Firemode:"
-		cvar "+button7"
+		text "Weapon mode:"
+		cvar "+button3"
 		rect 40 245 320 15
       		textalign ITEM_ALIGN_RIGHT
       		textalignx 160
@@ -659,6 +698,8 @@ itemDef {
 		mouseenter { show keyBindStatus }
 		mouseexit { hide keyBindStatus }
     		}
+
+/*
 	itemDef {
       		name shoot				
 		group grpControls
@@ -693,12 +734,14 @@ itemDef {
 		mouseenter { show keyBindStatus }
 		mouseexit { hide keyBindStatus }
     		}
+*/
+
 	itemDef {
       		name shoot				
 		group grpControls
       		type ITEM_TYPE_BIND
 		text "Drop Weapon:"
-		cvar "dropweapon"
+		cvar "ut_weapdrop"
 		rect 40 290 320 15
       		textalign ITEM_ALIGN_RIGHT
       		textalignx 160
@@ -772,7 +815,7 @@ itemDef {
 		mouseexit { hide keyBindStatus }
     		}
 	
-
+/*
 	itemDef {
       		name misc
 		group grpControls
@@ -794,12 +837,13 @@ itemDef {
 		mouseenter { show keyBindStatus }
 		mouseexit { hide keyBindStatus }
     		}
+*/
 	itemDef {
       		name misc
 		group grpControls
       		type ITEM_TYPE_BIND
 		text "Use:"
-		cvar "+button2"
+		cvar "+button7"
 		rect 40 95 320 15
       		textalign ITEM_ALIGN_RIGHT
       		textalignx 160
@@ -808,10 +852,6 @@ itemDef {
 		textscale .25        
       		forecolor 1 1 1 1
       		visible 0 
-
-		cvarTest "cg_useBandage"
-		hideCvar { "1" }
-
 		mouseenter { show keyBindStatus }
 		mouseexit { hide keyBindStatus }
     		}
@@ -820,7 +860,7 @@ itemDef {
 		group grpControls
       		type ITEM_TYPE_BIND
 		text "Bandage:"
-		cvar "bandage"
+		cvar "+button6"
 		rect 40 110 320 15
       		textalign ITEM_ALIGN_RIGHT
       		textalignx 160
@@ -832,6 +872,7 @@ itemDef {
 		mouseenter { show keyBindStatus }
 		mouseexit { hide keyBindStatus }
     		}
+/*
 	itemDef {
       		name misc
 		group grpControls
@@ -849,7 +890,7 @@ itemDef {
 		mouseenter { show yesno_message }
 		mouseexit { hide yesno_message } 
     		}
-
+*/
 	itemDef {
       		name misc
 		group grpControls
@@ -867,6 +908,81 @@ itemDef {
 		mouseenter { show keyBindStatus }
 		mouseexit { hide keyBindStatus }
     		}
+
+
+	itemDef {
+      		name misc
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Item Drop:"
+		cvar "ut_itemdrop"
+		rect 40 165 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name misc
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Item Next:"
+		cvar "ut_itemnext"
+		rect 40 180 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+	itemDef {
+      		name misc
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Item Previous:"
+		cvar "ut_itemprev"
+		rect 40 205 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+	itemDef {
+      		name misc
+		group grpControls
+      		type ITEM_TYPE_BIND
+		text "Item Use:"
+		cvar "ut_itemuse"
+		rect 40 220 320 15
+      		textalign ITEM_ALIGN_RIGHT
+      		textalignx 160
+		maxPaintChars 20
+      		textaligny 12
+		textscale .25        
+      		forecolor 1 1 1 1
+      		visible 0 
+		mouseenter { show keyBindStatus }
+		mouseexit { hide keyBindStatus }
+    		}
+
+
+/*
 	itemDef {
       		name misc
 		group grpControls
@@ -938,7 +1054,7 @@ itemDef {
 		mouseexit { hide keyBindStatus }
     		}
 
-
+*/
 
 
 itemDef {
@@ -962,7 +1078,25 @@ itemDef {
       	mouseExit { setitemcolor ctr_radio backcolor .1 .2 .6 0.5 ; hide message_radio }
 	}
 
+	itemDef {
+		name radio
+		group grpControls
+		style 0
+		rect 55 70 144 16
+		wrapped
+		text "radio not yet implemented"	
 
+		textalign 0
+		textalignx 0
+		textaligny 0
+		textscale .25
+
+		forecolor 1 1 1 1
+		visible 1 
+		decoration
+		}
+
+/*
 	itemDef {
       		name radio
 		group grpControls
@@ -1354,7 +1488,7 @@ itemDef {
 		mouseenter { show keyBindStatus }
 		mouseexit { hide keyBindStatus }
     		}
-
+*/
 
 // Messages
 
