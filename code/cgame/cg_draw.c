@@ -926,7 +926,7 @@ void CG_DrawStatusHud( void )
 
                                          stamina[9];
 
-	if (cg.snap->ps.pm_type == PM_DEAD )
+	if (cg.snap->ps.pm_type == PM_DEAD || cg.snap->ps.pm_type == PM_SPECTATOR )
 	{
 		return;
 	}
@@ -2408,7 +2408,7 @@ static void CG_DrawLagometer( void ) {
 	y = 480 - 144;
 #else
 	x = 640 - 48;
-	y = 480 - 48;
+	y = 480 - 220;
 #endif
 
 	trap_R_SetColor( NULL );
