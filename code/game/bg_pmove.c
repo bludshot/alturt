@@ -1807,10 +1807,11 @@ static void PM_CheckDuck (void)
                 pm->ps->viewheight = DEFAULT_VIEWHEIGHT;
         }
         
-        if (pm->ps->pm_flags & ~PMF_ONGROUND ){
-         pm->maxs[2] = 40;
-         
-        }
+		//Xamis's attempt to stop jumping head through ceilings. But it causes duck height to always be 40!
+       // if (pm->ps->pm_flags & ~PMF_ONGROUND ){
+       //  pm->maxs[2] = 40;
+       //  
+       // }
         
         
 }
