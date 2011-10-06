@@ -299,6 +299,9 @@ static void CG_Obituary( entityState_t *ent ) {
                 case MOD_PSG1:
                         message = "was machinegunned by";
                         break;
+           //      case MOD_BOOT:
+          //              message = "was stomped by";
+           //             break;
 		case MOD_SHOTGUN:
 			message = "was gunned down by";
 			break;
@@ -835,16 +838,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
                 trap_S_StartSound (NULL, es->number, CHAN_AUTO, cgs.media.selectSound );
                 break;
   
-	case EV_SAVEMODE:
-		DEBUGNAME("EV_SAVEMODE");
-              //  CG_Printf("SAVEMODE \n" );
-		if ( clientNum == cg.predictedPlayerState.clientNum ){ 
-                trap_Cvar_Set( "weapmodes_save",  va("%016d", cg.predictedPlayerState.powerups[PW_WEAPMODES]) );
-		//char *tmpstr;
-            //    CG_Printf("SAVEMODE  %s\n",va("%016d", cg.predictedPlayerState.powerups[PW_WEAPMODES]) );
-		//strcpy( tmpstr , va("%016d", cg.predictedPlayerState.powerups[PW_WEAPMODES]));
-		}
-		break;
   	case EV_WEAPON_DROPPED:
 		DEBUGNAME("EV_WEAPON_DROPPED");
                                      if ( clientNum == cg.predictedPlayerState.clientNum ) {
