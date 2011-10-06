@@ -187,7 +187,70 @@ qboolean CheckGauntletAttack( gentity_t *ent ) {
                 }else return qfalse;
 }
 
+void CheckBootAttack( gentity_t *ent ) {
+        trace_t         tr;
+        vec3_t          end;
+        gentity_t       *tent;
+        gentity_t       *traceEnt;
+        int                     damage;
+        int		weaponstate = ent->client->ps.weaponstate;
 
+
+        
+        
+      if ( weaponstate == WEAPON_FIRING || (ent->client->pers.cmd.buttons & BUTTON_ATTACK))
+         return;
+        
+
+       if( ent->client->ps.pm_flags & PMF_ONGROUND){
+           return;
+       }
+    
+        if(ent->client->ps.weapon != WP_KNIFE && !BG_Sidearm(ent->client->ps.weapon ) ){
+            return;
+        }
+                
+        
+        if( ent->client->ps.speed < 300 ){
+            return;
+        }
+        
+        AngleVectors (ent->client->ps.viewangles, forward, right, up);
+        CalcMuzzlePoint ( ent, forward, right, up, muzzle );
+
+        VectorMA (muzzle, 15, forward, end);
+
+       G_FixHitboxes();
+        trap_Trace (&tr, muzzle, NULL, NULL, end, ent->s.number, MASK_SHOT);
+       G_RestoreHitboxes();
+        
+        if ( tr.surfaceFlags & SURF_NOIMPACT ) {
+                return;
+        }
+
+        traceEnt = &g_entities[ tr.entityNum ];
+
+        // send blood impact
+  //      if ( traceEnt->takedamage && traceEnt->client ) {
+ //               tent = G_TempEntity( tr.endpos, EV_MISSILE_HIT );
+ //               tent->s.otherEntityNum = traceEnt->s.number;
+  //              tent->s.eventParm = DirToByte( tr.plane.normal );
+  //              tent->s.weapon = ent->s.weapon;
+    //    }
+
+        if ( !traceEnt->takedamage) {
+                return;
+        }
+        
+        
+                s_quadFactor = 1;
+
+
+        damage = 3 * s_quadFactor;
+        G_Damage( traceEnt, ent, ent, forward, tr.endpos,
+                damage, 0, MOD_BOOT );
+
+}
 
 /*
 ===============
@@ -1312,7 +1375,11 @@ void Set_Mode(gentity_t *ent){
 
 
   char                    weapmodes_saves[WP_NUM_WEAPONS];//xamis
-   strcpy( weapmodes_saves, va("%016d", ent->client->ps.powerups[PW_WEAPMODES]) );
+  
+  
+  
+
+Q_strncpyz( weapmodes_saves, ent->client->weaponModeChar , sizeof( weapmodes_saves ) );
  //weapmodes_saves = va("%016d", ent->client->ps.powerups[PW_WEAPMODES]) ;
 
    switch (weapmodes_saves[ent->client->ps.weapon] ){
@@ -1358,7 +1425,7 @@ void Change_Mode(gentity_t *ent){
  ent->client->modechangeTime = level.time + 3000;
  ent->client->modeChanged =qtrue;
 
- strcpy(weapmodes_saves,  va("%016d", ent->client->ps.powerups[PW_WEAPMODES]));
+Q_strncpyz( weapmodes_saves, ent->client->weaponModeChar , sizeof( weapmodes_saves ) );
  
  if (ent->client->ps.weapon == WP_KNIFE && bg_weaponlist[ent->client->ps.weapon].rounds[ent->client->ps.clientNum] <2  )
      return;
@@ -1408,7 +1475,8 @@ void Change_Mode(gentity_t *ent){
       weapmodes_saves[ent->client->ps.weapon]= '2';
 
      }
-ent->client->ps.powerups[PW_WEAPMODES]= atoi(weapmodes_saves);
+Q_strncpyz( ent->client->weaponModeChar,  weapmodes_saves, sizeof( ent->client->weaponModeChar ) );
+//ent->client->ps.powerups[PW_WEAPMODES]= atoi(weapmodes_saves);
 }
 
 
