@@ -247,8 +247,8 @@ void CheckBootAttack( gentity_t *ent ) {
 
 
         damage = 3 * s_quadFactor;
-        G_Damage( traceEnt, ent, ent, forward, tr.endpos,
-                damage, 0, MOD_BOOT );
+ //       G_Damage( traceEnt, ent, ent, forward, tr.endpos,
+        //        damage, 0, MOD_BOOT );
 
 }
 
