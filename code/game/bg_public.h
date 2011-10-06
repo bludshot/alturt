@@ -518,7 +518,6 @@ typedef enum {
         EV_WEAPON_DROPPED,
         EV_FIRE_WEAPON,
         EV_ZOOM_RESET,
-        EV_SAVEMODE,
         EV_EJECT_CASING,
 
         EV_USE_ITEM0,
@@ -727,6 +726,7 @@ typedef struct animation_s {
 typedef struct soundList_s {  //Added to deal with reload sounds --Xamis
         int          type;
         int          startFrame;
+        sfxHandle_t  fireSound[4];  
         sfxHandle_t  soundPath;  
 } soundList_t;
 
@@ -821,6 +821,7 @@ typedef enum {
         MOD_BLED,
         MOD_TARGET_LASER,
         MOD_TRIGGER_HURT,
+      //  MOD_BOOT,
 #ifdef MISSIONPACK
         MOD_NAIL,
         MOD_CHAINGUN,
