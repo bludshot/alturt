@@ -1067,7 +1067,15 @@ static void CG_ServerCommand( void ) {
 		return;
 	}
 
-	if ( !strcmp( cmd, "tchat" ) ) {
+	if ( !strcmp( cmd, "wm" ) ) {
+		//CG_Argv(1)
+                CG_Printf("weapmodes cvar is %s\n", CG_Argv(1));
+                                    trap_Cvar_Set( "weapmodes_save",  CG_Argv(1));
+		return;
+	}
+        
+        
+                  if ( !strcmp( cmd, "tchat" ) ) {
 		trap_S_StartLocalSound( cgs.media.talkSound, CHAN_LOCAL_SOUND );
 		Q_strncpyz( text, CG_Argv(1), MAX_SAY_TEXT );
                                      
