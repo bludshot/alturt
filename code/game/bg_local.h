@@ -28,7 +28,7 @@ along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
 
 #define	STEPSIZE		18
 
-#define	JUMP_VELOCITY	354.0f //Xamis -> blud (was 320)
+#define	JUMP_VELOCITY	364.0f //Xamis -> blud (was 320)
 
 #define	TIMER_LAND		130
 #define	TIMER_GESTURE	(34*66+50)
