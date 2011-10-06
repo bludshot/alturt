@@ -1152,7 +1152,7 @@ void CG_DrawStatusHud( void )
 
                                              hColor[3] = temp;
 
-                                             staminaV = (0.7*STAT_MAX_STAMINA);
+                                             staminaV = (float)(0.7*STAT_MAX_STAMINA);
 
                                            }
                                            trap_R_SetColor( hColor );
