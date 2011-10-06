@@ -190,7 +190,7 @@ qboolean CheckGauntletAttack( gentity_t *ent ) {
 void CheckBootAttack( gentity_t *ent ) {
         trace_t         tr;
         vec3_t          end;
-        gentity_t       *tent;
+//        gentity_t       *tent;
         gentity_t       *traceEnt;
         int                     damage;
         int		weaponstate = ent->client->ps.weaponstate;
