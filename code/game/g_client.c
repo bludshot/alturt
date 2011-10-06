@@ -1018,7 +1018,6 @@ void ClientBegin( int clientNum ) {
         gclient_t       *client;
         gentity_t       *tent;
         int                     flags;
-        char                    weapmodes_save[WP_NUM_WEAPONS];//xamis
         char    userinfo[MAX_INFO_STRING];
                 
         ent = g_entities + clientNum;
@@ -1053,7 +1052,7 @@ void ClientBegin( int clientNum ) {
         // locate ent at a spawn point
         ClientSpawn( ent );
         
-        Q_strncpyz( weapmodes_save, Info_ValueForKey (userinfo, "weapmodes_save"), sizeof( weapmodes_save ) );
+       Q_strncpyz( ent->client->weaponModeChar, Info_ValueForKey (userinfo, "weapmodes_save"), sizeof( ent->client->weaponModeChar ) );
 
     if ( client->sess.sessionTeam == TEAM_SPECTATOR ||
          g_gametype.integer == GT_BOMB ||  g_gametype.integer == GT_TEAMSV )
@@ -1076,8 +1075,7 @@ void ClientBegin( int clientNum ) {
 
         // count current clients and rank for scoreboard
         CalculateRanks();
-      G_PlayerLoadout( ent );
-      ent->client->ps.powerups[PW_WEAPMODES]= atoi(weapmodes_save);
+
 }
 
 
@@ -1103,8 +1101,9 @@ void G_PlayerLoadout( gentity_t *ent ){
 	client = ent->client;
 	Q_strncpyz( gear, Info_ValueForKey (userinfo, "gear"), sizeof( gear ) );
                   Q_strncpyz( weapmodes_save, Info_ValueForKey (userinfo, "weapmodes_save"), sizeof( weapmodes_save ) );
-                  ent->client->ps.powerups[PW_WEAPMODES]= atoi(weapmodes_save);
-                  
+                  Q_strncpyz( ent->client->weaponModeChar, Info_ValueForKey (userinfo, "weapmodes_save"), sizeof( ent->client->weaponModeChar ) );
+
+               //   G_Printf("weapmodes_save is %s",weapmodes_save);
 	client->ps.clientNum = index;
 
 	BG_ClearWeapons( ent->client->ps.stats );
