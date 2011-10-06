@@ -216,6 +216,7 @@ struct gentity_s {
 	gitem_t		*item;			// for bonus items
                    vec3_t          turloc;
                    vec3_t          centerpoint;
+                   char             *weaponmodes;
 
 };
 
@@ -413,7 +414,7 @@ struct gclient_s {
 	char		*areabits;
 
         int             weaponMode[WP_NUM_WEAPONS];
-        char            *weaponModeChar;
+        char            weaponModeChar[WP_NUM_WEAPONS];
    	alturt_t 	ut;
 
 };
@@ -1126,5 +1127,5 @@ void G_SetGameState(int state);
 void CheckTeamplay(void);
 void G_ResetEntities( void );
 void Door_ResetState( gentity_t *door );
-
+void CheckBootAttack( gentity_t *ent );
 
