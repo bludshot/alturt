@@ -530,8 +530,6 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
                 switch ( event ) {
                     case EV_CURBSTOMP:
                         break;
-		case EV_SAVEMODE:
-			break;
               	case EV_FALL_SHORT:
                                                                                                 // G_Printf(" EV_FALL_S\n"); //xamis debug
                                  if  ( groundEnt->client ){
@@ -802,7 +800,8 @@ void ClientThink_real( gentity_t *ent ) {
         
         if( client->modeChanged && client->modechangeTime + 1000 <= level.time ){
             client->modeChanged= qfalse;
-            G_AddEvent( ent, EV_SAVEMODE,0);    
+        //    G_Printf("server ent->weaponmodes is %s\n",ent->client->weaponModeChar);
+            trap_SendServerCommand(ent->client->ps.clientNum, va("wm %s", ent->client->weaponModeChar));
         }
         
         
@@ -914,7 +913,7 @@ if(  ( client->ps.weaponstate == WEAPON_START_BANDAGING
   //              ent->client->pers.cmd.buttons |= BUTTON_GESTURE;
   //      }
 
-
+  //   CheckBootAttack( ent ) ;
 
         pm.ps = &client->ps;
         pm.cmd = *ucmd;
