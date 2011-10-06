@@ -1069,7 +1069,7 @@ static void CG_ServerCommand( void ) {
 
 	if ( !strcmp( cmd, "wm" ) ) {
 		//CG_Argv(1)
-                CG_Printf("weapmodes cvar is %s\n", CG_Argv(1));
+            //    CG_Printf("weapmodes cvar is %s\n", CG_Argv(1));
                                     trap_Cvar_Set( "weapmodes_save",  CG_Argv(1));
 		return;
 	}
