@@ -45,6 +45,8 @@ Alturt is released under the AGPLv3. See aglp.txt for license.
 ================================
 INSTALLATION INSTRUCTIONS
 
+If you have alturt 0.01 installed, delete it before installing 0.02, as 0.02 is a full install, not an upgrade.
+
 Unzip alturt_alpha002.zip in your ioUrbanTerror *engine* folder, NOT in your q3ut4 mod folder! So if your ioUrbanTerror is in C:\games\urbanterror\, then your q3ut4 mod folder is at C:\games\urbanterror\q3ut4\ and you will unzip alturt_alpha002.zip to C:\games\urbanterror\
 
 You can make a shortcut on your desktop to ioUrbanTerror.exe and then alter its target to say ioUrbanTerror.exe +set fs_game alturt (if you don't run it with +set fs_game alturt then you'll just be running normal urt, not Alturt) 
@@ -84,7 +86,7 @@ There are many known issues. This is an early alpha which means that many featur
 ================================
 VERSION HISTORY
 
-Alpha 0.02 - 2011-10-05
+Alpha 0.02 - 2011-10-07
 -----------------------
 
 - walljumping!
