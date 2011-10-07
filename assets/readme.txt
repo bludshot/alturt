@@ -223,7 +223,7 @@ PERMISSIONS AND OPEN SOURCE
 
 You MAY make new mods based on this mod. Everything in this mod*, including the source code, graphics and sounds, are free and open source. (*But remember, this mod does NOT include any of the files in the Urban Terror game that Alturt happens to reference or display when you play it. Urban Terror is copyright Frozen Sand.) Alturt is released under AGPLv3. Any mods you make from it are subject to the AGPLv3 license and so must also in turn be open source, even if they are server-side only and only run on your own server! Anything you do to the code must be shared with the world.
 
-The AGPLv3 license applies to everything in Alturt, including all of the assets and text files, configs, shaders, menus, scripts and art and sound assets.
+The AGPLv3 license applies to everything in** Alturt, including all of the assets and text files, configs, shaders, menus, scripts and art and sound assets. (**And remember, the 'vanilla' base q3ut4 urt assets (maps, models, textures, skins, sounds, etc) are NOT 'in', or a part of, Alturt!)
 
 To comply with AGPLv3, we have added the command "sourceURL", which any client can type into their console and the server will echo to them the url(s) where they can find the source code for the ui, cgame and game to download. The sourceURL command is also bound to the O key by default. Also, for mods which use the alturt UI, the in-game about menu also displays the download links to the ui, cgame, and game source code.
 
