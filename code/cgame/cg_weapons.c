@@ -1674,12 +1674,7 @@ CG_PositionWeaponOnTag( &gun, parent, parent->hModel, "tag_weapon");
           weaponModel.customSkin =trap_R_RegisterSkin( "models/weapons2/grenade/grenade_smoke.skin" );
           
 if ( weaponDown ) {
-       if (  BG_Primary( cent->currentState.weapon))
-        CG_PositionEntityOnTag( &weaponModel, parent, parent->hModel, "tag_primary" );
-    if (  BG_Secondary(cent->currentState.weapon ))
-        CG_PositionEntityOnTag( &weaponModel, parent, parent->hModel, "tag_secondar" );
-    if (  BG_Sidearm(cent->currentState.weapon ))
-        CG_PositionEntityOnTag( &weaponModel, parent, parent->hModel, "tag_sidearm" );
+
 }else
           CG_PositionEntityOnTag( &weaponModel, &gun, weapon->handsModel, "tag_weapon" );
           CG_AddWeaponWithPowerups( &weaponModel, cent->currentState.powerups );
