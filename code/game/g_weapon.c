@@ -119,7 +119,7 @@ void weapon_knife_fire (gentity_t *ent) {
 
 	VectorNormalize( forward );
 
-	m = fire_knife (ent, muzzle, forward, 1200);//1600
+	m = fire_knife (ent, muzzle, forward, 1500);//1600
 //	m->damage *= s_quadFactor;
 //	m->splashDamage *= s_quadFactor;
 
