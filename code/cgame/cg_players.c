@@ -2505,7 +2505,7 @@ void CG_Player( centity_t *cent ) {
                   refEntity_t     SidweaponModel;
 
                  vec3_t			 angles; 
-
+		 int		 anim;
 
 #ifdef MISSIONPACK
 	refEntity_t		skull;
@@ -2516,18 +2516,28 @@ void CG_Player( centity_t *cent ) {
 	vec3_t			dir; //blud moved this back up here to fix error/warning
 #endif
 
-        
+	qboolean		weaponDown;        
         qboolean                vestOn;
         qboolean                helmetOn;
 		qboolean				nvgOn;
 		qboolean				medkitOn;
-        vestOn = helmetOn = nvgOn = medkitOn = qfalse;
+        vestOn = helmetOn = nvgOn = medkitOn = weaponDown =qfalse;
+
+
+            anim = cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT;
+
+            if ( anim == BOTH_CLIMB ||  anim == BOTH_CLIMB_IDLE || anim == TORSO_BANDAGE || anim == BOTH_LEDGECLIMB ){
+                      weaponDown=qtrue;
+                  } else
+                      weaponDown=qfalse;
+
         
 	weaponNum = cent->currentState.weapon;
         
-                  SidweaponNum = CG_GetSidearm();
-                  PriweaponNum = CG_GetPrimary();
-                  SecweaponNum = CG_GetWorstSecondary();
+                         
+                  SidweaponNum = BG_GetSidearm(cg.snap->ps.stats);
+                  PriweaponNum = BG_GetPrimary(cg.snap->ps.stats );
+                  SecweaponNum = BG_GetSecondary(cg.snap->ps.stats );
 
                   
 	CG_RegisterWeapon( weaponNum );
@@ -2920,7 +2930,7 @@ void CG_Player( centity_t *cent ) {
 
 
          if( cent->currentState.number == cg.predictedPlayerState.clientNum && cg.snap->ps.stats[STAT_HEALTH] >0 ){
-          if ( PriweaponNum != cent->currentState.weapon ){
+          if ( PriweaponNum != cent->currentState.weapon || weaponDown ){
           	memset( &PriweaponModel, 0, sizeof( PriweaponModel ) );
 	VectorCopy( torso.lightingOrigin, PriweaponModel.lightingOrigin );
 	PriweaponModel.shadowPlane = torso.shadowPlane;
@@ -2929,7 +2939,7 @@ void CG_Player( centity_t *cent ) {
                 CG_PositionEntityOnTag( &PriweaponModel, &torso, torso.hModel, "tag_primary" );
                 CG_AddWeaponWithPowerups( &PriweaponModel, cent->currentState.powerups );
           }
-          if ( SecweaponNum != cent->currentState.weapon ){
+          if ( SecweaponNum != cent->currentState.weapon || weaponDown ){
           	memset( &SecweaponModel, 0, sizeof( SecweaponModel ) );
 	VectorCopy( torso.lightingOrigin, SecweaponModel.lightingOrigin );
 	SecweaponModel.shadowPlane = torso.shadowPlane;
@@ -2938,7 +2948,7 @@ void CG_Player( centity_t *cent ) {
                 CG_PositionEntityOnTag( &SecweaponModel,  &torso, torso.hModel, "tag_secondar" );
                 CG_AddWeaponWithPowerups( &SecweaponModel, cent->currentState.powerups );
           }
-          if ( SidweaponNum != cent->currentState.weapon ){
+          if ( SidweaponNum != cent->currentState.weapon  || weaponDown ){
           	memset( &SidweaponModel, 0, sizeof( SidweaponModel ) );
 	VectorCopy( legs.lightingOrigin, SidweaponModel.lightingOrigin );
 	SidweaponModel.shadowPlane = legs.shadowPlane;
