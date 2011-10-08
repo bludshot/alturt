@@ -34,6 +34,10 @@ nadeInfo_t bg_nadeTimer;
 
 wp_sort_t bg_inventory;
 
+
+qboolean   BG_HasTwoSecondaries( const int stats [ ] );
+int             BG_GetSidearm( const int stats [ ] );
+
 wpinfo_t bg_weaponlist[] ={
   {  //WP_NONE, //0 Used for misc counts, rounds are for burst count.
     "",
@@ -1177,27 +1181,27 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
            return qtrue;
 }
             if ( BG_Sidearm( item->giTag )  ){
-                if (bg_inventory.sort[ps->clientNum][SIDEARM] == item->giTag)                                                    
+                if ( BG_GetSidearm( ps->stats ) == item->giTag)                                                    
              return qtrue; //same as weapon in inventory, add as ammo --Xamis
-                 if (bg_inventory.sort[ps->clientNum][SIDEARM]){
+                 if ( BG_GetSidearm( ps->stats ) ){
                   return qfalse;  
                  }
             }else if ( BG_Secondary( item->giTag )  ){
-              if (bg_inventory.sort[ps->clientNum][SECONDARY] == item->giTag){
+              if ( BG_GetSecondary( ps->stats ) == item->giTag){
                 return qtrue; //same as weapon in inventory, add as ammo --Xamis
               }
-              if (bg_inventory.sort[ps->clientNum][PRIMARY] ==WP_NEGEV ){
+              if ( BG_GetPrimary( ps->stats ) ==WP_NEGEV ){
                         return qfalse; 
               } 
-	if (bg_inventory.sort[ps->clientNum][PRIMARY]){
-                        if ((bg_inventory.sort[ps->clientNum][SECONDARY]))
+	if ( BG_Primary( item->giTag )){
+                        if ( BG_HasTwoSecondaries( ps->stats ))
                         return qfalse; 
               } 
-            }else if (BG_Primary( item->giTag )){
-              if (bg_inventory.sort[ps->clientNum][PRIMARY] == item->giTag){
+            }else if ( BG_Primary( item->giTag )){
+              if ( BG_GetPrimary( ps->stats ) == item->giTag){
                 return qtrue; //same as weapon in inventory, add as ammo --Xamis
               }
-              if (bg_inventory.sort[ps->clientNum][PRIMARY]){
+              if ( BG_GetPrimary( ps->stats )){
                 return qfalse;//do not have a primary --Xamis
               }
             }else if ( BG_Grenade(item->giTag) ) {
@@ -1208,7 +1212,7 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
 
 // end
 
-
+//we don't actually have ammo, so this should never happen
         case IT_AMMO:
             if(item->giTag == WP_KNIFE){
                 return qfalse;
@@ -1219,38 +1223,11 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
                 return qtrue;
 
         case IT_ARMOR:
-#ifdef MISSIONPACK
-          //      if( bg_itemlist[ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_SCOUT ) {
-           //             return qfalse;
-           //     }
-
-                // we also clamp armor to the maxhealth for handicapping
-           //     if( bg_itemlist[ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
-          //              upperBound = ps->stats[STAT_MAX_HEALTH];
-           //     }
-          //      else {
-            //            upperBound = ps->stats[STAT_MAX_HEALTH] * 2;
-            //    }
-
-            //    if ( ps->stats[STAT_ARMOR] >= upperBound ) {
-             //           return qfalse;
-           //     }
-#else
-//                if ( ps->stats[STAT_ARMOR] >= ps->stats[STAT_MAX_HEALTH] * 2 ) {
-//                        return qfalse;
-//                }
-#endif
                 return qtrue;
 
         case IT_HEALTH:
                 // small and mega healths will go over the max, otherwise
                 // don't pick up if already at max
-#ifdef MISSIONPACK
-             //   if( bg_itemlist[ps->stats[STAT_PERSISTANT_POWERUP]].giTag == PW_GUARD ) {
-             //           upperBound = ps->stats[STAT_MAX_HEALTH];
-              //  }
-             //   else
-#endif
                 if ( item->quantity == 5 || item->quantity == 100 ) {
                         if ( ps->stats[STAT_HEALTH] >= STAT_MAX_HEALTH * 2 ) {
                                 return qfalse;
@@ -1873,7 +1850,7 @@ BG_HasWeapon
 =====================
 */
 
-qboolean BG_HasWeapon( int weapon, int stats[ ] )
+qboolean BG_HasWeapon( int weapon, const int stats[ ] )
 {
 	if (weapon == WP_NONE)
 	{
@@ -1907,6 +1884,29 @@ qboolean BG_HasSidearm (const  playerState_t *ps ) {
 
     return qfalse;
 }
+
+
+
+qboolean   BG_HasTwoSecondaries( const int stats [ ] )
+{
+    int i, secondaries;
+	secondaries =0;
+
+    for ( i=WP_NUM_WEAPONS-1;i>WP_NONE;i--)
+    {
+          if ( BG_HasWeapon( i, stats ) )
+        {
+            if ( BG_Secondary( i ) )
+                secondaries++;
+        }
+    }
+	if(secondaries > 1)
+	return qtrue;
+	else
+    	return qfalse;
+}
+
+
 
 /*
 ================
@@ -1956,13 +1956,30 @@ qboolean BG_HasSecondary (const  playerState_t *ps ) {
 
 
 
+
+int     BG_GetSidearm( const int stats [ ] )
+{
+    int i;
+
+    for ( i=WP_NUM_WEAPONS-1;i>WP_NONE;i--)
+    {
+        if ( BG_HasWeapon( i, stats ) )
+        {
+            if ( BG_Sidearm( i ) )
+                return i;
+        }
+    }
+    return WP_NONE;
+}
+
+
 /*
 =====================
 BG_GetPrimary
 =====================
 */
 
-int             BG_GetPrimary( int stats [ ] )
+int             BG_GetPrimary( const int stats [ ] )
 {
     int i;
 
@@ -1983,7 +2000,7 @@ int             BG_GetPrimary( int stats [ ] )
 BG_GetSecondary
 =====================
 */
-int             BG_GetSecondary( int stats [ ] )
+int             BG_GetSecondary( const int stats [ ] )
 {
     int i;
 
