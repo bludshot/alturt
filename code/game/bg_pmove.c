@@ -67,8 +67,8 @@ int             c_pmove = 0;
 #define MAX_WALLJUMPS 3 //no explanation needed 
 #define WALLJUMP_SPEED 580.0f //used in VectorMA for walljumps, affects player velocity
 #define WALLJUMP_MAX_VEL 600 //max velocity during walljumps. I cut this in half, it was 1200 which seems way too high --xamis
-#define WALLJUMP_MAX_UP_VEL 240 //cap the upward velocity on a walljump
-#define WALLJUMP_UP_VEL_BOOST 0.5f //give the player some upward boost off the wall
+#define WALLJUMP_MAX_UP_VEL 250 //cap the upward velocity on a walljump
+#define WALLJUMP_UP_VEL_BOOST 0.7f //give the player some upward boost off the wall
 
 
 
@@ -76,10 +76,10 @@ int             c_pmove = 0;
 
 
 
-#define LEDGEGRABMAXHEIGHT              42
-#define LEDGEGRABHEIGHT                 38
+#define LEDGEGRABMAXHEIGHT              45
+#define LEDGEGRABHEIGHT                 42
 #define LEDGEVERTOFFSET                 LEDGEGRABHEIGHT
-#define LEDGEGRABMINHEIGHT              28
+#define LEDGEGRABMINHEIGHT              40
 
 //max distance you can be from the ledge for ledge grabbing to work
 #define LEDGEGRABDISTANCE               20
@@ -551,8 +551,7 @@ int CheckLadder( void )
 
         if ( pm->cmd.upmove > 0 )
                 return 0;
-        if ( pm->ps->weaponTime > 0 )
-                return 0;
+
         traceMins[0] = -16;
         traceMins[1] = -16;
         traceMins[2] = -16;
@@ -1145,7 +1144,7 @@ static void PM_AirMove( void ) {
     if (PM_CheckWallJump()) {
       if (PM_WallJump()) {
           PM_AddEvent(EV_WALLJUMP);
-          pm->ps->stats[STAT_WALLJUMPS]++;
+          //Com_Printf( "walljump count is %i\n", pm->ps->stats[STAT_WALLJUMPS] );
       }
     }
 
@@ -1807,11 +1806,7 @@ static void PM_CheckDuck (void)
                 pm->ps->viewheight = DEFAULT_VIEWHEIGHT;
         }
         
-		//Xamis's attempt to stop jumping head through ceilings. But it causes duck height to always be 40!
-       // if (pm->ps->pm_flags & ~PMF_ONGROUND ){
-       //  pm->maxs[2] = 40;
-       //  
-       // }
+
         
         
 }
@@ -2098,8 +2093,6 @@ static void PM_TorsoAnimation( void ) {
                 }else{
                         PM_ContinueTorsoAnim( TORSO_STAND );
                 }
-                // QUARANTINE - Weapon Animation
-// Should always draw the weapon when it is just ready
                if (BG_Grenade( pm->ps->weapon )|| pm->ps->weapon == WP_HK69){
             //     PM_ContinueWeaponAnim(WPN_READY_FIRE_IDLE);
                    return;
@@ -2204,33 +2197,6 @@ int ReloadEndTime( int w )        {
 
 }
 
-qboolean PM_HasDrawAnimation( int weapon ){
-    
-     switch( weapon ) {
-        default:
-            
-        case WP_KNIFE:
-        case WP_BERETTA:
-        case WP_DEAGLE:                                       
-        case WP_M4:
-            return qtrue;
-            break;        
-        case WP_MP5K:
-        case WP_LR300:
-        case WP_G36:
-        case WP_SPAS:
-        case WP_PSG1:
-        case WP_SR8:
-        case WP_UMP45:
-        case WP_NEGEV:
-        case WP_AK103:
-        case WP_HK69:
-        case WP_HE:
-        case WP_SMOKE:
-            return qfalse;
-        }    
-}
-
 /*
 ==============
 PM_Weapon
@@ -2332,7 +2298,6 @@ qboolean PM_Reload(void){
 
     
          if ( pm->ps->pm_flags & PMF_RELOADING ){
-           //PM_AddEvent( EV_ZOOM_RESET );
           PM_StartWeaponAnim( WPN_BOLT);
           if ( pm->ps->weapon == WP_SR8)
             pm->ps->weaponTime = 1500;
@@ -2560,10 +2525,8 @@ static void PM_Weapon( void ) {
         }
 
         if( pm->ps->legsAnim == BOTH_LEDGECLIMB )
-		return;
-
-        
-    //if player has thrown the last nade in their inventory, remove it.        
+              return;
+      
 
         
     // make weapon function
@@ -2572,13 +2535,27 @@ static void PM_Weapon( void ) {
         if ( pm->ps->weaponTime <= 0 )
           pm->ps->weaponTime = 0;
         
+      
+        
+        if (PM_Reload() )
+           return;
+        
+
+        
+        if( PM_Bandage())
+            return;
+        
+        
+        if ( CheckLadder() != 0 ) {
+                return;
+          }   
+
+       
+        
         
        if (PM_Grenade())
             return;
-        
-      // if ( pm->ps->weaponstate == WEAPON_READY_FIRE_ALT && pm->ps->weaponTime > 0 ) {
-      //          return;
-      //  }
+
 
         if( pm->ps->weaponstate ==  WEAPON_FIRING2 && pm->ps->weaponTime > 0){
                            return;
@@ -2593,8 +2570,6 @@ static void PM_Weapon( void ) {
                            return;
            }
         
-//      if (pm->ps->weapon == WP_KNIFE && ( pm->ps->weaponstate == WEAPON_TOALTERNATE ||pm->ps->weaponstate == WEAPON_TONORMAL)&& pm->ps->weaponTime <= 0)
-//           pm->ps->weaponstate = WEAPON_READY;
        
       if ( pm->ps->weaponstate == WEAPON_TOALTERNATE ) {
           pm->ps->weaponTime +=1000;
@@ -2622,23 +2597,14 @@ static void PM_Weapon( void ) {
       
 
         
-        
 
-        
-        
-       if (PM_Reload() )
-           return;
-        
-
-        
-        if( PM_Bandage())
-            return;
         
         
 
    if ( pm->ps->weaponTime > 0 ) {
                 return;
-  }                        
+  }                       
+        
 
 if ((pm->cmd.buttons & 1) ) {
 
@@ -3301,9 +3267,10 @@ void PmoveSingle (pmove_t *pmove) {
         PM_SetWaterLevel();
 
         // weapons
-        if ( CheckLadder () == 0 ){
-            
+        
         PM_Weapon();
+        
+        if ( CheckLadder () == 0 ){        
 
         pm->ps->pm_flags &= ~ PMF_ONLADDER;
         }
@@ -3432,8 +3399,8 @@ static qboolean PM_WallJump(void) {
         maxs[0] = 15;
         maxs[1] = 15;
 
-        maxs[2] = 20;
-        mins[2] = -20;
+        maxs[2] = 10;
+        mins[2] = -10;
 
   ProjectPointOnPlane(movedir, pml.forward, refNormal);
   VectorNormalize(movedir);
@@ -3485,11 +3452,6 @@ static qboolean PM_WallJump(void) {
     VectorScale( pm->ps->velocity, WALLJUMP_MAX_VEL, pm->ps->velocity );
   }
 
-      //    PM_AddEvent(EV_WALLJUMP);
-      //    pm->ps->stats[STAT_WALLJUMPS]++;
-      
-  //Com_Printf("pm->ps->velocity[2] is %f\n  pm->ps->stats[STAT_WALLJUMPS] is %i\npm->ps->stats[STAT_STAMINA] is %i\n",
-   //        pm->ps->velocity[2],pm->ps->stats[STAT_WALLJUMPS], pm->ps->stats[STAT_STAMINA] );
   
   if (pm->cmd.forwardmove >= 0) {
     PM_ForceLegsAnim(LEGS_JUMP);
