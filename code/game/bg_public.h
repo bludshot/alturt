@@ -319,7 +319,7 @@ qboolean BG_Sidearm( int weapon );
 qboolean BG_Primary ( int weapon );
 qboolean BG_Secondary ( int weapon );
 qboolean BG_Grenade( int weapon );
-qboolean BG_HasWeapon( int weapon, int stats[ ] );
+qboolean BG_HasWeapon( int weapon, const int stats[ ] );
 qboolean BG_HasSidearm (const  playerState_t *ps );
 qboolean BG_HasPrimary (const  playerState_t *ps );
 qboolean BG_HasSecondary (const  playerState_t *ps );
@@ -978,7 +978,9 @@ void      BG_PackWeapon( int weapon, int stats[ ] );
 void      BG_RemoveWeapon( int weapon, int stats[ ] );
 void	BG_LastKnife(void);
 void BG_ClearWeapons( int stats[ ] );
-int             BG_GetSecondary( int stats [ ] );
+int             BG_GetSecondary( const int stats [ ] );
+int		BG_GetPrimary( const int stats [ ] );
+int             BG_GetSidearm( const int stats [ ] );
 #define ARENAS_PER_TIER         4
 #define MAX_ARENAS                      1024
 #define MAX_ARENAS_TEXT         8192
