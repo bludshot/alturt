@@ -30,7 +30,7 @@ along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
 #include "bg_local.h"
 static qboolean PM_WallJump(void);
 static qboolean PM_CheckWallJump(void);
-qboolean PM_CheckPowerSlide( void );
+
 
 pmove_t         *pm;
 pml_t           pml;
@@ -3058,16 +3058,6 @@ void PM_PowerSlideMove( void ){
                     pm->ps->velocity, OVERCLIP );
     VectorNormalize(pm->ps->velocity);
     VectorScale(pm->ps->velocity, 500, pm->ps->velocity);
-}
-
-qboolean PM_CheckPowerSlide( void ){
-
-// if( pm->ps->pm_flags & PMF_DUCKED && pml.groundPlane  && pm->xyspeed > 280  ){
-
-    //Com_Printf( "pm->ps->pm_flags & PMF_DUCKED && pm->xyspeed > 280\n");
-  // return qtrue;
-  //}else
-  return qfalse;
 }
 
 
