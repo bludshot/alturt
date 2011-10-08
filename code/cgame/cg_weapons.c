@@ -25,22 +25,19 @@ along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
 // cg_weapons.c -- events and effects dealing with weapons
 #include "cg_local.h"
 
-/* [QUARANTINE] - Weapon Animations - CG_ParseWeaponAnimFile
-==========================
-CG_ParseWeaponAnimFile
-==========================
-*/
+
+
 static qboolean CG_ParseWeaponAnimFile( const char *filename, weaponInfo_t *weapon ) {
   char *text_p;
   int len;
-  int i;
+  int i,j,k;
   char *token;
   float fps;
   int skip;
   char text[20000];
   fileHandle_t f;
   animation_t *animations;
-
+  char *animationType;
   animations = weapon->animations;
 
 // load the file
@@ -60,23 +57,75 @@ static qboolean CG_ParseWeaponAnimFile( const char *filename, weaponInfo_t *weap
   text_p = text;
   skip = 0; // quite the compiler warning
 
+
+ k = 0;
+
 // read information for each frame
   for ( i = 0 ; i < MAX_WEAPON_ANIMATIONS ; i++ ) {
+
+
     token = COM_Parse( &text_p );
     if ( !token ) break;
-    animations[i].firstFrame = atoi( token );
+    animationType =( token );
+if ( !Q_stricmp( token, "WEAPON_DRAW" ) ) {
+		j= WPN_DRAW;
+}else if ( !Q_stricmp( token, "WEAPON_IDLE" ) ) {
+		j = WPN_IDLE;
+}else if ( !Q_stricmp( token, "WEAPON_READY_FIRE" ) ) {
+                j = WPN_READY_FIRE;
+}else if ( !Q_stricmp( token, "WEAPON_FIRE" ) ) {
+                j = WPN_FIRE;
+}else if ( !Q_stricmp( token, "WEAPON_READY_FIRE_IDLE" ) ) {
+                j = WPN_READY_FIRE_IDLE;
+}else if ( !Q_stricmp( animationType, "WEAPON_RELOAD" ) ) {
+                j = WPN_RELOAD;
+}else if ( !Q_stricmp( animationType, "WEAPON_BOLT" ) ) {
+                j = WPN_BOLT;
+}else if ( !Q_stricmp( animationType, "WEAPON_RELOAD_START" ) ) {
+                j = WPN_RELOAD_START;
+}else if ( !Q_stricmp( animationType, "WEAPON_RELOAD_END" ) ) {
+                j = WPN_RELOAD_END;
+}else if ( !Q_stricmp( animationType, "WEAPON_FIRE_ALT" ) ) {
+                j = WPN_FIRE_ALT;
+}else if ( !Q_stricmp( animationType, "WEAPON_TOALTERNATE" ) ) {
+                j = WPN_TOALTERNATE;
+}else if ( !Q_stricmp( animationType, "WEAPON_TONORMAL" ) ) {
+                j = WPN_TONORMAL;
+}else if ( !Q_stricmp( animationType, "WEAPON_IDLE_ALT" ) ) {
+                j = WPN_IDLE_ALT;
+}else if ( !Q_stricmp( animationType, "WEAPON_READY_FIRE_ALT" ) ) {
+                j = WPN_READY_FIRE_ALT;
+}else if ( !Q_stricmp( animationType, "WEAPON_READY_FIRE_IDLE_ALT" ) ) {
+                j = WPN_READY_FIRE_IDLE_ALT;
+}else{
+j=0;
+//CG_Printf("continue\n");
+if ( k < 3){ // if we go more than three lines without any animations, exit to prevent infinite loop.
+i=0;
+k++;
+}
+continue;
+}
+
+
+
     token = COM_Parse( &text_p );
     if ( !token ) break;
-    animations[i].numFrames = atoi( token );
+    animations[j].firstFrame = atoi( token );
     token = COM_Parse( &text_p );
     if ( !token ) break;
-    animations[i].loopFrames = atoi( token );
+    animations[j].numFrames = atoi( token );
     token = COM_Parse( &text_p );
     if ( !token ) break;
-    fps = atof( token );
-    if ( fps == 0 ) fps = 1;
-    animations[i].frameLerp = 1000 / fps;
-    animations[i].initialLerp = 1000 / fps;
+	 fps = atof( token );
+	 if ( fps == 0 ) fps = 1;
+		animations[j].frameLerp = 1000 / fps;
+		animations[j].initialLerp = 1000 / fps;
+    token = COM_Parse( &text_p );
+    if ( !token ) break;
+	animations[j].loopFrames = atoi( token );
+
+
   }
   if ( i != MAX_WEAPON_ANIMATIONS ) {
     CG_Printf( "Error parsing weapon animation file: %s", filename );
@@ -85,8 +134,6 @@ static qboolean CG_ParseWeaponAnimFile( const char *filename, weaponInfo_t *weap
 
   return qtrue;
 }
-// END
-
 
 /* Weapon Animation  Sounds --Xamis
 ==========================
@@ -154,8 +201,14 @@ static qboolean CG_ParseWeaponSounds( const char *filename, weaponInfo_t *weapon
                if ( !token ) break;
      if (Q_stricmp(token,""))
         tempSound = trap_S_RegisterSound( token, qfalse );
+
+        if ( soundList[i].type == 1){
         soundList[i].soundPath = tempSound;
         soundList[i].startFrame = j;
+        }
+        if ( soundList[i].type == 2){
+            soundList[i].fireSound[j]=tempSound;
+        }
 
 #ifdef DEBUG
    CG_Printf( "Type = %i \t",soundList[i].type );
@@ -618,20 +671,21 @@ void CG_RegisterWeapon( int weaponNum ) {
                 weaponInfo->ammoModel = trap_R_RegisterModel( ammo->world_model[0] );
         }
 
-// Load all weapons animation config files --Xamis
-            strcpy( path, item->world_model[0] );
-            COM_StripExtension(path, path, sizeof(path));
-            strcat( path, ".cfg" );
-            if ( !CG_ParseWeaponAnimFile(path, weaponInfo) ) {
-              Com_Printf("Failed to load weapon animation file %s\n", path);
-
-            }
 // Load all weapons sound config files --Xamis
             strcpy( path, bg_weaponlist[ weaponNum ].modelPath );
             strcat( path, "sound.cfg" );
             if ( !CG_ParseWeaponSounds(path, weaponInfo) ) {
               Com_Printf("Failed to load weapon sound file %s/n", path);
               }
+
+
+// Load all weapons animation config files --Xamis
+            strcpy( path, bg_weaponlist[ weaponNum ].modelPath );
+            strcat( path, "animation.cfg" );
+            if ( !CG_ParseWeaponAnimFile(path, weaponInfo) ) {
+              Com_Printf("Failed to load weapon animation file %s/n", path);
+              }
+
 
 
 //  All weapons parts for animations in first person view --Xamis
