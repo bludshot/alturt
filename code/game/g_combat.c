@@ -350,7 +350,7 @@ void TossClientItems( gentity_t *self ) {
 	if ( g_gametype.integer != GT_TEAM ) {
 		angle = 45;
 		for ( i = 2 ; i < PW_NUM_POWERUPS ; i++ ) {
-			if ( self->client->ps.powerups[ i ] > level.time ) {
+			if ( self->client->ps.powerups[ i ] > 0 ) {
 				item = BG_FindItemForPowerup( i );
 				if ( !item ) {
 					continue;
@@ -358,7 +358,7 @@ void TossClientItems( gentity_t *self ) {
                                 if( i == PW_REDFLAG|| i == PW_BLUEFLAG){
 				drop = Drop_Item( self, item, random()*360 );
 				// decide how many seconds it has left
-				drop->count = ( self->client->ps.powerups[ i ] - level.time ) / 1000;
+				drop->count = ( self->client->ps.powerups[ i ]);
 				if ( drop->count < 1 ) {
 					drop->count = 1;
 				}
@@ -1182,6 +1182,8 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
                         through_vest = 0;
                       else if ( !HasPowerup( targ, PW_VEST ) )
                         through_vest = 0;
+                      
+                     
 
         // get the hit location
                     //  G_Printf("getting Hitlocation\n");
@@ -1338,6 +1340,12 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		knockback = 0;
 	}
 
+        
+            //    if(mod == MOD_BOOT){
+             //             knockback*=20;
+             //             bleeding = qfalse;
+             //        }
+        
 	// figure momentum add, even if the damage won't be taken
 	if ( knockback && targ->client ) {
 		vec3_t	kvel;
