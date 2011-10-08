@@ -2099,13 +2099,13 @@ static void PM_TorsoAnimation( void ) {
                 }else
                 if ( (pm->ps->weapon == WP_KNIFE ) 
 			&& pm->ps->stats[STAT_MODE]
-			&& pm->ps->pm_flags & ~PMF_GRENADE_ARMED ){
-                   return; //PM_ContinueWeaponAnim( WPN_IDLE_ALT );
+			&& !( pm->ps->pm_flags & PMF_GRENADE_ARMED )){
+                   PM_ContinueWeaponAnim( WPN_IDLE_ALT );
                 }else
 		if ( (pm->ps->weapon == WP_KNIFE )
                         && pm->ps->stats[STAT_MODE]
                         && pm->ps->pm_flags & PMF_GRENADE_ARMED ){
-                   return; //PM_ContinueWeaponAnim( WPN_READY_FIRE_IDLE_ALT );
+                  PM_ContinueWeaponAnim( WPN_READY_FIRE_IDLE_ALT );
                 }else
                 PM_ContinueWeaponAnim( WPN_IDLE );
 
@@ -2761,7 +2761,7 @@ if ((pm->cmd.buttons & 1) ) {
               pm->ps->weaponstate =WEAPON_READY_FIRE_IDLE_ALT ; //holding the weapon in the ready to throw position 
               pm->ps->pm_flags |= PMF_GRENADE_ARMED;
               PM_StartWeaponAnim( WPN_READY_FIRE_ALT );
-              pm->ps->weaponTime = 800; 
+              pm->ps->weaponTime = 400; 
               return;
             }
 
