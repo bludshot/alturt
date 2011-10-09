@@ -998,6 +998,7 @@ static void CG_ServerCommand( void ) {
 	char	cgSourceCvarString[1024]; //I am not sure about the length
 	char	uiSourceCvarString[1024]; //I am not sure about the length
 
+
 	cmd = CG_Argv(0);
 
 	if ( !cmd[0] ) {
@@ -1074,6 +1075,14 @@ static void CG_ServerCommand( void ) {
 		return;
 	}
         
+        
+        	if ( !strcmp( cmd, "rsdelay" ) ) {
+                                    centity_t                       *cent;
+                                    cent = &cg_entities[cg.snap->ps.clientNum];
+		//CG_Argv(1)
+                                    cent->respawn = atoi( CG_Argv(1) );
+		return;
+	}
         
                   if ( !strcmp( cmd, "tchat" ) ) {
 		trap_S_StartLocalSound( cgs.media.talkSound, CHAN_LOCAL_SOUND );

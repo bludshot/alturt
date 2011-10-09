@@ -3207,6 +3207,54 @@ static void CG_DrawProxWarning( void ) {
 #endif
 
 
+
+
+/*
+=================
+CG_DrawWarmup
+=================
+*/
+static void CG_DrawRespawnDelay( void ) {
+	int			w;
+	int			sec;
+	int			i;
+	float scale;
+	int			cw;
+	const char	*s;
+                  centity_t                       *cent;
+                  cent = &cg_entities[cg.snap->ps.clientNum];
+        
+                  //CG_Printf ("cg.respawn is %i\n", cg.respawn);
+	sec = cent->respawn;
+                
+	if ( !sec ) {
+		return;
+	}
+
+	
+
+
+	sec = ( sec - cg.time ) / 1000;
+	if ( sec < 0 ) {
+		cent->respawn = 0;
+		sec = 0;
+	}
+	s = va( "Respawn in: %i", sec + 1 );
+
+	scale = 0.45f;
+	cw = 16;
+
+	w = CG_DrawStrlen( s );
+	CG_DrawStringExt( 320 - w * cw/2, 370, s, colorWhite,
+			qfalse, qtrue, cw, (int)(cw * 1.5), 0 );
+
+}
+
+
+
+
+
+
 /*
 =================
 CG_DrawWarmup
@@ -3487,6 +3535,8 @@ static void CG_Draw2D(stereoFrame_t stereoFrame)
 	CG_DrawLowerRight();
 	CG_DrawLowerLeft();
 #endif
+        
+
 
 	if ( !CG_DrawFollow() ) {
 		CG_DrawWarmup();
@@ -3498,6 +3548,9 @@ static void CG_Draw2D(stereoFrame_t stereoFrame)
 		CG_DrawCenterString();
                                         CG_DrawChatString();
 	}
+        
+        
+                CG_DrawRespawnDelay();
 
 
 }

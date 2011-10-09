@@ -212,6 +212,9 @@ typedef struct centity_s {
 
         int                             smokeTime;
         int                             lastSmokeTime;
+        int                             weaponDownTime;
+        int                             weaponUpTime;
+        int                             respawn;
 
 
 } centity_t;
@@ -717,6 +720,8 @@ typedef struct {
 	// warmup countdown
 	int			warmup;
 	int			warmupCount;
+        
+ 
 
 	//==========================
 
