@@ -926,6 +926,7 @@ static void PM_WaterJumpMove( void ) {
 
 // PM_StepSlideMove( qtrue, qfalse );
   PM_StepSlideMove( qtrue );
+
         pm->ps->velocity[2] -= pm->ps->gravity * pml.frametime;
         if (pm->ps->velocity[2] < 0) {
                 // cancel as soon as we are falling down again
@@ -2817,6 +2818,9 @@ if ((pm->cmd.buttons & 1) ) {
                                   {
                                         pm->ps->stats[STAT_BURST_COUNT] =0;
                                           pm->ps->pm_flags |= PMF_SINGLE_SHOT;
+                                          if (pm->ps->weapon == WP_UMP45){
+                                              pm->ps->weaponTime = 150;
+                                          }
 
                                   }
                           
