@@ -218,6 +218,7 @@ struct gentity_s {
                    vec3_t          centerpoint;
                    char             *weaponmodes;
 
+
 };
 
 
@@ -415,8 +416,8 @@ struct gclient_s {
 
         int             weaponMode[WP_NUM_WEAPONS];
         char            weaponModeChar[WP_NUM_WEAPONS];
-   	alturt_t 	ut;
-
+        alturt_t 	ut;
+        int                  amtHealed;
 };
 
 

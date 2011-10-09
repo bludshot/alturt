@@ -292,6 +292,10 @@ void CheckMed( gentity_t *ent ) {
         if ( !traceEnt->takedamage) {
                 return;
         }
+        
+        if ( traceEnt->client->amtHealed >=50){
+            return;
+        }
 
         if ( traceEnt->takedamage && traceEnt->client ) {
             if ( traceEnt->health <100 &&

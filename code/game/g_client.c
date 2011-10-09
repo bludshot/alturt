@@ -1377,6 +1377,7 @@ void ClientSpawn(gentity_t *ent) {
         client->ps.stats[STAT_BURST_COUNT] = 0;
           bg_weaponlist[0].rounds[client->ps.clientNum]=0; //Round count for burst mode.
           bg_weaponlist[0].numClips[client->ps.clientNum]=0; //Round count for spread.
+          ent->client->amtHealed =0;
 
         G_SetOrigin( ent, spawn_origin );
         VectorCopy( spawn_origin, client->ps.origin );
