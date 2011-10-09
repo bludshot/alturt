@@ -899,9 +899,12 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 
 	// don't allow respawn until the death anim is done
 	// g_forcerespawn may force spawning at some later time
+                if(g_gametype.integer == GT_BOMB|| g_gametype.integer == GT_TEAMSV ){
+                    self->client->respawnTime = level.time  +  2000;
+                }else{
 	self->client->respawnTime = level.time  +  (g_respawndelay.integer * 1000) ;
                   trap_SendServerCommand(self->client->ps.clientNum, va( "rsdelay %i", self->client->respawnTime ) );
-
+                }
 	// remove powerups
 	memset( self->client->ps.powerups, 0, sizeof(self->client->ps.powerups) );
 
