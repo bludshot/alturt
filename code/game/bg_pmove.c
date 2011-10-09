@@ -2032,9 +2032,9 @@ static void PM_BeginWeaponChange( int weapon ) {
 
        // PM_AddEvent( EV_CHANGE_WEAPON );
         pm->ps->weaponstate = WEAPON_DROPPING;
-        pm->ps->weaponTime +=300;
+        pm->ps->weaponTime +=150;
         PM_StartTorsoAnim( TORSO_DROP );
-        pm->ps->torsoTimer +=300;
+        pm->ps->torsoTimer +=150;
 }
 
 
@@ -2063,8 +2063,8 @@ static void PM_FinishWeaponChange( void ) {
         //bg_nadeTimer.fuseTime[pm->ps->clientNum] = 6000;
         pm->ps->weapon = weapon;
         pm->ps->weaponstate = WEAPON_RAISING;        
-        pm->ps->weaponTime +=300;
-        pm->ps->torsoTimer +=300;
+        pm->ps->weaponTime +=150;
+        pm->ps->torsoTimer +=150;
        //PM_StartWeaponAnim(WPN_DRAW);
         //pm->ps->weaponTime +=300;
         //pm->ps->torsoTimer +=300;
@@ -2098,11 +2098,10 @@ static void PM_TorsoAnimation( void ) {
                    return;
                 }else
                 if ( (pm->ps->weapon == WP_KNIFE ) 
-			&& pm->ps->stats[STAT_MODE]
-			&& !( pm->ps->pm_flags & PMF_GRENADE_ARMED )){
+	     && pm->ps->stats[STAT_MODE]
+	     && !( pm->ps->pm_flags & PMF_GRENADE_ARMED )){
                    PM_ContinueWeaponAnim( WPN_IDLE_ALT );
-                }else
-		if ( (pm->ps->weapon == WP_KNIFE )
+                }else if ( (pm->ps->weapon == WP_KNIFE )
                         && pm->ps->stats[STAT_MODE]
                         && pm->ps->pm_flags & PMF_GRENADE_ARMED ){
                   PM_ContinueWeaponAnim( WPN_READY_FIRE_IDLE_ALT );
