@@ -27,6 +27,7 @@ along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
 #define	MIN_WALK_NORMAL	0.7f		// can't walk on very steep slopes
 
 #define	STEPSIZE		18
+#define     SMALLSTEPSIZE       (STEPSIZE /2)
 
 #define	JUMP_VELOCITY	364.0f //Xamis -> blud (was 320)
 
@@ -103,6 +104,7 @@ void PM_AddEvent( int newEvent );
 
 
 qboolean	PM_SlideMove( qboolean gravity );
+
 
 void		PM_StepSlideMove( qboolean gravity );
 void PM_StartWeaponAnim( int anim );
