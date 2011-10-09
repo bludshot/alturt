@@ -294,7 +294,8 @@ void CheckMed( gentity_t *ent ) {
         }
         
 
-
+G_Printf( "amount healed is %i\n",traceEnt->client->amtHealed);
+        
         if ( traceEnt->takedamage && traceEnt->client ) {
             if ( traceEnt->health <100 &&
                     traceEnt->health > 0 &&
@@ -303,10 +304,10 @@ void CheckMed( gentity_t *ent ) {
                         traceEnt->client->amtHealed = traceEnt->health+=8;
                         
                 }else{
-                            if ( traceEnt->client->amtHealed >=50){
-                                        return;
-                               }
-                       traceEnt->client->amtHealed = traceEnt->health+=5;
+                            if ( traceEnt->client->amtHealed <=50){
+                              traceEnt->client->amtHealed = traceEnt->health+=5;  
+                              }
+
                 }
             }   
             traceEnt->client->ps.pm_flags &=  ~ PMF_BLEEDING;
