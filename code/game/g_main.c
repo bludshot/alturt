@@ -166,7 +166,7 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_weaponRespawn, "g_weaponrespawn", "5", 0, 0, qtrue  },
 	{ &g_weaponTeamRespawn, "g_weaponTeamRespawn", "30", 0, 0, qtrue },
 	{ &g_forcerespawn, "g_forcerespawn", "20", 0, 0, qtrue },
-	{ &g_respawndelay, "g_respawndelay", "8", CVAR_SERVERINFO | CVAR_ROM, 0, qtrue },        
+	{ &g_respawndelay, "g_respawndelay", "8", CVAR_SERVERINFO, 0, qtrue },        
 	{ &g_inactivity, "g_inactivity", "0", 0, 0, qtrue },
 	{ &g_debugMove, "g_debugMove", "0", 0, 0, qfalse },
 	{ &g_debugDamage, "g_debugDamage", "0", 0, 0, qfalse },
