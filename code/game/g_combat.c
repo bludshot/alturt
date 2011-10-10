@@ -903,6 +903,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
                     self->client->respawnTime = level.time  +  2000;
                 }else{
 	self->client->respawnTime = level.time  +  (g_respawndelay.integer * 1000) ;
+                  g_forcerespawn.integer =1;
                   trap_SendServerCommand(self->client->ps.clientNum, va( "rsdelay %i", self->client->respawnTime ) );
                 }
 	// remove powerups
