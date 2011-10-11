@@ -68,7 +68,7 @@ int             c_pmove = 0;
 #define WALLJUMP_SPEED 580.0f //used in VectorMA for walljumps, affects player velocity
 #define WALLJUMP_MAX_VEL 600 //max velocity during walljumps. I cut this in half, it was 1200 which seems way too high --xamis
 #define WALLJUMP_MAX_UP_VEL 250 //cap the upward velocity on a walljump
-#define WALLJUMP_UP_VEL_BOOST 0.9f //give the player some upward boost off the wall
+#define WALLJUMP_UP_VEL_BOOST 1.1f //give the player some upward boost off the wall
 
 
 
