@@ -2534,6 +2534,19 @@ static void PM_Weapon( void ) {
         pm->ps->weaponTime -= pml.msec;
         if ( pm->ps->weaponTime <= 0 )
           pm->ps->weaponTime = 0;
+ 
+     if( pm->ps->weaponstate ==  WEAPON_FIRING2 && pm->ps->weaponTime > 0){
+                           return;
+           } 
+        
+        
+      if( pm->ps->weaponstate ==  WEAPON_FIRING2){
+               pm->ps->weaponstate = WEAPON_FIRING;
+                           PM_AddEvent( EV_ZOOM_RESET );
+                           pm->ps->weaponTime = 200;
+                           return;
+           }
+        
         
       
         
@@ -2557,19 +2570,10 @@ static void PM_Weapon( void ) {
             return;
 
 
-        if( pm->ps->weaponstate ==  WEAPON_FIRING2 && pm->ps->weaponTime > 0){
-                           return;
-           }
+
         
         
-                
-        if( pm->ps->weaponstate ==  WEAPON_FIRING2){
-               pm->ps->weaponstate = WEAPON_FIRING;
-                           PM_AddEvent( EV_ZOOM_RESET );
-                           pm->ps->weaponTime = 200;
-                           return;
-           }
-        
+              
 
           if ( pm->ps->weaponstate ==WEAPON_READY_FIRE_IDLE_ALT&& pm->ps->weaponTime <= 0 ) {
               if(pm->ps->weapon==WP_KNIFE ){
