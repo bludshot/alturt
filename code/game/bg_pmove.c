@@ -2082,7 +2082,7 @@ PM_TorsoAnimation
 */
 static void PM_TorsoAnimation( void ) {
     
-    
+
         if ( pm->ps->weaponstate == WEAPON_READY ) {
           if ( pm->ps->weapon == WP_KNIFE || BG_Grenade(pm->ps->weapon) ) {
                         PM_ContinueTorsoAnim( TORSO_STAND2 );
@@ -2097,13 +2097,15 @@ static void PM_TorsoAnimation( void ) {
                 }else
                 if ( (pm->ps->weapon == WP_KNIFE ) 
 	     && pm->ps->stats[STAT_MODE]
+                         && pm->ps->weaponTime <= 0
 	     && !( pm->ps->pm_flags & PMF_GRENADE_ARMED )){
                    PM_ContinueWeaponAnim( WPN_IDLE_ALT );
-                }else if ( (pm->ps->weapon == WP_KNIFE )
+                }else if ( (pm->ps->weapon == WP_KNIFE  )
                         && pm->ps->stats[STAT_MODE]
-                        && pm->ps->pm_flags & PMF_GRENADE_ARMED ){
+                        && pm->ps->pm_flags & PMF_GRENADE_ARMED
+                         && pm->ps->weaponTime <= 0){
                   PM_ContinueWeaponAnim( WPN_READY_FIRE_IDLE_ALT );
-                }else
+                }else if( pm->ps->weaponTime <= 0)
                 PM_ContinueWeaponAnim( WPN_IDLE );
 
 
@@ -2568,22 +2570,7 @@ static void PM_Weapon( void ) {
                            return;
            }
         
-       
-      if ( pm->ps->weaponstate == WEAPON_TOALTERNATE ) {
-          pm->ps->weaponTime +=1000;
-          PM_StartWeaponAnim( WPN_TOALTERNATE );
-          pm->ps->weaponstate = WEAPON_READY;
-          return;
-          
-        }
-      
-            if ( pm->ps->weaponstate == WEAPON_TONORMAL ) {
-          pm->ps->weaponTime += 1000;
-          PM_StartWeaponAnim( WPN_TONORMAL );
-          pm->ps->weaponstate = WEAPON_READY;
-          return;
-        }
-        
+
           if ( pm->ps->weaponstate ==WEAPON_READY_FIRE_IDLE_ALT&& pm->ps->weaponTime <= 0 ) {
               if(pm->ps->weapon==WP_KNIFE ){
              PM_ContinueWeaponAnim(WPN_READY_FIRE_IDLE_ALT);
@@ -2601,7 +2588,24 @@ static void PM_Weapon( void ) {
 
    if ( pm->ps->weaponTime > 0 ) {
                 return;
-  }                       
+  }         
+        
+               
+      if ( pm->ps->weaponstate == WEAPON_TOALTERNATE ) {
+          pm->ps->weaponTime +=1000;
+          PM_StartWeaponAnim( WPN_TOALTERNATE );
+          pm->ps->weaponstate = WEAPON_READY;
+          return;
+          
+        }
+      
+            if ( pm->ps->weaponstate == WEAPON_TONORMAL ) {
+          pm->ps->weaponTime += 1000;
+          PM_StartWeaponAnim( WPN_TONORMAL );
+          pm->ps->weaponstate = WEAPON_READY;
+          return;
+        }
+        
         
 
 if ((pm->cmd.buttons & 1) ) {
