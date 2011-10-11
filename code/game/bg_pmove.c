@@ -63,12 +63,12 @@ float   pm_slidefriction = 0;
 int             c_pmove = 0;
 
 //Walljump constants
-#define WALLJUMP_BOOST 180 //used in the checkWalljump function, no change to the actual walljump made here.
+#define WALLJUMP_BOOST 140 //used in the checkWalljump function, no change to the actual walljump made here.
 #define MAX_WALLJUMPS 3 //no explanation needed 
 #define WALLJUMP_SPEED 580.0f //used in VectorMA for walljumps, affects player velocity
 #define WALLJUMP_MAX_VEL 600 //max velocity during walljumps. I cut this in half, it was 1200 which seems way too high --xamis
 #define WALLJUMP_MAX_UP_VEL 250 //cap the upward velocity on a walljump
-#define WALLJUMP_UP_VEL_BOOST 0.7f //give the player some upward boost off the wall
+#define WALLJUMP_UP_VEL_BOOST 0.9f //give the player some upward boost off the wall
 
 
 
@@ -153,41 +153,41 @@ void PM_SetVelocityforLedgeMove( playerState_t *ps, int anim )
 {
         vec3_t fwdAngles, moveDir;
 
-                        if( pm->ps->torsoTimer > 700 ) 
+                        if( pm->ps->torsoTimer > 750 ) 
                         {
                                 ps->velocity[0] = 0;
                                 ps->velocity[1] = 0;
                                 ps->velocity[2] = 40;
                         }
-                        else if( pm->ps->torsoTimer > 600 ) 
-                        {
-                                ps->velocity[0] = 0;
-                                ps->velocity[1] = 0;
-                                ps->velocity[2] = 140;
-                        }
-                        else  if( pm->ps->torsoTimer > 500 ) 
+                        else if( pm->ps->torsoTimer > 550 ) 
                         {
                                 ps->velocity[0] = 0;
                                 ps->velocity[1] = 0;
                                 ps->velocity[2] = 100;
                         }
+                        else  if( pm->ps->torsoTimer > 500 ) 
+                        {
+                                ps->velocity[0] = 0;
+                                ps->velocity[1] = 0;
+                                ps->velocity[2] = 60;
+                        }
                         else if( pm->ps->torsoTimer > 400 ) 
                         {
                                 ps->velocity[0] = 0;
                                 ps->velocity[1] = 0;
-                                ps->velocity[2] = 40;
+                                ps->velocity[2] = 50;
                         }
                         else if( pm->ps->torsoTimer > 120 ) 
                         {
                                 ps->velocity[0] = 0;
                                 ps->velocity[1] = 0;
-                                ps->velocity[2] = 180;
+                                ps->velocity[2] = 120;
                         }
                         else if( pm->ps->torsoTimer > 90 ) 
                         {
                                 ps->velocity[0] = 0;
                                 ps->velocity[1] = 0;
-                                ps->velocity[2] = 104;
+                                ps->velocity[2] = 140;
                         }
                         else if(pm->ps->torsoTimer > 0)
                         {
@@ -225,9 +225,9 @@ void PM_GrabWallForClimb( playerState_t *ps )
 {
         PM_StartTorsoAnim ( BOTH_LEDGECLIMB );
         PM_StartLegsAnim  ( BOTH_LEDGECLIMB );
-        ps->torsoTimer = 800;
-        ps->legsTimer = 800;
-        ps->weaponTime = 800;
+        ps->torsoTimer = 900;
+        ps->legsTimer = 900;
+        ps->weaponTime = 900;
         PM_AddEvent(EV_LEDGEGRAB);
         ps->pm_flags |= PMF_EDGE;
 }
@@ -2082,6 +2082,9 @@ PM_TorsoAnimation
 */
 static void PM_TorsoAnimation( void ) {
     
+    if( pm->ps->torsoTimer > 0 ){
+        return;
+    } 
 
         if ( pm->ps->weaponstate == WEAPON_READY ) {
           if ( pm->ps->weapon == WP_KNIFE || BG_Grenade(pm->ps->weapon) ) {
