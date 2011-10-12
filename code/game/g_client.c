@@ -476,18 +476,36 @@ void CopyToBodyQue( gentity_t *ent ) {
         // change the animation to the last-frame only, so the sequence
         // doesn't repeat anew for the body
         switch ( body->s.legsAnim & ~ANIM_TOGGLEBIT ) {
-        case BOTH_DEATH1:
-        case BOTH_DEAD1:
-                body->s.torsoAnim = body->s.legsAnim = BOTH_DEAD1;
+        case BOTH_DEATH_BLOWAHEAD:
+        case BOTH_DEAD_BLOWAHEAD:
+                body->s.torsoAnim = body->s.legsAnim = BOTH_DEAD_BLOWAHEAD;
                 break;
-        case BOTH_DEATH2:
-        case BOTH_DEAD2:
-                body->s.torsoAnim = body->s.legsAnim = BOTH_DEAD2;
+        case BOTH_DEATH_CHEST:
+        case BOTH_DEAD_CHEST:
+                body->s.torsoAnim = body->s.legsAnim = BOTH_DEAD_CHEST;
                 break;
-        case BOTH_DEATH3:
-        case BOTH_DEAD3:
+        case BOTH_DEATH_HEADBACK:
+        case BOTH_DEAD_HEADBACK:
+                body->s.torsoAnim = body->s.legsAnim = BOTH_DEAD_HEADBACK;
+                break;
+        case BOTH_DEATH_HEADFRONT:
+        case BOTH_DEAD_HEADFRONT:
+                body->s.torsoAnim = body->s.legsAnim = BOTH_DEAD_HEADFRONT;
+                break;
+        case BOTH_DEATH_WATER:
+        case BOTH_DEAD_WATER:
+                body->s.torsoAnim = body->s.legsAnim = BOTH_DEAD_WATER;
+                break;                
+        case BOTH_DEATH_BACK:
+        case BOTH_DEAD_BACK:
+                body->s.torsoAnim = body->s.legsAnim = BOTH_DEAD_BACK;
+                break;
+        case BOTH_DEATH_CROUCHED:
+        case BOTH_DEAD_CROUCHED:
+                body->s.torsoAnim = body->s.legsAnim = BOTH_DEAD_CROUCHED;
+                break;            
         default:
-                body->s.torsoAnim = body->s.legsAnim = BOTH_DEAD3;
+                body->s.torsoAnim = body->s.legsAnim = BOTH_DEAD_CHEST;
                 break;
         }
 
@@ -1410,7 +1428,7 @@ void ClientSpawn(gentity_t *ent) {
 
         
         // set default animations
-        client->ps.torsoAnim = TORSO_STAND;
+        client->ps.torsoAnim = TORSO_STAND_RIFLE;
         client->ps.legsAnim = LEGS_IDLE;
 
         if ( level.intermissiontime ) {

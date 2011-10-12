@@ -919,14 +919,14 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 
 		switch ( i ) {
 		case 0:
-			anim = BOTH_DEATH1;
+			anim = BOTH_DEATH_CROUCHED;
 			break;
 		case 1:
-			anim = BOTH_DEATH2;
+			anim = BOTH_DEATH_BACK;
 			break;
 		case 2:
 		default:
-			anim = BOTH_DEATH3;
+			anim = BOTH_DEATH_CHEST;
 			break;
 		}
 

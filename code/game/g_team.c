@@ -1742,12 +1742,6 @@ void G_DoVipStuff(int team, gentity_t *player)
     vip->client->ut.is_vip = qtrue;
     lastvip[team] = vip->s.clientNum;
 
-    // remove ammo & powerups
-    //memset( vip->client->ps.powerups, 0, sizeof(vip->client->ps.powerups) );
-    //memset( vip->client->ps.ammo, 0, sizeof(vip->client->ps.ammo) );
-
-    //vip->client->ps.stats[STAT_WEAPONS] = 0;
-    //vip->client->ps.stats[STAT_WEAPONS_EXT] = 0;
 
     vip->health = 100;
 
@@ -1842,7 +1836,7 @@ void CheckTeamplay( void ) {
                 {
                     client->sess.waiting = qfalse;
                     ClientSpawn( &g_entities[ client - level.clients ] );
-                   client->ps.eFlags &= ~EF_WEAPONS_LOCKED; //removed this, don't fire during warmup! --xamis
+                   client->ps.eFlags &= ~EF_WEAPONS_LOCKED; 
                   //  client->ps.eFlags |= EF_WEAPONS_LOCKED;
                 }
             }

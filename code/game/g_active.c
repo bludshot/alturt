@@ -219,9 +219,9 @@ void ClientImpacts(gentity_t *ent, pmove_t *pm) {
 
         if (!strcmp(other->classname, "func_breakable")) {
             if ((ent->s.legsAnim == LEGS_JUMP ||
-                    ent->s.legsAnim == LEGS_JUMPB ||
+                    ent->s.legsAnim == LEGS_BACKJUMP ||
                     ent->s.legsAnim == LEGS_LAND ||
-                    pm->ps->legsAnim == LEGS_LANDB))
+                    pm->ps->legsAnim == LEGS_BACKLAND))
                 G_Damage(other, NULL, NULL, NULL, NULL, 50, 0, MOD_MACHINEGUN);
             //G_Printf("func_breakable\n");
         }

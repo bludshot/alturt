@@ -176,11 +176,12 @@ typedef enum {
 } pmtype_t;
 
 typedef enum {
-        WEAPON_READY,
-        WEAPON_RAISING,
-        WEAPON_DROPPING,
-        WEAPON_FIRING,
+    WEAPON_READY,
+    WEAPON_RAISING,
+    WEAPON_DROPPING,
+    WEAPON_FIRING,
     WEAPON_FIRING2,
+    WEAPON_FIRING3,
     WEAPON_RELOADING,
     WEAPON_RELOADING_START,
     WEAPON_RELOADING_ZOOM_RESET,
@@ -297,7 +298,6 @@ typedef enum {
 
         STAT_DEAD_YAW,                                  // look this direction when dead (FIXME: get rid of?)
         STAT_CLIENTS_READY,                             // bit mask of clients wishing to exit the intermission (FIXME: configstring?)
-        STAT_XYSPEED,//Xamis
 
           STAT_NADE_FUSE,
           STAT_DMG_LOC,
@@ -622,74 +622,74 @@ typedef enum {
 
 // animations
 typedef enum {
-        BOTH_DEATH1,
-        BOTH_DEAD1,
-        BOTH_DEATH2,
-        BOTH_DEAD2,
-        BOTH_DEATH3,
-        BOTH_DEAD3,
-        BOTH_CLIMB,
-        BOTH_CLIMB_IDLE,
-        BOTH_LEDGECLIMB,
 
-        TORSO_GESTURE,
+BOTH_LEDGECLIMB,
+BOTH_CLIMB,
+BOTH_CLIMB_IDLE,
+BOTH_DEATH_BLOWAHEAD,
+BOTH_DEAD_BLOWAHEAD,
+BOTH_DEATH_BLOWBACK,
+BOTH_DEAD_BLOWBACK,
+BOTH_DEATH_CHEST,
+BOTH_DEAD_CHEST,
+BOTH_DEATH_BACK,
+BOTH_DEAD_BACK,
+BOTH_DEATH_HEADFRONT,
+BOTH_DEAD_HEADFRONT,
+BOTH_DEATH_HEADBACK,
+BOTH_DEAD_HEADBACK,
+BOTH_DEATH_CROUCHED,
+BOTH_DEAD_CROUCHED,
+BOTH_DEATH_WATER,
+BOTH_DEAD_WATER,
 
-        TORSO_ATTACK,
-        TORSO_ATTACK2,
+TORSO_USE,
+TORSO_BANDAGE,
+TORSO_ATTACK_PISTOL,
+TORSO_ATTACK_RIFLE,
+TORSO_ATTACK_PUMPGUN,
+TORSO_ATTACK_GRENADE,
+TORSO_ATTACK_KNIFE,
+TORSO_WEAPON_LOWER,
+TORSO_WEAPON_RAISE,
+TORSO_RELOAD_PISTOL,
+TORSO_RELOAD_RIFLE,
+TORSO_STAND_PISTOL,
+TORSO_STAND_RIFLE,
+TORSO_STAND_KNIFE,
+TORSO_POINT,
+TORSO_RUN_ATTACK_PISTOL,
+TORSO_RUN_ATTACK_RIFLE,
+TORSO_RUN_ATTACK_PUMPGUN,
+TORSO_RUN_2HANDED,
+TORSO_RUN_1HANDED,
+TORSO_SWIM,
 
-        TORSO_DROP,
-        TORSO_RAISE,
-
-        TORSO_STAND,
-        TORSO_STAND2,
-
-        LEGS_WALKCR,
-        LEGS_WALK,
-        LEGS_RUN,
-        LEGS_BACK,
-        LEGS_SWIM,
-        LEGS_LIMP,
-        LEGS_BACKLIMP,	
-
-        LEGS_JUMP,
-        LEGS_LAND,
-
-        LEGS_JUMPB,
-        LEGS_LANDB,
-
-        LEGS_IDLE,
-        LEGS_IDLECR,
-
-        LEGS_TURN,
- //Xamis pistol
-        TORSO_ATTACK_PISTOL,
-        TORSO_STAND_PISTOL,
-        TORSO_RUN_ATTACK_PISTOL,
-
-        TORSO_RELOAD_PISTOL,
-        TORSO_RELOAD_RIFLE,
-        TORSO_ATTACK_RIFLE,
-        TORSO_ATTACK_PUMPGUN,
-        TORSO_ATTACK_GRENADE,
-        TORSO_ATTACK_KNIFE,
-        TORSO_BANDAGE,
-        TORSO_GETFLAG,
-        TORSO_GUARDBASE,
-        TORSO_PATROL,
-        TORSO_FOLLOWME,
-        TORSO_AFFIRMATIVE,
-        TORSO_NEGATIVE,
-
+LEGS_WALKCR,
+LEGS_WALK,
+LEGS_BACKWALKCR,
+LEGS_BACKWALK,
+LEGS_RUN,
+LEGS_BACKRUN,
+LEGS_SWIM,
+LEGS_JUMP,
+LEGS_LAND,
+LEGS_BACKJUMP,
+LEGS_BACKLAND,
+LEGS_IDLE,
+LEGS_IDLECR,
+LEGS_TURN,
+LEGS_LIMP,
+LEGS_BACKLIMP,
+LEGS_STANDCR,
+LEGS_CRSTAND,
+LEGS_JUMPRT,
+LEGS_LANDRT,
+LEGS_BACKJUMPRT,
+LEGS_BACKLANDRT,
 
         MAX_ANIMATIONS,
-
-        LEGS_BACKCR,
-        LEGS_BACKWALK,
-        FLAG_RUN,
-        FLAG_STAND,
-        FLAG_STAND2RUN,
-
-        MAX_TOTALANIMATIONS
+        MAX_TOTALANIMATIONS,
 } animNumber_t;
 
 typedef enum {
@@ -722,6 +722,9 @@ typedef struct animation_s {
         int             initialLerp;            // msec to get to first frame
         int             reversed;                       // true if animation is reversed
         int             flipflop;                       // true if animation should flipflop back to base
+	int		upper;				//torso
+	int		lower;				//legs
+	int		hit;				//death animations?
 } animation_t;
 
 typedef struct soundList_s {  //Added to deal with reload sounds --Xamis

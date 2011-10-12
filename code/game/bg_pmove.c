@@ -858,7 +858,7 @@ VectorMA( pm->ps->velocity, JUMP_VELOCITY *0.5,
   }
   else
   {
-      PM_ForceLegsAnim( LEGS_JUMPB );
+      PM_ForceLegsAnim( LEGS_BACKJUMP );
     pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
   }
 
@@ -990,6 +990,11 @@ static void PM_WaterMove( void ) {
         if ( wishspeed > pm->ps->speed * pm_swimScale ) {
                 wishspeed = pm->ps->speed * pm_swimScale;
         }
+        
+
+         PM_StartTorsoAnim( TORSO_SWIM );
+
+
 
         PM_Accelerate (wishdir, wishspeed, pm_wateraccelerate);
 
@@ -1436,7 +1441,7 @@ static void PM_CrashLand( void ) {
         
         // decide which landing animation to use
         if ( pm->ps->pm_flags & PMF_BACKWARDS_JUMP ) {
-                PM_ForceLegsAnim( LEGS_LANDB );
+                PM_ForceLegsAnim( LEGS_BACKLAND );
         } else {
                 PM_ForceLegsAnim( LEGS_LAND );
         }
@@ -1595,7 +1600,7 @@ static void PM_GroundTraceMissed( void ) {
                                 PM_ForceLegsAnim( LEGS_JUMP );
                                 pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
                         } else {
-                                PM_ForceLegsAnim( LEGS_JUMPB );
+                                PM_ForceLegsAnim( LEGS_BACKJUMP );
                                 pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
                         }
                 }
@@ -1650,7 +1655,7 @@ static void PM_GroundTrace( void ) {
                         PM_ForceLegsAnim( LEGS_JUMP );
                         pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
                 } else {
-                        PM_ForceLegsAnim( LEGS_JUMPB );
+                        PM_ForceLegsAnim( LEGS_BACKJUMP );
                         pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
                 }
 
@@ -1897,7 +1902,7 @@ footstep = qfalse;
                 bobmove = 0;    // dont bob while crouched --Xamis Value was .5
 
                  if ( pm->ps->pm_flags & PMF_BACKWARDS_RUN ) {
-                        PM_ContinueLegsAnim( LEGS_BACKCR );
+                        PM_ContinueLegsAnim(LEGS_BACKWALKCR );
                 }
                 else {
                         PM_ContinueLegsAnim( LEGS_WALKCR );
@@ -1916,11 +1921,16 @@ footstep = qfalse;
         } else {
                 if ( !( pm->cmd.buttons & BUTTON_WALKING ) ) {
                         bobmove = 0.4f; // faster speeds bob faster
+                        
+                        if ( pm->waterlevel > 1 ){
+                                 PM_StartLegsAnim(LEGS_SWIM);
+                        }else
+                        
                         if ( pm->ps->pm_flags & PMF_BACKWARDS_RUN ) {
                               if ( pm->ps->stats[STAT_DMG_LOC] & ( 1 << LEG_DAMAGE )  ) {
                                 PM_ContinueLegsAnim( LEGS_BACKLIMP );
                                 }else
-                                PM_ContinueLegsAnim( LEGS_BACK );
+                                PM_ContinueLegsAnim( LEGS_BACKRUN );
                         }
                         else {
                               if ( pm->ps->stats[STAT_DMG_LOC] & ( 1 << LEG_DAMAGE )  ) {
@@ -2034,7 +2044,7 @@ static void PM_BeginWeaponChange( int weapon ) {
        // PM_AddEvent( EV_CHANGE_WEAPON );
         pm->ps->weaponstate = WEAPON_DROPPING;
         pm->ps->weaponTime +=150;
-        PM_StartTorsoAnim( TORSO_DROP );
+        PM_StartTorsoAnim( TORSO_WEAPON_LOWER );
         pm->ps->torsoTimer +=150;
 }
 
@@ -2069,7 +2079,7 @@ static void PM_FinishWeaponChange( void ) {
        //PM_StartWeaponAnim(WPN_DRAW);
         //pm->ps->weaponTime +=300;
         //pm->ps->torsoTimer +=300;
-        PM_StartTorsoAnim( TORSO_RAISE );
+        PM_StartTorsoAnim( TORSO_WEAPON_RAISE );
         PM_AddEvent( EV_CHANGE_WEAPON );
 }
 
@@ -2086,13 +2096,23 @@ static void PM_TorsoAnimation( void ) {
         return;
     } 
 
+
+    
+    
         if ( pm->ps->weaponstate == WEAPON_READY ) {
-          if ( pm->ps->weapon == WP_KNIFE || BG_Grenade(pm->ps->weapon) ) {
-                        PM_ContinueTorsoAnim( TORSO_STAND2 );
+            
+                 if ( pm->waterlevel > 1 ) {
+                        PM_StartTorsoAnim( TORSO_SWIM );
+                        return;
+                }
+            
+          if ( ( pm->ps->weapon == WP_KNIFE || BG_Grenade(pm->ps->weapon) ) 
+                    && !( pm->ps->pm_flags & PMF_GRENADE_ARMED )){
+                        PM_ContinueTorsoAnim( TORSO_STAND_KNIFE );
                 } else if ( BG_Sidearm(pm->ps->weapon)){
                   PM_StartTorsoAnim( TORSO_STAND_PISTOL );
                 }else{
-                        PM_ContinueTorsoAnim( TORSO_STAND );
+                        PM_ContinueTorsoAnim( TORSO_STAND_RIFLE );
                 }
                if (BG_Grenade( pm->ps->weapon )|| pm->ps->weapon == WP_HK69){
             //     PM_ContinueWeaponAnim(WPN_READY_FIRE_IDLE);
@@ -2515,7 +2535,8 @@ qboolean PM_Bandage(void){
 
 static void PM_Weapon( void ) {
 
-
+   
+    
         if ( pm->ps->pm_flags & PMF_RESPAWNED ) {
                 return;
         }
@@ -2542,6 +2563,11 @@ static void PM_Weapon( void ) {
                            return;
            } 
         
+     if( pm->ps->weaponstate ==  WEAPON_FIRING3 && pm->ps->weaponTime > 0){
+                           return;
+           }         
+
+        
         
       if( pm->ps->weaponstate ==  WEAPON_FIRING2){
                pm->ps->weaponstate = WEAPON_FIRING;
@@ -2550,6 +2576,29 @@ static void PM_Weapon( void ) {
                            return;
            }
         
+        
+     if( pm->ps->weaponstate ==  WEAPON_FIRING3){
+         
+         if(BG_Grenade(pm->ps->weapon)  ){
+            PM_StartWeaponAnim( WPN_FIRE );
+            pm->ps->weaponTime = 300;
+            PM_AddEvent( EV_FIRE_WEAPON );
+            pm->ps->pm_flags &= ~PMF_GRENADE_ARMED;
+            pm->ps->weaponstate = WEAPON_FIRING;
+            return;
+                }
+          if(pm->ps->weapon  == WP_KNIFE  ){        
+            PM_StartWeaponAnim( WPN_FIRE_ALT );
+            pm->ps->weaponstate = WEAPON_FIRING;
+            pm->ps->weaponTime = PM_WeaponTime(pm->ps->weapon ,pm->ps->stats[STAT_MODE] );
+            PM_AddEvent( EV_FIRE_WEAPON );
+            pm->ps->pm_flags &= ~PMF_GRENADE_ARMED;
+            return;
+          }
+         
+         
+         
+           }
         
       
         
@@ -2656,11 +2705,11 @@ if ((pm->cmd.buttons & 1) ) {
         if ( pm->ps->weaponstate == WEAPON_RAISING &&  pm->ps->weaponTime <= 0 ) {
                 pm->ps->weaponstate = WEAPON_READY;
                 if ( pm->ps->weapon == WP_KNIFE || BG_Grenade(pm->ps->weapon ) ) {
-                  PM_StartTorsoAnim( TORSO_STAND2 );
+                  PM_StartTorsoAnim( TORSO_STAND_KNIFE );
                 } else if ( BG_Sidearm(pm->ps->weapon)){
                   PM_StartTorsoAnim( TORSO_STAND_PISTOL );
                 }else{
-                  PM_StartTorsoAnim( TORSO_STAND );
+                  PM_StartTorsoAnim( TORSO_STAND_RIFLE );
                 }
 
 
@@ -2682,20 +2731,17 @@ if ((pm->cmd.buttons & 1) ) {
             pm->ps->stats[STAT_BURST_COUNT]  = 0;
             
           if(BG_Grenade(pm->ps->weapon) && pm->ps->pm_flags & PMF_GRENADE_ARMED){//we let go of fire do we have a grenade armed?
-            PM_StartWeaponAnim( WPN_FIRE );
-            pm->ps->weaponstate = WEAPON_FIRING;
-            pm->ps->weaponTime = 200;
-            PM_AddEvent( EV_FIRE_WEAPON );
             PM_StartTorsoAnim( TORSO_ATTACK_GRENADE );
-            pm->ps->pm_flags &= ~PMF_GRENADE_ARMED;
+            pm->ps->weaponstate = WEAPON_FIRING3;
+            pm->ps->torsoTimer = 600;
+            pm->ps->weaponTime = 600;
+
             return;
           }else if ( pm->ps->weapon == WP_KNIFE && pm->ps->stats[STAT_MODE]&& pm->ps->pm_flags & PMF_GRENADE_ARMED ){ //fire released, knife throw
-            PM_StartWeaponAnim( WPN_FIRE_ALT );
-            pm->ps->weaponstate = WEAPON_FIRING;
-            pm->ps->weaponTime = PM_WeaponTime(pm->ps->weapon ,pm->ps->stats[STAT_MODE] );
-            PM_AddEvent( EV_FIRE_WEAPON );
             PM_StartTorsoAnim( TORSO_ATTACK_GRENADE );
-            pm->ps->pm_flags &= ~PMF_GRENADE_ARMED;
+            pm->ps->weaponstate = WEAPON_FIRING3;
+            pm->ps->torsoTimer = 600;
+            pm->ps->weaponTime = 600;
             return;
               
           }else    {
@@ -2776,6 +2822,20 @@ if ((pm->cmd.buttons & 1) ) {
 
 
 //start a torso animation to match our weapon animations
+        if( pm->xyspeed >190 ){
+            
+                    if ( BG_Sidearm(pm->ps->weapon)){
+          PM_StartTorsoAnim( TORSO_RUN_ATTACK_PISTOL );
+        }else if ( pm->ps->weapon == WP_KNIFE){
+          PM_StartTorsoAnim( TORSO_ATTACK_KNIFE );
+        }else if ( pm->ps->weapon == WP_SPAS){
+          PM_StartTorsoAnim( TORSO_RUN_ATTACK_PUMPGUN );
+        }else{
+          PM_StartTorsoAnim( TORSO_RUN_ATTACK_RIFLE );
+        }
+            
+        }else{
+        
         if ( BG_Sidearm(pm->ps->weapon)){
           PM_StartTorsoAnim( TORSO_ATTACK_PISTOL );
         }else if ( pm->ps->weapon == WP_KNIFE){
@@ -2784,6 +2844,7 @@ if ((pm->cmd.buttons & 1) ) {
           PM_StartTorsoAnim( TORSO_ATTACK_PUMPGUN );
         }else{
           PM_StartTorsoAnim( TORSO_ATTACK_RIFLE );
+        }
         }
 
  
@@ -2846,7 +2907,7 @@ PM_Animate
 static void PM_Animate( void ) {
         //if ( pm->cmd.buttons & BUTTON_GESTURE ) {
           //      if ( pm->ps->torsoTimer == 0 ) {
-            //            PM_StartTorsoAnim( TORSO_GESTURE );
+            //            PM_StartTorsoAnim( TORSO_POINT );
               //          pm->ps->torsoTimer = TIMER_GESTURE;
                 //        PM_AddEvent( EV_TAUNT );
              //   }
@@ -3459,7 +3520,7 @@ static qboolean PM_WallJump(void) {
     PM_ForceLegsAnim(LEGS_JUMP);
     pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
   } else if(pm->cmd.forwardmove < 0) {
-    PM_ForceLegsAnim(LEGS_JUMPB);
+    PM_ForceLegsAnim(LEGS_BACKJUMP);
     pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
   } else if(pm->cmd.rightmove > 0){
 //todo jump right animation
