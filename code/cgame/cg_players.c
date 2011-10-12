@@ -83,6 +83,246 @@ CLIENT INFO
 =============================================================================
 */
 
+/*
+=============================================================================
+
+GetEnumFromString 
+
+--Xamis
+=============================================================================
+*/
+
+
+
+
+animNumber_t GetEnumFromString ( const char *s ) {
+    
+        int i;
+    static struct {
+        const char *s;
+        animNumber_t e;
+    } map[] = {
+        { "BOTH_LEDGECLIMB", BOTH_LEDGECLIMB },
+        { "BOTH_CLIMB", BOTH_CLIMB },
+        { "BOTH_CLIMB_IDLE", BOTH_CLIMB_IDLE },
+        { "BOTH_DEATH_BLOWAHEAD", BOTH_DEATH_BLOWAHEAD },
+        { "BOTH_DEAD_BLOWAHEAD", BOTH_DEAD_BLOWAHEAD },
+        { "BOTH_DEATH_BLOWBACK", BOTH_DEATH_BLOWBACK },
+        { "BOTH_DEAD_BLOWBACK", BOTH_DEAD_BLOWBACK },
+        { "BOTH_DEATH_CHEST", BOTH_DEATH_CHEST },
+        { "BOTH_DEAD_CHEST", BOTH_DEAD_CHEST },
+        { "BOTH_DEATH_BACK", BOTH_DEATH_BACK },
+        { "BOTH_DEAD_BACK", BOTH_DEAD_BACK },
+        { "BOTH_DEATH_HEADFRONT", BOTH_DEATH_HEADFRONT },
+        { "BOTH_DEAD_HEADFRONT", BOTH_DEAD_HEADFRONT },
+        { "BOTH_DEATH_HEADBACK", BOTH_DEATH_HEADBACK },
+        { "BOTH_DEAD_HEADBACK", BOTH_DEAD_HEADBACK },
+        { "BOTH_DEATH_CROUCHED", BOTH_DEATH_CROUCHED },
+        { "BOTH_DEAD_CROUCHED", BOTH_DEAD_CROUCHED },
+        { "BOTH_DEATH_WATER",BOTH_DEATH_WATER  },
+        { "BOTH_DEAD_WATER", BOTH_DEAD_WATER },
+
+//torso
+        { "TORSO_USE",TORSO_USE  },
+        { "TORSO_BANDAGE", TORSO_BANDAGE  },
+        { "TORSO_ATTACK_PISTOL", TORSO_ATTACK_PISTOL  },
+        { "TORSO_ATTACK_RIFLE", TORSO_ATTACK_RIFLE },
+        { "TORSO_ATTACK_PUMPGUN", TORSO_ATTACK_PUMPGUN  },
+        { "TORSO_ATTACK_GRENADE",TORSO_ATTACK_GRENADE  },
+        { "TORSO_ATTACK_KNIFE", TORSO_ATTACK_KNIFE },
+        { "TORSO_WEAPON_LOWER", TORSO_WEAPON_LOWER },
+        { "TORSO_WEAPON_RAISE", TORSO_WEAPON_RAISE  },
+        { "TORSO_RELOAD_PISTOL", TORSO_RELOAD_PISTOL },
+        { "TORSO_RELOAD_RIFLE",TORSO_RELOAD_RIFLE  },
+        { "TORSO_STAND_PISTOL",TORSO_STAND_PISTOL  },
+        { "TORSO_STAND_RIFLE",TORSO_STAND_RIFLE  },
+        { "TORSO_STAND_KNIFE", TORSO_STAND_KNIFE },
+        { "TORSO_POINT",TORSO_POINT  },
+        { "TORSO_RUN_ATTACK_PISTOL", TORSO_RUN_ATTACK_PISTOL  },
+        { "TORSO_RUN_ATTACK_RIFLE",TORSO_RUN_ATTACK_RIFLE  },
+        { "TORSO_RUN_ATTACK_PUMPGUN", TORSO_RUN_ATTACK_PUMPGUN },
+        { "TORSO_RUN_2HANDED", TORSO_RUN_2HANDED },
+        { "TORSO_RUN_1HANDED", TORSO_RUN_1HANDED },
+        { "TORSO_SWIM", TORSO_SWIM },
+//legs
+        { "LEGS_WALKCR", LEGS_WALKCR },
+        { "LEGS_WALK", LEGS_WALK },
+        { "LEGS_BACKWALKCR",LEGS_BACKWALKCR  },
+        { "LEGS_BACKWALK",LEGS_BACKWALK  },
+        { "LEGS_RUN",LEGS_RUN  },
+        { "LEGS_BACKRUN",LEGS_BACKRUN  },
+        { "LEGS_SWIM",LEGS_SWIM  },
+        { "LEGS_JUMP", LEGS_JUMP },
+        { "LEGS_LAND", LEGS_LAND  },
+        { "LEGS_BACKJUMP", LEGS_BACKJUMP  },
+        { "LEGS_BACKLAND", LEGS_BACKLAND  },
+       { "LEGS_IDLE", LEGS_IDLE  },
+       { "LEGS_IDLECR", LEGS_IDLECR  },
+       { "LEGS_TURN", LEGS_TURN   },
+       { "LEGS_LIMP", LEGS_LIMP  },
+       { "LEGS_BACKLIMP", LEGS_BACKLIMP  },
+       { "LEGS_STANDCR", LEGS_STANDCR  },
+       { "LEGS_CRSTAND", LEGS_CRSTAND  },
+       { "LEGS_JUMPRT", LEGS_JUMPRT  },
+       { "LEGS_LANDRT", LEGS_LANDRT  },
+       { "LEGS_BACKJUMPRT", LEGS_BACKJUMPRT  },
+       { "LEGS_BACKLANDRT", LEGS_BACKLANDRT  },
+        { "MAX_TOTALANIMATIONS",MAX_TOTALANIMATIONS  },
+        { "MAX_ANIMATIONS", MAX_ANIMATIONS },
+    };
+
+    for ( i = 0 ; i < sizeof(map)/sizeof(map[0]); i++ ) {
+        if ( strcmp(s,map[i].s) == 0 ) {
+            return map[i].e;
+        }
+    } return -1;
+}
+
+
+                                                                     
+                                                                     
+                                                                     
+                                             
+
+/*
+=============================================================================
+
+CG_ParseAnimationFile
+ * modified for non q3 models
+
+--Xamis
+=============================================================================
+*/
+
+static qboolean CG_ParseAnimationFile( const char *filename, clientInfo_t *ci, const char *modelName ) {
+  char *text_p;
+  int len;
+  int i,j,k;
+  char *token;
+  float fps;
+  int skip;
+  char text[20000];
+  fileHandle_t f;
+  animation_t *animations;
+  char *animationType;
+  animations = ci->animations;
+
+// load the file
+  len = trap_FS_FOpenFile( filename, &f, FS_READ );
+  if ( len <= 0 ) {
+    return qfalse;
+  }
+  if ( len >= sizeof( text ) - 1 ) {
+    CG_Printf( "File %s too long\n", filename );
+    return qfalse;
+  }
+  trap_FS_Read( text, len, f );
+  text[len] = 0;
+  trap_FS_FCloseFile( f );
+
+// parse the text
+  text_p = text;
+  skip = 0; // quite the compiler warning
+
+
+	ci->footsteps = FOOTSTEP_NORMAL;
+	VectorClear( ci->headOffset );
+	ci->gender = GENDER_MALE;
+	ci->fixedlegs = qfalse;
+	ci->fixedtorso = qfalse;
+ 	k = 0;
+
+
+
+	if ( !Q_stricmp( modelName, "athena") ) {
+		ci->gender = GENDER_FEMALE;
+	} else {
+		ci->gender = GENDER_MALE;
+	}
+
+
+// read information for each frame
+  for ( i = 0 ; i < MAX_TOTALANIMATIONS ; i++ ) {
+
+    token = COM_Parse( &text_p );
+    if ( !token ) break;
+    animationType =( token );
+if ( GetEnumFromString ( token ) >=0 ) {
+		j= GetEnumFromString ( token );
+}else{
+j=0;
+//CG_Printf("continue\n");
+if ( k < 3){ // if we go more than three lines without any animations, exit to prevent infinite loop.
+i=0;
+k++;
+}
+continue;
+}
+
+    token = COM_Parse( &text_p );
+    if ( !token ) break;
+    animations[j].firstFrame = atoi( token );
+
+
+    token = COM_Parse( &text_p );
+    if ( !token ) break;
+    animations[j].numFrames = atoi( token );
+    token = COM_Parse( &text_p );
+    if ( !token ) break;
+	 fps = atof( token );
+	 if ( fps == 0 ) fps = 1;
+		animations[j].frameLerp = 1000 / fps;
+		animations[j].initialLerp = 1000 / fps;
+    token = COM_Parse( &text_p );
+    if ( !token ) break;
+	animations[j].loopFrames = atoi( token );
+
+
+    token = COM_Parse( &text_p );
+    if ( !token ) break;
+	animations[j].flipflop = atoi( token );
+
+
+    token = COM_Parse( &text_p );
+    if ( !token ) break;
+	animations[j].upper = atoi( token );
+
+
+    token = COM_Parse( &text_p );
+    if ( !token ) break;
+	animations[j].lower = atoi( token );
+
+
+    token = COM_Parse( &text_p );
+    if ( !token ) break;
+	animations[j].hit = atoi( token );
+
+
+
+
+// leg only frames are adjusted to not count the upper body only frames
+        
+        //not sure about this section for non q3 models, will uncomment if needed --Xamis
+        
+		//if ( animations[j].upper && !animations[j].lower) {
+			//animations[i].firstFrame -=224;
+                                        //skip = animations[LEGS_WALKCR].firstFrame - animations[TORSO_POINT].firstFrame;//what to do here?
+		//}
+		//if ( i >= LEGS_WALKCR && i<TORSO_GETFLAG) {
+		//	animations[i].firstFrame -= skip;
+		//}
+
+
+
+  }
+  if ( i != MAX_TOTALANIMATIONS ) {
+    CG_Printf( "Error parsing weapon animation file: %s", filename );
+    return qfalse;
+  }
+
+  return qtrue;
+}
+
 
 /*
 ======================
@@ -92,7 +332,8 @@ Read a configuration file containing animation coutns and rates
 models/players/visor/animation.cfg, etc
 ======================
 */
-static qboolean	CG_ParseAnimationFile( const char *filename, clientInfo_t *ci, const char *modelName ) {
+  /*
+static qboolean	CG_ParseAnimationFile2( const char *filename, clientInfo_t *ci, const char *modelName ) {
 	int			bludtemp; //blud
 	//int			j; //blud debug
 	int			urtModelAnimOffset; //blud
@@ -209,11 +450,11 @@ static qboolean	CG_ParseAnimationFile( const char *filename, clientInfo_t *ci, c
 		token = COM_Parse( &text_p );
 		if ( !*token ) {
 			if( i >= TORSO_GETFLAG && i <= TORSO_NEGATIVE ) {
-				animations[i].firstFrame = animations[TORSO_GESTURE].firstFrame;
-				animations[i].frameLerp = animations[TORSO_GESTURE].frameLerp;
-				animations[i].initialLerp = animations[TORSO_GESTURE].initialLerp;
-				animations[i].loopFrames = animations[TORSO_GESTURE].loopFrames;
-				animations[i].numFrames = animations[TORSO_GESTURE].numFrames;
+				animations[i].firstFrame = animations[TORSO_POINT].firstFrame;
+				animations[i].frameLerp = animations[TORSO_POINT].frameLerp;
+				animations[i].initialLerp = animations[TORSO_POINT].initialLerp;
+				animations[i].loopFrames = animations[TORSO_POINT].loopFrames;
+				animations[i].numFrames = animations[TORSO_POINT].numFrames;
 				animations[i].reversed = qfalse;
 				animations[i].flipflop = qfalse;
 				continue;
@@ -224,10 +465,10 @@ static qboolean	CG_ParseAnimationFile( const char *filename, clientInfo_t *ci, c
 		// leg only frames are adjusted to not count the upper body only frames
 		if ( i == LEGS_WALKCR ) {
 			if (strcmp(modelName, "orion") == 0 || strcmp(modelName, "athena") == 0) { //if this is Orion or Athena, apply weird fix (later I want to make this more sophisticated to detect ANY urt style models)
-				skip = animations[LEGS_WALKCR].firstFrame - animations[TORSO_GESTURE].firstFrame - urtModelAnimOffset; //blud: - urtModelAnimOffset for weird animation fix.
+				skip = animations[LEGS_WALKCR].firstFrame - animations[TORSO_POINT].firstFrame - urtModelAnimOffset; //blud: - urtModelAnimOffset for weird animation fix.
 			}
 			else { //else this is assumed to be a q3 style model
-				skip = animations[LEGS_WALKCR].firstFrame - animations[TORSO_GESTURE].firstFrame;
+				skip = animations[LEGS_WALKCR].firstFrame - animations[TORSO_POINT].firstFrame;
 			}
 		}
 		if ( i >= LEGS_WALKCR && i<TORSO_GETFLAG) {
@@ -315,7 +556,7 @@ static qboolean	CG_ParseAnimationFile( const char *filename, clientInfo_t *ci, c
 	//
 	return qtrue;
 }
-
+*/
 /*
 ==========================
 CG_FileExists
@@ -1197,7 +1438,7 @@ PLAYER ANIMATION
 =============================================================================
 */
 
-/* [QUARANTINE] - Weapon Animations Added by Xamis
+/*Weapon Animations  --Xamis
 ===============
 CG_SetWeaponLerpFrame
 
@@ -1605,8 +1846,11 @@ static void CG_PlayerAngles( centity_t *cent, vec3_t srcAngles,
 
 	// allow yaw to drift a bit
   if( ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) != LEGS_IDLE ||
-      ( cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT ) != TORSO_STAND  )
-  {
+          
+      ( cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT ) != TORSO_STAND_PISTOL// ||
+      //  ( cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT ) != TORSO_STAND_RIFLE ||   
+      //   ( cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT ) != TORSO_STAND_KNIFE  
+          )  {
 		// if not standing still, always point all in the same direction
 		cent->pe.torso.yawing = qtrue;	// always center
 		cent->pe.torso.pitching = qtrue;	// always center
@@ -1873,7 +2117,7 @@ static void CG_DustTrail( centity_t *cent ) {
 	}
 
 	anim = cent->pe.legs.animationNumber & ~ANIM_TOGGLEBIT;
-	if ( anim != LEGS_LANDB && anim != LEGS_LAND ) {
+	if ( anim != LEGS_BACKLAND && anim != LEGS_LAND ) {
 		return;
 	}
 
@@ -1966,12 +2210,12 @@ static void CG_PlayerFlag( centity_t *cent, qhandle_t hSkin, refEntity_t *torso 
 	updateangles = qfalse;
 	legsAnim = cent->currentState.legsAnim & ~ANIM_TOGGLEBIT;
 	if( legsAnim == LEGS_IDLE || legsAnim == LEGS_IDLECR ) {
-		flagAnim = FLAG_STAND;
+	//	flagAnim = FLAG_STAND;
 	} else if ( legsAnim == LEGS_WALK || legsAnim == LEGS_WALKCR ) {
-		flagAnim = FLAG_STAND;
+	//	flagAnim = FLAG_STAND;
 		updateangles = qtrue;
 	} else {
-		flagAnim = FLAG_RUN;
+	//	flagAnim = FLAG_RUN;
 		updateangles = qtrue;
 	}
 
@@ -2036,7 +2280,7 @@ static void CG_PlayerFlag( centity_t *cent, qhandle_t hSkin, refEntity_t *torso 
 	angles[YAW] = cent->pe.flag.yawAngle;
 	// lerp the flag animation frames
 	ci = &cgs.clientinfo[ cent->currentState.clientNum ];
-        CG_RunLerpFrame( ci, &cent->pe.flag, flagAnim, 1,qfalse  );//Xamis, added qfalse for weapon animations
+           //        CG_RunLerpFrame( ci, &cent->pe.flag, flagAnim, 1,qfalse  );//Xamis, added qfalse for weapon animations
 	flag.oldframe = cent->pe.flag.oldFrame;
 	flag.frame = cent->pe.flag.frame;
 	flag.backlerp = cent->pe.flag.backlerp;

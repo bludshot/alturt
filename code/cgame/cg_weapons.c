@@ -26,7 +26,6 @@ along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
 #include "cg_local.h"
 
 
-
 static qboolean CG_ParseWeaponAnimFile( const char *filename, weaponInfo_t *weapon ) {
   char *text_p;
   int len;
@@ -1049,23 +1048,38 @@ CG_MapTorsoToWeaponFrame
 static int CG_MapTorsoToWeaponFrame( clientInfo_t *ci, int frame ) {
 
         // change weapon
-        if ( frame >= ci->animations[TORSO_DROP].firstFrame
-                && frame < ci->animations[TORSO_DROP].firstFrame + 9 ) {
-                return frame - ci->animations[TORSO_DROP].firstFrame + 6;
+        if ( frame >= ci->animations[TORSO_WEAPON_LOWER].firstFrame
+                && frame < ci->animations[TORSO_WEAPON_LOWER].firstFrame + 9 ) {
+                return frame - ci->animations[TORSO_WEAPON_LOWER].firstFrame + 6 ;
         }
+  
         
         // stand attack
-        if ( frame >= ci->animations[TORSO_ATTACK].firstFrame
-                && frame < ci->animations[TORSO_ATTACK].firstFrame + 6 ) {
-                return 1 + frame - ci->animations[TORSO_ATTACK].firstFrame;
+        if ( frame >= ci->animations[TORSO_ATTACK_PISTOL].firstFrame
+                && frame < ci->animations[TORSO_ATTACK_PISTOL].firstFrame + 6 ) {
+                return 1 + frame - ci->animations[TORSO_ATTACK_PISTOL].firstFrame;
         }
 
         // stand attack 2
-        if ( frame >= ci->animations[TORSO_ATTACK2].firstFrame
-                && frame < ci->animations[TORSO_ATTACK2].firstFrame + 6 ) {
-                return 1 + frame - ci->animations[TORSO_ATTACK2].firstFrame;
+        if ( frame >= ci->animations[TORSO_ATTACK_PUMPGUN].firstFrame
+                && frame < ci->animations[TORSO_ATTACK_PUMPGUN].firstFrame + 6 ) {
+                return 1 + frame - ci->animations[TORSO_ATTACK_PUMPGUN].firstFrame;
         }
-
+        
+        if ( frame >= ci->animations[TORSO_ATTACK_GRENADE].firstFrame
+                && frame < ci->animations[TORSO_ATTACK_GRENADE].firstFrame + 6 ) {
+                return 1 + frame - ci->animations[TORSO_ATTACK_GRENADE].firstFrame;
+        }
+        
+        if ( frame >= ci->animations[TORSO_ATTACK_PISTOL].firstFrame
+                && frame < ci->animations[TORSO_ATTACK_PISTOL].firstFrame + 6 ) {
+                return 1 + frame - ci->animations[TORSO_ATTACK_PISTOL].firstFrame;
+        }
+        
+        if ( frame >= ci->animations[TORSO_ATTACK_KNIFE].firstFrame
+                && frame < ci->animations[TORSO_ATTACK_KNIFE].firstFrame + 6 ) {
+                return 1 + frame - ci->animations[TORSO_ATTACK_KNIFE].firstFrame;
+        }        
         return 0;
 }
 
@@ -1355,7 +1369,7 @@ void CG_RenderLaser(centity_t *cent){
       }else{
       VectorCopy ( cent->lerpOrigin ,muzzlePoint );
 
-           if ( anim == LEGS_WALKCR  || anim == LEGS_BACKCR || anim == LEGS_IDLECR )
+           if ( anim == LEGS_WALKCR  || anim == LEGS_BACKWALKCR || anim == LEGS_IDLECR )
                muzzlePoint[2] += CROUCH_VIEWHEIGHT +1;
            else
                 muzzlePoint[2] += DEFAULT_VIEWHEIGHT +1;
@@ -1540,6 +1554,8 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	{
                                     weapon->handsModel = trap_R_RegisterModel( "models/weapons2/handskins/hands.md3" );
 		gun.hModel = weapon->handsModel;
+                
+                
 	}
 
 	if(ps )
@@ -1647,7 +1663,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 
 if ( !ps ) {
 
-        CG_PositionEntityOnTag( &gun, parent, parent->hModel, "tag_weapon");
+         CG_PositionEntityOnTag( &gun, parent, parent->hModel, "tag_weapon");
 
 }
 else {
@@ -2157,7 +2173,8 @@ void CG_AddViewWeapon( playerState_t *ps ) {
         float           fovOffset;
         vec3_t          angles;
         weaponInfo_t    *weapon;
-        int             anim;
+        int             anim; 
+        int              i;
 
         if ( ps->persistant[PERS_TEAM] >= TEAM_SPECTATOR ) {
                 return;
@@ -2172,9 +2189,7 @@ void CG_AddViewWeapon( playerState_t *ps ) {
         if ( cg.renderingThirdPerson ) {
                 return;
         }
-        if ( ps->pm_flags & PMF_ONLADDER ) {
-            return;
-        }
+
 
         
         // allow the gun to be completely removed
@@ -2219,9 +2234,6 @@ void CG_AddViewWeapon( playerState_t *ps ) {
         cent = &cg.predictedPlayerEntity;       // &cg_entities[cg.snap->ps.clientNum];
         anim = cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT;
 
-            if ( anim == TORSO_BANDAGE ){
-                return;
-                  } 
         
                  if ( anim == BOTH_CLIMB ||  anim == BOTH_CLIMB_IDLE || anim == TORSO_BANDAGE || anim == BOTH_LEDGECLIMB ){
                       return;
@@ -2232,10 +2244,24 @@ void CG_AddViewWeapon( playerState_t *ps ) {
         weapon = &cg_weapons[ ps->weapon ];
 
         memset (&hand, 0, sizeof(hand));
+        
+        
+        
 
         // set up gun position
         CG_CalculateWeaponPosition( hand.origin, angles );
 
+        
+     if(cent->weaponDownTime > cg.time ){
+                            for( i =0; i < 60; i++)    {        
+        //angles[YAW] -=i/10;
+       //angles[PITCH] -=i/10;
+       // angles[ROLL]  -=i/10;
+       // AnglesToAxis( angles, hand.axis );
+
+                            }
+        }
+        
 
         //if smallgun
         if ( cg_gunsize.integer ){
@@ -2245,21 +2271,23 @@ void CG_AddViewWeapon( playerState_t *ps ) {
 
 			AnglesToAxis( angles, hand.axis );
 			//if smallgun
-        VectorScale(hand.axis[0], 0.4f, hand.axis[0]);
-        VectorScale(hand.axis[1], 0.65f, hand.axis[1]);
-        VectorScale(hand.axis[2], 0.67f, hand.axis[2]);
+                                                        VectorScale(hand.axis[0], 0.4f, hand.axis[0]);
+                                                        VectorScale(hand.axis[1], 0.65f, hand.axis[1]);
+                                                        VectorScale(hand.axis[2], 0.67f, hand.axis[2]);
 		}else{
             			VectorMA( hand.origin, cg_gun_x.value+4.8, cg.refdef.viewaxis[0], hand.origin );
 			VectorMA( hand.origin, cg_gun_y.value+1.2, cg.refdef.viewaxis[1], hand.origin );
 			VectorMA( hand.origin, (cg_gun_z.value+fovOffset)+2,cg.refdef.viewaxis[2], hand.origin );
-                        AnglesToAxis( angles, hand.axis );
-        VectorScale(hand.axis[0], 0.42f, hand.axis[0]);
-        VectorScale(hand.axis[1], .7f, hand.axis[1]);
-        VectorScale(hand.axis[2], .71f, hand.axis[2]);
+                                                        AnglesToAxis( angles, hand.axis );
+                                                        VectorScale(hand.axis[0], 0.42f, hand.axis[0]);
+                                                        VectorScale(hand.axis[1], .7f, hand.axis[1]);
+                                                        VectorScale(hand.axis[2], .71f, hand.axis[2]);
 
 
 			//AnglesToAxis( angles, hand.axis );
 		}
+        
+        
 
 		ci = &cgs.clientinfo[ cent->currentState.clientNum ]; //blud moved this up out of the ifelse below, because I need it all the time for my CG_AddPlayerWeapon call (to do with hand skins)
 		//blud: I hope this doesn't reduce perfomance or something??? This isn't being done 30 times a second or anything is it? (oh well even if it is that might be fine I have no idea)
@@ -2277,7 +2305,7 @@ void CG_AddViewWeapon( playerState_t *ps ) {
 			hand.backlerp = cent->pe.torso.backlerp;
 		}
 
-
+        //weapon->handsModel = trap_R_RegisterModel( "models/weapons2/handskins/hands.md3" );
         weapon->handsModel = trap_R_RegisterModel( "models/weapons2/shotgun/shotgun_hand.md3" );
         hand.hModel = weapon->handsModel;
         hand.renderfx = RF_DEPTHHACK | RF_FIRST_PERSON | RF_MINLIGHT;
@@ -2781,7 +2809,10 @@ CG_NextWeapon_f
 void CG_NextWeapon_f( void ) {
         int             i;
         int             original;
-
+       centity_t        *cent;
+          
+       
+       cent = &cg.predictedPlayerEntity; 
         if ( !cg.snap ) {
                 return;
         }
@@ -2793,7 +2824,7 @@ void CG_NextWeapon_f( void ) {
         
         if(cg.snap->ps.weaponstate != WEAPON_READY)
             return;
-
+        cent->weaponDownTime = cg.time +3000;
         cg.weaponSelectTime = cg.time;
         original = cg.weaponSelect;
         CG_ZoomReset_f();
@@ -2822,7 +2853,13 @@ CG_PrevWeapon_f
 void CG_PrevWeapon_f( void ) {
         int             i;
         int             original;
-
+       centity_t        *cent;
+          
+       
+      cent = &cg.predictedPlayerEntity; 
+        
+        
+        
         if ( !cg.snap ) {
                 return;
         }
@@ -2838,6 +2875,7 @@ void CG_PrevWeapon_f( void ) {
         
         cg.weaponSelectTime = cg.time;
         original = cg.weaponSelect;
+        cent->weaponDownTime = cg.time +3000;
         CG_ZoomReset_f();
 
         for ( i = 0 ; i < WP_NUM_WEAPONS ; i++ ) {
