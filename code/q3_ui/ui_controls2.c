@@ -432,7 +432,7 @@ static void Controls_UpdateModel( int anim ) {
 	s_controls.playerViewangles[YAW] = 180 - 30;
 	s_controls.playerMoveangles[YAW] = s_controls.playerViewangles[YAW];
 	s_controls.playerLegs		     = LEGS_IDLE;
-	s_controls.playerTorso			 = TORSO_STAND;
+	s_controls.playerTorso			 = TORSO_STAND_RIFLE;
 	s_controls.playerWeapon			 = -1;
 	s_controls.playerChat			 = qfalse;
 
@@ -446,7 +446,7 @@ static void Controls_UpdateModel( int anim ) {
 		break;
 
 	case ANIM_BACK:	
-		s_controls.playerLegs = LEGS_BACK;
+		s_controls.playerLegs = LEGS_BACKRUN;
 		break;
 
 	case ANIM_JUMP:	
@@ -525,16 +525,16 @@ static void Controls_UpdateModel( int anim ) {
 	//	break;
 
 	case ANIM_ATTACK:
-		s_controls.playerTorso = TORSO_ATTACK;
+		s_controls.playerTorso = TORSO_ATTACK_RIFLE;
 		break;
 
 	case ANIM_GESTURE:
-		s_controls.playerTorso = TORSO_GESTURE;
+		s_controls.playerTorso = TORSO_POINT;
 		break;
 
 	case ANIM_DIE:
-		s_controls.playerLegs = BOTH_DEATH1;
-		s_controls.playerTorso = BOTH_DEATH1;
+		s_controls.playerLegs = BOTH_DEATH_BACK;
+		s_controls.playerTorso = BOTH_DEATH_BACK;
 		s_controls.playerWeapon = WP_NONE;
 		break;
 

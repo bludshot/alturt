@@ -184,11 +184,11 @@ UI_ForceTorsoAnim
 static void UI_ForceTorsoAnim( playerInfo_t *pi, int anim ) {
 	pi->torsoAnim = ( ( pi->torsoAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT ) | anim;
 
-	if ( anim == TORSO_GESTURE ) {
+	if ( anim == TORSO_POINT ) {
 		pi->torsoAnimationTimer = UI_TIMER_GESTURE;
 	}
 
-	if ( anim == TORSO_ATTACK || anim == TORSO_ATTACK2 ) {
+	if ( anim == TORSO_ATTACK_PUMPGUN || anim == TORSO_ATTACK_RIFLE ) {
 		pi->torsoAnimationTimer = UI_TIMER_ATTACK;
 	}
 }
@@ -220,9 +220,9 @@ static void UI_TorsoSequencing( playerInfo_t *pi ) {
 	currentAnim = pi->torsoAnim & ~ANIM_TOGGLEBIT;
 
 	if ( pi->weapon != pi->currentWeapon ) {
-		if ( currentAnim != TORSO_DROP ) {
+		if ( currentAnim != TORSO_WEAPON_LOWER ) {
 			pi->torsoAnimationTimer = UI_TIMER_WEAPON_SWITCH;
-			UI_ForceTorsoAnim( pi, TORSO_DROP );
+			UI_ForceTorsoAnim( pi, TORSO_WEAPON_LOWER );
 		}
 	}
 
@@ -230,25 +230,25 @@ static void UI_TorsoSequencing( playerInfo_t *pi ) {
 		return;
 	}
 
-	if( currentAnim == TORSO_GESTURE ) {
-		UI_SetTorsoAnim( pi, TORSO_STAND );
+	if( currentAnim == TORSO_POINT ) {
+		UI_SetTorsoAnim( pi, TORSO_STAND_PISTOL );
 		return;
 	}
 
-	if( currentAnim == TORSO_ATTACK || currentAnim == TORSO_ATTACK2 ) {
-		UI_SetTorsoAnim( pi, TORSO_STAND );
+	if( currentAnim == TORSO_ATTACK_PISTOL || currentAnim == TORSO_ATTACK_KNIFE ) {
+		UI_SetTorsoAnim( pi, TORSO_STAND_RIFLE );
 		return;
 	}
 
-	if ( currentAnim == TORSO_DROP ) {
+	if ( currentAnim == TORSO_WEAPON_LOWER ) {
 		UI_PlayerInfo_SetWeapon( pi, pi->weapon );
 		pi->torsoAnimationTimer = UI_TIMER_WEAPON_SWITCH;
-		UI_ForceTorsoAnim( pi, TORSO_RAISE );
+		UI_ForceTorsoAnim( pi, TORSO_WEAPON_RAISE );
 		return;
 	}
 
-	if ( currentAnim == TORSO_RAISE ) {
-		UI_SetTorsoAnim( pi, TORSO_STAND );
+	if ( currentAnim == TORSO_WEAPON_RAISE ) {
+		UI_SetTorsoAnim( pi, TORSO_STAND_RIFLE );
 		return;
 	}
 }
@@ -587,7 +587,7 @@ static void UI_PlayerAngles( playerInfo_t *pi, vec3_t legs[3], vec3_t torso[3], 
 
 	// allow yaw to drift a bit
 	if ( ( pi->legsAnim & ~ANIM_TOGGLEBIT ) != LEGS_IDLE 
-		|| ( pi->torsoAnim & ~ANIM_TOGGLEBIT ) != TORSO_STAND  ) {
+		|| ( pi->torsoAnim & ~ANIM_TOGGLEBIT ) != TORSO_STAND_RIFLE  ) {
 		// if not standing still, always point all in the same direction
 		pi->torso.yawing = qtrue;	// always center
 		pi->torso.pitching = qtrue;	// always center
@@ -670,13 +670,13 @@ float	UI_MachinegunSpinAngle( playerInfo_t *pi ) {
 	}
 
 	torsoAnim = pi->torsoAnim  & ~ANIM_TOGGLEBIT;
-	if( torsoAnim == TORSO_ATTACK2 ) {
-		torsoAnim = TORSO_ATTACK;
+	if( torsoAnim == TORSO_ATTACK_PISTOL ) {
+		torsoAnim = TORSO_ATTACK_RIFLE;
 	}
-	if ( pi->barrelSpinning == !(torsoAnim == TORSO_ATTACK) ) {
+	if ( pi->barrelSpinning == !(torsoAnim == TORSO_ATTACK_RIFLE) ) {
 		pi->barrelTime = dp_realtime;
 		pi->barrelAngle = AngleMod( angle );
-		pi->barrelSpinning = !!(torsoAnim == TORSO_ATTACK);
+		pi->barrelSpinning = !!(torsoAnim == TORSO_ATTACK_PISTOL);
 	}
 
 	return angle;
@@ -1003,7 +1003,7 @@ static qboolean UI_ParseAnimationFile( const char *filename, animation_t *animat
 		animations[i].firstFrame = atoi( token );
 		// leg only frames are adjusted to not count the upper body only frames
 		if ( i == LEGS_WALKCR ) {
-			skip = animations[LEGS_WALKCR].firstFrame - animations[TORSO_GESTURE].firstFrame;
+			skip = animations[LEGS_WALKCR].firstFrame - animations[TORSO_POINT].firstFrame;
 		}
 		if ( i >= LEGS_WALKCR ) {
 			animations[i].firstFrame -= skip;
@@ -1188,8 +1188,8 @@ void UI_PlayerInfo_SetInfo( playerInfo_t *pi, int legsAnim, int torsoAnim, vec3_
 	weaponNum = pi->lastWeapon;
 	pi->weapon = weaponNum;
 
-	if ( torsoAnim == BOTH_DEATH1 || legsAnim == BOTH_DEATH1 ) {
-		torsoAnim = legsAnim = BOTH_DEATH1;
+	if ( torsoAnim == BOTH_DEATH_CHEST || legsAnim == BOTH_DEATH_CHEST ) {
+		torsoAnim = legsAnim = BOTH_DEATH_CHEST;
 		pi->weapon = pi->currentWeapon = WP_NONE;
 		UI_PlayerInfo_SetWeapon( pi, pi->weapon );
 
@@ -1215,21 +1215,21 @@ void UI_PlayerInfo_SetInfo( playerInfo_t *pi, int legsAnim, int torsoAnim, vec3_
 	}
 
 	// torso animation
-	if ( torsoAnim == TORSO_STAND || torsoAnim == TORSO_STAND2 ) {
+	if ( torsoAnim == TORSO_STAND_PISTOL || torsoAnim == TORSO_STAND_KNIFE ) {
 		if ( weaponNum == WP_NONE || weaponNum == WP_KNIFE ) {
-			torsoAnim = TORSO_STAND2;
+			torsoAnim = TORSO_STAND_PISTOL;
 		}
 		else {
-			torsoAnim = TORSO_STAND;
+			torsoAnim = TORSO_STAND_KNIFE;
 		}
 	}
 
-	if ( torsoAnim == TORSO_ATTACK || torsoAnim == TORSO_ATTACK2 ) {
+	if ( torsoAnim == TORSO_ATTACK_PISTOL || torsoAnim == TORSO_ATTACK_KNIFE ) {
 		if ( weaponNum == WP_NONE || weaponNum == WP_KNIFE ) {
-			torsoAnim = TORSO_ATTACK2;
+			torsoAnim = TORSO_ATTACK_KNIFE;
 		}
 		else {
-			torsoAnim = TORSO_ATTACK;
+			torsoAnim = TORSO_ATTACK_PISTOL;
 		}
 		pi->muzzleFlashTime = dp_realtime + UI_TIMER_MUZZLE_FLASH;
 		//FIXME play firing sound here
@@ -1237,10 +1237,10 @@ void UI_PlayerInfo_SetInfo( playerInfo_t *pi, int legsAnim, int torsoAnim, vec3_
 
 	currentAnim = pi->torsoAnim & ~ANIM_TOGGLEBIT;
 
-	if ( weaponNum != pi->currentWeapon || currentAnim == TORSO_RAISE || currentAnim == TORSO_DROP ) {
+	if ( weaponNum != pi->currentWeapon || currentAnim == TORSO_WEAPON_RAISE || currentAnim == TORSO_WEAPON_LOWER ) {
 		pi->pendingTorsoAnim = torsoAnim;
 	}
-	else if ( ( currentAnim == TORSO_GESTURE || currentAnim == TORSO_ATTACK ) && ( torsoAnim != currentAnim ) ) {
+	else if ( ( currentAnim == TORSO_POINT || currentAnim == TORSO_ATTACK_PISTOL ) && ( torsoAnim != currentAnim ) ) {
 		pi->pendingTorsoAnim = torsoAnim;
 	}
 	else if ( torsoAnim != currentAnim ) {
