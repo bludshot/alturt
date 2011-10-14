@@ -30,7 +30,8 @@ along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
 ================
  *   Rotating_Door_Blocked
  * 
- * returns true if door opens towards activator
+ * returns true if door opens towards activator 
+ * returns false if door opens towards activator and activator is holding the back button.
 ================
 */
 static qboolean Rotating_Door_Blocked( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
@@ -67,7 +68,7 @@ static qboolean Rotating_Door_Blocked( gentity_t *ent, gentity_t *other, gentity
                 } else if ( ent->movedir[2] ) {
                         angles[2] += ent->distance;
                 }
-                
+               //let user control door direction 
                 if ( activator->client->pers.cmd.forwardmove < 0)
                     VectorNegate(angles, angles);
 
@@ -965,7 +966,10 @@ if(!(ent->trigger_only)){
 	if ( ent->moverState == ROTATOR_POS1 ) {
             
             
-            //If the door would open towards the player reverse the direction of the door.
+            //This code makes sure that the doors open in a prediactable direction, it defaults to opening away from player.
+	    //this also ensures that multiple doors open the same direction. Rotating_Door_Blocked can be reversed by the player
+	    //using the key bound to -forward.
+	    // --Xamis		
                     if ( Rotating_Door_Blocked( ent, other, activator ) ) {
                                     VectorNegate ( ent->movedir, ent->movedir );
                 	       	VectorMA ( ent->pos1, ent->distance, ent->movedir, ent->pos2 );
