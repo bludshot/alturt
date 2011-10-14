@@ -59,7 +59,7 @@ static qboolean Rotating_Door_Blocked( gentity_t *ent, gentity_t *other, gentity
                 if ( ent->movedir[0] ) {
                         angles[0] += ent->distance;
                           if(  ent->s.origin[0] < 0 && ent->pos2[0] < 0 )
-                         angles[1] *=-1;
+                         angles[0] *=-1;
                 } else if ( ent->movedir[1] ) {
                         angles[1] += ent->distance;
                      if(  ent->s.origin[1] < 0 && ent->pos2[1] < 0 )
