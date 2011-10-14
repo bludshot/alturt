@@ -25,11 +25,70 @@ along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "g_local.h"
 
+
 /*
-Rotating doors still need a lot of work!, they are just here right now so that the doors show up in game and are somewhat functional.
-func_doors that have the trigger_only flag set, currently do not work properly.As these features have not been implemented yet.
- --Xamis
+================
+ *   Rotating_Door_Blocked
+ * 
+ * returns true if door opens towards activator
+================
 */
+static qboolean Rotating_Door_Blocked( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
+                vec3_t dir, angles;
+                vec3_t pos;
+                vec3_t vec;
+                float dot;
+                vec3_t forward;
+                qboolean is_relay = qfalse;
+
+
+                if ( !activator ) {
+                        if ( Q_stricmp( other->classname, "target_relay" ) == 0 ) {
+                                is_relay = qtrue;
+                        } else if ( !activator->client ) {
+                                return qfalse;
+                        }
+                }
+
+                VectorAdd( ent->r.absmin, ent->r.absmax, pos );
+                VectorScale( pos, 0.5, pos );
+
+                VectorSubtract( pos, ent->s.origin, dir );
+                vectoangles( dir, angles );
+
+                if ( ent->movedir[0] ) {
+                        angles[0] += ent->distance;
+                          if(  ent->s.origin[0] < 0 && ent->pos2[0] < 0 )
+                         angles[1] *=-1;
+                } else if ( ent->movedir[1] ) {
+                        angles[1] += ent->distance;
+                     if(  ent->s.origin[1] < 0 && ent->pos2[1] < 0 )
+                         angles[1] *=-1;
+                } else if ( ent->movedir[2] ) {
+                        angles[2] += ent->distance;
+                }
+
+                AngleVectors( angles, forward, NULL, NULL );
+
+                if ( is_relay ) {
+                        VectorSubtract( other->r.currentOrigin, pos, vec );
+                } else {
+                        VectorSubtract( activator->r.currentOrigin, pos, vec );
+                }
+
+                VectorNormalize( vec );
+                dot = DotProduct( vec, forward );
+                
+                if ( dot >= 0 ) {
+                        return qtrue;
+                } else {
+                        return qfalse;
+                }
+
+}
+
+
+
 
 /*
 ===============================================================================
@@ -776,6 +835,7 @@ Use_BinaryMover
 void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
 	int		total;
 	int		partial;
+
         
 	if( ent->trigger_only){
 		//G_Printf( "Use_BinaryMover ent->trigger_only\n" );
@@ -786,6 +846,8 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
 		Use_BinaryMover( ent->teammaster, other, activator );
 		return;
 	}
+
+
 
 	ent->activator = activator;
 if(!(ent->trigger_only)){
@@ -824,27 +886,7 @@ if(!(ent->trigger_only)){
 			    return;
 		    }
 
-
-		 /*   if( ent->moverState == MOVER_POS2 && ent->wait > 0 ) {
-					//G_Printf( "Use_BinaryMover moverState == MOVER_POS2 && ent->wait > 0\n");
-        // start moving 50 msec later, becase if this was player
-        // triggered, level.time hasn't been advanced yet
-			    MatchTeam( ent, MOVER_2TO1, level.time + 550 );
-					//G_Printf( "Use_BinaryMover MOVER_2TO1 MatchTeam called\n");
-        // starting sound
-			    if ( ent->sound2to1 ) {
-					    G_AddEvent( ent, EV_GENERAL_SOUND, ent->sound2to1 );
-			    }
-
-        // looping sound
-			    ent->s.loopSound = ent->soundLoop;
-
-        // open areaportal
-			    if ( ent->teammaster == ent || !ent->teammaster ) {
-				    trap_AdjustAreaPortalState( ent, qtrue );
-			    }
-			    return;
-		    } else */ if ( ent->moverState == MOVER_POS2 && ent->nextthink < level.time  &&  ent->wait > 0 ) { // this is for making the door stay up
+                                        if ( ent->moverState == MOVER_POS2 && ent->nextthink < level.time  &&  ent->wait > 0 ) { // this is for making the door stay up
 				//G_Printf( "ent->moverState == MOVER_POS2 && ent->nextthink < level.time  &&  ent->wait > 0\n");
                                                           MatchTeam( ent, MOVER_2TO1, level.time + 50 );
 			    return;
@@ -918,22 +960,20 @@ if(!(ent->trigger_only)){
 			    return;
 		    }
 	if ( ent->moverState == ROTATOR_POS1 ) {
+            
+            
+            //If the door would open towards the player reverse the direction of the door.
+                    if ( Rotating_Door_Blocked( ent, other, activator ) ) {
+                                    VectorNegate ( ent->movedir, ent->movedir );
+                	       	VectorMA ( ent->pos1, ent->distance, ent->movedir, ent->pos2 );
+                                    MatchTeam( ent, ROTATOR_1TO2, level.time + 50 );
+                    }else{
 
-                             if(    ( ent->activator->client->ps.origin[1]   < ent->r.absmax[1]  && ent->activator->client->ps.origin[1] > ent->r.absmin[1]) ||
-                                  ( ent->activator->client->ps.origin[0]   < ent->r.absmax[0]  && ent->activator->client->ps.origin[0] > ent->r.absmin[0]) 
-                         ){
-		VectorNegate ( ent->movedir, ent->movedir );
-                       	VectorMA ( ent->pos1, ent->distance, ent->movedir, ent->pos2 );
-                           }
+                                    MatchTeam( ent, ROTATOR_1TO2, level.time + 50 );
+                        }
 
-
-		// start moving 50 msec later, becase if this was player
-		// triggered, level.time hasn't been advanced yet
-		MatchTeam( ent, ROTATOR_1TO2, level.time + 50 );
-
-		// starting sound
-		if ( ent->sound1to2 ) {
-			G_AddEvent( ent, EV_GENERAL_SOUND, ent->sound1to2 );
+	if ( ent->sound1to2 ) {
+	       G_AddEvent( ent, EV_GENERAL_SOUND, ent->sound1to2 );
 		}
 
 		// looping sound
