@@ -26,6 +26,17 @@ along with Alturt source code.  If not, see <http://www.gnu.org/licenses/>.
 #include "cg_local.h"
 
 
+
+
+
+/* 
+==========================================================================
+CG_ParseWeaponAnimFile
+
+--Xamis
+==========================================================================
+*/
+
 static qboolean CG_ParseWeaponAnimFile( const char *filename, weaponInfo_t *weapon ) {
   char *text_p;
   int len;
@@ -135,9 +146,11 @@ continue;
 }
 
 /* Weapon Animation  Sounds --Xamis
-==========================
+==================================================================================
+
 CG_ParseWeaponSounds
-==========================
+
+==================================================================================
 */
 
 static qboolean CG_ParseWeaponSounds( const char *filename, weaponInfo_t *weapon ) {
@@ -1430,7 +1443,8 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	refEntity_t     handsModel;
 	refEntity_t     gun; //this is used for thirdperson weapon and firstperson hands model Xamis
 	refEntity_t     viewmainModel; //firstperson weapon model
-	refEntity_t     holds;
+	refEntity_t     holds;//placeholder for first person hands attachment
+	//Weapons parts, first person view
 	refEntity_t     flash;
 	refEntity_t     silencer;
 	refEntity_t     laser;
@@ -1462,6 +1476,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	refEntity_t     vaim;
 	refEntity_t     vshell;
 	refEntity_t     vgrenade;
+	//End of weapon parts
 	refEntity_t     weaponModel;
 	vec3_t          angles;
 	weapon_t        weaponNum;
@@ -1470,12 +1485,11 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	orientation_t   lerped;
 	int             powerups;
 	clientInfo_t    *ci;
-	//int i;
 	qboolean lasersight;
 	qboolean silenced;
 	qboolean vestOn;	//needed for different torso weapon tag location
  	qboolean        weaponDown;
-                  int            anim;
+        int            anim;
 
 
 
@@ -1501,7 +1515,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
                   } else
                       weaponDown=qfalse;
         
-	if ( powerups & ( 1 << PW_SILENCER )&& !( cg.ItemToggleState[cg.predictedPlayerState.clientNum] & ( 1 << PW_SILENCER )) )
+	if ( powerups & ( 1 << PW_SILENCER ))
 		silenced = qtrue;
 
 	if ( powerups & ( 1 << PW_LASERSIGHT ) )
@@ -1694,9 +1708,6 @@ if ( weaponDown ) {
 }else
           CG_PositionEntityOnTag( &weaponModel, &gun, weapon->handsModel, "tag_weapon" );
           CG_AddWeaponWithPowerups( &weaponModel, cent->currentState.powerups );
-
-
-		  //Putting weaposn on the player's back or holster (weapons they are not currently using)
 
         }
 
