@@ -527,6 +527,9 @@ void CG_EntityEvent(centity_t *cent, vec3_t position) {
 
         case EV_BANDAGE:
             DEBUGNAME("EV_BANDAGE");
+            if (clientNum == cg.predictedPlayerState.clientNum) {
+                CG_ZoomReset_f();
+            }
             trap_S_StartSound(NULL, es->number, CHAN_BODY, cgs.media.bandageSound);
             break;
 
@@ -1191,6 +1194,9 @@ void CG_EntityEvent(centity_t *cent, vec3_t position) {
         case EV_DEATH2:
         case EV_DEATH3:
             DEBUGNAME("EV_DEATHx");
+             if (clientNum == cg.predictedPlayerState.clientNum) {
+                CG_ZoomReset_f();
+            }
             trap_S_StartSound(NULL, es->number, CHAN_VOICE,
                     CG_CustomSound(es->number, va("*death%i.wav", event - EV_DEATH1 + 1)));
             break;
