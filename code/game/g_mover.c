@@ -67,6 +67,9 @@ static qboolean Rotating_Door_Blocked( gentity_t *ent, gentity_t *other, gentity
                 } else if ( ent->movedir[2] ) {
                         angles[2] += ent->distance;
                 }
+                
+                if ( activator->client->pers.cmd.forwardmove < 0)
+                    VectorNegate(angles, angles);
 
                 AngleVectors( angles, forward, NULL, NULL );
 
