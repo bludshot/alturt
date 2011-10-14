@@ -914,22 +914,32 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		// gib death
 		GibEntity( self, killer );
 	} else {
+
+
+		if( self->client->ps.pm_flags & PMF_DUCKED){
+			anim = BOTH_DEATH_CROUCHED;	
+
+		}else if ( contents & CONTENTS_WATER ){
+			anim = BOTH_DEATH_WATER;
+
+		}else{
+
 		// normal death
 		static int i;
 
-		switch ( i ) {
-		case 0:
-			anim = BOTH_DEATH_CROUCHED;
-			break;
-		case 1:
-			anim = BOTH_DEATH_BACK;
-			break;
-		case 2:
-		default:
-			anim = BOTH_DEATH_CHEST;
-			break;
+			switch ( i ) {
+			case 0:
+				anim = BOTH_DEATH_CROUCHED;
+				break;
+			case 1:
+				anim = BOTH_DEATH_BACK;
+				break;
+			case 2:
+			default:
+				anim = BOTH_DEATH_CHEST;
+				break;
+			}
 		}
-
 		// for the no-blood option, we need to prevent the health
 		// from going to gib level
 		if ( self->health <= GIB_HEALTH ) {
